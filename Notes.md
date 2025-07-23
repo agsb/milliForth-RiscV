@@ -20,6 +20,10 @@ Must define:
 
 the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) or [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
 
+The milliForth will be a program called by elsewhere alien operational system, then use of temporary registers T0-T6, because they are expendable bettween function calls.
+
+The milliForth uses memory pointers for data stack, return stack. They must be memory pointers because are acessed using fetch and store words from a special structure called s.
+
 ## Coding
 
 This version includes: 
