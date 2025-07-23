@@ -22,9 +22,9 @@ the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit [ISA](https://www.cl.cam.ac
 
 The milliForth will be a program called by elsewhere alien operational system, then use of temporary registers T0-T6, because they are expendable bettween function calls.
 
-The milliForth uses memory pointers for data stack, return stack. They must be memory pointers because are acessed using fetch and store words from a special structure called s.
-
 ## Coding
+
+The milliForth uses memory pointers for data stack and return stack, to allow acesse using fetch and store from a special structure called 'user structure'.
 
 This version includes: 
 
