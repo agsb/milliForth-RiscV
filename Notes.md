@@ -15,6 +15,7 @@ Must define:
     how do getc and putc for key and emit
     which memory map be used and pages size
     where is the heap and stack in memory
+    
 ## ISA
 
 the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) or [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
