@@ -17,7 +17,8 @@ ASFLAGS = --fpic --warn -a -Z
 LD = /usr/bin/riscv64-unknown-elf-ld
 
 LDFLAGS = -m elf32lriscv --nostdlib --no-relax \
--ffunction-sections -fdata-sections  
+--strip-all
+#-ffunction-sections -fdata-sections -ffreestanding \
 
 MY = sector-riscv
 

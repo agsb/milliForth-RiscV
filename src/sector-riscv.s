@@ -211,12 +211,12 @@ NOTES:
 
 # registers, saved by caller
 
-.set ipt,       a2 #; instruction pointer
-.set wrd,       a3 #; word pointer
-.set fst,       a4 #; first
-.set snd,       a5 #; second
-.set trd,       a6 #; third
-.set fth,       a7 #; fourth
+ ipt equ       a2 #; instruction pointer
+ wrd equ       a3 #; word pointer
+ fst equ       a4 #; first
+ snd equ       a5 #; second
+ trd equ       a6 #; third
+ fth equ       a7 #; fourth
 
 #----------------------------------------------------------------------
 # no values here or must be a BSS
