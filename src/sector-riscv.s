@@ -36,7 +36,7 @@
 #
 #   only IMMEDIATE flag used as $80, no hide, no compile;
 #
-#   As ANSI Forth 1994: FALSE is $0000 ; TRUE is $FFFF ;
+#   As ANSI Forth 1994: FALSE is $0000 #; TRUE is $FFFF ;
 #
 #----------------------------------------------------------------------
 #   Remarks:
@@ -80,7 +80,7 @@
 #   For Devs:
 #
 #   the hello_world.forth file states that stacks works
-#       to allow : dup sp@ @ ; so sp must point to actual TOS.
+#       to allow : dup sp@ @ #; so sp must point to actual TOS.
 #   
 #   The movement will be:
 #       pull is 'fetch and increase'
@@ -112,30 +112,53 @@
 #   .byte  name
 #   name:
 #
-# label for primitives
-.macro makelabel arg1, arg2
-.ident (.concat (arg1, arg2)):
-.endmacro
-
-# header for primitives
-# the entry point for dictionary is h_~name~
-# the entry point for code is ~name~
-.macro def_word name, label, flag
-makelabel "h_", label
-.ident(.sprintf("H%04X", hcount + 1)) = *
-.word .ident (.sprintf ("H%04X", hcount))
-hcount .set hcount + 1
-.byte .strlen(name) + flag + 0 ; nice trick !
-.byte name
-makelabel "", label
-.endmacro
 
 #---------------------------------------------------------------------
-# variables for macros
+.macro def_word name, label, flags=0x0
+.p2align 2, 0x00
+is_\label:
+    .word 99b
+99:
+    .byte \flags
+    .byte (3f - 2f) 
+2:
+    .ascii "\name"
+3:
+    .p2align 2, 0x20	
 
-hcount .set 0
+\label:
+.endm
 
-H0000 = 0
+#----------------------------------------------------------------------
+# stack macros
+# could have hooks for check over/under
+##
+
+.macro spull stack, register
+    lw \register, 0 (\stack)
+    addi \stack, \stack, +1 * CELL
+.endm
+
+.macro spush stack, register
+    addi \stack, \stack, -1 * CELL
+    sw \register, 0 (\stack)
+.endm
+
+.macro scopy stack, register, index
+    lw \register, \index * CELL (\stack)
+.endm
+
+.macro copy destin, origin
+    add \destin, \origin, \zero
+.endm
+
+.macro link address
+    jal zero, \address
+.endm
+
+.macro jump address
+    jalr zero, \address, 0
+.endm
 
 #---------------------------------------------------------------------
 # define thread code model
@@ -188,39 +211,39 @@ NOTES:
 
 # registers, saved by caller
 
-.set ipt,       a2 ; instruction pointer
-.set wrd,       a3 ; word pointer
-.set fst,       a4 ; first
-.set snd,       a5 ; second
-.set trd,       a6 ; third
-.set fth,       a7 ; fourth
+.set ipt,       a2 #; instruction pointer
+.set wrd,       a3 #; word pointer
+.set fst,       a4 #; first
+.set snd,       a5 #; second
+.set trd,       a6 #; third
+.set fth,       a7 #; fourth
 
 #----------------------------------------------------------------------
 # no values here or must be a BSS
 .section .data
 .align 4
 
-nil:  ; empty for fixed reference
+nil:  #; empty for fixed reference
 
 # user variables
 # order matters for hello_world.forth !
 
 # internal Forth user structure
 
-stat:   .word $0 ; state at lsb, last size+flag at 2nd,
-toin:   .word $0 ; toin next free byte in TIB
-last:   .word $0 ; last link word cell in heap dictionary linked list
-here:   .word $0 ; next free cell in heap dictionary, aka dpt
-sp:     .word $0 ; data stack base
-rp:     .word $0 ; return stack base
+stat:   .word $0 #; state at lsb, last size+flag at 2nd,
+toin:   .word $0 #; toin next free byte in TIB
+last:   .word $0 #; last link word cell in heap dictionary linked list
+here:   .word $0 #; next free cell in heap dictionary, aka dpt
+sp:     .word $0 #; data stack base
+rp:     .word $0 #; return stack base
 
 # used, reserved
-tout:   .word $0 ; next token in TIB
-back:   .word $0 ; hold 'here while compile
+tout:   .word $0 #; next token in TIB
+back:   .word $0 #; hold 'here while compile
 
 # for future expansion, reserved
-head:   .word $0 ; heap forward, also DP
-tail:   .word $0 ; heap backward
+head:   .word $0 #; heap forward, also DP
+tail:   .word $0 #; heap backward
 
 #----------------------------------------------------------------------
 .section .bss
@@ -245,28 +268,32 @@ rp0:    .word
 
 main:
 
+99:
+
+def_word "exit", "exit", 0
+
+def_word "noexit", "noexit", 0
+
+.end
+
 #----------------------------------------------------------------------
 # common must
 #
 cold:
-#   disable interrupts
-        sei
+#   disable interrupts, sei
 
 #   saves
 
-#   enable interrupts
-        cli
+#   enable interrupts, cli
 
 #----------------------------------------------------------------------
 warm:
 # link list of headers
-        li wrd, %lo(h_exit)
-        add wrd, wrd, %hi(h_exit)
+        li wrd, h_exit
         sw wrd, 0(last)
 
 # next heap free cell, same as init:  
-        li wrd, %lo(ends)
-        add wrd, wrd, %hi(ends)
+        li wrd, ends
         sw wrd, 0(here)
 
 #---------------------------------------------------------------------
@@ -285,7 +312,7 @@ quit:
         sw wrd, 0(rp)
 
 # stat is 'interpret' == \0
-        mv wrd, r0, r0
+        add wrd, r0, r0
         
         jmp okey
 
@@ -312,11 +339,11 @@ resolve:
 # get a token
         jal token
 
-        ; lda #'P'
-        ; jsr putchar
+        #; lda #'P'
+        #; jsr putchar
 
 find:
-        lw snd, 0 (last)
+        lw snd, 0(last)
         
 @loop:
 # verify null
@@ -335,7 +362,7 @@ find:
 #    jsr putchar
 #    lda #10
 #    jsr putchar
-#    jmp abort  ; end of dictionary, no more words to search, abort
+#    jmp abort  #; end of dictionary, no more words to search, abort
 
 @each:    
 
@@ -346,8 +373,8 @@ find:
         ldy #0
 
 # save the flag, first byte is (size and flag) 
-        lda (wrd), y
-        sta stat + 1
+        lb trd, (wrd)
+        sb trd, (stat+1)
 
 # compare chars
 @equal:
@@ -369,7 +396,7 @@ find:
 @done:
 # update wrd
         tya
-        ;; ldx #(wrd) ; set already
+        ;; ldx #(wrd) #; set already
         ;; addwx also clear carry
         jsr addwx
         
@@ -384,8 +411,8 @@ eval:
 
 compile:
 
-        ; lda #'C'
-        ; jsr putchar
+        #; lda #'C'
+        #; jsr putchar
 
         jsr wcomma
 
@@ -394,8 +421,8 @@ compile:
 immediate:
 execute:
 
-        ; lda #'E'
-        ; jsr putchar
+        #; lda #'E'
+        #; jsr putchar
 
         lda #>resolvept
         sta ipt + 1
@@ -418,7 +445,7 @@ execute:
 #---------------------------------------------------------------------
 try:
         lda tib, y
-        beq getline    ; if \0 
+        beq getline    #; if \0 
         iny
         eor #' '
         rts
@@ -433,7 +460,7 @@ getline:
         ldy #0
 @loop:  
 # is valid
-        sta tib, y  ; dummy store on first pass, overwritten
+        sta tib, y  #; dummy store on first pass, overwritten
         iny
 # would be better with 
 # end of buffer ?
@@ -456,8 +483,8 @@ getline:
 @ends:
 # grace \b
         lda #32
-        sta tib + 0 ; start with space
-        sta tib, y  ; ends with space
+        sta tib + 0 #; start with space
+        sta tib, y  #; ends with space
 # mark eol with \0
         lda #0
         sta tib + 1, y
@@ -499,11 +526,11 @@ token:
 # keep it
         ldy tout + 0
         dey
-        sta tib, y  ; store size for counted string 
+        sta tib, y  #; store size for counted string 
         sty tout + 0
 
 # setup token
-        clc     ; clean 
+        clc     #; clean 
         rts
 
 #---------------------------------------------------------------------
@@ -516,7 +543,7 @@ getchar:
 
 eofs:
 # EOF ?
-        cmp #$FF ; also clean carry :)
+        cmp #$FF #; also clean carry :)
         beq byes
 
 putchar:
@@ -561,7 +588,7 @@ wcomma:
 
 comma: 
         ldx #(here)
-        ; fall throught
+        #; fall throught
 
 #---------------------------------------------------------------------
 # from a page zero address indexed by Y
@@ -588,8 +615,8 @@ spush1:
 # into a page zero indirect address indexed by X
 spush:
         ldx #(spt)
-        ; jmp push
-        .byte $2c   ; mask next two bytes, nice trick !
+        #; jmp push
+        .byte $2c   #; mask next two bytes, nice trick !
 
 rpush:
         ldx #(rpt)
@@ -609,12 +636,12 @@ push:
 spull2:
         ldy #(snd)
         jsr spull
-        ; fall through
+        #; fall through
 
 #---------------------------------------------------------------------
 spull1:
         ldy #(fst)
-        ; fall through
+        #; fall through
 
 #---------------------------------------------------------------------
 # pull a cell 
@@ -622,15 +649,15 @@ spull1:
 # into a page zero address indexed by y
 spull:
         ldx #(spt)
-        ; jmp pull
-        .byte $2c   ; mask next two bytes, nice trick !
+        #; jmp pull
+        .byte $2c   #; mask next two bytes, nice trick !
 
 rpull:
         ldx #(rpt)
 
 #---------------------------------------------------------------------
 # classic stack backwards
-pull:   ; fall through, same as copyfrom
+pull:   #; fall through, same as copyfrom
 
 #---------------------------------------------------------------------
 # from a page zero indirect address indexed by X
@@ -641,7 +668,7 @@ copyfrom:
         jsr incwx
         lda (0, x)
         sta 1, y
-        ; jmp incwx ; fall through
+        #; jmp incwx ; fall through
 
 #---------------------------------------------------------------------
 # increment a word in page zero. offset by X
@@ -655,7 +682,7 @@ addwx:
         sta 0, x
         bcc @ends
         inc 1, x
-        clc ; keep carry clean
+        clc #; keep carry clean
 @ends:
         rts
 
@@ -778,7 +805,7 @@ def_word "dump", "dump", 0
         cmp here + 1
         bne @loop
 
-        clc  ; clean
+        clc  #; clean
         jmp next 
 
 #----------------------------------------------------------------------
@@ -889,7 +916,7 @@ def_word "words", "words", 0
         jmp @loop 
 
 @ends:
-        clc  ; clean
+        clc  #; clean
         jmp next
 
 #----------------------------------------------------------------------
@@ -983,7 +1010,7 @@ seek:
 @ends:
         tya
         lsr
-        clc  ; clean
+        clc  #; clean
         rts
 
 #----------------------------------------------------------------------
@@ -1016,7 +1043,7 @@ puthex:
         bcc @ends
         adc #$06
 @ends:
-        clc  ; clean
+        clc  #; clean
         jmp putchar
 
 .endif
@@ -1055,7 +1082,7 @@ number:
         ora fst + 0
         sta fst + 0
 
-        clc ; clean
+        clc #; clean
         rts
 
 @very:
@@ -1066,7 +1093,7 @@ number:
         cmp #10
         bcc @ends
         sbc #$07
-        ; any valid digit, A-Z, do not care 
+        #; any valid digit, A-Z, do not care 
 @ends:
         rts
 
@@ -1085,7 +1112,7 @@ number:
 .ifdef use_extensions
 
 #---------------------------------------------------------------------
-# ( w -- w/2 ) ; shift right
+# ( w -- w/2 ) #; shift right
 def_word "2/", "shr", 0
         jsr spull1
         lsr fst + 1
@@ -1114,32 +1141,30 @@ def_word ";$", "donext", 0
 # core primitives minimal 
 # start of dictionary
 #---------------------------------------------------------------------
-# ( -- u ) ; tos + 1 unchanged
+# ( -- u ) #; tos + 1 unchanged
 def_word "key", "key", 0
         jsr getchar
         sta fst + 0
-        ; jmp this  ; uncomment if char could be \0
-        bne this    ; always taken
+        #; jmp this  ; uncomment if char could be \0
+        bne this    #; always taken
         
 #---------------------------------------------------------------------
-# ( u -- ) ; tos + 1 unchanged
+# ( u -- ) #; tos + 1 unchanged
 def_word "emit", "emit", 0
         jsr spull1
         lda fst + 0
         jsr putchar
-        ; jmp next  ; uncomment if carry could be set
-        bcc jmpnext ; always taken
+        #; jmp next  ; uncomment if carry could be set
+        bcc jmpnext #; always taken
 
 #---------------------------------------------------------------------
-# ( a w -- ) ; [a] = w
+# ( a w -- ) #; [a] = w
 def_word "!", "store", 0
 storew:
-        jsr spull2
-        ldx #(snd) 
-        ldy #(fst) 
+        lw snd, 0(sp)
+        lw fst, 1(sp)
         jsr copyinto
-        ; jmp next  ; uncomment if carry could be set
-        bcc jmpnext ; always taken
+        beq r0, r0, jmpnext
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- NOT(w1 AND w2) )
@@ -1152,30 +1177,29 @@ def_word "nand", "nand", 0
         lda snd + 1
         and fst + 1
         eor #$FF
-        ; jmp keeps  ; uncomment if carry could be set
-        bcc keeps ; always taken
+        beq r0, r0, keeps
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1+w2 ) 
 def_word "+", "plus", 0
         jsr spull2
-        clc  ; better safe than sorry
+        clc  #; better safe than sorry
         lda snd + 0
         adc fst + 0
         sta fst + 0
         lda snd + 1
         adc fst + 1
-        jmp keeps
+        beq r0, r0, keeps
 
 #---------------------------------------------------------------------
-# ( a -- w ) ; w = [a]
+# ( a -- w ) #; w = [a]
 def_word "@", "fetch", 0
 fetchw:
         jsr spull1
         ldx #(fst)
         ldy #(snd)
         jsr copyfrom
-        ; fall throught
+        #; fall throught
 
 #---------------------------------------------------------------------
 copys:
@@ -1198,7 +1222,7 @@ def_word "0#", "zeroq", 0
         jsr spull1
         lda fst + 1
         ora fst + 0
-        beq isfalse  ; is \0 ?
+        beq isfalse  #; is \0 ?
 istrue:
         lda #$FF
 isfalse:
@@ -1211,8 +1235,8 @@ def_word "s@", "state", 0
         lda #<stat
         sta fst + 0
         lda #>stat
-        ;  jmp keeps ; uncomment if stats not in page $0
-        beq keeps   ; always taken
+        #;  jmp keeps ; uncomment if stats not in page $0
+        beq keeps   #; always taken
 
 #---------------------------------------------------------------------
 def_word ";", "semis",  FLAG_IMM
@@ -1234,8 +1258,8 @@ finish:
         sta wrd + 1
         jsr wcomma
 
-        ; jmp next
-        bcc next    ; always taken
+        #; jmp next
+        bcc next    #; always taken
 
 #---------------------------------------------------------------------
 def_word ":", "colon", 0
@@ -1261,7 +1285,7 @@ def_word ":", "colon", 0
         ldy #0
 @loop:    
         lda (tout), y
-        cmp #32    ; stops at space
+        cmp #32    #; stops at space
         beq @ends
         sta (here), y
         iny
@@ -1297,8 +1321,8 @@ magic = $20EA
 #~~~~~~~~
 
 # done
-        ; jmp next
-        bcc next    ; always taken
+        #; jmp next
+        bcc next    #; always taken
 
 #---------------------------------------------------------------------
 # Thread Code Engine
@@ -1313,59 +1337,32 @@ magic = $20EA
 #---------------------------------------------------------------------
 # ( -- ) 
 def_word "exit", "exit", 0
-unnest: ; exit
+unnest: #; exit
 # pull, ipt = (rpt), rpt += 2 
         ldy #(ipt)
         jsr rpull
 
 next:
-# wrd = (ipt) ; ipt += 2
+# wrd = (ipt) #; ipt += 2
         ldx #(ipt)
         ldy #(wrd)
         jsr copyfrom
 
-#~~~~~~~~
-.ifdef use_DTC
-
-pick:
-        jmp (wrd)
-
-nest:   ; enter
-# push, *rp = ipt, rp -=2
-        ldy #(ipt)
-        jsr rpush
-
-# pull (ip),
-        pla
-        sta ipt + 0
-        pla
-        sta ipt + 1
-
-# 6502 trick: must increase return address
-        ldx #(ipt)
-        jsr incwx
-
-        bcc next
-
-.else
-
 pick:
 # compare pages (MSBs)
-        lda wrd + 1
-        cmp #>ends + 1
-        bmi jump
+        blt wrd, ends, jump
 
-nest:   ; enter
+nest:   #; enter
 # push, *rp = ipt, rp -=2
+        lw wrd, (ipt)
+        sw wrd, ????
+
         ldy #(ipt)
         jsr rpush
 
-        lda wrd + 0
-        sta ipt + 0
-        lda wrd + 1
-        sta ipt + 1
+        sw wrd, (ipt)
 
-        jmp next
+        beq r0, r0, next
 
 jump: 
 
