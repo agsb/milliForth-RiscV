@@ -10,23 +10,27 @@
 
 ########################################
 
-AS = /usr/bin/riscv64-unknown-elf-as
+#riscv32-unknown-elf-as exampleAsm.S -o exampleAsm.o
+#riscv32-unknown-elf-ld -o exampleAsm.elf -T asm.ld -m elf32lriscv -nostdlib --no-relax
 
-ASFLAGS = --fpic --warn -a -Z  
+PASS=/opt/riscv/bin
 
-LD = /usr/bin/riscv64-unknown-elf-ld
+AS = ${PASS}/riscv64-unknown-elf-as
 
-LDFLAGS = -m elf32lriscv --nostdlib --no-relax \
---strip-all
-#-ffunction-sections -fdata-sections -ffreestanding \
+ASFLAGS = -fpic --warn -a -Z  
+
+LD = ${PASS}/riscv64-unknown-elf-ld
+
+LDFLAGS = -m elf32lriscv --no-relax --strip-all \
+-static -nostdlib -r -w -pie   
 
 MY = sector-riscv
 
 ########################################
 
-%: %.s
+%: %.S
 
-$(MY): $(SOURCES:.s=.o)
+$(MY): $(SOURCES:.S=.o)
 
 	$(AS) $(ASFLAGS) -o $@.out $@.s 2> err | tee out
 
