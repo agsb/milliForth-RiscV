@@ -1,5 +1,7 @@
 # Notes
 
+*"To master riding bicycles you have do ride bicycles"*
+
 started at 23/07/2025, agsb@
 
 This will be an implementation of MilliForth (sectorforth) concept for RISCV ISA.
@@ -27,7 +29,10 @@ The milliForth will be a program called by 'elsewhere alien operational system',
 
 ## Coding
 
-"qemu -kernel loads the kernel at 0x80000000 and causes each hart (i.e. core of CPU) to jump there."
+*"qemu -kernel loads the kernel at 0x80000000 and causes each hart (i.e. core of CPU) to jump there."*
+
+For now, using riscv-unknown-elf-gcc 15.0 suit with spike and qemu emulators for a single core minimal footprint Forth thread.
+I hope it uses far less than 4k bytes, without a dictionary.
 
 The milliForth must use memory pointers for data stack and return stack, because does fetch and store from a special 'user structure', which contains the user variables for Forth (state, toin, last, here, sp, dp, tout, back, heap, tail).
 
