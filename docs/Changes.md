@@ -2,50 +2,6 @@ _this file is still a stub_
 
 # Adapt and survive
 
-    Due lack of registers and complex instructions, present in x86, 
-    the 6502 milliforth review the original code for use 
-    of references at page zero and memory access modes.
-
-```
-  in x86:
-    mov ax, dx
-
-  is 6502:
-    lda ax + 0
-    sta dx + 0
-    lda ax + 1
-    sta dx + 1
-```
-
-```
-in x86:
-    mov [bx], ax
-    inc bx
-    inc bx
-
-is 6502:
-    ldx #bx
-    ldy #ax
-
-; for reuse    
-movs:
-    ld (0), y
-    sta (0, x)
-    jsr incwx
-    ld (1), y
-    sta (0, x)
-    jsr incwx
-    rts
-
-incwx:
-    inc 0, x
-    bne ends
-    inc 1, x
-ends:
-    rts
-       
-```
-
 ### the primitives
    
         +    ( w1 w2 -- w1+w2 ) unsigned addition
@@ -61,14 +17,16 @@ ends:
         
 ### the user area pointers 
 
-        state,     the state of Forth, compile or execute
-        toin,      next free byte in terminal input buffer
-        latest,    last word in dictionary
-        dpt,       next free byte in heap dictionary (here)
-        spt,       actual top of data stack
-        rpt,       actual top of return stack
-        ipt,       next following cell in dictionary
-        wrd,       word been executed
+        state,  the state of Forth, compile or execute
+        toin,   next free byte in terminal input buffer
+        last,   latest word in dictionary
+        here,   next free byte in heap dictionary (here)
+        spt,    actual top of data stack
+        rpt,    actual top of return stack
+        tout,   
+        once,   hold last here while compiling
+        head,   heap pointer, forwards
+        tail    stack pointer, backwards
 
 ### the hello_world file
     
