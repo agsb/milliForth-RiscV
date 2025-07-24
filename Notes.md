@@ -25,14 +25,16 @@ Must define:
 
 the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) or [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
 
-The milliForth will be a program called by 'elsewhere alien operational system', then use of temporary registers A2-A7, because they are caller saved between function calls.
+The milliForth is a program called by 'elsewhere alien operational system', and use of registers A2-A7, 
+because they are caller saved between function calls, and T3-T5, as scratch. 
 
 ## Coding
 
 *"qemu -kernel loads the kernel at 0x80000000 and causes each hart (i.e. core of CPU) to jump there."*
 
-For now, using riscv-unknown-elf-gcc 15.0 suit with spike and qemu emulators for a single core minimal footprint Forth thread.
-I hope it uses far less than 4k bytes, without a dictionary.
+For assembler, use [standart Risc-V](https://github.com/riscv-non-isa/riscv-asm-manual) style without pre-processor directives like #define.
+
+For now, using riscv-unknown-elf-gcc 15.0 suit with spike and qemu emulators for a single core minimal footprint Forth thread.  I hope it uses far less than 4k bytes, without a dictionary.
 
 The milliForth must use memory pointers for data stack and return stack, because does fetch and store from a special 'user structure', which contains the user variables for Forth (state, toin, last, here, sp, dp, tout, back, heap, tail).
 

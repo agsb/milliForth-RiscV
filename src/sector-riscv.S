@@ -10,9 +10,9 @@
 #   SectorForth and MilliForth was made for x86 arch 
 #   and uses full 16-bit registers 
 #
-#   The way at 6502 is use page zero and lots of lda/sta
+#   The way at 6502 is use page zero and lots of lda/sta.
 #
-#   The way of RiscV is use linear memory and registers.
+#   The way of RiscV is use linear memory and 32-bit registers.
 #
 #   Focus in size not performance.
 #
@@ -25,12 +25,14 @@
 #----------------------------------------------------------------------
 #   Changes:
 #
-#   all data (36 cells) and return (36 cells) stacks, TIB (80 bytes) 
-#       and PIC (32 bytes) are in same page; 
+#   all user structure, data (36 cells) and return (36 cells) stacks, 
+#   TIB (80 bytes) and PIC (32 bytes) are in sequence; 
 #
 #   TIB and PIC grows forward, stacks grows backwards;
 #
 #   no overflow or underflow checks;
+#
+#   no numbers only words;
 #
 #   the header order is LINK, SIZE+FLAG, NAME+PAD.
 #
@@ -43,7 +45,7 @@
 #
 #       this code uses Minimal Thread Code, aka MTC.
 #
-#       use a actual cell with 32-bits. 
+#       uses cell with 32-bits. 
 #
 #       no TOS register, all values keeped at stacks;
 #
@@ -56,7 +58,7 @@
 #       no line wrap, do not break words between lines;
 #
 #       only 7-bit ASCII characters, plus \n, no controls;
-#           ( later maybe \b backspace and \u cancel )
+#           ( later maybe \b oncespace and \u cancel )
 #
 #       words are case-sensitivy and less than 16 characters;
 #
@@ -74,7 +76,7 @@
 #----------------------------------------------------------------------
 #   For stacks:
 #
-#   "when the heap moves forward, move the stack backward" 
+#   "when the heap moves forward, move the stack onceward" 
 #
 #----------------------------------------------------------------------
 #   For Devs:
@@ -89,8 +91,8 @@
 #   Never mess with two underscore variables;
 #
 #   Not using smudge, 
-#       colon saves "here" into "back" and 
-#       semis loads "lastest" from "back";
+#       colon saves "here" into "once" and 
+#       semis loads "lastest" from "once";
 #
 #----------------------------------------------------------------------
 #
@@ -103,6 +105,8 @@
 # Stuff for compiler
 #
 
+.attribute arch, rv64imafdc
+
 #---------------------------------------------------------------------
 # macros for dictionary, makes:
 #
@@ -114,18 +118,19 @@
 #
 
 #---------------------------------------------------------------------
+# macro to define the header of words in dictionary
+# 0x0: is used for get last link address 
 .macro def_word name, label, flags=0x0
 .p2align 2, 0x00
 is_\label:
-    .word 99b
-99:
+    .word 1b
+1:
     .byte \flags
     .byte (3f - 2f) 
 2:
     .ascii "\name"
 3:
     .p2align 2, 0x20	
-
 \label:
 .endm
 
@@ -162,7 +167,7 @@ is_\label:
 
 #---------------------------------------------------------------------
 # define thread code model
-# MTC is default
+# Minimal Indirect Thread Code is default
 
 # uncomment to include the extras (sic)
 # use_extras = 1 
@@ -181,94 +186,118 @@ NOTES:
 # alias 
 
 # FORTH 1983
-.set FALSE,      0
-.set TRUE,      -1
+.equ FALSE, 0
+.equ TRUE, -1
 
-.set ONE,        1
-.set TWO,        2
+# usefull
+.equ ONE, 1
+.equ TWO, 2
 
 # cell size, 4 bytes, 32-bit
-.set CELL,       4
+.equ CELL, 4
 
 # highlander, immediate flag.
-.set FLAG_IMM, 1<<32
+.equ FLAG_IMM,  1<<32
 
-# reserve 80 bytes, (72 is enough) 
+# Terminal input buffer 80 bytes, (but 72 is enough) 
 # moves forwards
-.set tibz,      $50
+.equ tibz, $50
 
-# reserves 32 bytes,
+# reserves 32 bytes for pad scratch,
 # moves forwards
-.set padz,      $20
+.equ padz, $20
 
 # data stack, 36 cells,
-# moves backwards, push decreases before copy
-.set spz,       $24
+# moves oncewards, push decreases before copy
+.equ spz, $90
 
 # return stack, 36 cells, 
-# moves backwards, push decreases before copy
-.set rpz,       $24
+# moves oncewards, push decreases before copy
+.equ rpz, $90
 
-# registers, saved by caller
+## registers, saved by caller
 
- ipt equ       a2 #; instruction pointer
- wrd equ       a3 #; word pointer
- fst equ       a4 #; first
- snd equ       a5 #; second
- trd equ       a6 #; third
- fth equ       a7 #; fourth
+# instruction pointer
+.equ ipt,       a2 
+# word pointer
+.equ wrd,       a3 
+
+# first
+.equ fst,       a4 
+# second
+.equ snd,       a5 
+# third
+.equ trd,       a6 
+# fourth
+.equ fth,       a7 
 
 #----------------------------------------------------------------------
 # no values here or must be a BSS
 .section .data
-.align 4
+.p2align 2, 0x00
 
-nil:  #; empty for fixed reference
+# user structure of internal Forth variables
+# ATT: the order matters for forth !
 
-# user variables
-# order matters for hello_world.forth !
+# state at lsb 
+stat:   .word $0 
 
-# internal Forth user structure
+# toin next free byte in TIB
+toin:   .word $0 
 
-stat:   .word $0 #; state at lsb, last size+flag at 2nd,
-toin:   .word $0 #; toin next free byte in TIB
-last:   .word $0 #; last link word cell in heap dictionary linked list
-here:   .word $0 #; next free cell in heap dictionary, aka dpt
-sp:     .word $0 #; data stack base
-rp:     .word $0 #; return stack base
+# last link word cell in heap dictionary linked list
+last:   .word $0 
 
-# used, reserved
-tout:   .word $0 #; next token in TIB
-back:   .word $0 #; hold 'here while compile
+# next free cell in heap dictionary, aka dpt
+here:   .word $0 
 
-# for future expansion, reserved
-head:   .word $0 #; heap forward, also DP
-tail:   .word $0 #; heap backward
+# data stack base
+sp:     .word $0 
+
+# return stack base
+rp:     .word $0 
+
+# next token in TIB
+tout:   .word $0 
+
+# hold 'here while compile
+once:   .word $0 
+
+# heap forward
+head:   .word $0 
+
+# heap onceward
+tail:   .word $0 
 
 #----------------------------------------------------------------------
 .section .bss
-.align 4
+.p2align 2, 0x00
 
 # tib/pad grows forward
 
-tib:    .skip tibz * 1
+tib:    
+.skip tibz
 
-pad:    .skip padz * 1
+pad:    
+.skip padz
 
-# stacks grows backward
+# stacks grows onceward
 
-dpb:    .skip spz * 4
+spb:    # bottom 
+.skip spz
 sp0:    .word
 
-rpb:    .skip rpz * 4
+rpb:    # bottom
+.skip rpz
 rp0:    .word
 
 #----------------------------------------------------------------------
 .text 
+.p2align 2, 0x00
 
 main:
 
-99:
+0: .word 0x00
 
 def_word "exit", "exit", 0
 
@@ -325,7 +354,7 @@ resolvept:
 #---------------------------------------------------------------------
 okey:
 
-#;   uncomment for feedback
+#;   uncomment for feedonce
 #    lda stat + 0
 #    bne resolve
 #    lda #'O'
@@ -355,7 +384,7 @@ find:
 #   maybe to place a code for number? 
 #   but not for now.
 
-#;   uncomment for feedback, comment out "beq abort" above
+#;   uncomment for feedonce, comment out "beq abort" above
 #    lda #'?'
 #    jsr putchar
 #    lda #'?'
@@ -622,7 +651,7 @@ rpush:
         ldx #(rpt)
 
 #---------------------------------------------------------------------
-# classic stack backwards
+# classic stack oncewards
 push:
         jsr decwx
         lda 1, y
@@ -656,7 +685,7 @@ rpull:
         ldx #(rpt)
 
 #---------------------------------------------------------------------
-# classic stack backwards
+# classic stack oncewards
 pull:   #; fall through, same as copyfrom
 
 #---------------------------------------------------------------------
@@ -1241,9 +1270,9 @@ def_word "s@", "state", 0
 #---------------------------------------------------------------------
 def_word ";", "semis",  FLAG_IMM
 # update last, panic if colon not lead elsewhere 
-        lda back + 0 
+        lda once + 0 
         sta last + 0
-        lda back + 1 
+        lda once + 1 
         sta last + 1
 
 # stat is 'interpret'
@@ -1265,9 +1294,9 @@ finish:
 def_word ":", "colon", 0
 # save here, panic if semis not follow elsewhere
         lda here + 0
-        sta back + 0 
+        sta once + 0 
         lda here + 1
-        sta back + 1 
+        sta once + 1 
 
 # stat is 'compile'
         lda #1
@@ -1296,29 +1325,6 @@ def_word ":", "colon", 0
         tya
         ldx #(here)
         jsr addwx
-
-#~~~~~~~~
-.ifdef use_DTC
-
-# magic NOP (EA) JSR (20), at CFA cell
-# magic = $EA20
-
-magic = $20EA
-
-# inserts the nop call
-        lda #<magic
-        sta wrd + 0
-        lda #>magic
-        jsr stawrd
-
-# inserts the reference
-        lda #<nest
-        sta wrd + 0
-        lda #>nest
-        jsr stawrd
-
-.endif
-#~~~~~~~~
 
 # done
         #; jmp next
