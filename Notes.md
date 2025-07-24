@@ -4,27 +4,32 @@ started at 23/07/2025, agsb@
 
 This will be an implementation of MilliForth (sectorforth) concept for RISCV ISA.
 
-Milliforth uses a minimal set of primitives and functions for Forth.
+Milliforth uses a minimal set of primitives and functions for make a Forth.
 
 Must define:
 
-    a compiler suit of RISCV
-    a simulator of RISCV
-    a library of core functions of RISCV
+    a compiler suit of RISCV:   gcc riscv64-unknown-elf-*
+    a simulator of RISCV:    spike
+    
+    which memory map be used and pages size:    start 0x80000000, page 4096
+    
+    where is the heap and stack in memory:    for a 4GB real memory in qemu VM, about 18GB 
+    
+    a library of core functions of RISCV:
 
     how do getc and putc for key and emit
-    which memory map be used and pages size
-    where is the heap and stack in memory
     
 ## ISA
 
 the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) or [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
 
-The milliForth will be a program called by elsewhere alien operational system, then use of temporary registers T0-T6, because they are expendable bettween function calls.
+The milliForth will be a program called by 'elsewhere alien operational system', then use of temporary registers A2-A7, because they are caller saved between function calls.
 
 ## Coding
 
-The milliForth uses memory pointers for data stack and return stack, to allow acesse using fetch and store from a special structure called 'user structure'.
+"qemu -kernel loads the kernel at 0x80000000 and causes each hart (i.e. core of CPU) to jump there."
+
+The milliForth must use memory pointers for data stack and return stack, because does fetch and store from a special 'user structure', which contains the user variables for Forth (state, toin, last, here, sp, dp, tout, back, heap, tail).
 
 This version includes: 
 
