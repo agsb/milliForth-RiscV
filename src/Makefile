@@ -13,7 +13,10 @@
 #riscv32-unknown-elf-as exampleAsm.S -o exampleAsm.o
 #riscv32-unknown-elf-ld -o exampleAsm.elf -T asm.ld -m elf32lriscv -nostdlib --no-relax
 
-PASS=/opt/riscv/bin
+QEMU = qemu-system-riscv32
+QFLAGS = -nographic -smp 4 -machine virt -bios none
+
+PASS = /opt/riscv/bin
 
 AS = ${PASS}/riscv64-unknown-elf-as
 
@@ -22,7 +25,9 @@ ASFLAGS = -fpic --warn -a -Z
 LD = ${PASS}/riscv64-unknown-elf-ld
 
 LDFLAGS = -m elf32lriscv --no-relax --strip-all \
--static -nostdlib -r -w -pie   
+-static -nostdlib -r -w -pie -T this.ld
+
+OBJDUMP = riscv64-unknown-elf-objdump
 
 MY = sector-riscv
 
@@ -32,7 +37,7 @@ MY = sector-riscv
 
 $(MY): $(SOURCES:.S=.o)
 
-	$(AS) $(ASFLAGS) -o $@.out $@.s 2> err | tee out
+	$(AS) $(ASFLAGS) -o $@.out $@.S 2> err | tee out
 
 	$(LD) $(LDFLAGS) -o $@.elf 2>> err | tee -a out
 
@@ -52,4 +57,8 @@ clean:
 	      $(MY).lbl $(MY).lbs $(MY).lbf \
 	      $(MY).hex err out
 
+qemu: $(TARGET)
+	@qemu-system-riscv32 -M ? | grep virt >/dev/null || exit
+	@echo "Press Ctrl-A and then X to exit QEMU"
+	$(QEMU) $(QFLAGS) -kernel sector-riscv.elf
 

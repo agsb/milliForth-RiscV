@@ -107,8 +107,6 @@
 
 # .attribute arch, rv64imafdc
 
-.equ GCC, 1
-
 #---------------------------------------------------------------------
 # macros for dictionary, makes:
 #
@@ -121,7 +119,7 @@
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
-# 0x0: is used for get last link address 
+# 1: is used for get last link address for linked list dictionary 
 .macro def_word name, label, flags=0x0
 .p2align 2, 0x00
 is_\label:
@@ -156,7 +154,7 @@ is_\label:
 .endm
 
 .macro copy destin, origin
-    add \destin, \origin, \zero
+    add \destin, \origin, zero
 .endm
 
 .macro link address
@@ -215,18 +213,19 @@ NOTES:
 # return stack, 36 cells, moves backwards, push decreases before copy
 .equ rpz, 0x90
 
-#.ifdef GCC
-
-#define ipt a2
+/*#define ipt a2
 #define wrd a3
 #define fst a4
 #define snd a5
 #define trd a6
 #define fth a7
+*/
 
-#.endif
+#.equ ipt, a2
 
-.ifndef GCC
+.set ipt, a2
+
+/*
 
 ## registers, saved by caller
 
@@ -244,11 +243,15 @@ NOTES:
 # fourth
 .equ fth,       a7 
 
-.endif
+*/
 
 #----------------------------------------------------------------------
 # no values here or must be a BSS
 .section .data
+.p2align 2, 0x0
+
+#----------------------------------------------------------------------
+.section .bss
 .p2align 2, 0x0
 
 # user structure of internal Forth variables
@@ -283,10 +286,6 @@ head:   .word 0x0
 
 # heap onceward
 tail:   .word 0x0 
-
-#----------------------------------------------------------------------
-.section .bss
-.p2align 2, 0x0
 
 # tib/pad grows forward
 
