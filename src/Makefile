@@ -13,19 +13,23 @@
 #riscv32-unknown-elf-as exampleAsm.S -o exampleAsm.o
 #riscv32-unknown-elf-ld -o exampleAsm.elf -T asm.ld -m elf32lriscv -nostdlib --no-relax
 
-QEMU = qemu-system-riscv32
-QFLAGS = -nographic -smp 4 -machine virt -bios none
-
 PASS = /opt/riscv/bin
+
+QEMU = ${PASS}/qemu-riscv32
+
+QFLAGS = -nographic -smp 4 -machine virt -bios none
 
 AS = ${PASS}/riscv64-unknown-elf-as
 
-ASFLAGS = -fpic --warn -a -Z  
+ASFLAGS = -mlittle-endian -fpic -mabi=ilp32 \
+	-Z --warn --info 
+	# --statistics -Z
 
 LD = ${PASS}/riscv64-unknown-elf-ld
 
-LDFLAGS = -m elf32lriscv --no-relax --strip-all \
--static -nostdlib -r -w -pie -T this.ld
+LDFLAGS = -m elf32lriscv -no-relax --strip-all \
+-static -nostdlib -r --stats \
+#-T this.ld
 
 OBJDUMP = riscv64-unknown-elf-objdump
 
@@ -37,11 +41,11 @@ MY = sector-riscv
 
 $(MY): $(SOURCES:.S=.o)
 
-	$(AS) $(ASFLAGS) -o $@.out $@.S 2> err | tee out
+	$(AS) $(ASFLAGS) -alms=$@.lst -o $@.out $@.S 2> err | tee out
 
-	$(LD) $(LDFLAGS) -o $@.elf 2>> err | tee -a out
+	$(LD) $(LDFLAGS) -o $@.elf $@.out 2>> err | tee -a out
 
-#	od --endian=big -A x -t x1z -v $@.out > $@.hex
+	od --endian=big -A x -t x1z -v $@.elf > $@.hex
 
 #	cp $@.s $@.asm
 

@@ -213,19 +213,17 @@ NOTES:
 # return stack, 36 cells, moves backwards, push decreases before copy
 .equ rpz, 0x90
 
-/*#define ipt a2
+/*
+#----------------------------------------------------------------------
+# I dunno about another way to make alias for register names
+
+#define ipt a2
 #define wrd a3
 #define fst a4
 #define snd a5
 #define trd a6
 #define fth a7
 */
-
-#.equ ipt, a2
-
-.set ipt, a2
-
-/*
 
 ## registers, saved by caller
 
@@ -243,16 +241,14 @@ NOTES:
 # fourth
 .equ fth,       a7 
 
-*/
-
 #----------------------------------------------------------------------
 # no values here or must be a BSS
 .section .data
 .p2align 2, 0x0
 
 #----------------------------------------------------------------------
-.section .bss
-.p2align 2, 0x0
+#.section .bss
+#.p2align 2, 0x0
 
 # user structure of internal Forth variables
 # ATT: the order matters for forth !
