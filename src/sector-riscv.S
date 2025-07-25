@@ -1,3 +1,52 @@
+/*
+;----------------------------------------------------------------------
+;
+; Copyright (c) 2025, Alvaro Gomes Sobral Barcellos
+; All rights reserved.
+; 
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions
+; are met:
+; 
+; 1. Redistributions of source code must retain the above copyright 
+; notice, this list of conditions and the following disclaimer.
+;
+; 2. Redistributions in binary form must reproduce the above copyright
+; notice, this list of conditions and the following disclaimer in 
+; the documentation and/or other materials provided with the 
+; distribution.
+; 
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+; "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+; FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+; COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+; INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+; BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, 
+; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+; CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
+; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+; ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+; POSSIBILITY OF SUCH DAMAGE.
+;
+;---------------------------------------------------------------------
+;
+; Copyright 2025 Alvaro Gomes Sobral Barcellos <@agsb>
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 2 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #----------------------------------------------------------------------
 #
 #   A MilliForth for RISCV 
@@ -5,100 +54,10 @@
 #   original for the RISCV, by Alvaro G. S. Barcellos, 2025
 #
 #   https://github.com/agsb 
-#   see the disclaimer file in this repo for more information.
+
+#   see the disclaimer file in this repository.
 #
-#   SectorForth and MilliForth was made for x86 arch 
-#   and uses full 16-bit registers 
-#
-#   The way at 6502 is use page zero and lots of lda/sta.
-#
-#   The way of RiscV is use linear memory and 32-bit registers.
-#
-#   Focus in size not performance.
-#
-#   why ? For understand better my skills, riscv code and thread codes
-#
-#   how ? Programming a old Forth for new 32-bit cpu emulator
-#
-#   what ? Design the best minimal Forth engine and vocabulary
-#
-#----------------------------------------------------------------------
-#   Changes:
-#
-#   all user structure, data (36 cells) and return (36 cells) stacks, 
-#   TIB (80 bytes) and PIC (32 bytes) are in sequence; 
-#
-#   TIB and PIC grows forward, stacks grows backwards;
-#
-#   no overflow or underflow checks;
-#
-#   no numbers only words;
-#
-#   the header order is LINK, SIZE+FLAG, NAME+PAD.
-#
-#   only IMMEDIATE flag used as $80, no hide, no compile;
-#
-#   As ANSI Forth 1994: FALSE is 0x0000 #; TRUE is $FFFF ;
-#
-#----------------------------------------------------------------------
-#   Remarks:
-#
-#       this code uses Minimal Thread Code, aka MTC.
-#
-#       uses cell with 32-bits. 
-#
-#       no TOS register, all values keeped at stacks;
-#
-#       TIB (terminal input buffer) is like a stream;
-#
-#       Chuck Moore uses 64 columns, be wise, obey rule 72 CPL; 
-#
-#       words must be between spaces, before and after;
-#
-#       no line wrap, do not break words between lines;
-#
-#       only 7-bit ASCII characters, plus \n, no controls;
-#           ( later maybe \b oncespace and \u cancel )
-#
-#       words are case-sensitivy and less than 16 characters;
-#
-#       ? no need named-'pad' at end of even names;
-#
-#       ? no multiuser, no multitask, no checks, not faster;
-#
-#----------------------------------------------------------------------
-#   For RiscV:
-#
-#       a 32-bit processor with 32-bit address space;
-#
-#       hardware stack not used for this Forth;
-#
-#----------------------------------------------------------------------
-#   For stacks:
-#
-#   "when the heap moves forward, move the stack onceward" 
-#
-#----------------------------------------------------------------------
-#   For Devs:
-#
-#   the hello_world.forth file states that stacks works
-#       to allow : dup sp@ @ #; so sp must point to actual TOS.
-#   
-#   The movement will be:
-#       pull is 'fetch and increase'
-#       push is 'decrease and store'
-#
-#   Never mess with two underscore variables;
-#
-#   Not using smudge, 
-#       colon saves "here" into "once" and 
-#       semis loads "lastest" from "once";
-#
-#----------------------------------------------------------------------
-#
-#   Stacks represented as (standart)
-#       S:(w1 w2 w3 -- u1 u2)  R:(w1 w2 w3 -- u1 u2)
-#       before -- after, top at left.
+#   More info at end of this file.
 #
 #----------------------------------------------------------------------
 #
@@ -108,66 +67,6 @@
 # .attribute arch, rv64imafdc
 
 #---------------------------------------------------------------------
-# macros for dictionary, makes:
-#
-#   h_name:
-#   .word  link_to_previous_entry
-#   .byte  strlen(name) + flags
-#   .byte  name
-#   name:
-#
-
-#---------------------------------------------------------------------
-# macro to define the header of words in dictionary
-# 1: is used for get last link address for linked list dictionary 
-.macro def_word name, label, flags=0x0
-.p2align 2, 0x00
-is_\label:
-    .word 1b
-1:
-    .byte \flags
-    .byte (3f - 2f) 
-2:
-    .ascii "\name"
-3:
-    .p2align 2, 0x20	
-\label:
-.endm
-
-#----------------------------------------------------------------------
-# stack macros
-# could have hooks for check over/under
-##
-
-.macro spull stack, register
-    lw \register, 0 (\stack)
-    addi \stack, \stack, +1 * CELL
-.endm
-
-.macro spush stack, register
-    addi \stack, \stack, -1 * CELL
-    sw \register, 0 (\stack)
-.endm
-
-.macro scopy stack, register, index
-    lw \register, \index * CELL (\stack)
-.endm
-
-.macro copy destin, origin
-    add \destin, \origin, zero
-.endm
-
-.macro link address
-    jal zero, \address
-.endm
-
-.macro jump address
-    jalr zero, \address, 0
-.endm
-
-#---------------------------------------------------------------------
-# define thread code model
-# Minimal Indirect Thread Code is default
 
 # uncomment to include the extras (sic)
 # use_extras = 1 
@@ -176,13 +75,6 @@ is_\label:
 # use_extensions = 1 
 
 #---------------------------------------------------------------------
-/*
-NOTES:
-
-        not finished yet :)
-
-*/
-#----------------------------------------------------------------------
 # alias 
 
 # FORTH 1983
@@ -197,129 +89,175 @@ NOTES:
 .equ CELL, 4
 
 # highlander, immediate flag.
-.equ FLAG_IMM,  1<<32
+.equ FLAG_IMM, 1<<32
 
-# Terminal input buffer 80 bytes, (but 72 is enough) 
-# moves forwards
+# Terminal input buffer 80 bytes, (but 72 is enough), moves forwards
 .equ tibz, 0x50
 
-# reserves 32 bytes for pad scratch,
-# moves forwards
+# reserves 32 bytes for pad scratch, moves forwards
 .equ padz, 0x20
 
 # data stack, 36 cells, moves backwards, push decreases before copy
-.equ spz, 0x90
+.equ spz, 36 
 
 # return stack, 36 cells, moves backwards, push decreases before copy
-.equ rpz, 0x90
+.equ rpz, 36 
 
-/*
+#---------------------------------------------------------------------
+# macro to define the header of words in dictionary
+# catch:
+# the label 1: is used for get last link address for list dictionary 
+# makes:
+#   f_name:
+#   .word  link_to_previous_entry
+#   .byte  strlen(name) + flags
+#   .byte  name + pad
+#   name:
+##
+.macro def_word name, label, flags=0x0
+.p2align 2, 0x00
+h_\label:
+       .word 1b
+1:
+       .byte \flags
+       .byte (3f - 2f) 
+2:
+       .ascii "\name"
+3:
+       .p2align 2, 0x20        
+\label:
+.endm
+
 #----------------------------------------------------------------------
-# I dunno about another way to make alias for register names
+# stack macros
+# could have hooks for check over/under
+##
 
+.macro spull stack, register
+       lw \register, 0 (\stack)
+       addi \stack, \stack, +1 * CELL
+.endm
+
+.macro spush stack, register
+       addi \stack, \stack, -1 * CELL
+       sw \register, 0 (\stack)
+.endm
+
+# zzzz
+.macro mcopy from, into, index
+       lw \into, \index * CELL (\from)
+.endm
+
+.macro copy destin, origin
+       add \destin, \origin, zero
+.endm
+
+.macro link address
+       jal zero, \address
+.endm
+
+.macro jump address
+       jalr zero, \address, 0
+.endm
+
+#---------------------------------------------------------------------
+/*
+NOTES:
+
+        not finished yet :)
+
+*/
+
+#----------------------------------------------------------------------
+# I dunno about another way to make register name alias
+# why ".equ name, register", does not work ?
+# maybe reserved words can not be aliased ?
+# also r0 must be called as zero.
+##
+
+# 
+# instruction pointer
 #define ipt a2
+# word pointer
 #define wrd a3
+
+# some auxiliars
 #define fst a4
 #define snd a5
 #define trd a6
 #define fth a7
-*/
-
-## registers, saved by caller
-
-# instruction pointer
-.equ ipt,       a2 
-# word pointer
-.equ wrd,       a3 
-
-# first
-.equ fst,       a4 
-# second
-.equ snd,       a5 
-# third
-.equ trd,       a6 
-# fourth
-.equ fth,       a7 
 
 #----------------------------------------------------------------------
-# no values here or must be a BSS
-.section .data
+# dont use data, it blows the file
+#.section .data
+
+#----------------------------------------------------------------------
+# dont use data, it blows the file
+# better
+.section .bss
 .p2align 2, 0x0
-
-#----------------------------------------------------------------------
-#.section .bss
-#.p2align 2, 0x0
 
 # user structure of internal Forth variables
 # ATT: the order matters for forth !
 
 # state at lsb 
-stat:   .word 0x0 
+stat:  .word 0x0 
 
 # toin next free byte in TIB
-toin:   .word 0x0 
+toin:  .word 0x0 
 
-# last link word cell in heap dictionary linked list
-last:   .word 0x0 
+# last link cell in heap dictionary linked list
+last:  .word 0x0 
 
 # next free cell in heap dictionary, aka dpt
-here:   .word 0x0 
+here:  .word 0x0 
 
-# data stack base
-sp:     .word 0x0 
+# data stack index
+sp:    .word 0x0 
 
-# return stack base
-rp:     .word 0x0 
+# return stack index
+rp:    .word 0x0 
 
 # next token in TIB
-tout:   .word 0x0 
+tout:  .word 0x0 
 
 # hold 'here while compile
-once:   .word 0x0 
+once:  .word 0x0 
 
 # heap forward
-head:   .word 0x0 
+head:  .word 0x0 
 
 # heap onceward
-tail:   .word 0x0 
+tail:  .word 0x0 
 
-# tib/pad grows forward
+# tib grows forward
 
-tib:    
+tib:       
 .skip tibz
 
-pad:    
+# pad grows forward
+pad:       
 .skip padz
 
-# stacks grows onceward
+# stacks grows backward
 
-spb:    # bottom 
+spb:       # bottom 
 .skip spz
-sp0:    .word
+sp0:       .word
 
-rpb:    # bottom
+rpb:       # bottom
 .skip rpz
-rp0:    .word
+rp0:       .word
 
 #----------------------------------------------------------------------
 .text 
 .p2align 2, 0x0
 
-    j main
-
-1: .word 0x0
-
 main:
+       jal cold
 
-def_word "exit", "exit", 0
-
-def_word "noexit", "noexit", 0
-
-    add ipt, r0, r0
-
-    add wpt, ipt, r0
-
-.end
+# catch for macros
+1: .word 0x0
 
 #----------------------------------------------------------------------
 # common must
@@ -327,33 +265,33 @@ def_word "noexit", "noexit", 0
 cold:
 #   disable interrupts, sei
 
-#   saves
+#   saves registers, etc
 
 #   enable interrupts, cli
 
 #----------------------------------------------------------------------
 warm:
 # link list of headers
-        li wrd, h_exit
+        la wrd, h_exit
         sw wrd, 0(last)
 
 # next heap free cell, same as init:  
-        li wrd, ends
+        la wrd, ends
         sw wrd, 0(here)
 
 #---------------------------------------------------------------------
 # supose never change
 reset:
-        li wrd, tib
+        la wrd, tib
         sw wrd, toin
         sw wrd, tout
 
 abort:
-        li wrd, sp0 
+        la wrd, sp0 
         sw wrd, 0(sp)
 
 quit:
-        li wrd, rp0 
+        la wrd, rp0 
         sw wrd, 0(rp)
 
 # stat is 'interpret' == \0
@@ -371,14 +309,14 @@ resolvept:
 okey:
 
 #;   uncomment for feedonce
-#    lda stat + 0
-#    bne resolve
-#    lda #'O'
-#    jsr putchar
-#    lda #'K'
-#    jsr putchar
-#    lda #10
-#    jsr putchar
+#       lda stat + 0
+#       bne resolve
+#       lda #'O'
+#       jsr putchar
+#       lda #'K'
+#       jsr putchar
+#       lda #10
+#       jsr putchar
 
 resolve:
 # get a token
@@ -401,15 +339,15 @@ find:
 #   but not for now.
 
 #;   uncomment for feedonce, comment out "beq abort" above
-#    lda #'?'
-#    jsr putchar
-#    lda #'?'
-#    jsr putchar
-#    lda #10
-#    jsr putchar
-#    jmp abort  #; end of dictionary, no more words to search, abort
+#       lda #'?'
+#       jsr putchar
+#       lda #'?'
+#       jsr putchar
+#       lda #10
+#       jsr putchar
+#       jmp abort  #; end of dictionary, no more words to search, abort
 
-@each:    
+@each:       
 
 # update next link 
         lw snd, 0(wrd)
@@ -509,20 +447,20 @@ getline:
         iny
 # would be better with 
 # end of buffer ?
-#    cpy #tib_end
-#    beq @ends
+#       cpy #tib_end
+#       beq @ends
 # then 
         jsr getchar
 # would be better with 
 # 7-bit ascii only
-#    and #$7F        
+#       and #$7F        
 # unix \n
         cmp #10         
         bne @loop
 # would be better with 
 # no controls
-#    cmp #' '
-#    bmi @loop
+#       cmp #' '
+#       bmi @loop
 
 # clear all if y eq \0
 @ends:
@@ -616,11 +554,11 @@ decwx:
 #---------------------------------------------------------------------
 # increment a word in page zero. offset by X
 #incwx:
-#    inc 0, x
-#    bne @ends
-#    inc 1, x
+#       inc 0, x
+#       bne @ends
+#       inc 1, x
 #@ends:
-#    rts
+#       rts
 
 #---------------------------------------------------------------------
 # classic heap moves always forward
@@ -882,7 +820,7 @@ def_word "words", "words", 0
         lda snd + 1
         sta fst + 1
 
-@each:    
+@each:       
 
         lda #10
         jsr putchar
@@ -1328,7 +1266,7 @@ def_word ":", "colon", 0
 
 # copy it
         ldy #0
-@loop:    
+@loop:       
         lda (tout), y
         cmp #32    #; stops at space
         beq @ends
@@ -1400,3 +1338,98 @@ ends:
 # anything above is not a primitive
 #----------------------------------------------------------------------
 
+#----------------------------------------------------------------------
+#   SectorForth and MilliForth was made for x86 arch 
+#   and uses full 16-bit registers 
+#
+#   The way at 6502 is use page zero and lots of lda/sta.
+#
+#   The way of RiscV is use linear memory and 32-bit registers.
+#
+#   Focus in size not performance.
+#
+#   why ? For understand better my skills, riscv code and thread codes
+#
+#   how ? Programming a old Forth for new 32-bit cpu emulator
+#
+#   what ? Design the best minimal Forth engine and vocabulary
+#
+#----------------------------------------------------------------------
+#   Changes:
+#
+#   all user structure, data (36 cells) and return (36 cells) stacks, 
+#   TIB (80 bytes) and PIC (32 bytes) are in sequence; 
+#
+#   TIB and PIC grows forward, stacks grows backwards;
+#
+#   no overflow or underflow checks;
+#
+#   no numbers only words;
+#
+#   the header order is LINK, SIZE+FLAG, NAME+PAD.
+#
+#   only IMMEDIATE flag used as $80, no hide, no compile;
+#
+#   As ANSI Forth 1994: FALSE is 0x0000 #; TRUE is $FFFF ;
+#
+#----------------------------------------------------------------------
+#   Remarks:
+#
+#         this code uses Minimal Thread Code, aka MTC.
+#
+#         uses cell with 32-bits. 
+#
+#         no TOS register, all values keeped at stacks;
+#
+#         TIB (terminal input buffer) is like a stream;
+#
+#         Chuck Moore uses 64 columns, be wise, obey rule 72 CPL; 
+#
+#         words must be between spaces, before and after;
+#
+#         no line wrap, do not break words between lines;
+#
+#         only 7-bit ASCII characters, plus \n, no controls;
+#         ( later maybe \b oncespace and \u cancel )
+#
+#         words are case-sensitivy and less than 16 characters;
+#
+#         ? no need named-'pad' at end of even names;
+#
+#         ? no multiuser, no multitask, no checks, not faster;
+#
+#----------------------------------------------------------------------
+#   For RiscV:
+#
+#         a 32-bit processor with 32-bit address space;
+#
+#         hardware stack not used for this Forth;
+#
+#----------------------------------------------------------------------
+#   For stacks:
+#
+#   "when the heap moves forward, move the stack onceward" 
+#
+#----------------------------------------------------------------------
+#   For Devs:
+#
+#   the hello_world.forth file states that stacks works
+#         to allow : dup sp@ @ #; so sp must point to actual TOS.
+#   
+#   The movement will be:
+#         pull is 'fetch and increase'
+#         push is 'decrease and store'
+#
+#   Never mess with two underscore variables;
+#
+#   Not using smudge, 
+#         colon saves "here" into "once" and 
+#         semis loads "lastest" from "once";
+#
+#----------------------------------------------------------------------
+#
+#   Stacks represented as (standart)
+#         S:(w1 w2 w3 -- u1 u2)  R:(w1 w2 w3 -- u1 u2)
+#         before -- after, top at left.
+#
+#----------------------------------------------------------------------

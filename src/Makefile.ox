@@ -20,19 +20,20 @@ QEMU = ${PASS}/qemu-riscv64
 
 QFLAGS = -nographic -smp 4 -machine virt -bios none
 
-GCC = ${PASS}/riscv64-unknown-elf-gcc
+AS = ${PASS}/riscv64-unknown-elf-as
 
-GCCFLAGS = -fpic -static -nostdlib -nostartfiles 
+ASFLAGS = -v -mlittle-endian --warn -fpic -g -Z   
+	# --warn --info 
+	# --statistics -Z
 
-#-fverbose-asm
+LD = ${PASS}/riscv64-unknown-elf-ld
 
-ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst -Wa,-o=$@.out
-
-LDFLAGS = -Wl,-b=elf64-littleriscv -Wl,--stats -Wl,--strip-all -Wl,--build-id -Wl,-r 
+LDFLAGS = -v -b elf64-littleriscv -static -nostdlib --stats --strip-all --build-id -r 
+# -T this.ld
 
 STRIP = ${PASS}/riscv64-unknown-elf-strip
 
-OBJDUMP = ${PASS}/riscv64-unknown-elf-objdump
+OBJDUMP = riscv64-unknown-elf-objdump
 
 MY = minimal
 MY = sector-riscv
@@ -43,13 +44,11 @@ MY = sector-riscv
 
 $(MY): $(SOURCES:.S=.o)
 
-	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.S > err | tee out
+	$(AS) $(ASFLAGS) -aghlms=$@.lst -o $@.out $@.S 2> err | tee out
 
-	# $(AS) $(ASFLAGS) -aghlms=$@.lst -o $@.out $@.S 2> err | tee out
+	$(LD) $(LDFLAGS) -o $@.elf $@.out 2>> err | tee -a out
 
-	# $(LD) $(LDFLAGS) -o $@.elf $@.out 2>> err | tee -a out
-
-	#$(STRIP) $@.elf $@.out
+	$(STRIP) $@.elf $@.out
 
 #	od --endian=big -A x -t x1z -v $@.elf > $@.hex
 
