@@ -13,29 +13,38 @@
 #riscv32-unknown-elf-as exampleAsm.S -o exampleAsm.o
 #riscv32-unknown-elf-ld -o exampleAsm.elf -T asm.ld -m elf32lriscv -nostdlib --no-relax
 
-#PASS = /opt/riscv/bin
-PASS = /usr/bin
+# as ubuntu 
+BASE = /usr/bin
+NAME = riscv64-unknown-elf-
 
-QEMU = ${PASS}/qemu-riscv64
+# as default compiled
 
-QFLAGS = -nographic -smp 4 -machine virt -bios none
+BASE = /opt/riscv/bin/
+NAME = riscv64-unknown-linux-gnu-
 
-GCC = ${PASS}/riscv64-unknown-elf-gcc
+PASS = /${BASE}/${NAME}
 
-GCCFLAGS = -fpic -static -nostdlib -nostartfiles 
+QEMU = ${BASE}/qemu-riscv64
+
+QFLAGS = -nographic -smp 1 -machine virt -bios none
+
+GCC = ${PASS}gcc
+
+GCCFLAGS = -fpic -static -nostdlib -nostartfiles --save-temps 
 
 #-fverbose-asm
 
-ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst -Wa,-o=$@.out
+ASFLAGS = -Wa,-mlittle-endian 
+
+#ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst -Wa,-o$@.out
 
 LDFLAGS = -Wl,-b=elf64-littleriscv -Wl,--stats -Wl,--strip-all -Wl,--build-id -Wl,-r 
 
-STRIP = ${PASS}/riscv64-unknown-elf-strip
+STRIP = ${PASS}strip
 
-OBJDUMP = ${PASS}/riscv64-unknown-elf-objdump
+OBJDUMP = ${PASS}objdump
 
-MY = minimal
-MY = sector-riscv
+MY = test
 
 ########################################
 
@@ -43,15 +52,15 @@ MY = sector-riscv
 
 $(MY): $(SOURCES:.S=.o)
 
-	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.S > err | tee out
+#	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.S 2> err 1> out
 
-	# $(AS) $(ASFLAGS) -aghlms=$@.lst -o $@.out $@.S 2> err | tee out
+	
 
-	# $(LD) $(LDFLAGS) -o $@.elf $@.out 2>> err | tee -a out
+	$(STRIP) $@.out $@.elf
 
-	#$(STRIP) $@.elf $@.out
+	$(OBJDUMP) $@.elf > $@.dmp
 
-#	od --endian=big -A x -t x1z -v $@.elf > $@.hex
+#	od --endian=little -A x -t x1z -v $@.elf > $@.hex
 
 #	cp $@.s $@.asm
 

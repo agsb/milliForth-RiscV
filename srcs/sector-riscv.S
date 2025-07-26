@@ -75,35 +75,6 @@
 # use_extensions = 1 
 
 #---------------------------------------------------------------------
-# macros for dictionary, makes:
-#
-#   f_name:
-#   .word  link_to_previous_entry
-#   .byte  strlen(name) + flags
-#   .byte  name + pad
-#   name:
-#
-
-#---------------------------------------------------------------------
-# macro to define the header of words in dictionary
-# catch:
-# the label 1: is used for get last link address for list dictionary 
-##
-.macro def_word name, label, flags=0x0
-.p2align 2, 0x00
-f_\label:
-       .word 1b
-1:
-       .byte \flags
-       .byte (3f - 2f) 
-2:
-       .ascii "\name"
-3:
-       .p2align 2, 0x20        
-\label:
-.endm
-
-#----------------------------------------------------------------------
 # alias 
 
 # FORTH 1983
@@ -118,19 +89,46 @@ f_\label:
 .equ CELL, 4
 
 # highlander, immediate flag.
-.equ FLAG_IMM, 1<<32
+.equ FLAG_IMM, 1 << (CELL * 8)
 
 # Terminal input buffer 80 bytes, (but 72 is enough), moves forwards
-.equ tibz, 0x50
+.equ tibz, 80
 
 # reserves 32 bytes for pad scratch, moves forwards
-.equ padz, 0x20
+.equ padz, 32
 
 # data stack, 36 cells, moves backwards, push decreases before copy
 .equ spz, 36 
 
 # return stack, 36 cells, moves backwards, push decreases before copy
 .equ rpz, 36 
+
+#---------------------------------------------------------------------
+# macro to define the header of words in dictionary
+#
+# makes:
+#   f_name:
+#   .word  link_to_previous_entry
+#   .byte  strlen(name) + flags
+#   .byte  name + pad
+#   name:
+#
+# catch:
+# the label 1: is used for get last link address for list dictionary 
+##
+.macro def_word name, label, flags=0x0
+.p2align 2, 0x00
+h_\label:
+       .word 1b
+1:
+       .byte \flags
+       .byte (3f - 2f) 
+2:
+       .ascii "\name"
+3:
+       .p2align 2, 0x20        
+\label:
+.endm
 
 #----------------------------------------------------------------------
 # stack macros
@@ -172,76 +170,67 @@ NOTES:
 
 */
 
-/*
-
-this do not work !!!
-
-## registers, saved by caller
-
-# instruction pointer
-.equ ipt, a2 
-# word pointer
-.equ wrd, a3 
-
-# first
-.equ fst, a4 
-# second
-.equ snd, a5 
-# third
-.equ trd, a6 
-# fourth
-.equ fth, a7 
-*/
-
 #----------------------------------------------------------------------
 # I dunno about another way to make register name alias
+# why ".equ name, register", does not work ?
+# maybe reserved words can not be aliased ?
+# also r0 must be called as zero.
 ##
+
+# forth struct pointer 
+# define usr a1
+
+# instruction pointer
 #define ipt a2
+
+# word pointer
 #define wrd a3
+
+# some auxiliars
 #define fst a4
 #define snd a5
 #define trd a6
 #define fth a7
 
 #----------------------------------------------------------------------
-.section .data
+# dont use data, it blows the file
+#.section .data
+
+#----------------------------------------------------------------------
+# dont use data, it blows the file
+# better
+.section .bss
 .p2align 2, 0x0
 
 # user structure of internal Forth variables
 # ATT: the order matters for forth !
 
-# state at lsb 
-stat:  .word 0x0 
-
+# state flag
+.equ stat, 0 * CELL
 # toin next free byte in TIB
-toin:  .word 0x0 
-
+.equ toin, 1 * CELL
 # last link cell in heap dictionary linked list
-last:  .word 0x0 
-
+.equ last, 2  * CELL
 # next free cell in heap dictionary, aka dpt
-here:  .word 0x0 
-
+.equ here, 3 * CELL
 # data stack index
-sp:    .word 0x0 
-
+.equ spt, 4 * CELL
 # return stack index
-rp:    .word 0x0 
-
+.equ rpt, 5 * CELL
 # next token in TIB
-tout:  .word 0x0 
-
+.equ tout, 6 * CELL
 # hold 'here while compile
-once:  .word 0x0 
-
+.equ once, 7 * CELL
 # heap forward
-head:  .word 0x0 
+.equ head, 8 * CELL
+# heap backward
+.equ tail, 9 * CELL
 
-# heap onceward
-tail:  .word 0x0 
+# this is it
+_user:
+.skip 10 * CELL
 
 # tib grows forward
-
 tib:       
 .skip tibz
 
@@ -270,59 +259,55 @@ rp0:       .word
 
 main:
 
-def_word "exit", "exit", 0
+# disable interrupts, sei
 
-def_word "noexit", "noexit", 0
+# do something about a0 and a1
 
-       add a2, r0, r0
+# save
 
-       add a2, a3, r0
-
-.end
-       add ipt, r0, r0
-
-       add wpt, ipt, r0
-.end
+# enable interrupts, cli
 
 #----------------------------------------------------------------------
-# common must
-#
+# do what need once
 cold:
-#   disable interrupts, sei
 
-#   saves
-
-#   enable interrupts, cli
+# load user pointer address
+    
+        la usr, _user
 
 #----------------------------------------------------------------------
 warm:
 # link list of headers
-        li wrd, h_exit
-        sw wrd, 0(last)
+        la wrd, h_exit
+        sw wrd, last (usr)
 
-# next heap free cell, same as init:  
-        li wrd, ends
-        sw wrd, 0(here)
+# next heap free cell  
+        la wrd, ends
+        sw wrd, here (usr)
 
 #---------------------------------------------------------------------
 # supose never change
 reset:
-        li wrd, tib
-        sw wrd, toin
-        sw wrd, tout
+        la wrd, tib
+        sw wrd, toin (usr)
+        sw wrd, tout (usr)
 
+#---------------------------------------------------------------------
 abort:
-        li wrd, sp0 
-        sw wrd, 0(sp)
+# reset data stack
+        la wrd, sp0 
+        sw wrd, spt (usr)
 
+#---------------------------------------------------------------------
 quit:
-        li wrd, rp0 
-        sw wrd, 0(rp)
+# reset return stack
+        la wrd, rp0 
+        sw wrd, rpt (usr)
 
 # stat is 'interpret' == \0
-        add wrd, r0, r0
-        
-        jmp okey
+        sw zero, stat (usr)
+
+        j okey
 
 #---------------------------------------------------------------------
 # the outer loop
@@ -343,6 +328,7 @@ okey:
 #       lda #10
 #       jsr putchar
 
+#---------------------------------------------------------------------
 resolve:
 # get a token
         jal token
@@ -350,49 +336,52 @@ resolve:
         #; lda #'P'
         #; jsr putchar
 
+#---------------------------------------------------------------------
 find:
-        lw snd, 0(last)
+        lw snd, last (usr)
         
-@loop:
-# verify null
-        beq snd, r0, abort
+loop%=:
+# verify null, end of dictionary, abort
+        beq snd, zero, abort
 
-# lsb linked list
-        add wrd, snd, r0
+# linked list
+        add wrd, snd, zero
 
 #   maybe to place a code for number? 
-#   but not for now.
 
-#;   uncomment for feedonce, comment out "beq abort" above
+# uncomment for feedback, comment out "beq abort" above
+# end of dictionary, no more words to search, abort
 #       lda #'?'
 #       jsr putchar
 #       lda #'?'
 #       jsr putchar
 #       lda #10
 #       jsr putchar
-#       jmp abort  #; end of dictionary, no more words to search, abort
+#       jmp abort  
 
-@each:       
+each%=:       
 
 # update next link 
-        lw snd, 0(wrd)
+        add snd, wrd, zero
 
 # compare words
         ldy #0
 
 # save the flag, first byte is (size and flag) 
         lb trd, (wrd)
-        sb trd, (stat+1)
+        sb trd, stat+1 (usr)
+
+# zzzz
 
 # compare chars
-@equal:
+equal%=:
         lda (tout), y
 # space ends
-        cmp #32  
-        beq @done
+        beq t1, ' ', done%=  
+
 # verify 
-        sec
         sbc (wrd), y     
+
 # clean 7-bit ascii
         asl        
         bne @loop
@@ -437,19 +426,6 @@ execute:
         lda #<resolvept
         sta ipt + 0
 
-#~~~~~~~~
-.ifdef use_DTC
-
-        jmp (wrd)
-
-.else 
-        
-        jmp pick
-
-.endif
-#~~~~~~~~
-
-        
 #---------------------------------------------------------------------
 try:
         lda tib, y
@@ -696,420 +672,11 @@ addwx:
 
 #---------------------------------------------------------------------
 #
-# the primitives, 
-# for stacks uses
-# a address, c byte ascii, w signed word, u unsigned word 
-# cs counted string < 256, sz string with nul ends
-# 
-#----------------------------------------------------------------------
-
-.ifdef use_extras
-
-#----------------------------------------------------------------------
 # extras
-#----------------------------------------------------------------------
-# ( -- ) ae exit forth
-def_word "bye", "bye", 0
-        jmp byes
-
-#----------------------------------------------------------------------
-# ( -- ) ae abort
-def_word "abort", "abort_", 0
-        jmp abort
-
-#----------------------------------------------------------------------
-# ( -- ) ae list of data stack
-def_word ".S", "splist", 0
-        lda spt + 0
-        sta fst + 0
-        lda spt + 1
-        sta fst + 1
-        lda #'S'
-        jsr putchar
-        lda #sp0
-        jsr list
-        jmp next
-
-#----------------------------------------------------------------------
-# ( -- ) ae list of return stack
-def_word ".R", "rplist", 0
-        lda rpt + 0
-        sta fst + 0
-        lda rpt + 1
-        sta fst + 1
-        lda #'R'
-        jsr putchar
-        lda #rp0
-        jsr list
-        jmp next
-
-#----------------------------------------------------------------------
-#  ae list a sequence of references
-list:
-
-        sec
-        sbc fst + 0
-        lsr
-
-        tax
-
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-
-        lda #' '
-        jsr putchar
-
-        txa
-        jsr puthex
-
-        lda #' '
-        jsr putchar
-
-        txa
-        beq @ends
-
-        ldy #0
-@loop:
-        lda #' '
-        jsr putchar
-        iny
-        lda (fst),y 
-        jsr puthex
-        dey
-        lda (fst),y 
-        jsr puthex
-        iny 
-        iny
-        dex
-        bne @loop
-@ends:
-        rts
-        
-#----------------------------------------------------------------------
-# ( -- ) dumps the user dictionary
-def_word "dump", "dump", 0
-
-        lda #0x0
-        sta fst + 0
-        lda #>ends + 1
-        sta fst + 1
-
-        ldx #(fst)
-        ldy #0
-
-@loop:
-        
-        lda (fst),y
-        jsr putchar
-        jsr incwx
-
-        lda fst + 0
-        cmp here + 0
-        bne @loop
-
-        lda fst + 1
-        cmp here + 1
-        bne @loop
-
-        clc  #; clean
-        jmp next 
-
-#----------------------------------------------------------------------
-# ( -- ) words in dictionary, 
-def_word "words", "words", 0
-
-# load lastest
-        lda last + 1
-        sta snd + 1
-        lda last + 0
-        sta snd + 0
-
-# load here
-        lda here + 1
-        sta trd + 1
-        lda here + 0
-        sta trd + 0
-        
-@loop:
-# lsb linked list
-        lda snd + 0
-        sta fst + 0
-
-# verify \0x0
-        ora snd + 1
-        beq @ends
-
-# msb linked list
-        lda snd + 1
-        sta fst + 1
-
-@each:       
-
-        lda #10
-        jsr putchar
-
-# put address
-        lda #' '
-        jsr putchar
-
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-
-# put link
-        lda #' '
-        jsr putchar
-
-        ldy #1
-        lda (fst), y
-        jsr puthex
-        dey 
-        lda (fst), y
-        jsr puthex
-
-        ldx #(fst)
-        lda #2
-        jsr addwx
-
-# put size + flag, name
-        ldy #0
-        jsr show_name
-
-# update
-        iny
-        tya
-        ldx #(fst)
-        jsr addwx
-
-# show CFA
-
-        lda #' '
-        jsr putchar
-        
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-
-# check if is a primitive
-        lda fst + 1
-        cmp #>ends + 1
-        bmi @continue
-
-# list references
-        ldy #0
-        jsr show_refer
-
-@continue:
-        
-        lda snd + 0
-        sta trd + 0
-        lda snd + 1
-        sta trd + 1
-
-        ldy #0
-        lda (trd), y
-        sta snd + 0
-        iny
-        lda (trd), y
-        sta snd + 1
-
-        ldx #(trd)
-        lda #2
-        jsr addwx
-
-        jmp @loop 
-
-@ends:
-        clc  #; clean
-        jmp next
-
-#----------------------------------------------------------------------
-# ae put size and name 
-show_name:
-        lda #' '
-        jsr putchar
-
-        lda (fst), y
-        jsr puthex
-        
-        lda #' '
-        jsr putchar
-
-        lda (fst), y
-        and #$7F
-        tax
-
- @loop:
-        iny
-        lda (fst), y
-        jsr putchar
-        dex
-        bne @loop
-
-@ends:
-        rts
-
-#----------------------------------------------------------------------
-show_refer:
-# ae put references PFA ... 
-
-        ldx #(fst)
-
-@loop:
-        lda #' '
-        jsr putchar
-
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-
-        lda #':'
-        jsr putchar
-        
-        iny 
-        lda (fst), y
-        jsr puthex
-        dey
-        lda (fst), y
-        jsr puthex
-
-        lda #2
-        jsr addwx
-
-# check if ends
-
-        lda fst + 0
-        cmp trd + 0
-        bne @loop
-        lda fst + 1
-        cmp trd + 1
-        bne @loop
-
-@ends:
-        rts
-
-#----------------------------------------------------------------------
-#  ae seek for 'exit to ends a sequence of references
-#  max of 254 references in list
 #
-seek:
-        ldy #0
-@loop1:
-        iny
-        beq @ends
-
-        lda (fst), y
-        cmp #>exit
-        bne @loop1
-
-        dey 
-        lda (fst), y
-        cmp #<exit
-        beq @ends
-        
-        iny
-        bne @loop1
-
-@ends:
-        tya
-        lsr
-        clc  #; clean
-        rts
-
-#----------------------------------------------------------------------
-# ( u -- u ) print tos in hexadecimal, swaps order
-def_word ".", "dot", 0
-        lda #' '
-        jsr putchar
-        jsr spull1
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-        jsr spush1
-        jmp next
-
-#----------------------------------------------------------------------
-# code a byte in ASCII hexadecimal 
-puthex:
-        pha
-        lsr
-        ror
-        ror
-        ror
-        jsr @conv
-        pla
-@conv:
-        and #0x0F
-        ora #$30
-        cmp #$3A
-        bcc @ends
-        adc #0x06
-@ends:
-        clc  #; clean
-        jmp putchar
-
-.endif
-
-
-.ifdef numbers
-#----------------------------------------------------------------------
-# code a ASCII $FFFF hexadecimal in a byte
-#  
-number:
-
-        ldy #0
-
-        jsr @very
-        asl
-        asl
-        asl
-        asl
-        sta fst + 1
-
-        iny 
-        jsr @very
-        ora fst + 1
-        sta fst + 1
-        
-        iny 
-        jsr @very
-        asl
-        asl
-        asl
-        asl
-        sta fst + 0
-
-        iny 
-        jsr @very
-        ora fst + 0
-        sta fst + 0
-
-        clc #; clean
-        rts
-
-@very:
-        lda (tout), y
-        sec
-        sbc #$30
-        bmi @erro
-        cmp #10
-        bcc @ends
-        sbc #0x07
-        #; any valid digit, A-Z, do not care 
-@ends:
-        rts
-
-@erro:
-        pla
-        pla
-        rts
-
+#---------------------------------------------------------------------
+.ifdef use_extras
+.include "extras-milliforth.S"
 .endif
 
 #---------------------------------------------------------------------
@@ -1118,42 +685,20 @@ number:
 #
 #---------------------------------------------------------------------
 .ifdef use_extensions
-
-#---------------------------------------------------------------------
-# ( w -- w/2 ) #; shift right
-def_word "2/", "shr", 0
-        jsr spull1
-        lsr fst + 1
-        ror fst + 0
-        jmp this
-
-#---------------------------------------------------------------------
-# ( a -- ) execute a jump to a reference at top of data stack
-def_word "exec", "exec", 0 
-        jsr spull1
-        jmp (fst)
-
-#---------------------------------------------------------------------
-# ( -- ) execute a jump to a reference at IP
-def_word ":$", "docode", 0 
-        jmp (ipt)
-
-#---------------------------------------------------------------------
-# ( -- ) execute a jump to next
-def_word ";$", "donext", 0 
-        jmp next
-
+.include "extensions-milliforth.S"
 .endif
 
 #---------------------------------------------------------------------
-# core primitives minimal 
-# start of dictionary
+#
+# the primitives, 
+# 
+#----------------------------------------------------------------------
+
 #---------------------------------------------------------------------
 # ( -- u ) #; tos + 1 unchanged
 def_word "key", "key", 0
         jsr getchar
-        sta fst + 0
-        #; jmp this  ; uncomment if char could be \0
+        add fst, wrd, zero
         bne this    #; always taken
         
 #---------------------------------------------------------------------
@@ -1169,8 +714,10 @@ def_word "emit", "emit", 0
 # ( a w -- ) #; [a] = w
 def_word "!", "store", 0
 storew:
-        lw snd, 0(sp)
-        lw fst, 1(sp)
+        lw wrd, sp (usr)
+        lw snd, 0(wrd)
+        lw fst, 1(wrd)
+
         jsr copyinto
         beq r0, r0, jmpnext
 
@@ -1324,8 +871,10 @@ def_word ":", "colon", 0
 def_word "exit", "exit", 0
 unnest: #; exit
 # pull, ipt = (rpt), rpt += 2 
-        ldy #(ipt)
-        jsr rpull
+        lw wrd, rpt (usr)
+        add ipt, wrd, zero
+        addi wrd, wrd, 1 * CELL
+        sw wrd, rpt (usr)
 
 next:
 # wrd = (ipt) #; ipt += 2
@@ -1339,6 +888,11 @@ pick:
 
 nest:   #; enter
 # push, *rp = ipt, rp -=2
+        lw wrd, rpt (usr)
+        sw ipt, 0 (wrd)
+        addi wrd, wrd, -1 * CELL
+        sw wrd, rpt (usr)
+
         lw wrd, (ipt)
         sw wrd, ????
 
