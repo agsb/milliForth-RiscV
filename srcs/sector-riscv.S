@@ -178,7 +178,10 @@ NOTES:
 ##
 
 # forth struct pointer 
-# define usr a1
+#define usr a0
+
+# for stack index
+#define idx a1
 
 # instruction pointer
 #define ipt a2
@@ -714,84 +717,105 @@ def_word "emit", "emit", 0
 # ( a w -- ) #; [a] = w
 def_word "!", "store", 0
 storew:
-        lw wrd, sp (usr)
-        lw snd, 0(wrd)
-        lw fst, 1(wrd)
+        lw idx, spt (usr)
+        
+        lw fst, 1 * CELL (idx)
+        
+        lw snd, 0 * CELL (idx)
 
-        jsr copyinto
-        beq r0, r0, jmpnext
+        sw snd, 0 (fst)
+
+        add idx, idx, +2 * CELL
+        
+        sw idx, spt (usr)
+
+        beq zero, zero, next
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- NOT(w1 AND w2) )
 def_word "nand", "nand", 0
-        jsr spull2
-        lda snd + 0
-        and fst + 0
-        eor #$FF
-        sta fst + 0
-        lda snd + 1
-        and fst + 1
-        eor #$FF
-        beq r0, r0, keeps
+        lw idx, spt (usr)
+        
+        lw fst, 1 * CELL (idx)
+        
+        lw snd, 0 * CELL (idx)
+
+        and fst, fst, snd
+        
+        not fst, fst
+
+        sw fst, 1 * CELL (idx)
+
+        add idx, idx, +1 * CELL
+        
+        sw idx, spt (usr)
+
+        beq zero, zero, next
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1+w2 ) 
 def_word "+", "plus", 0
-        jsr spull2
-        clc  #; better safe than sorry
-        lda snd + 0
-        adc fst + 0
-        sta fst + 0
-        lda snd + 1
-        adc fst + 1
-        beq r0, r0, keeps
+        lw idx, spt (usr)
+        
+        lw fst, 1 * CELL (idx)
+        
+        lw snd, 0 * CELL (idx)
+
+        add fst, fst, snd
+
+        sw fst, 1 * CELL (idx)
+        
+        add idx, idx, +1 * CELL
+        
+        sw idx, spt (usr)
+
+        beq zero, zero, next
 
 #---------------------------------------------------------------------
 # ( a -- w ) #; w = [a]
 def_word "@", "fetch", 0
 fetchw:
-        jsr spull1
-        ldx #(fst)
-        ldy #(snd)
-        jsr copyfrom
-        #; fall throught
+        lw idx, spt (usr)
+        
+        lw fst, 0 * CELL (idx)
 
-#---------------------------------------------------------------------
-copys:
-        lda 0, y
-        sta fst + 0
-        lda 1, y
+        lw snd, 0 (fst)
+        
+        sw snd, 0 * CELL (idx)
 
-keeps:
-        sta fst + 1
-
-this:
-        jsr spush1
-
-jmpnext:
-        jmp next
+        beq zero, zero, next
 
 #---------------------------------------------------------------------
 # ( 0 -- 0x0000) | ( n -- $FFFF) not zero at top ?
 def_word "0#", "zeroq", 0
-        jsr spull1
-        lda fst + 1
-        ora fst + 0
+        lw idx, spt (usr)
+        
+        lw fst, 0 * CELL (idx)
+
+        beq fst, zero, istrue
+        
         beq isfalse  #; is \0 ?
 istrue:
-        lda #$FF
+        not fst, fst
 isfalse:
-        sta fst + 0                                                         
-        jmp keeps  
+        sw fst, 0 * CELL (idx)
+
+        beq zero, zero, next
 
 #---------------------------------------------------------------------
 # ( -- state ) a variable return an reference
 def_word "s@", "state", 0 
-        lda #<stat
-        sta fst + 0
-        lda #>stat
-        #;  jmp keeps ; uncomment if stats not in page 0x0
-        beq keeps   #; always taken
+        lw idx, spt (usr)
+        
+        addi, idx, idx, -1 * CELL
+        
+        la fst, stat 
+        
+        sw fst, 0 (idx)
+        
+        sw idx, spt (usr)
+        
+        beq zero, zero, next
 
 #---------------------------------------------------------------------
 def_word ";", "semis",  FLAG_IMM
@@ -866,53 +890,53 @@ def_word ":", "colon", 0
 #   nest aka enter or docol, 
 #   unnest aka exit or semis;
 #
+# for milli-forth both stack index must be in memory
+# but there is only indirect memory save, sw !
+#
+# then for sake must have:
+#       usr, one register for point the user struct
+#       idx, one register for stack index
+#
 #---------------------------------------------------------------------
 # ( -- ) 
 def_word "exit", "exit", 0
 unnest: #; exit
-# pull, ipt = (rpt), rpt += 2 
-        lw wrd, rpt (usr)
-        add ipt, wrd, zero
-        addi wrd, wrd, 1 * CELL
-        sw wrd, rpt (usr)
+# pull, ipt = (rpt), rpt += cell 
+        lw idx, rpt (usr)
+        lw ipt, 0 (idx)
+        addi idx, idx, +1 * CELL
+        sw idx, rpt (usr)
 
 next:
-# wrd = (ipt) #; ipt += 2
-        ldx #(ipt)
-        ldy #(wrd)
-        jsr copyfrom
+# wrd = (ipt) #; ipt += cell
+        lw wrd, 0 (ipt)
+        addi ipt, ipt + 1 * CELL
 
 pick:
-# compare pages (MSBs)
+# compare address, if less than ends is a primitive 
         blt wrd, ends, jump
 
 nest:   #; enter
-# push, *rp = ipt, rp -=2
-        lw wrd, rpt (usr)
-        sw ipt, 0 (wrd)
-        addi wrd, wrd, -1 * CELL
-        sw wrd, rpt (usr)
+# push, (rpt) = ipt, rp -= cell
+        lw idx, rpt (usr)
+        sw ipt, 0 (idx)
+        addi idx, idx, -1 * CELL
+        sw idx, rpt (usr)
 
-        lw wrd, (ipt)
-        sw wrd, ????
+# exchange 
+        add ipt, ipt, wrd
+        beq zero, zero, next
 
-        ldy #(ipt)
-        jsr rpush
-
-        sw wrd, (ipt)
-
-        beq r0, r0, next
-
+# jump to primitive
 jump: 
-
-        jmp (wrd)
+        jalr zero, 0 (wrd)
 
 .endif
-#~~~~~~~~
 
 #-----------------------------------------------------------------------
 # BEWARE, MUST BE AT END! MINIMAL THREAD CODE DEPENDS ON IT!
 ends:
+
 #-----------------------------------------------------------------------
 # anything above is not a primitive
 #----------------------------------------------------------------------
