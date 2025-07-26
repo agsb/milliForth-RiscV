@@ -713,144 +713,138 @@ def_word "emit", "emit", 0
         #; jmp next  ; uncomment if carry could be set
         bcc jmpnext #; always taken
 
+
 #---------------------------------------------------------------------
-# ( a w -- ) #; [a] = w
-def_word "!", "store", 0
-storew:
-        lw idx, spt (usr)
-        
-        lw fst, 1 * CELL (idx)
-        
-        lw snd, 0 * CELL (idx)
+# 
+drop2:
+        add idx, idx, +1 * CELL
 
-        sw snd, 0 (fst)
-
-        add idx, idx, +2 * CELL
+drop1:
+        add idx, idx, +1 * CELL
         
         sw idx, spt (usr)
 
         beq zero, zero, next
+
+load2:
+        lw idx, spt (usr)
+        
+        lw fst, 0 * CELL (idx)
+        
+        lw snd, 1 * CELL (idx)
+
+        ret
+
+save1:
+
+        sw snd, 1 * CELL (idx)
+
+        beq zero, zero, drop1
+
+save0:
+
+        sw fst, 0 * CELL (idx)
+
+        beq zero, zero, next
+
+#---------------------------------------------------------------------
+# ( a w -- ) #; [a] = w
+def_word "!", "store", 0
+        
+        call load2
+
+        sw snd, 0 (fst)
+
+        beq zero, zero, drop2
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- NOT(w1 AND w2) )
 def_word "nand", "nand", 0
-        lw idx, spt (usr)
-        
-        lw fst, 1 * CELL (idx)
-        
-        lw snd, 0 * CELL (idx)
 
-        and fst, fst, snd
+        call load2
+
+        and snd, snd, fst
         
-        not fst, fst
+        not snd, snd
 
-        sw fst, 1 * CELL (idx)
-
-        add idx, idx, +1 * CELL
-        
-        sw idx, spt (usr)
-
-        beq zero, zero, next
+        beq zero, zero, save1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1+w2 ) 
 def_word "+", "plus", 0
-        lw idx, spt (usr)
-        
-        lw fst, 1 * CELL (idx)
-        
-        lw snd, 0 * CELL (idx)
 
-        add fst, fst, snd
+        call load2
 
-        sw fst, 1 * CELL (idx)
-        
-        add idx, idx, +1 * CELL
-        
-        sw idx, spt (usr)
+        add snd, snd, fst
 
-        beq zero, zero, next
+        beq zero, zero, save1
 
 #---------------------------------------------------------------------
 # ( a -- w ) #; w = [a]
 def_word "@", "fetch", 0
 fetchw:
-        lw idx, spt (usr)
-        
-        lw fst, 0 * CELL (idx)
+        call load2
 
-        lw snd, 0 (fst)
-        
-        sw snd, 0 * CELL (idx)
+        add snd, fst, zero
 
-        beq zero, zero, next
+        lw fst, 0 (snd)
+        
+        beq zero, zero, save0
 
 #---------------------------------------------------------------------
 # ( 0 -- 0x0000) | ( n -- $FFFF) not zero at top ?
 def_word "0#", "zeroq", 0
-        lw idx, spt (usr)
-        
-        lw fst, 0 * CELL (idx)
+
+        call load2
 
         beq fst, zero, istrue
         
-        beq isfalse  #; is \0 ?
 istrue:
-        not fst, fst
-isfalse:
-        sw fst, 0 * CELL (idx)
 
-        beq zero, zero, next
+        not fst, fst
+
+isfalse:
+
+        beq zero, zero, save0
 
 #---------------------------------------------------------------------
 # ( -- state ) a variable return an reference
 def_word "s@", "state", 0 
         lw idx, spt (usr)
         
-        addi, idx, idx, -1 * CELL
+        addi idx, idx, -1 * CELL
         
-        la fst, stat 
+        addi fst, usr, stat 
         
-        sw fst, 0 (idx)
-        
-        sw idx, spt (usr)
-        
-        beq zero, zero, next
+        beq zero, zero, save0
 
 #---------------------------------------------------------------------
 def_word ";", "semis",  FLAG_IMM
 # update last, panic if colon not lead elsewhere 
-        lda once + 0 
-        sta last + 0
-        lda once + 1 
-        sta last + 1
+        lw fst, once (usr)
+        sw fst, last (usr)
 
-# stat is 'interpret'
-        lda #0
-        sta stat + 0
+# stat is 'interpret' == 0
+        sw zero, stat (usr)
 
 # compound words must ends with exit
 finish:
-        lda #<exit
-        sta wrd + 0
-        lda #>exit
-        sta wrd + 1
-        jsr wcomma
+        la fst, exit
+        call wcomma
 
-        #; jmp next
-        bcc next    #; always taken
+# done
+        # jmp next
+        beq zero, zero, next 
 
 #---------------------------------------------------------------------
 def_word ":", "colon", 0
 # save here, panic if semis not follow elsewhere
-        lda here + 0
-        sta once + 0 
-        lda here + 1
-        sta once + 1 
+        lw fst, here (usr)
+        sw fst, once (usr)
 
-# stat is 'compile'
-        lda #1
-        sta stat + 0
+# stat is 'compile' == 1
+        addi fst, zero, 1
+        sw fst, stat (usr)
 
 @header:
 # copy last into (here)
@@ -877,8 +871,8 @@ def_word ":", "colon", 0
         jsr addwx
 
 # done
-        #; jmp next
-        bcc next    #; always taken
+        # jmp next
+        beq zero, zero, next 
 
 #---------------------------------------------------------------------
 # Thread Code Engine
@@ -930,8 +924,6 @@ nest:   #; enter
 # jump to primitive
 jump: 
         jalr zero, 0 (wrd)
-
-.endif
 
 #-----------------------------------------------------------------------
 # BEWARE, MUST BE AT END! MINIMAL THREAD CODE DEPENDS ON IT!
