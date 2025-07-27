@@ -1,34 +1,4 @@
 /*
-;----------------------------------------------------------------------
-;
-; Copyright (c) 2025, Alvaro Gomes Sobral Barcellos
-; All rights reserved.
-; 
-; Redistribution and use in source and binary forms, with or without
-; modification, are permitted provided that the following conditions
-; are met:
-; 
-; 1. Redistributions of source code must retain the above copyright 
-; notice, this list of conditions and the following disclaimer.
-;
-; 2. Redistributions in binary form must reproduce the above copyright
-; notice, this list of conditions and the following disclaimer in 
-; the documentation and/or other materials provided with the 
-; distribution.
-; 
-; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-; "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-; FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-; COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-; INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-; BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, 
-; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-; CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
-; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
-; ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-; POSSIBILITY OF SUCH DAMAGE.
-;
 ;---------------------------------------------------------------------
 ;
 ; Copyright 2025 Alvaro Gomes Sobral Barcellos <@agsb>
@@ -130,38 +100,6 @@ h_\label:
 \label:
 .endm
 
-#----------------------------------------------------------------------
-# stack macros
-# could have hooks for check over/under
-##
-
-.macro spull stack, register
-       lw \register, 0 (\stack)
-       addi \stack, \stack, +1 * CELL
-.endm
-
-.macro spush stack, register
-       addi \stack, \stack, -1 * CELL
-       sw \register, 0 (\stack)
-.endm
-
-# zzzz
-.macro mcopy from, into, index
-       lw \into, \index * CELL (\from)
-.endm
-
-.macro copy destin, origin
-       add \destin, \origin, zero
-.endm
-
-.macro link address
-       jal zero, \address
-.endm
-
-.macro jump address
-       jalr zero, \address, 0
-.endm
-
 #---------------------------------------------------------------------
 /*
 NOTES:
@@ -176,6 +114,27 @@ NOTES:
 # maybe reserved words can not be aliased ?
 # also r0 must be called as zero.
 ##
+
+# almost all memory access must be indirectd by a register
+# and millifort uses a struct for pointers, then:
+# reserve one register (usr) for the pointer to this structure
+# and another (idx) to use as temporary index value
+# 
+# lw rd, offset (ro)
+# sw ro, offset (rd)
+#
+# the indirect code defaults:
+#
+/*
+# load the index of data stack
+        lw idx, spt (usr)
+# pull the value
+        lw fst, 0 (idx)
+# update the index
+        addi idx, idx, +1 * CELL
+# save the index
+        sw idx, spt (usr)
+*/
 
 # forth struct pointer 
 #define usr a0
@@ -207,6 +166,8 @@ NOTES:
 
 # user structure of internal Forth variables
 # ATT: the order matters for forth !
+
+# name some offsets
 
 # state flag
 .equ stat, 0 * CELL
@@ -700,14 +661,16 @@ addwx:
 #---------------------------------------------------------------------
 # ( -- u ) #; tos + 1 unchanged
 def_word "key", "key", 0
-        jsr getchar
-        add fst, wrd, zero
+        jalr getchar
+
+        lw idx, spt (usr)
+
         bne this    #; always taken
         
 #---------------------------------------------------------------------
 # ( u -- ) #; tos + 1 unchanged
 def_word "emit", "emit", 0
-        jsr spull1
+        jalr spull1
         lda fst + 0
         jsr putchar
         #; jmp next  ; uncomment if carry could be set
@@ -736,8 +699,9 @@ load2:
         ret
 
 save1:
+        sw fst, 1 * CELL (idx)
 
-        sw snd, 1 * CELL (idx)
+        addi idx, idx, -1 * CELL
 
         beq zero, zero, drop1
 
@@ -755,7 +719,8 @@ def_word "!", "store", 0
 
         sw snd, 0 (fst)
 
-        beq zero, zero, drop2
+        j drop2
+
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- NOT(w1 AND w2) )
@@ -767,7 +732,7 @@ def_word "nand", "nand", 0
         
         not snd, snd
 
-        beq zero, zero, save1
+        j drop1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1+w2 ) 
@@ -814,8 +779,12 @@ def_word "s@", "state", 0
         
         addi idx, idx, -1 * CELL
         
-        addi fst, usr, stat 
+        addi fst, stat, zero 
         
+        sw fst, 0 (idx)
+
+        sw idx, spt (usr)
+
         beq zero, zero, save0
 
 #---------------------------------------------------------------------
@@ -918,7 +887,7 @@ nest:   #; enter
         sw idx, rpt (usr)
 
 # exchange 
-        add ipt, ipt, wrd
+        add ipt, wrd, zero
         beq zero, zero, next
 
 # jump to primitive
@@ -933,6 +902,37 @@ ends:
 # anything above is not a primitive
 #----------------------------------------------------------------------
 
+.end
+;----------------------------------------------------------------------
+;
+; Copyright (c) 2025, Alvaro Gomes Sobral Barcellos
+; All rights reserved.
+; 
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions
+; are met:
+; 
+; 1. Redistributions of source code must retain the above copyright 
+; notice, this list of conditions and the following disclaimer.
+;
+; 2. Redistributions in binary form must reproduce the above copyright
+; notice, this list of conditions and the following disclaimer in 
+; the documentation and/or other materials provided with the 
+; distribution.
+; 
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+; "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+; FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+; COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+; INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+; BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, 
+; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+; CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
+; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+; ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+; POSSIBILITY OF SUCH DAMAGE.
+;
 #----------------------------------------------------------------------
 #   SectorForth and MilliForth was made for x86 arch 
 #   and uses full 16-bit registers 
