@@ -147,6 +147,8 @@ But which registers ?
 The convention for R32* ISA for interrupts, keeps ra, t0-t2, a0-a5
 and the gcc __attribute__((interrupt)) keeps which are used inside,
 
+Remember, all code must be align to CELL size !
+
 */
 
 # for pre-processor CPP (GNU GCC)
@@ -322,7 +324,6 @@ find:
         lw snd, LAST (usr)
         
 100:
-
 # verify null, end of dictionary, abort
         beq snd, zero, abort
 
@@ -331,44 +332,46 @@ find:
 
 # maybe to place code for number? 
 
+# test length of word
 200:       
 
-# using a hash !
-
 # update next link 
-        add snd, wrd, zero
+        lw  snd, 0 (wrd)
 
-# compare words
-        ldy #0
+        add wrd, wrd, CELL
 
 # save the flag, first byte is (size and flag) 
-        lb trd, (wrd)
-        # zzzz
-        sb trd, STAT+1 (usr)
+        
+        lb idx, (wrd)
+        
+        sb idx, STAT+1 (usr)
 
+        ssli idx, idx, 1
 
-# zzzz
+        lb fth, (trd)
+
+        bne idx, fth, 200b
 
 # compare chars
 300:
 
-        lda (tout), y
+        lb fth, 0 (trd)
 
-# space ends
-        beq t1, ' ', done%=  
+        beq fth, ' ', 
 
-# verify 
+        bne idx, fth, 300f
+
         sbc (wrd), y     
 
-# clean 7-bit ascii
-        asl        
         bne @loop
 
 # next char
-        iny
-        bne @equal
+        addi wrd, wrd, 1
+        addi trd, trd, 1
+        j 300b
 
-@done:
+300:
+
 # update wrd
         tya
         ;; ldx #(wrd) #; set already

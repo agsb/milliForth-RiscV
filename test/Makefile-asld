@@ -13,13 +13,13 @@
 #riscv32-unknown-elf-as exampleAsm.S -o exampleAsm.o
 #riscv32-unknown-elf-ld -o exampleAsm.elf -T asm.ld -m elf32lriscv -nostdlib --no-relax
 
-# as ubuntu 
-BASE = /usr/bin
-NAME = riscv64-unknown-elf-
-
 # as default compiled
 BASE = /opt/riscv/bin/
 NAME = riscv64-unknown-linux-gnu-
+
+# as ubuntu 
+BASE = /usr/bin
+NAME = riscv64-unknown-elf-
 
 PASS = /${BASE}/${NAME}
 

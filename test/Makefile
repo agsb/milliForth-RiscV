@@ -6,42 +6,40 @@
 # to make: 	make 
 # to clean: 	make clean
 
-.PHONY: clean all
+.PHONY: clean opt all
 
 ########################################
 
 #riscv32-unknown-elf-as exampleAsm.S -o exampleAsm.o
 #riscv32-unknown-elf-ld -o exampleAsm.elf -T asm.ld -m elf32lriscv -nostdlib --no-relax
 
-# as ubuntu 
+# default
 BASE = /usr/bin
 NAME = riscv64-unknown-elf-
 
-# as default compiled
-BASE = /opt/riscv/bin/
-NAME = riscv64-unknown-linux-gnu-
+# or optional compiled
+PASS = /opt/riscv/
 
-PASS = /${BASE}/${NAME}
+ifneq ("$(wildcard $(PASS))", "")
+	BASE =/opt/riscv/bin/
+	NAME =riscv64-unknown-linux-gnu-
+endif
+
+PASS = ${BASE}/${NAME}
 
 QEMU = ${BASE}/qemu-riscv64
 
 QFLAGS = -nographic -smp 1 -machine virt -bios none
 
-CPP = ${PAS}cpp
-
 GCC = ${PASS}gcc
 
-GCCFLAGS = -fpic -static -nostdlib -nostartfiles --save-temps 
+GCCFLAGS = -fpic -static -nostdlib -nostartfiles 
 
 #-fverbose-asm
 
-AS = ${PASS}as
+ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst -Wa,-o=$@.out
 
-ASFLAGS = -mlittle-endian
-
-LD = ${PASS}ld
-
-LDFLAGS = -b=elf64-littleriscv --stats --strip-all --build-id -r 
+LDFLAGS = -Wl,-b=elf64-littleriscv -Wl,--stats -Wl,--strip-all -Wl,--build-id -Wl,-r 
 
 STRIP = ${PASS}strip
 
@@ -51,17 +49,11 @@ MY = test
 
 ########################################
 
-%: %.S
+%: %.C
 
 $(MY): $(SOURCES:.S=.o)
 
-	$(CPP) $@.S > $@.s
-
-#	$(GCC) $(GCCFLAGS) -S -fverbose-asm -g -O2 $@.S
-
-	$(AS) $(ASFLAGS) -aghlms=$@.lst -o $@.out $@.s
-	
-	$(LD) $(LDFLAGS) -o $@.elf $@.s 
+	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.C 2> err | tee out
 
 	$(STRIP) $@.out $@.elf
 

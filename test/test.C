@@ -8,11 +8,13 @@
 ;
 */
 
-#---------------------------------------------------------------------
-
 __attribute__ ((interrupt))
 
-void test (void)
+void test (void) {
+        }
 
-
+int does ( int a, int b , int c, int d) {
+        int as, bs, cs, ds;
+        return a;
+        }
 
