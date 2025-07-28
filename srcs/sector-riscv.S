@@ -106,51 +106,70 @@ h_\label:
 
  Not finished yet :)
 
+ Why ".equ name, register", does not work ?
+ Mmaybe reserved words can not be aliased ?
+ Also r0 must ever be called as zero.
+
  I dunno about another way to make register name alias
- why ".equ name, register", does not work ?
- maybe reserved words can not be aliased ?
- also r0 must be called as zero.
+ So, using cpp to pre-process the alias, like:
 
+ #define mytmp  t1     
 
- almost all memory access must be indirectd by a register
- and millifort uses a struct for pointers, then:
+ Almost all memory access must be indirectd by a register
+ eg. lw rd, offset (ro); sw ro, offset (rd);
+ and millifort uses a struct for pointers, then need:
  reserve one register (usr) for the pointer to this structure
  and another (idx) to use as temporary index value
- 
- lw rd, offset (ro)
- sw ro, offset (rd)
 
- the indirect code defaults:
+ The indirect code defaults:
 
+wpull:
 # load the index of data stack
-        lw idx, spt (usr)
+        lw idx, SPT (usr)
 # pull the value
         lw fst, 0 (idx)
 # update the index
         addi idx, idx, +1 * CELL
 # save the index
-        sw idx, spt (usr)
+        sw idx, SPT (usr)
+wpush:
+# load the index of data stack
+        lw idx, SPT (usr)
+# update the index
+        addi idx, idx, -1 * CELL
+# pull the value
+        sw fst, 0 (idx)
+# save the index
+        sw idx, SPT (usr)
+
+But which registers ?
+
+The convention for R32* ISA for interrupts, keeps ra, t0-t2, a0-a5
+and the gcc __attribute__((interrupt)) keeps which are used inside,
+
 */
 
 # for pre-processor CPP (GNU GCC)
 
-# forth struct pointer, indirect constant
+# forth struct pointer, constant 
 #define usr a0
 
-# for stack index, indirect variable
-#define idx a1
+# instruction pointer, preserved
+#define ipt a1
 
-# instruction pointer
-#define ipt a2
+# memory index 
+#define idx a2
 
 # word pointer
 #define wrd a3
 
+# compare value
+#define fth a4
+
 # some auxiliars
-#define fst a4
-#define snd a5
-#define trd a6
-#define fth a7
+#define fst t0
+#define snd t1
+#define trd t2
 
 #----------------------------------------------------------------------
 # dont use data, it blows the file
@@ -158,6 +177,8 @@ h_\label:
 
 #----------------------------------------------------------------------
 # better
+# assure all zeroes
+
 .section .bss
 .p2align 2, 0x0
 
@@ -192,21 +213,21 @@ _user:
 .skip 10 * CELL
 
 # tib grows forward
-tib:       
+_tib:       
 .skip tibz
 
 # pad grows forward
-pad:       
+_pad:       
 .skip padz
 
 # stacks grows backward
 
-spb:       # bottom 
-.skip spz
+_spb:       # bottom 
+.skip spz * CELL
 sp0:       .word
 
-rpb:       # bottom
-.skip rpz
+_rpb:       # bottom
+.skip rpz * CELL
 rp0:       .word
 
 #----------------------------------------------------------------------
@@ -215,7 +236,7 @@ rp0:       .word
 
        j main
 
-# catch for macros
+# catch for header macro
 1: .word 0x0
 
 #----------------------------------------------------------------------
@@ -225,7 +246,9 @@ main:
 
 # do something about a0 and a1
 
-# save
+# do save what needs
+
+# do etc
 
 # enable interrupts, cli
 
@@ -235,37 +258,39 @@ cold:
 
 # load user pointer address
     
+        fence
+
         la usr, _user
 
 #----------------------------------------------------------------------
 warm:
-# link list of headers
-        la wrd, h_exit
-        sw wrd, LAST (usr)
+# link list of headers, aka dictionary
+        la idx, h_exit
+        sw idx, LAST (usr)
 
 # next heap free cell  
-        la wrd, ends
-        sw wrd, HERE (usr)
+        la idx, ends
+        sw idx, HERE (usr)
 
 #---------------------------------------------------------------------
 # supose never change
 reset:
-        la wrd, tib
-        sw wrd, TOIN (usr)
-        sw wrd, TOUT (usr)
+        la idx, _tib
+        sw idx, TOIN (usr)
+        sw idx, TOUT (usr)
 
 #---------------------------------------------------------------------
 abort:
 # reset data stack
-        la wrd, sp0 
-        sw wrd, SPT (usr)
+        la idx, sp0 
+        sw idx, SPT (usr)
 
         # call prompt_erro ('??\n')
 #---------------------------------------------------------------------
 quit:
 # reset return stack
-        la wrd, rp0 
-        sw wrd, RPT (usr)
+        la idx, rp0 
+        sw idx, RPT (usr)
 
 # stat is 'interpret' == \0
         sw zero, STAT (usr)
@@ -273,7 +298,7 @@ quit:
         j okey
 
 #---------------------------------------------------------------------
-# the outer loop
+# the outer loop, need for indirects
 
 resolvept:
         .word okey
@@ -286,16 +311,18 @@ okey:
 #---------------------------------------------------------------------
 resolve:
 # get a token
-        jal token
+        call token
 
         #; lda #'P'
         #; jsr putchar
 
 #---------------------------------------------------------------------
 find:
+# get the latest link
         lw snd, LAST (usr)
         
 100:
+
 # verify null, end of dictionary, abort
         beq snd, zero, abort
 
@@ -305,6 +332,8 @@ find:
 # maybe to place code for number? 
 
 200:       
+
+# using a hash !
 
 # update next link 
         add snd, wrd, zero
@@ -348,12 +377,12 @@ find:
         
 eval:
 # executing ? if == \0
-        lw idx, STAT (usr)
+        lb idx, STAT+0 (usr)
         beq idx, zero, execute
 
 # immediate ? if < \0
-        lda stat + 1   
-        bmi immediate      
+        lb idx, STAT+1 (usr)
+        bne idx, zero, immediate      
 
 compile:
 
@@ -385,9 +414,10 @@ try:
         ret
 
 #---------------------------------------------------------------------
+# absolute crude getline, continues until \n
 getline:
 # get the terminal input buffer
-        la idx, tib
+        la idx, _tib
         
         sw idx, TOIN (usr)
 
@@ -398,7 +428,7 @@ getline:
         addi wrd, zero, 32
 
 100:
-        sw wrd, 0 (idx)
+        sb wrd, 0 (idx)
         
         addi idx, idx, 1
 
@@ -408,7 +438,7 @@ getline:
 # \n ends 
         beq wrd, fth, 100f
 
-# 7-bit ascii only ?
+# 7-bit ascii only 
 #        andi wrd, 0x7F
 
 # no controls ?
@@ -417,16 +447,19 @@ getline:
 
         j 100b
 
-# grace a space
-        
-        addi wrd, wrd, 32
+# replace new-line with space 
+100:        
+        addi wrd, zero, 32
         
         sw wrd, 0 (idx)
 
 # mark eol with \0
+
         addi idx, idx, 1
         
         sw zero, 0 (idx)
+
+        # falltrought
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
@@ -437,11 +470,11 @@ getline:
 
 token:
 
-# set space
-        addi fth, zero, 32
-
 # last position on tib
         lw idx, TOIN (usr)
+
+# set test to space
+        addi fth, zero, 32
 
 # skip spaces
 100:
@@ -469,6 +502,7 @@ token:
 
         sub idx, idx, wrd
 
+# place the length before word, c-str
         addi wrd, wrd, -1
 
         sw idx, 0 (wrd)
@@ -576,7 +610,7 @@ tokencopy:
 # ( -- u ) #; tos + 1 unchanged
 def_word "key", "key", 0
         
-        jalr getchar
+        call getchar
 
         j push1
 
@@ -586,7 +620,7 @@ def_word "emit", "emit", 0
         
         call load2
 
-        jalr putchar
+        call putchar
 
         j drop1
 
@@ -606,7 +640,7 @@ drop1:
 
         sw idx, SPT (usr)
 
-        beq zero, zero, next
+        j next
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- NOT(w1 AND w2) )
@@ -678,7 +712,7 @@ push1:
 save0:
         sw fst, 0 (idx)
 
-        beq zero, zero, next
+        j next
 
 #---------------------------------------------------------------------
 def_word ":", "colon", 0
@@ -712,7 +746,7 @@ def_word ":", "colon", 0
 
 # done
         # jmp next
-        beq zero, zero, next 
+        j next 
 
 #---------------------------------------------------------------------
 def_word ";", "semis",  FLAG_IMM
@@ -732,7 +766,7 @@ finish:
 
 # done
         # jmp next
-        beq zero, zero, next 
+        j next 
 
 #---------------------------------------------------------------------
 # Thread Code Engine
@@ -780,7 +814,7 @@ nest:   #; enter
 
 # exchange 
         add ipt, wrd, zero
-        beq zero, zero, next
+        j next
 
 # jump to primitive
 jump: 

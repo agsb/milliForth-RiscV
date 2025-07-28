@@ -6,23 +6,26 @@
 # to make: 	make 
 # to clean: 	make clean
 
-.PHONY: clean all
+.PHONY: clean opt all
 
 ########################################
 
 #riscv32-unknown-elf-as exampleAsm.S -o exampleAsm.o
 #riscv32-unknown-elf-ld -o exampleAsm.elf -T asm.ld -m elf32lriscv -nostdlib --no-relax
 
-# as ubuntu 
+# default
 BASE = /usr/bin
 NAME = riscv64-unknown-elf-
 
-# as default compiled
+# or optional compiled
+PASS = /opt/riscv/
 
-BASE = /opt/riscv/bin/
-NAME = riscv64-unknown-linux-gnu-
+ifneq ("$(wildcard $(PASS))", "")
+	BASE =/opt/riscv/bin/
+	NAME =riscv64-unknown-linux-gnu-
+endif
 
-PASS = /${BASE}/${NAME}
+PASS = ${BASE}/${NAME}
 
 QEMU = ${BASE}/qemu-riscv64
 
