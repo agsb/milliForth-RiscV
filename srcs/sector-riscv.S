@@ -260,6 +260,7 @@ abort:
         la wrd, sp0 
         sw wrd, SPT (usr)
 
+        # call prompt_erro ('??\n')
 #---------------------------------------------------------------------
 quit:
 # reset return stack
@@ -280,15 +281,7 @@ resolvept:
 #---------------------------------------------------------------------
 okey:
 
-#;   uncomment for feedonce
-#       lda stat + 0
-#       bne resolve
-#       lda #'O'
-#       jsr putchar
-#       lda #'K'
-#       jsr putchar
-#       lda #10
-#       jsr putchar
+        # call prompt_okey ('OK\n')
 
 #---------------------------------------------------------------------
 resolve:
@@ -302,26 +295,16 @@ resolve:
 find:
         lw snd, LAST (usr)
         
-loop%=:
+100:
 # verify null, end of dictionary, abort
         beq snd, zero, abort
 
 # linked list
         add wrd, snd, zero
 
-#   maybe to place a code for number? 
+# maybe to place code for number? 
 
-# uncomment for feedback, comment out "beq abort" above
-# end of dictionary, no more words to search, abort
-#       lda #'?'
-#       jsr putchar
-#       lda #'?'
-#       jsr putchar
-#       lda #10
-#       jsr putchar
-#       jmp abort  
-
-each%=:       
+200:       
 
 # update next link 
         add snd, wrd, zero
@@ -338,8 +321,10 @@ each%=:
 # zzzz
 
 # compare chars
-equal%=:
+300:
+
         lda (tout), y
+
 # space ends
         beq t1, ' ', done%=  
 
@@ -363,8 +348,8 @@ equal%=:
         
 eval:
 # executing ? if == \0
-        lda stat + 0   
-        beq execute
+        lw idx, STAT (usr)
+        beq idx, zero, execute
 
 # immediate ? if < \0
         lda stat + 1   
@@ -375,9 +360,9 @@ compile:
         #; lda #'C'
         #; jsr putchar
 
-        jsr wcomma
+        call wcomma
 
-        bcc resolve
+        j resolve
 
 immediate:
 execute:
@@ -385,10 +370,9 @@ execute:
         #; lda #'E'
         #; jsr putchar
 
-        lda #>resolvept
-        sta ipt + 1
-        lda #<resolvept
-        sta ipt + 0
+        la ipt, resolvept
+
+        j pick
 
 #---------------------------------------------------------------------
 try:
@@ -401,8 +385,6 @@ try:
         ret
 
 #---------------------------------------------------------------------
-# none edit 
-#
 getline:
 # get the terminal input buffer
         la idx, tib
@@ -451,12 +433,12 @@ getline:
 # the counter is placed at space before word
 # returns a c-str
 
-# \0 as eol then goto getline
+# \0 as eol goto getline
 
 token:
 
 # set space
-        addi, fth, zero, 32
+        addi fth, zero, 32
 
 # last position on tib
         lw idx, TOIN (usr)
@@ -487,11 +469,11 @@ token:
 
         sub idx, idx, wrd
 
-        subi wrd, wrd, 1
+        addi wrd, wrd, -1
 
         sw idx, 0 (wrd)
 
-        sw wrd, TOIN (src)
+        sw wrd, TOIN (usr)
 
         ret
 
@@ -579,7 +561,7 @@ tokencopy:
         sb   idx, 0(snd)       # Store the byte from t0 to destination
 
         beq  idx, zero, 100f   # If byte is null (0), exit loop
-# zzzz
+
         addi idx, zero, 32     # ascii space
         beq  idx, zero, 100f   # If byte is space (32), exit loop
 
@@ -589,8 +571,6 @@ tokencopy:
 
 100:
         ret                     # Return from function
-
-#----------------------------------------------------------------------
 
 #---------------------------------------------------------------------
 # ( -- u ) #; tos + 1 unchanged
@@ -678,7 +658,7 @@ isfalse:
         
 istrue:
 
-        lwi fst, TRUE
+        addi fst, zero, TRUE
 
         j save0
 
@@ -704,21 +684,27 @@ save0:
 def_word ":", "colon", 0
 # save here, panic if semis not follow elsewhere
         lw idx, HERE (usr)
+
         sw idx, ONCE (usr)
 
 # stat is 'compile' == 1
         addi fst, zero, 1
+        
         sw fst, STAT (usr)
 
 # make header:
 # copy last into (here)
         lw wrd, LAST (usr)
+        
         call wcomma
 
 # get following token
         call token
+        
         lw fst, TOIN (usr)
+        
         lw snd, HERE (usr)
+        
         call tokencopy
 
 # update here 
@@ -732,6 +718,7 @@ def_word ":", "colon", 0
 def_word ";", "semis",  FLAG_IMM
 # update last, panic if colon not lead elsewhere 
         lw idx, ONCE (usr)
+        
         sw idx, LAST (usr)
 
 # stat is 'interpret' == 0
@@ -740,6 +727,7 @@ def_word ";", "semis",  FLAG_IMM
 # compound words must ends with exit
 finish:
         la wrd, exit
+        
         call wcomma
 
 # done
