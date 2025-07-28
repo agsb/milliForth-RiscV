@@ -162,11 +162,14 @@ Remember, all code must be align to CELL size !
 # memory index 
 #define idx a2
 
+# link pointer
+#define lnk a3
+
 # word pointer
-#define wrd a3
+#define wrd a4
 
 # compare value
-#define fth a4
+#define fth a5
 
 # some auxiliars
 #define fst t0
@@ -312,8 +315,10 @@ okey:
 
 #---------------------------------------------------------------------
 resolve:
-# get a token
+# get a token, return 
         call token
+
+# get the size of token 
 
         #; lda #'P'
         #; jsr putchar
@@ -321,63 +326,59 @@ resolve:
 #---------------------------------------------------------------------
 find:
 # get the latest link
-        lw snd, LAST (usr)
-        
+        lw lnk, LAST (usr)
+
+# set token
+        lw idx, TOIN (usr)
+        lb fst, (idx)
+
 100:
-# verify null, end of dictionary, abort
-        beq snd, zero, abort
+# verify null, end of dictionary, then abort
+# or maybe to verify numbers? 
+        beq lnk, zero, abort
 
 # linked list
-        add wrd, snd, zero
-
-# maybe to place code for number? 
-
-# test length of word
-200:       
+        add wrd, lnk, zero
 
 # update next link 
-        lw  snd, 0 (wrd)
+        lw  lnk, 0 (wrd)
 
         add wrd, wrd, CELL
 
-# save the flag, first byte is (size and flag) 
-        
-        lb idx, (wrd)
-        
-        sb idx, STAT+1 (usr)
+# first byte is (size and flag) 
+# test length of word
 
-        ssli idx, idx, 1
+        lb snd, (wrd)
 
-        lb fth, (trd)
+# save it
 
-        bne idx, fth, 200b
+        sb snd, STAT+1 (usr)
 
-# compare chars
-300:
+# mask it
 
-        lb fth, 0 (trd)
+        andi snd, snd, 0x7F
 
-        beq fth, ' ', 
+# compare it
 
-        bne idx, fth, 300f
+        bne fst, snd, 100b
 
-        sbc (wrd), y     
+# size ok, compare chars
 
-        bne @loop
-
-# next char
+200:
+        addi idx, idx, 1
         addi wrd, wrd, 1
-        addi trd, trd, 1
-        j 300b
 
-300:
+        lb fst, 0 (idx)
+        lb snd, 0 (wrd)
 
-# update wrd
-        tya
-        ;; ldx #(wrd) #; set already
-        ;; addwx also clear carry
-        jsr addwx
-        
+        beq snd,'  ', 200f
+        bne fst, snd, 100b
+        j 200b
+
+200:
+
+        addi idx, idx, 1
+
 eval:
 # executing ? if == \0
         lb idx, STAT+0 (usr)
@@ -408,9 +409,9 @@ execute:
 
 #---------------------------------------------------------------------
 try:
-        lb wrd, 0 (idx)
+        lb fst, 0 (idx)
 
-        beq wrd, zero, getline
+        beq fst, zero, getline
         
         addi idx, idx, 1
         
@@ -428,33 +429,27 @@ getline:
         addi fth, zero, 10
 
 # ever start with a space
-        addi wrd, zero, 32
+        addi fst, zero, 32
 
 100:
-        sb wrd, 0 (idx)
+        sb fst, 0 (idx)
         
         addi idx, idx, 1
 
 110:
         call getchar
 
-# \n ends 
-        beq wrd, fth, 100f
-
 # 7-bit ascii only 
-#        andi wrd, 0x7F
+#        andi fst, 0x7F
 
-# no controls ?
-#        addi fth, zero, 32
-#        blt wrd, fth, 110b
-
-        j 100b
+# \n ends 
+        bne fst, fth, 100b
 
 # replace new-line with space 
 100:        
-        addi wrd, zero, 32
+        addi fst, zero, 32
         
-        sw wrd, 0 (idx)
+        sw fst, 0 (idx)
 
 # mark eol with \0
 
@@ -482,35 +477,36 @@ token:
 # skip spaces
 100:
         call try
-        bne wrd, fth, 100f
+        bne fst, fth, 100f
         j 100b
+100:
 
 #update toin
-100:
         sw idx, TOIN (usr)
 
 # scan spaces
 200:
         call try
-        beq wrd, fth, 200f
+        beq fst, fth, 200f
         j 200b
+200:
 
 # update tout
-200:
         sw idx, TOUT (usr)
 
-# sizeof
+# lenght or sizeof
 
-        lw wrd, TOIN (usr)
+        lw fth, TOIN (usr)
 
-        sub idx, idx, wrd
+        sub idx, idx, fth
 
 # place the length before word, c-str
-        addi wrd, wrd, -1
 
-        sw idx, 0 (wrd)
+        addi fth, fht, -1
 
-        sw wrd, TOIN (usr)
+        sw idx, 0 (fth)
+
+        sw fth, TOIN (usr)
 
         ret
 
