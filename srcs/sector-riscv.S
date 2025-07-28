@@ -102,30 +102,26 @@ h_\label:
 
 #---------------------------------------------------------------------
 /*
-NOTES:
+ NOTES:
 
-        not finished yet :)
+ Not finished yet :)
 
-*/
+ I dunno about another way to make register name alias
+ why ".equ name, register", does not work ?
+ maybe reserved words can not be aliased ?
+ also r0 must be called as zero.
 
-#----------------------------------------------------------------------
-# I dunno about another way to make register name alias
-# why ".equ name, register", does not work ?
-# maybe reserved words can not be aliased ?
-# also r0 must be called as zero.
-##
 
-# almost all memory access must be indirectd by a register
-# and millifort uses a struct for pointers, then:
-# reserve one register (usr) for the pointer to this structure
-# and another (idx) to use as temporary index value
-# 
-# lw rd, offset (ro)
-# sw ro, offset (rd)
-#
-# the indirect code defaults:
-#
-/*
+ almost all memory access must be indirectd by a register
+ and millifort uses a struct for pointers, then:
+ reserve one register (usr) for the pointer to this structure
+ and another (idx) to use as temporary index value
+ 
+ lw rd, offset (ro)
+ sw ro, offset (rd)
+
+ the indirect code defaults:
+
 # load the index of data stack
         lw idx, spt (usr)
 # pull the value
@@ -136,10 +132,12 @@ NOTES:
         sw idx, spt (usr)
 */
 
-# forth struct pointer 
+# for pre-processor CPP (GNU GCC)
+
+# forth struct pointer, indirect constant
 #define usr a0
 
-# for stack index
+# for stack index, indirect variable
 #define idx a1
 
 # instruction pointer
@@ -159,7 +157,6 @@ NOTES:
 #.section .data
 
 #----------------------------------------------------------------------
-# dont use data, it blows the file
 # better
 .section .bss
 .p2align 2, 0x0
@@ -170,25 +167,25 @@ NOTES:
 # name some offsets
 
 # state flag
-.equ stat, 0 * CELL
+.equ STAT, 0 * CELL
 # toin next free byte in TIB
-.equ toin, 1 * CELL
+.equ TOIN, 1 * CELL
 # last link cell in heap dictionary linked list
-.equ last, 2  * CELL
+.equ LAST, 2  * CELL
 # next free cell in heap dictionary, aka dpt
-.equ here, 3 * CELL
+.equ HERE, 3 * CELL
 # data stack index
-.equ spt, 4 * CELL
+.equ SPT, 4 * CELL
 # return stack index
-.equ rpt, 5 * CELL
+.equ RPT, 5 * CELL
 # next token in TIB
-.equ tout, 6 * CELL
+.equ TOUT, 6 * CELL
 # hold 'here while compile
-.equ once, 7 * CELL
+.equ ONCE, 7 * CELL
 # heap forward
-.equ head, 8 * CELL
+.equ HEAD, 8 * CELL
 # heap backward
-.equ tail, 9 * CELL
+.equ TAIL, 9 * CELL
 
 # this is it
 _user:
@@ -221,6 +218,7 @@ rp0:       .word
 # catch for macros
 1: .word 0x0
 
+#----------------------------------------------------------------------
 main:
 
 # disable interrupts, sei
@@ -243,33 +241,33 @@ cold:
 warm:
 # link list of headers
         la wrd, h_exit
-        sw wrd, last (usr)
+        sw wrd, LAST (usr)
 
 # next heap free cell  
         la wrd, ends
-        sw wrd, here (usr)
+        sw wrd, HERE (usr)
 
 #---------------------------------------------------------------------
 # supose never change
 reset:
         la wrd, tib
-        sw wrd, toin (usr)
-        sw wrd, tout (usr)
+        sw wrd, TOIN (usr)
+        sw wrd, TOUT (usr)
 
 #---------------------------------------------------------------------
 abort:
 # reset data stack
         la wrd, sp0 
-        sw wrd, spt (usr)
+        sw wrd, SPT (usr)
 
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         la wrd, rp0 
-        sw wrd, rpt (usr)
+        sw wrd, RPT (usr)
 
 # stat is 'interpret' == \0
-        sw zero, stat (usr)
+        sw zero, STAT (usr)
 
         j okey
 
@@ -302,7 +300,7 @@ resolve:
 
 #---------------------------------------------------------------------
 find:
-        lw snd, last (usr)
+        lw snd, LAST (usr)
         
 loop%=:
 # verify null, end of dictionary, abort
@@ -333,7 +331,9 @@ each%=:
 
 # save the flag, first byte is (size and flag) 
         lb trd, (wrd)
-        sb trd, stat+1 (usr)
+        # zzzz
+        sb trd, STAT+1 (usr)
+
 
 # zzzz
 
@@ -392,94 +392,108 @@ execute:
 
 #---------------------------------------------------------------------
 try:
-        lda tib, y
-        beq getline    #; if \0 
-        iny
-        eor #' '
-        rts
+        lb wrd, 0 (idx)
+
+        beq wrd, zero, getline
+        
+        addi idx, idx, 1
+        
+        ret
 
 #---------------------------------------------------------------------
+# none edit 
+#
 getline:
-# drop rts of try
-        pla
-        pla
+# get the terminal input buffer
+        la idx, tib
+        
+        sw idx, TOIN (usr)
 
-# leave the first
-        ldy #0
-@loop:  
-# is valid
-        sta tib, y  #; dummy store on first pass, overwritten
-        iny
-# would be better with 
-# end of buffer ?
-#       cpy #tib_end
-#       beq @ends
-# then 
-        jsr getchar
-# would be better with 
-# 7-bit ascii only
-#       and #$7F        
-# unix \n
-        cmp #10         
-        bne @loop
-# would be better with 
-# no controls
-#       cmp #' '
-#       bmi @loop
+# end-of-line is newline
+        addi fth, zero, 10
 
-# clear all if y eq \0
-@ends:
-# grace \b
-        lda #32
-        sta tib + 0 #; start with space
-        sta tib, y  #; ends with space
+# ever start with a space
+        addi wrd, zero, 32
+
+100:
+        sw wrd, 0 (idx)
+        
+        addi idx, idx, 1
+
+110:
+        call getchar
+
+# \n ends 
+        beq wrd, fth, 100f
+
+# 7-bit ascii only ?
+#        andi wrd, 0x7F
+
+# no controls ?
+#        addi fth, zero, 32
+#        blt wrd, fth, 110b
+
+        j 100b
+
+# grace a space
+        
+        addi wrd, wrd, 32
+        
+        sw wrd, 0 (idx)
+
 # mark eol with \0
-        lda #0
-        sta tib + 1, y
-# start it
-        sta toin + 0
+        addi idx, idx, 1
+        
+        sw zero, 0 (idx)
 
 #---------------------------------------------------------------------
-# in place every token,
-# the counter is placed at last space before word
-# no rewinds
+# in place every token, no rewinds
+# the counter is placed at space before word
+# returns a c-str
+
+# \0 as eol then goto getline
+
 token:
+
+# set space
+        addi, fth, zero, 32
+
 # last position on tib
-        ldy toin + 0
+        lw idx, TOIN (usr)
 
-@skip:
 # skip spaces
-        jsr try
-        beq @skip
+100:
+        call try
+        bne wrd, fth, 100f
+        j 100b
 
-# keep y == start + 1
-        dey
-        sty tout + 0
+#update toin
+100:
+        sw idx, TOIN (usr)
 
-@scan:
 # scan spaces
-        jsr try
-        bne @scan
+200:
+        call try
+        beq wrd, fth, 200f
+        j 200b
 
-# keep y == stop + 1  
-        dey
-        sty toin + 0 
+# update tout
+200:
+        sw idx, TOUT (usr)
 
-@done:
 # sizeof
-        tya
-        sec
-        sbc tout + 0
 
-# keep it
-        ldy tout + 0
-        dey
-        sta tib, y  #; store size for counted string 
-        sty tout + 0
+        lw wrd, TOIN (usr)
 
-# setup token
-        clc     #; clean 
-        rts
+        sub idx, idx, wrd
+
+        subi wrd, wrd, 1
+
+        sw idx, 0 (wrd)
+
+        sw wrd, TOIN (src)
+
+        ret
 
 #---------------------------------------------------------------------
 #  this code depends on systems or emulators
@@ -502,137 +516,11 @@ putchar:
 byes:
         jmp 0x0000
 
-#
-#   lib6502 emulator
-#---------------------------------------------------------------------
-
-#---------------------------------------------------------------------
-# decrement a word in page zero. offset by X
-decwx:
-        lda 0, x
-        bne @ends
-        dec 1, x
-@ends:
-        dec 0, x
-        rts
-
-#---------------------------------------------------------------------
-# increment a word in page zero. offset by X
-#incwx:
-#       inc 0, x
-#       bne @ends
-#       inc 1, x
-#@ends:
-#       rts
-
-#---------------------------------------------------------------------
-# classic heap moves always forward
-#
-stawrd:
-        sta wrd + 1
-
-wcomma:
-        ldy #(wrd)
-
-comma: 
-        ldx #(here)
-        #; fall throught
-
-#---------------------------------------------------------------------
-# from a page zero address indexed by Y
-# into a page zero indirect address indexed by X
-copyinto:
-        lda 0, y
-        sta (0, x)
-        jsr incwx
-        lda 1, y
-        sta (0, x)
-        jmp incwx
-
 #---------------------------------------------------------------------
 #
 # generics 
 #
 #---------------------------------------------------------------------
-spush1:
-        ldy #(fst)
-
-#---------------------------------------------------------------------
-# push a cell 
-# from a page zero address indexed by Y
-# into a page zero indirect address indexed by X
-spush:
-        ldx #(spt)
-        #; jmp push
-        .byte $2c   #; mask next two bytes, nice trick !
-
-rpush:
-        ldx #(rpt)
-
-#---------------------------------------------------------------------
-# classic stack oncewards
-push:
-        jsr decwx
-        lda 1, y
-        sta (0, x)
-        jsr decwx
-        lda 0, y
-        sta (0, x)
-        rts  
-
-#---------------------------------------------------------------------
-spull2:
-        ldy #(snd)
-        jsr spull
-        #; fall through
-
-#---------------------------------------------------------------------
-spull1:
-        ldy #(fst)
-        #; fall through
-
-#---------------------------------------------------------------------
-# pull a cell 
-# from a page zero indirect address indexed by X
-# into a page zero address indexed by y
-spull:
-        ldx #(spt)
-        #; jmp pull
-        .byte $2c   #; mask next two bytes, nice trick !
-
-rpull:
-        ldx #(rpt)
-
-#---------------------------------------------------------------------
-# classic stack oncewards
-pull:   #; fall through, same as copyfrom
-
-#---------------------------------------------------------------------
-# from a page zero indirect address indexed by X
-# into a page zero address indexed by y
-copyfrom:
-        lda (0, x)
-        sta 0, y
-        jsr incwx
-        lda (0, x)
-        sta 1, y
-        #; jmp incwx ; fall through
-
-#---------------------------------------------------------------------
-# increment a word in page zero. offset by X
-incwx:
-        lda #01
-#---------------------------------------------------------------------
-# add a byte to a word in page zero. offset by X
-addwx:
-        clc
-        adc 0, x
-        sta 0, x
-        bcc @ends
-        inc 1, x
-        clc #; keep carry clean
-@ends:
-        rts
 
 #---------------------------------------------------------------------
 #
@@ -656,60 +544,71 @@ addwx:
 #
 # the primitives, 
 # 
+#---------------------------------------------------------------------
+
+#
+# note : using load2 to short code size at cost of 1 cycle
+#
+load2:
+        lw idx, SPT (usr)
+        
+        lw snd, 0 * CELL (idx)
+        
+        lw fst, 1 * CELL (idx)
+
+        ret
+
+wcomma:
+        lw idx, HERE (usr)
+      
+        sw wrd, 0 (idx)
+      
+        addi idx, idx, CELL
+      
+        sw idx, HERE (usr)
+
+        ret
+
+tokencopy:
+    # fst = source address
+    # snd = destination address
+
+        
+100:
+        lb   idx, 0(fst)       # Load a byte from source into t0
+        sb   idx, 0(snd)       # Store the byte from t0 to destination
+
+        beq  idx, zero, 100f   # If byte is null (0), exit loop
+# zzzz
+        addi idx, zero, 32     # ascii space
+        beq  idx, zero, 100f   # If byte is space (32), exit loop
+
+        addi fst, fst, 1       # Increment destination address
+        addi snd, snd, 1       # Increment source address
+        jal  zero, 100b        # Jump back to the start of the loop
+
+100:
+        ret                     # Return from function
+
 #----------------------------------------------------------------------
 
 #---------------------------------------------------------------------
 # ( -- u ) #; tos + 1 unchanged
 def_word "key", "key", 0
+        
         jalr getchar
 
-        lw idx, spt (usr)
+        j push1
 
-        bne this    #; always taken
-        
 #---------------------------------------------------------------------
 # ( u -- ) #; tos + 1 unchanged
 def_word "emit", "emit", 0
-        jalr spull1
-        lda fst + 0
-        jsr putchar
-        #; jmp next  ; uncomment if carry could be set
-        bcc jmpnext #; always taken
-
-
-#---------------------------------------------------------------------
-# 
-drop2:
-        add idx, idx, +1 * CELL
-
-drop1:
-        add idx, idx, +1 * CELL
         
-        sw idx, spt (usr)
+        call load2
 
-        beq zero, zero, next
+        jalr putchar
 
-load2:
-        lw idx, spt (usr)
-        
-        lw fst, 0 * CELL (idx)
-        
-        lw snd, 1 * CELL (idx)
-
-        ret
-
-save1:
-        sw fst, 1 * CELL (idx)
-
-        addi idx, idx, -1 * CELL
-
-        beq zero, zero, drop1
-
-save0:
-
-        sw fst, 0 * CELL (idx)
-
-        beq zero, zero, next
+        j drop1
 
 #---------------------------------------------------------------------
 # ( a w -- ) #; [a] = w
@@ -717,22 +616,35 @@ def_word "!", "store", 0
         
         call load2
 
-        sw snd, 0 (fst)
+        sw fst, 0 (snd)
 
-        j drop2
+drop2:
+        add idx, idx, +1 * CELL
+        
+drop1:
+        add idx, idx, +1 * CELL
 
+        sw idx, SPT (usr)
+
+        beq zero, zero, next
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- NOT(w1 AND w2) )
 def_word "nand", "nand", 0
 
         call load2
-
-        and snd, snd, fst
         
-        not snd, snd
+        and fst, fst, snd
+        
+        not fst, fst
 
-        j drop1
+save1:
+
+        add idx, idx, +1 * CELL
+
+        sw idx, SPT (usr)
+
+        j save0
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1+w2 ) 
@@ -740,104 +652,95 @@ def_word "+", "plus", 0
 
         call load2
 
-        add snd, snd, fst
+        add fst, fst, snd
 
-        beq zero, zero, save1
+        j save1
 
 #---------------------------------------------------------------------
 # ( a -- w ) #; w = [a]
 def_word "@", "fetch", 0
 fetchw:
         call load2
-
-        add snd, fst, zero
-
+        
         lw fst, 0 (snd)
         
-        beq zero, zero, save0
+        j save0
 
 #---------------------------------------------------------------------
-# ( 0 -- 0x0000) | ( n -- $FFFF) not zero at top ?
+# ( 0 -- FALSE) | ( n -- TRUE) not zero at top ?
 def_word "0#", "zeroq", 0
 
         call load2
 
-        beq fst, zero, istrue
+isfalse:
+
+        beq snd, zero, next
         
 istrue:
 
-        not fst, fst
+        lwi fst, TRUE
 
-isfalse:
-
-        beq zero, zero, save0
+        j save0
 
 #---------------------------------------------------------------------
 # ( -- state ) a variable return an reference
 def_word "s@", "state", 0 
-        lw idx, spt (usr)
+        
+        add fst, usr, zero 
+
+push1:
+        lw idx, SPT (usr)
         
         addi idx, idx, -1 * CELL
         
-        addi fst, stat, zero 
+        sw idx, SPT (usr)
         
+save0:
         sw fst, 0 (idx)
 
-        sw idx, spt (usr)
-
-        beq zero, zero, save0
+        beq zero, zero, next
 
 #---------------------------------------------------------------------
-def_word ";", "semis",  FLAG_IMM
-# update last, panic if colon not lead elsewhere 
-        lw fst, once (usr)
-        sw fst, last (usr)
+def_word ":", "colon", 0
+# save here, panic if semis not follow elsewhere
+        lw idx, HERE (usr)
+        sw idx, ONCE (usr)
 
-# stat is 'interpret' == 0
-        sw zero, stat (usr)
+# stat is 'compile' == 1
+        addi fst, zero, 1
+        sw fst, STAT (usr)
 
-# compound words must ends with exit
-finish:
-        la fst, exit
+# make header:
+# copy last into (here)
+        lw wrd, LAST (usr)
         call wcomma
+
+# get following token
+        call token
+        lw fst, TOIN (usr)
+        lw snd, HERE (usr)
+        call tokencopy
+
+# update here 
+        sw snd, HERE (usr)
 
 # done
         # jmp next
         beq zero, zero, next 
 
 #---------------------------------------------------------------------
-def_word ":", "colon", 0
-# save here, panic if semis not follow elsewhere
-        lw fst, here (usr)
-        sw fst, once (usr)
+def_word ";", "semis",  FLAG_IMM
+# update last, panic if colon not lead elsewhere 
+        lw idx, ONCE (usr)
+        sw idx, LAST (usr)
 
-# stat is 'compile' == 1
-        addi fst, zero, 1
-        sw fst, stat (usr)
+# stat is 'interpret' == 0
+        sw zero, STAT (usr)
 
-@header:
-# copy last into (here)
-        ldy #(last)
-        jsr comma
-
-# get following token
-        jsr token
-
-# copy it
-        ldy #0
-@loop:       
-        lda (tout), y
-        cmp #32    #; stops at space
-        beq @ends
-        sta (here), y
-        iny
-        bne @loop
-
-@ends:
-# update here 
-        tya
-        ldx #(here)
-        jsr addwx
+# compound words must ends with exit
+finish:
+        la wrd, exit
+        call wcomma
 
 # done
         # jmp next
@@ -865,26 +768,27 @@ def_word ":", "colon", 0
 def_word "exit", "exit", 0
 unnest: #; exit
 # pull, ipt = (rpt), rpt += cell 
-        lw idx, rpt (usr)
+        lw idx, RPT (usr)
         lw ipt, 0 (idx)
         addi idx, idx, +1 * CELL
-        sw idx, rpt (usr)
+        sw idx, RPT (usr)
 
 next:
 # wrd = (ipt) #; ipt += cell
         lw wrd, 0 (ipt)
-        addi ipt, ipt + 1 * CELL
+        addi ipt, ipt,  +1 * CELL
 
 pick:
 # compare address, if less than ends is a primitive 
-        blt wrd, ends, jump
+        la idx, ends
+        blt wrd, idx, jump
 
 nest:   #; enter
 # push, (rpt) = ipt, rp -= cell
-        lw idx, rpt (usr)
-        sw ipt, 0 (idx)
+        lw idx, RPT (usr)
         addi idx, idx, -1 * CELL
-        sw idx, rpt (usr)
+        sw ipt, 0 (idx)
+        sw idx, RPT (usr)
 
 # exchange 
         add ipt, wrd, zero
@@ -903,6 +807,7 @@ ends:
 #----------------------------------------------------------------------
 
 .end
+
 ;----------------------------------------------------------------------
 ;
 ; Copyright (c) 2025, Alvaro Gomes Sobral Barcellos
