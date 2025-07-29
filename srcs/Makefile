@@ -39,7 +39,7 @@ GCCFLAGS = -fpic -static -nostdlib -nostartfiles
 
 ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst -Wa,-o=$@.out
 
-LDFLAGS = -Wl,-b=elf64-littleriscv -Wl,--stats -Wl,--strip-all -Wl,--build-id -Wl,-r 
+LDFLAGS = -Wl,-b=elf32-littleriscv -Wl,--stats -Wl,--strip-all -Wl,--build-id -Wl,-r 
 
 STRIP = ${PASS}strip
 
@@ -56,7 +56,7 @@ $(MY): $(SOURCES:.S=.o)
 
 	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.S 2> err | tee out
 
-	$(STRIP) $@.out $@.elf
+	$(STRIP) a.out $@.out $@.elf
 
 	$(OBJDUMP) $@.elf > $@.dmp
 

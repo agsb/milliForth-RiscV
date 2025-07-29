@@ -1,40 +1,41 @@
 /*
-;---------------------------------------------------------------------
-;
-; Copyright 2025 Alvaro Gomes Sobral Barcellos <@agsb>
-;
-; This program is free software: you can redistribute it and/or modify
-; it under the terms of the GNU General Public License as published by
-; the Free Software Foundation, either version 2 of the License, or
-; (at your option) any later version.
-;
-; This program is distributed in the hope that it will be useful,
-; but WITHOUT ANY WARRANTY; without even the implied warranty of
-; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-; GNU General Public License for more details.
-;
-; You should have received a copy of the GNU General Public License
-; along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+#---------------------------------------------------------------------
+ 
+  Copyright 2025 Alvaro Gomes Sobral Barcellos <@agsb>
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 2 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #----------------------------------------------------------------------
-#
-#   A MilliForth for RISCV 
-#
-#   original for the RISCV, by Alvaro G. S. Barcellos, 2025
-#
-#   https://github.com/agsb 
+ 
+    A MilliForth for RISCV 
+ 
+    original for the RISCV, by Alvaro G. S. Barcellos, 2025
+ 
+    https://github.com/agsb 
 
-#   see the disclaimer file in this repository.
-#
-#   More info at end of this file.
-#
+    see the disclaimer file in this repository.
+ 
+    More info at end of this file.
+ 
+*/
+
 #----------------------------------------------------------------------
 #
 # Stuff for compiler
 #
 
-# .attribute arch, rv64imafdc
+# .attribute arch, rv32i
 
 #---------------------------------------------------------------------
 
@@ -59,19 +60,19 @@
 .equ CELL, 4
 
 # highlander, immediate flag.
-.equ FLAG_IMM, 1 << (CELL * 8)
+.equ FLAG_IMM, 1 << 7
+
+# data stack, 36 cells, moves backwards, push decreases before copy
+.equ spz, 36 * CELL
+
+# return stack, 36 cells, moves backwards, push decreases before copy
+.equ rpz, 36 * CELL
 
 # Terminal input buffer 80 bytes, (but 72 is enough), moves forwards
 .equ tibz, 80
 
 # reserves 32 bytes for pad scratch, moves forwards
 .equ padz, 32
-
-# data stack, 36 cells, moves backwards, push decreases before copy
-.equ spz, 36 
-
-# return stack, 36 cells, moves backwards, push decreases before copy
-.equ rpz, 36 
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
@@ -228,11 +229,11 @@ _pad:
 # stacks grows backward
 
 _spb:       # bottom 
-.skip spz * CELL
+.skip spz
 sp0:       .word
 
 _rpb:       # bottom
-.skip rpz * CELL
+.skip rpz
 rp0:       .word
 
 #----------------------------------------------------------------------
@@ -241,8 +242,14 @@ rp0:       .word
 
        j main
 
+#----------------------------------------------------------------------
 # catch for header macro
 1: .word 0x0
+
+#----------------------------------------------------------------------
+# system dependences, linux ecall
+#
+.include "minimal.S"
 
 #----------------------------------------------------------------------
 main:
@@ -278,11 +285,13 @@ warm:
         sw idx, HERE (usr)
 
 #---------------------------------------------------------------------
-# supose never change
+# clean TIB
 reset:
         la idx, _tib
-        sw idx, TOIN (usr)
-        sw idx, TOUT (usr)
+        sw zero, 0 (idx)
+
+        #sw idx, TOIN (usr)
+        #sw idx, TOUT (usr)
 
 #---------------------------------------------------------------------
 abort:
@@ -291,6 +300,7 @@ abort:
         sw idx, SPT (usr)
 
         # call prompt_erro ('??\n')
+
 #---------------------------------------------------------------------
 quit:
 # reset return stack
@@ -332,6 +342,9 @@ find:
         lw idx, TOIN (usr)
         lb fst, (idx)
 
+# set space
+        add trd, zero, 32
+
 100:
 # verify null, end of dictionary, then abort
 # or maybe to verify numbers? 
@@ -341,7 +354,7 @@ find:
         add wrd, lnk, zero
 
 # update next link 
-        lw  lnk, 0 (wrd)
+        lw lnk, 0 (wrd)
 
         add wrd, wrd, CELL
 
@@ -366,13 +379,17 @@ find:
 
 200:
         addi idx, idx, 1
+
         addi wrd, wrd, 1
 
         lb fst, 0 (idx)
+        
         lb snd, 0 (wrd)
 
-        beq snd,'  ', 200f
+        beq fst, trd, 200f
+        
         bne fst, snd, 100b
+        
         j 200b
 
 200:
@@ -384,7 +401,7 @@ eval:
         lb idx, STAT+0 (usr)
         beq idx, zero, execute
 
-# immediate ? if < \0
+# immediate ? if != \0
         lb idx, STAT+1 (usr)
         bne idx, zero, immediate      
 
@@ -408,6 +425,7 @@ execute:
         j pick
 
 #---------------------------------------------------------------------
+# 
 try:
         lb fst, 0 (idx)
 
@@ -420,7 +438,8 @@ try:
 #---------------------------------------------------------------------
 # absolute crude getline, continues until \n
 getline:
-# get the terminal input buffer
+# get the TIB 
+  
         la idx, _tib
         
         sw idx, TOIN (usr)
@@ -431,12 +450,12 @@ getline:
 # ever start with a space
         addi fst, zero, 32
 
+# fill the TIB
 100:
         sb fst, 0 (idx)
         
         addi idx, idx, 1
 
-110:
         call getchar
 
 # 7-bit ascii only 
@@ -481,7 +500,7 @@ token:
         j 100b
 100:
 
-#update toin
+# update toin
         sw idx, TOIN (usr)
 
 # scan spaces
@@ -494,7 +513,7 @@ token:
 # update tout
         sw idx, TOUT (usr)
 
-# lenght or sizeof
+# lenght 
 
         lw fth, TOIN (usr)
 
@@ -502,7 +521,7 @@ token:
 
 # place the length before word, c-str
 
-        addi fth, fht, -1
+        addi fth, fth, -1
 
         sw idx, 0 (fth)
 
@@ -511,31 +530,67 @@ token:
         ret
 
 #---------------------------------------------------------------------
-#  this code depends on systems or emulators
-#
-#  lib6502  emulator
-# 
-getchar:
-        lda $E000
-
-eofs:
-# EOF ?
-        cmp #$FF #; also clean carry :)
-        beq byes
-
-putchar:
-        sta $E000
-        rts
-
-# exit for emulator  
-byes:
-        jmp 0x0000
-
-#---------------------------------------------------------------------
 #
 # generics 
 #
 #---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#
+#  this code depends on systems or emulators
+#
+getchar:
+        ret
+
+putchar:
+        ret
+
+# exit for emulator  
+byes:
+        ret
+
+#---------------------------------------------------------------------
+#
+# note : using load2 to short code size at cost of 1 cycle
+#
+load2:
+        lw idx, SPT (usr)
+        
+        lw snd, 0 * CELL (idx)
+        
+        lw fst, 1 * CELL (idx)
+
+        ret
+
+#---------------------------------------------------------------------
+wcomma:
+        lw idx, HERE (usr)
+      
+        sw wrd, 0 (idx)
+      
+        addi idx, idx, CELL
+      
+        sw idx, HERE (usr)
+
+        ret
+
+#---------------------------------------------------------------------
+tokencopy:
+100:
+        lb   idx, 0(fst)       # Load a byte from source into t0
+        sb   idx, 0(snd)       # Store the byte from t0 to destination
+
+        beq  idx, zero, 100f   # If byte is null (0), exit loop
+
+        addi idx, zero, 32     # ascii space
+        beq  idx, zero, 100f   # If byte is space (32), exit loop
+
+        addi fst, fst, 1       # Increment destination address
+        addi snd, snd, 1       # Increment source address
+        jal  zero, 100b        # Jump back to the start of the loop
+
+100:
+        ret                     # Return from function
 
 #---------------------------------------------------------------------
 #
@@ -557,56 +612,12 @@ byes:
 
 #---------------------------------------------------------------------
 #
-# the primitives, 
+# the primitives 
 # 
 #---------------------------------------------------------------------
 
-#
-# note : using load2 to short code size at cost of 1 cycle
-#
-load2:
-        lw idx, SPT (usr)
-        
-        lw snd, 0 * CELL (idx)
-        
-        lw fst, 1 * CELL (idx)
-
-        ret
-
-wcomma:
-        lw idx, HERE (usr)
-      
-        sw wrd, 0 (idx)
-      
-        addi idx, idx, CELL
-      
-        sw idx, HERE (usr)
-
-        ret
-
-tokencopy:
-    # fst = source address
-    # snd = destination address
-
-        
-100:
-        lb   idx, 0(fst)       # Load a byte from source into t0
-        sb   idx, 0(snd)       # Store the byte from t0 to destination
-
-        beq  idx, zero, 100f   # If byte is null (0), exit loop
-
-        addi idx, zero, 32     # ascii space
-        beq  idx, zero, 100f   # If byte is space (32), exit loop
-
-        addi fst, fst, 1       # Increment destination address
-        addi snd, snd, 1       # Increment source address
-        jal  zero, 100b        # Jump back to the start of the loop
-
-100:
-        ret                     # Return from function
-
 #---------------------------------------------------------------------
-# ( -- u ) #; tos + 1 unchanged
+# ( -- c ) 
 def_word "key", "key", 0
         
         call getchar
@@ -614,7 +625,7 @@ def_word "key", "key", 0
         j push1
 
 #---------------------------------------------------------------------
-# ( u -- ) #; tos + 1 unchanged
+# ( c -- ) 
 def_word "emit", "emit", 0
         
         call load2
@@ -624,7 +635,7 @@ def_word "emit", "emit", 0
         j drop1
 
 #---------------------------------------------------------------------
-# ( a w -- ) #; [a] = w
+# ( a w -- ),  [a] = w
 def_word "!", "store", 0
         
         call load2
@@ -642,7 +653,7 @@ drop1:
         j next
 
 #---------------------------------------------------------------------
-# ( w1 w2 -- NOT(w1 AND w2) )
+# ( w1 w2 -- w), NOT(w1 AND w2)
 def_word "nand", "nand", 0
 
         call load2
@@ -660,7 +671,7 @@ save1:
         j save0
 
 #---------------------------------------------------------------------
-# ( w1 w2 -- w1+w2 ) 
+# ( w1 w2 -- w), w = w1+w2  
 def_word "+", "plus", 0
 
         call load2
@@ -670,7 +681,7 @@ def_word "+", "plus", 0
         j save1
 
 #---------------------------------------------------------------------
-# ( a -- w ) #; w = [a]
+# ( a -- w ), w = [a]
 def_word "@", "fetch", 0
 fetchw:
         call load2
@@ -680,7 +691,7 @@ fetchw:
         j save0
 
 #---------------------------------------------------------------------
-# ( 0 -- FALSE) | ( n -- TRUE) not zero at top ?
+# ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
 def_word "0#", "zeroq", 0
 
         call load2
@@ -696,7 +707,7 @@ istrue:
         j save0
 
 #---------------------------------------------------------------------
-# ( -- state ) a variable return an reference
+# ( -- state ), return an reference
 def_word "s@", "state", 0 
         
         add fst, usr, zero 
@@ -716,6 +727,7 @@ save0:
 #---------------------------------------------------------------------
 def_word ":", "colon", 0
 # save here, panic if semis not follow elsewhere
+
         lw idx, HERE (usr)
 
         sw idx, ONCE (usr)

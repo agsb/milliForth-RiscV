@@ -1,5 +1,4 @@
 #
-#
 # experimental Makefile, feel free for comments
 #
 # use:
@@ -37,25 +36,31 @@ GCCFLAGS = -fpic -static -nostdlib -nostartfiles
 
 #-fverbose-asm
 
-ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst -Wa,-o=$@.out
+ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst 
 
-LDFLAGS = -Wl,-b=elf64-littleriscv -Wl,--stats -Wl,--strip-all -Wl,--build-id -Wl,-r 
+#-Wa,-o=$@.out
+
+LDFLAGS = -Wl,--stats -Wl,--strip-all 
+
+#-Wl,--build-id -Wl,-r 
+
+#-Wl,-b=elf32-littleriscv 
 
 STRIP = ${PASS}strip
 
 OBJDUMP = ${PASS}objdump
 
-MY = test
+MY = minimal
 
 ########################################
 
-%: %.C
+%: %.S
 
 $(MY): $(SOURCES:.S=.o)
 
-	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.C 2> err | tee out
+	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.S 2> err | tee out
 
-	$(STRIP) $@.out $@.elf
+	$(STRIP) a.out $@.out $@.elf
 
 	$(OBJDUMP) $@.elf > $@.dmp
 
