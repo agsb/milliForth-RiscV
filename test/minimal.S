@@ -10,7 +10,8 @@
 
 
 #---------------------------------------------------------------------
-# linux ecall stuff
+# linux ecall stuff, 29/07/2025, vide:
+# https://github.com/riscv-software-src/riscv-pk/blob/master/pk/syscall.h
 
 .equ STDIN,     0
 .equ STDOUT,    1
@@ -36,29 +37,33 @@ _start:
 
 # load system call for exit
 _exit:
-        addi a0, a0, 0
-        addi a7, a7, EXIT
+        add a0, zero, zero
+        addi a7, zero, EXIT
         ecall
 
 # load system call for init
 _init:
-	la a1, _pad
-	addi a2, a2, 1
-	ret
+        la a1, _pad
+        addi a2, zero, 1
+        ret
 
 # linux ecall for getc
 _getc:
-	addi a0, a0, STDIN
-	addi a7, a7, GETC
-    	ecall
-    	lw t0, 0 (a1)
-	ret
+        addi a0, zero, STDIN
+        addi a7, zero, GETC
+        ecall
+        lw t3, 0 (a1)
+        ret
 
 # linux ecall for putc
 _putc:
-	addi a0, a0, STDOUT
-	addi a7, a7, PUTC
-	ecall
-        lw t0, a0
-	ret
+        sw t4, 0 (a1)
+        addi a0, zero, STDOUT
+        addi a7, zero, PUTC
+        ecall
+        ret
+
+_test:
+        la t0, _exit
+        ret
 

@@ -33,21 +33,25 @@ QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 GCC = ${PASS}gcc
 
-GCCFLAGS = -fpic -static -nostdlib -nostartfiles 
-#-fverbose-asm
+GCCFLAGS = -static -nostartfiles -nostdlib \
+	-march=rv32i -mabi=ilp32 \
+# -T this.ld 
 
-LDFLAGS = -Wl,-b=elf32-littleriscv -Wl,--stats -Wl,--strip-all -Wl,-r
-#-Wl,-build-id 
+LDFLAGS = -Wl,--stats 
 
-ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
-#-aghlms
+# -Wl,--strip-all \ 
+# -Wl,-r -Wl,--no-relax
+# -Wl,-b=elf32-littleriscv 
+# -Wl,-build-id 
+
+ASFLAGS = -Wa,-fno-pic -Wa,-mlittle-endian -Wa,-alms=$@.lst 
 
 STRIP = ${PASS}strip
 
 OBJDUMP = ${PASS}objdump
 
-MY = minimal
 MY = sector-riscv
+MY = minimal
 
 ########################################
 
@@ -74,8 +78,9 @@ all:
 clean:
 	
 	$(RM) $(MY).out $(MY).map $(MY).lst \
-	      $(MY).lbl $(MY).lbs $(MY).lbf \
-	      $(MY).hex err out
+	      $(MY).elf $(MY).dmp $(MY).hex \
+	      err out
+	      # $(MY).lbl $(MY).lbs $(MY).lbf \
 
 qemu: $(TARGET)
 	@qemu-system-riscv32 -M ? | grep virt >/dev/null || exit

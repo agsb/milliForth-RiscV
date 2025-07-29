@@ -33,9 +33,19 @@ QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 GCC = ${PASS}gcc
 
-GCCFLAGS = -static -nostdlib -nostartfiles 
+GCCFLAGS = -static -nostartfiles -nodefaultlibs \
+	-march=rv32i -mabi=ilp32 \
+	-no-pie
 
-LDFLAGS = -Wl,--stats -Wl,--strip-all -Wl,-r -Wl,--no-relax
+# -static-pie
+
+# -nostdlib -nolibc \
+# -T this.ld 
+
+LDFLAGS = -Wl,--stats 
+
+# -Wl,--strip-all \ 
+# -Wl,-r -Wl,--no-relax
 # -Wl,-b=elf32-littleriscv 
 # -Wl,-build-id 
 

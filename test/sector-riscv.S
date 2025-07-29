@@ -57,6 +57,7 @@
 # usefull
 .equ ONE, 1
 .equ TWO, 2
+.equ SPACE, 32
 
 # cell size, 4 bytes, 32-bit
 .equ CELL, 4
@@ -88,7 +89,7 @@
 #
 # catchs:
 # the label 1: is used for get last link address for list dictionary 
-# minimum size of header is two words
+# minimum size of header is two words, why not use hash ?
 ##
 .macro def_word name, label, flags=0x0
 .p2align 2, 0x00
@@ -117,19 +118,20 @@ h_\label:
 # memory index 
 #define idx s4
 
+# memory cursor
+#define crs s5
+
 # link pointer
-#define lnk s5
+#define lnk s6
 
 # word pointer
-#define wrd s6
-
-# compare value
-#define fth s7
+#define wrd s7
 
 # some auxiliar
 #define fst t3
 #define snd t4
 #define trd t5
+#define fth t6
 
 #----------------------------------------------------------------------
 # dont use data, it blows the file
@@ -194,7 +196,15 @@ rp0:       .word
 .text 
 .p2align 2, 0x0
 
-       j main
+#----------------------------------------------------------------------
+.globl _start
+_start:
+
+main:
+
+        call _init
+
+        j cold
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
@@ -205,24 +215,19 @@ rp0:       .word
 # catch for header macro
 1: .word 0x0
 
-#----------------------------------------------------------------------
-main:
-
-# disable interrupts
-
-# do save what needs
-
-# do something about
-
-# enable interrupts
+#define la lla
 
 #----------------------------------------------------------------------
 # do what need once
 cold:
 
-# load user pointer address
         fence
+
+# load user pointer address
         la usr, _user
+
+# load word separator
+        add fth, zero, SPACE
 
 #----------------------------------------------------------------------
 warm:
@@ -278,25 +283,20 @@ resolve:
 # get a token 
         call token
 
+#---------------------------------------------------------------------         
+tick:
 # get the latest link
         lw lnk, LAST (usr)
 
-# set space
-        add trd, zero, 32
-
-#---------------------------------------------------------------------         
-find:
-
 100:
-# set token
+# set token, c-str
         lw idx, TOIN (usr)
 
 # get length
         lb fst, (idx)
 
 200:
-# verify null, end of dictionary, then abort
-# or maybe verify if is a number? 
+# verify end of dictionary, abort (could be number?)
         beq lnk, zero, abort
 
 # linked list
@@ -305,18 +305,16 @@ find:
 # update next link 
         lw lnk, 0 (wrd)
 
-# point to c-str
+# set word, c-str
         add wrd, wrd, CELL
 
 # first byte is (size and flag) 
 
         lb snd, (wrd)
 
-# save it
+# save it and mask it
 
         sb snd, STAT+1 (usr)
-
-# mask it
 
         andi snd, snd, 0x7F
 
@@ -335,15 +333,14 @@ find:
         
         lb snd, 0 (wrd)
 
-# test end of word, as space
-        beq fst, trd, 300f
+        beq fst, fth, 300f
         
         bne fst, snd, 100b
         
         j 300b
 
 300:
-# wrd points to code or list of references
+# wrd points to start of code or list of references
 
 eval:
 # executing ? if == \0
@@ -356,8 +353,8 @@ eval:
 
 compile:
 
-        #; lda #'C'
-        #; jsr putchar
+# addi snd, zero, 'C'
+# call _putchar
 
         call wcomma
 
@@ -366,8 +363,8 @@ compile:
 execute:
 immediate:
 
-        #; lda #'E'
-        #; jsr putchar
+# addi snd, zero, 'E'
+# call putchar
 
         la ipt, resolvept
 
@@ -394,12 +391,12 @@ getline:
         sw idx, TOIN (usr)
 
 # end-of-line is newline
-        addi fth, zero, 10
+        addi trd, zero, 10
 
 # ever start with a space
-        addi fst, zero, 32
+        add fst, zero, fth
 
-# fill the TIB
+# fill the TIB until \n
 100:
         sb fst, 0 (idx)
         
@@ -411,11 +408,11 @@ getline:
 #        andi fst, 0x7F
 
 # \n ends 
-        bne fst, fth, 100b
+        bne fst, trd, 100b
 
-# replace new-line with space 
+# replace \n with space 
 100:        
-        addi fst, zero, 32
+        add fst, zero, fth
         
         sw fst, 0 (idx)
 
@@ -439,9 +436,6 @@ token:
 # last position on tib
         lw idx, TOIN (usr)
 
-# set test to space
-        addi fth, zero, 32
-
 # skip spaces
 100:
         call try
@@ -464,17 +458,17 @@ token:
 
 # lenght 
 
-        lw fth, TOIN (usr)
+        lw snd, TOIN (usr)
 
-        sub idx, idx, fth
+        sub idx, idx, snd
 
 # place the length bt space efore word, c-str
 
-        addi fth, fth, -1
+        addi snd, snd, -1
 
-        sw idx, 0 (fth)
+        sw idx, 0 (snd)
 
-        sw fth, TOIN (usr)
+        sw snd, TOIN (usr)
 
         ret
 
@@ -537,16 +531,12 @@ wcomma:
 # ( -- c ) 
 def_word "key", "key", 0
         call _getc
-        la idx, _pad
-        lw fst, 0 (idx)
         j push1
 
 #---------------------------------------------------------------------
 # ( c -- ) 
 def_word "emit", "emit", 0
         call load2
-        la idx, _pad
-        sw snd, 0 (idx)
         call _putc
         j drop1
 
@@ -566,7 +556,7 @@ drop1:
 # ( w1 w2 -- w), NOT(w1 AND w2)
 def_word "nand", "nand", 0
         call load2
-        and fst, fst, snd
+        and fst, snd, fst
         not fst, fst
 save1:
         add idx, idx, +1 * CELL
@@ -574,10 +564,10 @@ save1:
         j save0
 
 #---------------------------------------------------------------------
-# ( w1 w2 -- w), w = w1+w2  
+# ( w1 w2 -- w), w = w1 + w2  
 def_word "+", "plus", 0
         call load2
-        add fst, fst, snd
+        add fst, snd, fst
         j save1
 
 #---------------------------------------------------------------------
@@ -630,13 +620,12 @@ def_word ":", "colon", 0
         
         lw fst, TOIN (usr)
         lw snd, HERE (usr)
-        addi trd, zero, 32
 
 mcopy:
 100:
         lb   idx, 0(fst)       
         sb   idx, 0(snd)
-        beq  idx, trd, 100f
+        beq  idx, fth, 100f
         addi fst, fst, 1
         addi snd, snd, 1
         j 100b
@@ -668,27 +657,26 @@ finish:
         j next 
 
 #---------------------------------------------------------------------
-# Thread Code Engine
+# Minimal Indirect Thread Code Engine
 #
-#   ipt is IP, wrd is W
+# this is the Forth heart beat.
+#
+# classic Fig-Forth: ipt is IP, wrd is W
 #
 # for reference: 
 #
 #   nest aka enter or docol, 
 #   unnest aka exit or semis;
 #
-# for milli-forth both stack index must be in memory
-# but there is only indirect memory save, sw !
+# for milli-forth both stack indexes must be in memory
 #
-# then for sake must have:
-#       usr, one register for point the user struct
-#       idx, one register for stack index
+# "why there is no 'docol at start of words ?"
 #
 #---------------------------------------------------------------------
 # ( -- ) 
 def_word "exit", "exit", 0
 unnest: #; exit
-# pull, ipt = (rpt), rpt += cell 
+# return pull, ipt = (rpt), rpt += cell 
         lw idx, RPT (usr)
         lw ipt, 0 (idx)
         addi idx, idx, +1 * CELL
@@ -700,24 +688,26 @@ next:
         addi ipt, ipt,  +1 * CELL
 
 pick:
-# compare address, if less than ends is a primitive 
+# compare address, if less than 'ends then is a primitive 
         la idx, ends
         blt wrd, idx, jump
 
 nest:   #; enter
-# push, (rpt) = ipt, rp -= cell
+# return push, (rpt) = ipt, rp -= cell
         lw idx, RPT (usr)
         addi idx, idx, -1 * CELL
         sw ipt, 0 (idx)
         sw idx, RPT (usr)
 
-# move 
+move: 
+# indirect access 
         add ipt, wrd, zero
         j next
 
-# jump to primitive
 jump: 
+# jump to primitive
         jalr zero, 0 (wrd)
+
 
 #-----------------------------------------------------------------------
 # BEWARE, MUST BE AT END! MINIMAL THREAD CODE DEPENDS ON IT!
@@ -899,5 +889,7 @@ wpush:
     Then best registers to use are s2-s11 and t3-t6. 
 
     All code must be align to CELL size, also the dictionary headers.
+    
+    Why not use a hash for all words ?
 
 */

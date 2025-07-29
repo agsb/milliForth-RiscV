@@ -43,33 +43,29 @@ _exit:
 
 # load system call for init
 _init:
-	#lw a1, _pad (gp) ????
-	la a1, _pad
-	addi a2, zero, 1
-	ret
+        la a1, _pad
+        addi a2, zero, 1
+        ret
 
 # linux ecall for getc
 _getc:
-	addi a0, zero, STDIN
-	addi a7, zero, GETC
-    	ecall
-    	lw t3, 0 (a1)
-	ret
+        addi a0, zero, STDIN
+        addi a7, zero, GETC
+        ecall
+        lw t3, 0 (a1)
+        ret
 
 # linux ecall for putc
 _putc:
         sw t4, 0 (a1)
-	addi a0, zero, STDOUT
-	addi a7, zero, PUTC
-	ecall
-	ret
+        addi a0, zero, STDOUT
+        addi a7, zero, PUTC
+        ecall
+        ret
 
-_none:
-        .word 0x0
+.ifdef DEBUGS
+_test:
         la t0, _exit
         ret
-        lla t0, _exit
-        ret
-        lw t0, _exit (gp)
-        ret
-        li t0, _exit
+.endif
+
