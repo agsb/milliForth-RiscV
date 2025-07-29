@@ -13,13 +13,20 @@
 
 .ifndef _pad
 _pad:
-.skip 8
+.skip 32
 .endif
 
 #---------------------------------------------------------------------
 .section .text
 _start:
 
+# load system call for exit
+_exit:
+        li a7, 93
+        li a0, 0
+        ecall
+
+# load system call for init
 _init:
 	ret
 
@@ -40,11 +47,6 @@ _putc:
 	la a1, _pad
 	li a2, 1
 	ecall
+        lw t0, a0
 	ret
-
-# load system call for exit
-_exit:
-        li a7, 93
-        li a0, 0
-        ecall
 

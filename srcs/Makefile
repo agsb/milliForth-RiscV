@@ -34,12 +34,13 @@ QFLAGS = -nographic -smp 1 -machine virt -bios none
 GCC = ${PASS}gcc
 
 GCCFLAGS = -fpic -static -nostdlib -nostartfiles 
-
 #-fverbose-asm
 
-ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst -Wa,-o=$@.out
+LDFLAGS = -Wl,-b=elf32-littleriscv -Wl,--stats -Wl,--strip-all -Wl,-r
+#-Wl,-build-id 
 
-LDFLAGS = -Wl,-b=elf32-littleriscv -Wl,--stats -Wl,--strip-all -Wl,--build-id -Wl,-r 
+ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
+#-aghlms
 
 STRIP = ${PASS}strip
 
@@ -54,11 +55,11 @@ MY = sector-riscv
 
 $(MY): $(SOURCES:.S=.o)
 
-	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.S 2> err | tee out
+	$(GCC) $(GCCFLAGS) $(LDFLAGS) $(ASFLAGS) -o $@.elf $@.S 2> err | tee out
 
-	$(STRIP) a.out $@.out $@.elf
+	$(STRIP) $@.elf
 
-	$(OBJDUMP) $@.elf > $@.dmp
+	$(OBJDUMP) -s -d $@.elf > $@.dmp
 
 #	od --endian=little -A x -t x1z -v $@.elf > $@.hex
 

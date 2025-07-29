@@ -1,4 +1,5 @@
 #
+#
 # experimental Makefile, feel free for comments
 #
 # use:
@@ -33,24 +34,20 @@ QFLAGS = -nographic -smp 1 -machine virt -bios none
 GCC = ${PASS}gcc
 
 GCCFLAGS = -fpic -static -nostdlib -nostartfiles 
-
 #-fverbose-asm
 
-ASFLAGS = -Wa,-mlittle-endian -Wa,-aghlms=$@.lst 
+LDFLAGS = -Wl,-b=elf32-littleriscv -Wl,--stats -Wl,--strip-all -Wl,-r
+#-Wl,-build-id 
 
-#-Wa,-o=$@.out
-
-LDFLAGS = -Wl,--stats -Wl,--strip-all 
-
-#-Wl,--build-id -Wl,-r 
-
-#-Wl,-b=elf32-littleriscv 
+ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
+#-aghlms
 
 STRIP = ${PASS}strip
 
 OBJDUMP = ${PASS}objdump
 
 MY = minimal
+MY = sector-riscv
 
 ########################################
 
@@ -58,11 +55,11 @@ MY = minimal
 
 $(MY): $(SOURCES:.S=.o)
 
-	$(GCC) $(GCCFLAGS) $(ASFLAGS) $(LDFLAGS) $@.S 2> err | tee out
+	$(GCC) $(GCCFLAGS) $(LDFLAGS) $(ASFLAGS) -o $@.elf $@.S 2> err | tee out
 
-	$(STRIP) a.out $@.out $@.elf
+	$(STRIP) $@.elf
 
-	$(OBJDUMP) $@.elf > $@.dmp
+	$(OBJDUMP) -s -d $@.elf > $@.dmp
 
 #	od --endian=little -A x -t x1z -v $@.elf > $@.hex
 
