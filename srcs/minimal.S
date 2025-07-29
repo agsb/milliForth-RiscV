@@ -8,6 +8,17 @@
  minimal elf with exit code
 */
 
+
+#---------------------------------------------------------------------
+# linux ecall stuff, 29/07/2025, vide:
+# https://github.com/riscv-software-src/riscv-pk/blob/master/pk/syscall.h
+
+.equ STDIN,     0
+.equ STDOUT,    1
+.equ GETC,     63
+.equ PUTC,     64
+.equ EXIT,     93
+
 #---------------------------------------------------------------------
 .section .bss
 
@@ -18,35 +29,47 @@ _pad:
 
 #---------------------------------------------------------------------
 .section .text
+
+.ifndef _start
+.globl _start
 _start:
+.endif
 
 # load system call for exit
 _exit:
-        li a7, 93
-        li a0, 0
+        add a0, zero, zero
+        addi a7, zero, EXIT
         ecall
 
 # load system call for init
 _init:
+	#lw a1, _pad (gp) ????
+	la a1, _pad
+	addi a2, zero, 1
 	ret
 
 # linux ecall for getc
 _getc:
-	li a7, 63
-	li a0, 0
-	la a1, _pad
-	li a2, 1 
+	addi a0, zero, STDIN
+	addi a7, zero, GETC
     	ecall
-    	lw t0, 0 (a1)
+    	lw t3, 0 (a1)
 	ret
 
 # linux ecall for putc
 _putc:
-	li a7, 64
-	li a0, 1
-	la a1, _pad
-	li a2, 1
+        sw t4, 0 (a1)
+	addi a0, zero, STDOUT
+	addi a7, zero, PUTC
 	ecall
-        lw t0, a0
 	ret
 
+_none:
+        .word 0x0
+        la t0, _exit
+        ret
+        lla t0, _exit
+        ret
+        lw t0, _exit (gp)
+        ret
+        li t0, _exit

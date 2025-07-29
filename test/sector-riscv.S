@@ -105,8 +105,8 @@ h_\label:
 .endm
 
 #---------------------------------------------------------------------
-
-# for pre-processor CPP (GNU GCC)
+# using pre-processor CPP (GNU GCC)
+# for alias register names 
 
 # forth struct pointer, constant 
 #define usr s2
@@ -127,9 +127,9 @@ h_\label:
 #define fth s7
 
 # some auxiliar
-#define fst t4
-#define snd t5
-#define trd t6
+#define fst t3
+#define snd t4
+#define trd t5
 
 #----------------------------------------------------------------------
 # dont use data, it blows the file

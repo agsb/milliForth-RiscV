@@ -2,16 +2,16 @@
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
 def_word "2/", "shr", 0
-        jsr spull1
-        lsr fst + 1
-        ror fst + 0
-        jmp this
+        call load2
+        srli fst, snd, 1
+        j save0
 
 #---------------------------------------------------------------------
-# ( a -- ) execute a jump to a reference at top of data stack
+# ( a -- ) execute a jump to a address at top of data stack
+# not change the stack
 def_word "exec", "exec", 0 
-        jsr spull1
-        jmp (fst)
+        call load2
+        jalr zero, 0 (snd)
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to a reference at IP
@@ -22,4 +22,9 @@ def_word ":$", "docode", 0
 # ( -- ) execute a jump to next
 def_word ";$", "donext", 0 
         jmp next
+
+#---------------------------------------------------------------------
+# ( -- ) exit forth
+def_word "bye", "bye", 0
+        call _exit
 
