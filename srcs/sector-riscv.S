@@ -146,7 +146,11 @@ wpush:
 But which registers ?
 
 The convention for R32* ISA for interrupts, keeps ra, t0-t2, a0-a5
-and the gcc __attribute__((interrupt)) keeps which are used inside,
+and the gcc __attribute__((interrupt)) keeps which are used inside.
+
+The convention for R32* linux ecalls uses a0, a1, a2, a7 registers.
+
+Then best registers to use are s2-s11 and t3-t6 
 
 Remember, all code must be align to CELL size !
 
@@ -155,27 +159,27 @@ Remember, all code must be align to CELL size !
 # for pre-processor CPP (GNU GCC)
 
 # forth struct pointer, constant 
-#define usr a0
+#define usr s2
 
 # instruction pointer, preserved
-#define ipt a1
+#define ipt s3
 
 # memory index 
-#define idx a2
+#define idx s4
 
 # link pointer
-#define lnk a3
+#define lnk s5
 
 # word pointer
-#define wrd a4
+#define wrd s6
 
 # compare value
-#define fth a5
+#define fth s7
 
-# some auxiliars
-#define fst t0
-#define snd t1
-#define trd t2
+# some auxiliar
+#define fst t4
+#define snd t5
+#define trd t6
 
 #----------------------------------------------------------------------
 # dont use data, it blows the file
@@ -243,13 +247,13 @@ rp0:       .word
        j main
 
 #----------------------------------------------------------------------
-# catch for header macro
-1: .word 0x0
-
-#----------------------------------------------------------------------
 # system dependences, linux ecall
 #
 .include "minimal.S"
+
+#----------------------------------------------------------------------
+# catch for header macro
+1: .word 0x0
 
 #----------------------------------------------------------------------
 main:
@@ -269,9 +273,7 @@ main:
 cold:
 
 # load user pointer address
-    
         fence
-
         la usr, _user
 
 #----------------------------------------------------------------------
@@ -325,29 +327,28 @@ okey:
 
 #---------------------------------------------------------------------
 resolve:
-# get a token, return 
+# get a token 
         call token
 
-# get the size of token 
-
-        #; lda #'P'
-        #; jsr putchar
-
-#---------------------------------------------------------------------
-find:
 # get the latest link
         lw lnk, LAST (usr)
-
-# set token
-        lw idx, TOIN (usr)
-        lb fst, (idx)
 
 # set space
         add trd, zero, 32
 
+#---------------------------------------------------------------------         
+find:
+
 100:
+# set token
+        lw idx, TOIN (usr)
+
+# get length
+        lb fst, (idx)
+
+200:
 # verify null, end of dictionary, then abort
-# or maybe to verify numbers? 
+# or maybe verify if is a number? 
         beq lnk, zero, abort
 
 # linked list
@@ -356,6 +357,7 @@ find:
 # update next link 
         lw lnk, 0 (wrd)
 
+# point to c-str
         add wrd, wrd, CELL
 
 # first byte is (size and flag) 
@@ -373,11 +375,11 @@ find:
 
 # compare it
 
-        bne fst, snd, 100b
+        bne fst, snd, 200b
 
 # size ok, compare chars
 
-200:
+300:
         addi idx, idx, 1
 
         addi wrd, wrd, 1
@@ -386,13 +388,15 @@ find:
         
         lb snd, 0 (wrd)
 
-        beq fst, trd, 200f
+        beq fst, trd, 300f
         
         bne fst, snd, 100b
         
-        j 200b
+        j 300b
 
-200:
+300:
+# wrd points to code or list of references
+        ///????????
 
         addi idx, idx, 1
 
@@ -519,7 +523,7 @@ token:
 
         sub idx, idx, fth
 
-# place the length before word, c-str
+# place the length bt space efore word, c-str
 
         addi fth, fth, -1
 
