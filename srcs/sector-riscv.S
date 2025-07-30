@@ -91,16 +91,16 @@
 # the label 1: is used for get last link address for list dictionary 
 # minimum size of header is two words, why not use hash ?
 ##
+.set last_link, 0x0
 .macro def_word name, label, flag
 .p2align 2, 0x00
 h_\label:
-       .word 1b
+.word last_link
+#.set last_link, h_\label + 0
+.byte (2f - 1f) | \flag
 1:
-       #.byte ((3f - 2f) + 0) + (flag + 0 )
-       .byte (3f - 2f)
-2:
        .ascii "\name"
-3:
+2:
        .p2align 2, 0x20        
 \label:
 .endm
@@ -212,7 +212,7 @@ main:
 
 #----------------------------------------------------------------------
 # catch for header macro
-1: .word 0x0
+def_link: .word 0x0
 
 #define la lla
 

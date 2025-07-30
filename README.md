@@ -113,6 +113,7 @@ the my_hello_world.FORTH is adapted for miiliforth-6502
 
 ## References
 
+[^11]: The linux ecall list: https://github.com/riscv-software-src/riscv-pk/blob/master/pk/syscall.h)
 [^10]: The milliforth-6502: https://github.com/agsb/milliForth-6502/
 [^1]: The original milliForth: https://github.com/fuzzballcat/milliForth 
 [^2]: The inspirational sectorForth: https://github.com/cesarblum/sectorforth/

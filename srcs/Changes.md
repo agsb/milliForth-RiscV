@@ -1,16 +1,27 @@
 # Changes
 
+## Todo
+
+    1. parameters for gcc
+
+    2. def_word macro, need resolve how to update
+        link for each word to point the previous,
+        linked list
+
+    3. force use of 'addi rd, gp, offset' instead 
+        auipc rd, offset (31-12); addi rd, rd, (11-0)
+
+    4.
+
+## Done
 
 29/07/2025
 
     Almost done the code from 6502 to Riscv.
 
-    Still glitches with line parameters to gcc
+    Still testing line parameters to gcc
 
-    Need change the defword macro, 
-    sintax error when join size (3f-2f) and flags
-    .byte (3f-2f) | flags   NOT WORK
-    .byte (3f-2f) + flags   NOT WORK
+    Need change the defword macro 
 
 25/07/2025
 

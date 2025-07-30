@@ -29,27 +29,32 @@ PASS = ${BASE}/${NAME}
 
 QEMU = ${BASE}/qemu-riscv64
 
+QEMU = ${BASE}/qemu-riscv32
+
 QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 GCC = ${PASS}gcc
 
-GCCFLAGS = -static -nostartfiles -nodefaultlibs \
-	-march=rv32i -mabi=ilp32 \
-	-no-pie
+GCCFLAGS = -nostartfiles -nodefaultlibs \
+	-march=rv32i -mabi=ilp32 -static
 
+# -fPIC
+# -no-pie
 # -static-pie
-
 # -nostdlib -nolibc \
 # -T this.ld 
 
-LDFLAGS = -Wl,--stats --no-relax
+LDFLAGS = 
 
+# -Wl,--stats --no-relax
 # -Wl,--strip-all \ 
 # -Wl,-r -Wl,--no-relax
 # -Wl,-b=elf32-littleriscv 
 # -Wl,-build-id 
 
-ASFLAGS = -Wa,-fno-pic -Wa,-mlittle-endian -Wa,-alms=$@.lst 
+ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
+
+#-Wa,-fno-pic 
 
 STRIP = ${PASS}strip
 
@@ -66,9 +71,9 @@ $(MY): $(SOURCES:.S=.o)
 
 	$(GCC) $(GCCFLAGS) $(LDFLAGS) $(ASFLAGS) -o $@.elf $@.S 2> err | tee out
 
-	$(STRIP) $@.elf
+	$(STRIP) -o $@.bin $@.elf 
 
-	$(OBJDUMP) -s -d $@.elf > $@.dmp
+	$(OBJDUMP) -D -s -d $@.elf > $@.dmp
 
 #	od --endian=little -A x -t x1z -v $@.elf > $@.hex
 
@@ -88,7 +93,7 @@ clean:
 	      # $(MY).lbl $(MY).lbs $(MY).lbf \
 
 qemu: $(TARGET)
-	@qemu-system-riscv32 -M ? | grep virt >/dev/null || exit
+	#@qemu-system-riscv32 -M ? | grep virt >/dev/null || exit
 	@echo "Press Ctrl-A and then X to exit QEMU"
-	$(QEMU) $(QFLAGS) -kernel sector-riscv.elf
+	$(QEMU) $(QFLAGS) -kernel $@.elf
 
