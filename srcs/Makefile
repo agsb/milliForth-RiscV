@@ -42,7 +42,7 @@ GCCFLAGS = -static -nostartfiles -nodefaultlibs \
 # -nostdlib -nolibc \
 # -T this.ld 
 
-LDFLAGS = -Wl,--stats 
+LDFLAGS = -Wl,--stats --no-relax
 
 # -Wl,--strip-all \ 
 # -Wl,-r -Wl,--no-relax

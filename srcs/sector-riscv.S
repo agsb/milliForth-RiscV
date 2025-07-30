@@ -140,9 +140,26 @@ h_\label:
 #----------------------------------------------------------------------
 # better
 # all zeroes
-
 .section .bss
 .p2align 2, 0x0
+
+# tib grows forward
+_tib:       
+.skip tibz
+
+# pad grows forward
+_pad:       
+.skip padz
+
+# stacks grows backward
+
+_spb:       # bottom 
+.skip spz
+sp0:       .word
+
+_rpb:       # bottom
+.skip rpz
+rp0:       .word
 
 # user structure of internal Forth variables
 # ATT: the order matters for forth !
@@ -173,24 +190,6 @@ h_\label:
 # this is it
 _user:
 .skip 10 * CELL
-
-# tib grows forward
-_tib:       
-.skip tibz
-
-# pad grows forward
-_pad:       
-.skip padz
-
-# stacks grows backward
-
-_spb:       # bottom 
-.skip spz
-sp0:       .word
-
-_rpb:       # bottom
-.skip rpz
-rp0:       .word
 
 #----------------------------------------------------------------------
 .text 

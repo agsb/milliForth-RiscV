@@ -58,7 +58,7 @@ primitives:
     key   get a char from default terminal (system dependent)
     emit  put a char into default terminal (system dependent)
         
-internals: 
+only internals: 
     
     main, cold, warm, quit, 
     token, skip, scan, getline, 
@@ -68,7 +68,7 @@ internals:
 
     ps. exit is unnest, next is not the NEXT of FOR loop    
 
-externals:
+with externals:
 
     _getc, _putc, _exit, _init, 
 
