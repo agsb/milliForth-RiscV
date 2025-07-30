@@ -23,7 +23,7 @@ _this file is still a stub_
         here,   next free byte in heap dictionary (here)
         spt,    actual top of data stack
         rpt,    actual top of return stack
-        tout,   
+        tout,   keeps next toin 
         once,   hold last here while compiling
         head,   heap pointer, forwards
         tail    stack pointer, backwards
@@ -51,10 +51,10 @@ _this file is still a stub_
         exec    ( a -- )        jump to top of stack address
         >r      ( w -- )( -- w ) move from data into return stack
         r>      ( -- w )( w -- ) move from return into data stack
+        bye     ( -- )  ends the Forth
 
 ### the extras
 
-        bye     ( -- )  ends the Forth
         abort   ( -- )  abort and reset
         .S      ( -- )  dumps the data stack
         .R      ( -- )  dumps the return stack

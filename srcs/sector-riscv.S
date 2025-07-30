@@ -754,53 +754,51 @@ ends:
 #----------------------------------------------------------------------
  NOTES:
 
-    SectorForth and MilliForth was made for x86 arch 
-    and uses full 16-bit registers 
+    Sectorforth and Milliforth was made for x86 and Z80 arch 
+    and uses full 16-bit registers. 
  
-    The way at 6502 is use page zero and lots of lda/sta.
+    The way at 6502 is to use page zero and lots of lda/sta.
  
-    The way of RiscV is use linear memory and 32-bit registers.
+    The way of RiscV is to use linear memory and 32-bit registers.
  
     Focus in size not performance.
  
     why ? For understand better my skills, riscv code and thread codes
  
-    how ? Programming a old Forth for new 32-bit cpu emulator
+    how ? Programming a old Forth for new 32-bit cpu ISA
  
     what ? Design the best minimal Forth engine and vocabulary
  
 #----------------------------------------------------------------------
     Changes:
  
-    all user structure, data (36 cells) and return (36 cells) stacks, 
+    Uses cell with 32-bits;
+ 
+    All user structure, data (36 cells) and return (36 cells) stacks, 
     TIB (80 bytes) and PIC (32 bytes) are in sequence; 
  
     TIB and PIC grows forward, stacks grows backwards;
  
-    no overflow or underflow checks;
+    No overflow or underflow checks;
  
-    no numbers only words;
+    No numbers only words;
  
-    the header order is LINK, SIZE+FLAG, NAME+PAD.
+    The header order is LINK, SIZE+FLAG, NAME+PAD.
  
-    only IMMEDIATE flag used as $80, no hide, no compile;
+    Only IMMEDIATE flag used as $80, no hide, no compile;
  
-    As ANSI Forth 1983: FALSE is 0x0000 ; TRUE is $FFFF ;
+    As ANSI Forth 1983: FALSE is 0 and TRUE is -1 ;
  
 #----------------------------------------------------------------------
     Remarks:
  
-    this code uses Minimal Thread Code, aka MTC;
- 
-    uses cell with 32-bits;
+    This code uses Minimal Indirect Thread Code, aka MITC;
  
     No TOS or ROS registers, all values keeped at stacks;
  
+    PAD (scratchpad) is for temporaries, formats, buffers, etc;  
+
     TIB (terminal input buffer) is like a stream;
- 
-    Chuck Moore uses 64 columns, be wise, obey rule 72 CPL; 
- 
-    No line wrap, do not break words between lines;
  
     Only 7-bit ASCII characters, plus \n, no controls;
           ( later maybe \b backspace and \u cancel )
@@ -809,17 +807,14 @@ ends:
  
     Words are case-sensitivy and less than 32 characters;
  
+    No line wrap, do not break words between lines;
+ 
     No multiuser, no multitask, no checks, not faster;
  
 #----------------------------------------------------------------------
     For Devs:
  
-    the hello_world.forth file states that stacks works
-          to allow : dup sp@ @ ; so spt must point to actual TOS.
-    
-    The movement will be:
-          pull is 'fetch and increase'
-          push is 'decrease and store'
+    Chuck Moore uses 64 columns, be wise, obey rule 72 CPL; 
  
     Never mess with two underscore variables;
  
@@ -830,35 +825,55 @@ ends:
 #----------------------------------------------------------------------
     For stacks:
  
-    "when the heap moves forward, move the stack onceward" 
- 
     The hardware stack is not used for this Forth;
  
+    The hello_world.forth file states that stacks works to allow 
+        : dup sp@ @ ; so spt must point to actual TOS;
+    
+    "when the heap moves forward, the stack moves backward"; 
+ 
+    The stack movement to be:
+        pull is 'fetch and increase'
+        push is 'decrease and store'
+ 
     Stacks represented as (standart)
-    S:(w1 w2 w3 -- u1 u2)  R:(w1 w2 w3 -- u1 u2)
-    before -- after, top at left.
+        (w1 w2 w3 -- u1 u2), (w1 w2 w3 -- u1 u2)
+        data, return (before -- after), top at left.
+        c unsigned 8-bit character, a 32-bit address,
+        w signed 32-bit, u unsigned 32-bit,
  
 #----------------------------------------------------------------------
     For RiscV:
  
-    A 32-bit processor with 32-bit address space;
+    A 32-bit processor with 32-bit address space and reduced ISA;
  
-    Why ".equ name, register", does not work ?
-    Maybe reserved words can not be aliased ?
+    No direct memory access, only by register as pointer.
+    No register indexed offset, only immediate offsets.
+
+    For Assembler:
+
+    1. Why ".equ name, register", does not work ?
     Also r0 must ever be called as zero.
 
     I dunno about another way to make register name alias
-    So, using cpp to pre-process the alias, like:
-
+    but using cpp to pre-process the alias, eg. 
     #define mytmp  t1     
 
-    Almost all memory access must be indirectd by a register
-    eg. lw rd, offset (ro); sw ro, offset (rd);
-    and millifort uses a struct for pointers, then need:
-    reserve one register (usr) to keep the pointer to this structure
-    and another (ipt) to keep the instruction pointer
+    2. All memory access is by a register eg. 
+    # load
+        lw rd, offset (ro); 
+    # save
+        sw ro, offset (rd);
+    
+    3. Forth uses a 'user struct' with variables and pointers, then 
+    for each memory reference "la rd, reference_memory" is really
+    two instructions "auipc rd" and "li rd", then better keep the
+    reference in a register and do offsets "lw rd, offser (rf)"
 
- The indirect code defaults:
+    reserve one register (usr) to keep the reference to 'user struct'
+    and another (ipt) to hold the Forth instruction pointer
+
+    The indirect code defaults:
 
 wpull:
 # load the index of data stack
