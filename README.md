@@ -103,6 +103,9 @@ For Forth language primer see
 For Forth from inside howto see
 [JonasForth](http://git.annexia.org/?p=jonesforth.git;a=blob_plain;f=jonesforth.S;hb=refs/heads/master)
 
+For A Problem Oriented Language see
+[POL](https://www.forth.org/POL.pdf)
+
 ## Note
 
 the originals files are edited for lines with less than 80 bytes
