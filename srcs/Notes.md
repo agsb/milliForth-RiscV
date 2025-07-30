@@ -152,12 +152,20 @@ wpush:
     All code must be align to CELL size, also the dictionary headers.
     
 ## IDEAS
+
+    _"AI uses hash code as word, Humans uses semantics as word"_
+     [Liang Ng](https://www.youtube.com/watch?v=sSlM3Mr_9sI)
     
     Why not use hashes for words ?
 
     Moore once used size and first three characters of name as words
-    in dictionary. Now with 32-bit RiscV the find of a word could be 
-    done just one comparation, and the header as: link, hash, code.
+    in dictionary. Now with 32-bit CPUs the find of a word could be 
+    easy, done just one comparation, and the header as: link, hash, code.
+
+    To keep safe from colisions, check the hash of token inside colon (:)
+    and when exists, block that token.
+
+    Also could export a name:hash, to make a list for human reference.
     
     The hash over 0x00000000 to 0x7FFFFFFF, reserve -1 to IMMEDIATE flag
 
