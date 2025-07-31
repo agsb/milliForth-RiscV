@@ -26,13 +26,13 @@ Forth starts the compiled dictionary at end of code, because all memory is linea
 
 RiscV CPUs are memory mapped, eg. the RP2350 includes 520KiB of SRAM in ten banks, first eigth banks (0-7) have bits 3:2 striped address access, the last two banks (8-9) are not striped.
 
-The gcc linker ld, have memory map for .data, .text, .bss, .rodata sections and a default segment memory. 
+The gcc linker ld, have memory map for .data, .text, .rodata, .bss, sections and a default segment memory. 
     
-Where are the .heap and .stack ? Forth needs those @!@
+Where are the .heap and .stack ? Forth needs those @!@. 
 
 The Minimal Inderect Thread Code, for a linear memory model relies in known where are the primitives.
-    
-Maybe without .rodata, at end of .bss could be a good place to start...
+
+For sake assume that order is .data, .text, .rodata, .bss, then at end of .bss could be a good place.
     
  _For sake, 0x2000000 is a good place._
 
