@@ -63,7 +63,17 @@ _putc:
         ecall
         ret
 
-_test:
-        la t0, _exit
+# linux ecall for puts
+_puts:
+        # pointer to msg
+        add a1, t3, zero
+        # lenght of msg
+        add a2, t4, zero
+
+        addi a0, zero, STDOUT
+        addi a7, zero, PUTC
+        ecall
+        j _init
         ret
+
 

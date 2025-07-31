@@ -15,6 +15,17 @@ PHDRS
   bss PT_LOAD;
 }
 
+/*
+SECTIONS
+{
+        . = 0x10000;
+        .text : { *(.text) }
+        . = 0x8000000;
+        .data : { *(.data) }
+        .bss : { *(.bss) }
+}
+*/
+
 SECTIONS
 {
   .text : {
@@ -44,3 +55,4 @@ SECTIONS
   PROVIDE(_memory_start = ORIGIN(ram));
   PROVIDE(_memory_end = ORIGIN(ram) + LENGTH(ram));
 }
+

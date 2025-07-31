@@ -28,7 +28,7 @@
  
     read notes at end of this file.
  
-    THIS USES HASH HEADERS.
+    THIS VERSION USES ONLY HASH HEADERS.
 
     Not working yet :)
 
@@ -53,27 +53,37 @@
 # alias 
 
 # FORTH 1983
+
 .equ FALSE, 0
+
 .equ TRUE, -1
 
 # usefull
+
 .equ ONE, 1
+
 .equ TWO, 2
-.equ SPACE, 32
+
+.equ SPC, 32
 
 # cell size, 4 bytes, 32-bit
+
 .equ CELL, 4
 
 # data stack, 36 cells, moves backwards, push decreases before copy
+
 .equ spz, 36 * CELL
 
 # return stack, 36 cells, moves backwards, push decreases before copy
+
 .equ rpz, 36 * CELL
 
 # Terminal input buffer 80 bytes, (but 72 is enough), moves forwards
+
 .equ tibz, 80
 
 # reserves 32 bytes for pad scratch, moves forwards
+
 .equ padz, 32
 
 #---------------------------------------------------------------------
@@ -96,6 +106,7 @@
 .p2align 2, 0x00
 h_\label:
 .word last_link
+
 .word 0x0
 #.set last_link, h_\label + 0
 \label:
@@ -118,7 +129,7 @@ h_\label:
 # memory index 
 #define idx s4
 
-# hash cursor
+# hash value
 #define hsh s5
 
 # link pointer
@@ -134,14 +145,54 @@ h_\label:
 #define fth t6
 
 #----------------------------------------------------------------------
-# dont use data, it blows the file
 #.section .data
 
+# none 
+
 #----------------------------------------------------------------------
-# better
-# all zeroes
 .section .bss
 .p2align 2, 0x0
+
+# user structure of internal Forth variables
+# catch:
+#       the order matters for forth !
+#       stacks have fixed size
+
+# name some offsets
+
+# state flag
+.equ STAT, 0 * CELL
+
+# toin next free byte in TIB
+.equ TOIN, 1 * CELL
+
+# last link cell in heap dictionary linked list
+.equ LAST, 2  * CELL
+
+# next free cell in heap dictionary, aka dpt
+.equ HERE, 3 * CELL
+
+# data stack index
+.equ SPT, 4 * CELL
+
+# return stack index
+.equ RPT, 5 * CELL
+
+# next token in TIB
+.equ TOUT, 6 * CELL
+
+# hold 'here while compile
+.equ ONCE, 7 * CELL
+
+# heap forward
+.equ HEAD, 8 * CELL
+
+# heap backward
+.equ TAIL, 9 * CELL
+
+# this is it
+_user:
+.skip (1 + TAIL) * CELL
 
 # tib grows forward
 _tib:       
@@ -151,49 +202,21 @@ _tib:
 _pad:       
 .skip padz
 
-# stacks grows backward
-
+# data stack grows backward
 _spb:       # bottom 
 .skip spz
 sp0:       .word
 
+# return stack grows backward
 _rpb:       # bottom
 .skip rpz
 rp0:       .word
 
-# user structure of internal Forth variables
-# ATT: the order matters for forth !
-
-# name some offsets
-
-# state flag
-.equ STAT, 0 * CELL
-# toin next free byte in TIB
-.equ TOIN, 1 * CELL
-# last link cell in heap dictionary linked list
-.equ LAST, 2  * CELL
-# next free cell in heap dictionary, aka dpt
-.equ HERE, 3 * CELL
-# data stack index
-.equ SPT, 4 * CELL
-# return stack index
-.equ RPT, 5 * CELL
-# next token in TIB
-.equ TOUT, 6 * CELL
-# hold 'here while compile
-.equ ONCE, 7 * CELL
-# heap forward
-.equ HEAD, 8 * CELL
-# heap backward
-.equ TAIL, 9 * CELL
-
-# this is it
-_user:
-.skip 10 * CELL
-
 #----------------------------------------------------------------------
 .text 
-.p2align 2, 0x0
+
+# really ?
+.p2align 4, 0x0
 
 #----------------------------------------------------------------------
 .globl _start
@@ -211,12 +234,12 @@ main:
 .include "minimal.S"
 
 #----------------------------------------------------------------------
-# djb hash function
-
+# djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
 # idx pointer to str
 # fth hold the end of word character ( \0 or spc)
-# snd returns the hash 
+# uses fst, snd
+# hsh returns the hash 
 djb2f:
         # easy 3581
         addi hsh, zero, 2000
@@ -235,15 +258,17 @@ djb2f:
 #----------------------------------------------------------------------
 # do what need once
 cold:
+# just for sake
         fence
 
 # load user pointer address
         la usr, _user
 
 # load word separator
-        add fth, zero, SPACE
+        add fth, zero, SPC
 
 #----------------------------------------------------------------------
+# wipe the dictionary
 warm:
 # link list of headers, aka dictionary
         la idx, h_exit
@@ -254,13 +279,10 @@ warm:
         sw idx, HERE (usr)
 
 #---------------------------------------------------------------------
-# clean TIB
+# reset TIB
 reset:
         la idx, _tib
         sw zero, 0 (idx)
-
-        #sw idx, TOIN (usr)
-        #sw idx, TOUT (usr)
 
 #---------------------------------------------------------------------
 abort:
@@ -314,6 +336,7 @@ eval:
 
 # wrd points to start of code or list of references
 
+#---------------------------------------------------------------------         
 compile:
 
 # addi snd, zero, 'C'
@@ -323,6 +346,7 @@ compile:
 
         j resolve
 
+#---------------------------------------------------------------------         
 execute:
 immediate:
 
@@ -334,6 +358,7 @@ immediate:
         j pick
 
 #---------------------------------------------------------------------         
+# search for a hash in dictionary linked list 
 find:
 
 # get the latest link
@@ -349,40 +374,31 @@ find:
 # get next link 
         lw lnk, 0 (wrd)
 
-# get hash
+# move to hash
         add wrd, wrd, CELL
 
         lw snd, 0 (wrd)
 
-# hash flag, 0 or 1
+# hash flag
         andi trd, snd, FLAG_IMM
 
-# mask immediate
+# mask flag
         xor snd, snd, trd
 
 # compare
         beq hsh, snd, 100f
 
+# next link
         j 100b
 
 100:
+# move to code
         add wrd, wrd, CELL
 
 # keep the flag
 
         sb trd, STAT+1 (usr)
 
-        ret
-
-#---------------------------------------------------------------------
-# 
-try:
-        lb fst, 0 (idx)
-
-        beq fst, zero, getline
-        
-        addi idx, idx, 1
-        
         ret
 
 #---------------------------------------------------------------------
@@ -398,7 +414,7 @@ getline:
         addi trd, zero, 10
 
 # ever start with a space
-        add fst, zero, fth
+        add fst, fth, zero
 
 # fill the TIB until \n
 100:
@@ -416,7 +432,7 @@ getline:
 
 # replace \n with space 
 100:        
-        add fst, zero, fth
+        add fst, fth, zero
         
         sw fst, 0 (idx)
 
@@ -442,21 +458,31 @@ token:
 
 # skip spaces
 100:
-        call try
+        lb fst, 0 (idx)
+
+        beq fst, zero, getline
+        
+        addi idx, idx, 1
+        
         bne fst, fth, 100f
+
         j 100b
 100:
 
-# make and mask hash
+# make hash
 
         call djb2f
+
+# save toin
+
+        sw idx, TOIN (usr)
+
+# mask flag 
 
         andi trd, snd, FLAG_IMM
 
         xor snd, snd, trd
-        
-        sw idx, TOIN (usr)
-
+       
         ret 
 
 #---------------------------------------------------------------------

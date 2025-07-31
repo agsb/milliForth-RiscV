@@ -44,9 +44,10 @@ GCCFLAGS = -nostartfiles -nodefaultlibs \
 # -nostdlib -nolibc \
 # -T this.ld 
 
-LDFLAGS = 
+LDFLAGS = -Wl,--stats 
 
-# -Wl,--stats --no-relax
+# -Wl,--stats 
+#--no-relax
 # -Wl,--strip-all \ 
 # -Wl,-r -Wl,--no-relax
 # -Wl,-b=elf32-littleriscv 
@@ -73,7 +74,7 @@ $(MY): $(SOURCES:.S=.o)
 
 	$(STRIP) -o $@.bin $@.elf 
 
-	$(OBJDUMP) -D -s -d $@.elf > $@.dmp
+	$(OBJDUMP) -hda $@.elf > $@.dmp
 
 #	od --endian=little -A x -t x1z -v $@.elf > $@.hex
 

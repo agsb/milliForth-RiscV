@@ -10,7 +10,26 @@
 
     3.  Code could start at align 2 or must be at align 4 ?
 
+    4.  How use of compressed ISA ?
+
 ## Done
+
+31/07/2025
+
+    _"From a 6502 64k memory to a Risc-V 4GB memory, Mind the Gap."_
+
+    The milliforth-riscv is a memory program that runs in SRAM and 
+    Forth thinks that is continous but limited, and grows silently. 
+    Really ?
+
+    RiscV are memory mapped, eg. the RP2350 includes 520KiB of SRAM 
+    in ten banks, first eigth banks (0-7) have bits 3:2 striped 
+    address access, the last two banks (8-9) are not striped.
+
+    The gcc linker ld, have memory map for .text, .data, .bss, .rodata 
+    sections and a default segment memory. 
+    
+    For sake, 0x2008000 is a good place.
 
 30/07/2025
 

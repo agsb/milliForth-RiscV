@@ -96,7 +96,7 @@
 
 .set last_link, 0x0
 .macro def_word name, label, flag
-.p2align 2, 0x00
+#.p2align 2, 0x00
 h_\label:
 .word last_link
 #.set last_link, h_\label + 0
@@ -104,7 +104,7 @@ h_\label:
 1:
        .ascii "\name"
 2:
-       .p2align 2, 0x20        
+ .p2align 4, 0x20        
 \label:
 .endm
 
