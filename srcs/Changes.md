@@ -8,11 +8,12 @@
         link for each word to point the previous,
         linked list
 
-    3.
+    3.  Code could start at align 2 or must be at align 4 ?
 
 ## Done
 
 30/07/2025
+
 
 1. hashes in dictionary
 
@@ -20,6 +21,10 @@
 
     Going to use DJB2 hash for represent the words at dictionary.
     
+    Splited the code of sector-riscv in two kinds, one using 
+    the traditional name header with /link, size+flag, name+pad/ and
+    other using a hash header with /link, hash/.
+
     This will simplify the lookup of dictionary, as just 
     do one single comparation of 4-bytes, and reduce the problem of
     find where code starts before the name, which could be padded to 
@@ -51,6 +56,8 @@
     
     Using /la rf, address/ one or two instructions, 
     and /addi rd, rf, offset * CELL/ one instruction. 
+
+3. Sizes differs when use align 2 or align 2
 
 29/07/2025
 
