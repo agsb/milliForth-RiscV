@@ -3,6 +3,7 @@
 *"To master riding bicycles you have do ride bicycles"*
 
 started at 23/07/2025, agsb@
+vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/srcs/Changes.md)
 
 This is an implementation of milliForth (sectorforth) 
 concept for RISCV ISA.
