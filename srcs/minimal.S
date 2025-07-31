@@ -63,6 +63,9 @@ _putc:
         ecall
         ret
 
+# just not necessary
+
+.if 0
 # linux ecall for puts
 _puts:
         # pointer to msg
@@ -75,5 +78,6 @@ _puts:
         ecall
         j _init
         ret
+.endif
 
 

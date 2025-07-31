@@ -332,7 +332,7 @@ eval:
 
 # immediate ? if < \0
         lb idx, STAT+1 (usr)
-        blt idx, zero, immediate      
+        bne idx, zero, immediate      
 
 # wrd points to start of code or list of references
 
@@ -379,10 +379,9 @@ find:
 
         lw snd, 0 (wrd)
 
-# hash flag
+# mask hash flag
         andi trd, snd, FLAG_IMM
 
-# mask flag
         xor snd, snd, trd
 
 # compare
@@ -429,6 +428,8 @@ getline:
 
 # \n ends 
         bne fst, trd, 100b
+
+# at end-of-line
 
 # replace \n with space 
 100:        
@@ -478,10 +479,11 @@ token:
         sw idx, TOIN (usr)
 
 # mask flag 
+mask:
 
-        andi trd, snd, FLAG_IMM
+        andi fst, hsh, FLAG_IMM
 
-        xor snd, snd, trd
+        xor hsh, hsh, fst
        
         ret 
 
@@ -492,19 +494,6 @@ token:
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
-#
-# note : using load2 to short code size at cost of 1 cycle
-#
-load2:
-        lw idx, SPT (usr)
-        
-        lw snd, 0 * CELL (idx)
-        
-        lw fst, 1 * CELL (idx)
-
-        ret
-
-#---------------------------------------------------------------------
 wcomma:
         lw idx, HERE (usr)
       
@@ -513,6 +502,16 @@ wcomma:
         addi idx, idx, CELL
       
         sw idx, HERE (usr)
+
+        ret
+
+#---------------------------------------------------------------------
+load2:
+        lw idx, SPT (usr)
+        
+        lw snd, 0 * CELL (idx)
+        
+        lw fst, 1 * CELL (idx)
 
         ret
 
@@ -566,6 +565,13 @@ drop1:
         j next
 
 #---------------------------------------------------------------------
+# ( a -- w ), w = [a]
+def_word "@", "fetch", 0
+        call load2
+        lw fst, 0 (snd)
+        j save0
+
+#---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
 def_word "nand", "nand", 0
         call load2
@@ -582,14 +588,6 @@ def_word "+", "plus", 0
         call load2
         add fst, snd, fst
         j save1
-
-#---------------------------------------------------------------------
-# ( a -- w ), w = [a]
-def_word "@", "fetch", 0
-fetchw:
-        call load2
-        lw fst, 0 (snd)
-        j save0
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
@@ -616,14 +614,14 @@ save0:
 #---------------------------------------------------------------------
 def_word ":", "colon", 0
 # save here, panic if semis not follow elsewhere
-        lw idx, HERE (usr)
-        sw idx, ONCE (usr)
+        lw fst, HERE (usr)
+        sw fst, ONCE (usr)
 
 # stat is 'compile' == 1
-        addi fst, zero, 1
+        addi fst, zero, ONE
         sw fst, STAT (usr)
 
-# make header:
+# make a header:
 
 # copy last into (here)
         lw wrd, LAST (usr)
@@ -634,7 +632,11 @@ def_word ":", "colon", 0
         
 # copy the hash
 
-        add wrd, zero, snd
+        add wrd, hsh, zero
+
+#---------------------------------------------------------------------
+finish:
+
         call wcomma
 
 # done
@@ -644,20 +646,16 @@ def_word ":", "colon", 0
 #---------------------------------------------------------------------
 def_word ";", "semis",  0 #FLAG_IMM
 # update last, panic if colon not lead elsewhere 
-        lw idx, ONCE (usr)
-        sw idx, LAST (usr)
+        lw fst, ONCE (usr)
+        sw fst, LAST (usr)
 
 # stat is 'interpret' == 0
         sw zero, STAT (usr)
 
 # compound words must ends with exit
-finish:
         la wrd, exit
-        call wcomma
 
-# done
-        # jmp next
-        j next 
+        j finish
 
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
