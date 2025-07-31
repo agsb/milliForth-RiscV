@@ -155,7 +155,29 @@ wpush:
     does only ONE level of call, more levels must 
     save the register ra elsewhere and load it at ret.
 
-## IDEAS
+## For Heaps
+
+_"From a 6502 64k memory to a Risc-V 4GB memory, Mind the Gap."_
+
+The milliforth-riscv is a memory program that runs in SRAM and Forth thinks that is continous but limited, and grows silently. 
+
+Really ?
+
+Forth starts the compiled dictionary at end of code, because all memory is linear and equal, except some reserved for I/O.
+
+RiscV CPUs are memory mapped, eg. the RP2350 includes 520KiB of SRAM in ten banks, first eigth banks (0-7) have bits 3:2 striped address access, the last two banks (8-9) are not striped.
+
+The gcc linker ld, have memory map for .data, .text, .bss, .rodata sections and a default segment memory. 
+    
+Where are the .heap and .stack ? Forth needs those @!@
+
+The Minimal Inderect Thread Code, for a linear memory model relies in known where are the primitives.
+    
+Maybe without .rodata, at end of .bss could be a good place to start...
+    
+ _For sake, 0x2000000 is a good place._
+
+## For Hash
 
     _"AI uses hash code as word, Humans uses semantics as word"_
      [Liang Ng](https://www.youtube.com/watch?v=sSlM3Mr_9sI)
@@ -172,4 +194,28 @@ wpush:
     Also could export a name:hash, to make a list for human reference.
     
     The hash over 0x00000000 to 0x7FFFFFFF, reserve -1 to IMMEDIATE flag
+
+_" there is no spoon "_
+
+Going to use DJB2 hash for represent the words at dictionary.
+    
+Splited the code of sector-riscv in two kinds, one using the traditional name header with /link, size+flag, name+pad/ and other using a hash header with /link, hash/.
+
+This will simplify the lookup of dictionary, as just do one single comparation of 4-bytes, and reduce the problem of find where code starts before the name, which could be padded to align with 4-bytes.
+
+The usual flags in Forth uses some high bits at the size byte of name c-str. 
+
+In Riscv ISA, can't use /andi rd, rs, 0x8000000/ with the 31 bit, because the imm is restrict within +/- 2047. Some alternatives uses 2 or 3 instructions.
+
+Using hash, there is no size+flag byte + name string, no more. Only four bytes hash with lower bits as flags.
+
+When the immediate flag (FLAG_IMM) is the bit 0, could use _ori|andi|xori rd, rs, 0x1_ to test, set and flip the flag
+    
+Catchs: 
+
+To clear the bit 0 use a _andi rd, hsh, 0x1_ then _or hsh, hash, rd_ after hash calculation.
+        
+All valid hashes will be even. 
+        
+Can not calculate the hash within a macro, need a program to calculate the hashes for primitives and make the headers by hand.
 
