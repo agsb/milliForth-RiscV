@@ -11,19 +11,24 @@ concept for RISCV ISA.
 Milliforth uses a minimal set of primitives and functions 
 for make a Forth.
 
-a compiler suit of RISCV: gcc riscv64-unknown-elf-*
-a simulator of RISCV: spike
-which memory map be used and pages size: start 0x80000000, page 4096
-where is the heap and stack in memory: about 4GB real memory, about 18GB in qemu VM
-a systems calls of core functions: linux ecalls
+Options:
+
+    compiler suit of RISCV: gcc riscv64-unknown-elf-* -Oz
+
+    which memory map be used and pages size: default GCC
+  
+    simulator of RISCV: spike
+    
+    the heap and stack in memory: .heap at end of .bss, .stack elsewhere ?
+
+    systems calls of core functions: linux ecalls
     
 ## ISA
 
 the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit 
 [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) or [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
 
-The milliForth is a program called by 'elsewhere alien operational 
-system', and use of registers s2-s7, and t3-t6, as scratch. 
+The milliForth is a program called by 'elsewhere alien operational system', and use of registers s2-s7, and t3-t6, as scratch. 
 
 ## Coding
 
@@ -31,14 +36,11 @@ system', and use of registers s2-s7, and t3-t6, as scratch.
 
 For assembler, use [standart Risc-V](https://github.com/riscv-non-isa/riscv-asm-manual) style with pre-processor directives eg. #define.
 
-For now, using riscv-unknown-elf-gcc 15.0 suit with spike and qemu 
-emulators for a single core minimal footprint Forth thread.  
-I hope it uses far less than 4k bytes, without a dictionary.
+For now, using riscv-unknown-elf-gcc 15.0 suit with spike and qemu emulators for a single core minimal footprint Forth thread.  
 
-The milliForth must use memory pointers for data stack and return stack,
-because does fetch and store from a special 'user structure', 
-which contains the user variables for Forth (state, toin, last, here, 
-spt, dpt, tout, once, heap, tail).
+I hope it uses far less than 4k bytes, without a user dictionary.
+
+The milliForth must use memory pointers for data stack and return stack, because does fetch and store from a special 'user structure', which contains the user variables for Forth (state, toin, last, here, spt, dpt, tout, once, heap, tail).
 
 This version includes: 
 
@@ -61,7 +63,7 @@ primitives:
         
 only internals: 
     
-    main, cold, warm, quit, 
+    main, cold, warm, quit, djb2, 
     token, skip, scan, getline, 
     tick, find, compile, execute, comma, memcopy 
 
