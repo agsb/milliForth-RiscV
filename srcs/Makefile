@@ -88,8 +88,9 @@ all:
 clean:
 	
 	$(RM) $(MY).out $(MY).map $(MY).lst \
-	      $(MY).elf $(MY).dmp $(MY).hex \
+	      $(MY).elf $(MY).dmp $(MY).bin \
 	      err out
+
 	      # $(MY).lbl $(MY).lbs $(MY).lbf \
 
 qemu: $(TARGET)

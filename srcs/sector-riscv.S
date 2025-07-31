@@ -63,7 +63,9 @@
 .equ CELL, 4
 
 # highlander, immediate flag.
-.equ FLAG_IMM, 1 << 7
+.equ FLAG_IMM, 0x10000000 #1 << 31
+
+.equ MASK_IMM, 0x7FFFFFFF #NOT(FLAG_IMM)
 
 # data stack, 36 cells, moves backwards, push decreases before copy
 .equ spz, 36 * CELL
@@ -118,8 +120,8 @@ h_\label:
 # memory index 
 #define idx s4
 
-# memory cursor
-#define crs s5
+# hash cursor
+#define hsh s5
 
 # link pointer
 #define lnk s6
@@ -211,6 +213,33 @@ main:
 .include "minimal.S"
 
 #----------------------------------------------------------------------
+# djb hash function
+#.include "djb2f.S"
+
+.ifdef DJB2
+
+# classic djb2 hash algorithm, with XOR, adapted from cdb_hash
+# idx pointer to str
+# fth hold the end of word character ( \0 or spc)
+# snd returns the hash 
+djb2f:
+        # easy 3581
+        addi hsh, zero, 2000
+        addi hsh, hsh,  1581
+100:
+        lb fst, 0 (idx)
+        # beq fst, zero, 100f
+        beq fst, fth, 100f
+        slli snd, hsh, 5
+        add hsh, hsh, snd
+        xor hsh, hsh, fst
+        addi idx, idx, 1
+        j 100b
+100:    ret
+        
+.endif
+
+#----------------------------------------------------------------------
 # catch for header macro
 def_link: .word 0x0
 
@@ -278,14 +307,90 @@ okey:
         # call prompt_okey ('OK\n')
 
 #---------------------------------------------------------------------
+# get a token or a hash
 resolve:
-# get a token 
         call token
 
 #---------------------------------------------------------------------         
+# find de code
 tick:
+        call find
+
+#---------------------------------------------------------------------         
+eval:
+# executing ? if == \0
+        lb idx, STAT+0 (usr)
+        beq idx, zero, execute
+
+# immediate ? if < \0
+        lb idx, STAT+1 (usr)
+        blt idx, zero, immediate      
+
+# wrd points to start of code or list of references
+
+compile:
+
+# addi snd, zero, 'C'
+# call _putchar
+
+        call wcomma
+
+        j resolve
+
+execute:
+immediate:
+
+# addi snd, zero, 'E'
+# call putchar
+
+        la ipt, resolvept
+
+        j pick
+
+#---------------------------------------------------------------------         
+find:
+
 # get the latest link
         lw lnk, LAST (usr)
+
+.ifdef DJB2
+
+100:
+# verify end of dictionary, abort (could be number?)
+        beq lnk, zero, abort
+
+# linked list
+        add wrd, lnk, zero
+
+# get next link 
+        lw lnk, 0 (wrd)
+
+# get hash
+        add wrd, wrd, CELL
+
+        lw snd, 0 (wrd)
+
+        add trd, zero, snd
+
+# mask immediate ?
+        
+        andi snd, snd, MASK_IMM
+
+# compare
+        beq hsh, snd, 100f
+
+        j 100b
+
+100:
+        andi thd, trd, FLAG_IMM
+
+# zzzz save in STAT+1 ????
+
+        add wrd, wrd, CELL
+
+.endif
+
+.ifndef DJB2
 
 100:
 # set token, c-str
@@ -338,36 +443,12 @@ tick:
         
         j 300b
 
+        # wrd must be 4 byte align !!! zzzz
+
+.endif
+
 300:
-# wrd points to start of code or list of references
-
-eval:
-# executing ? if == \0
-        lb idx, STAT+0 (usr)
-        beq idx, zero, execute
-
-# immediate ? if < \0
-        lb idx, STAT+1 (usr)
-        blt idx, zero, immediate      
-
-compile:
-
-# addi snd, zero, 'C'
-# call _putchar
-
-        call wcomma
-
-        j resolve
-
-execute:
-immediate:
-
-# addi snd, zero, 'E'
-# call putchar
-
-        la ipt, resolvept
-
-        j pick
+        ret
 
 #---------------------------------------------------------------------
 # 
@@ -442,7 +523,24 @@ token:
         j 100b
 100:
 
+.ifdef DJB2
+
+# make and mask hash
+
+        call djb2
+
+        andi hsh, hsh, MASK_IMM
+
 # update toin
+
+        sw idx, TOIN (usr)
+        
+.endif
+
+.ifndef DJB2
+
+# update toin
+
         sw idx, TOIN (usr)
 
 # scan spaces
@@ -469,7 +567,9 @@ token:
 
         sw snd, TOIN (usr)
 
-        ret
+.endif
+
+        ret 
 
 #---------------------------------------------------------------------
 #
@@ -610,6 +710,7 @@ def_word ":", "colon", 0
         sw fst, STAT (usr)
 
 # make header:
+
 # copy last into (here)
         lw wrd, LAST (usr)
         call wcomma
@@ -617,6 +718,17 @@ def_word ":", "colon", 0
 # get following token
         call token
         
+.ifdef DJB2
+
+# copy the hash
+
+        add wrd, zero, snd
+        call wcomma
+
+.endif
+
+.ifndef DJB2
+
         lw fst, TOIN (usr)
         lw snd, HERE (usr)
 
@@ -632,6 +744,8 @@ mcopy:
 
 # update here 
         sw snd, HERE (usr)
+
+.endif
 
 # done
         # jmp next
