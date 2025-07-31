@@ -103,7 +103,7 @@
 .set last_link, 0x0
 
 .macro def_word name, label, flag
-.p2align 2, 0x00
+#.p2align 2, 0x00
 h_\label:
 .word last_link
 
@@ -151,7 +151,7 @@ h_\label:
 
 #----------------------------------------------------------------------
 .section .bss
-.p2align 2, 0x0
+#.p2align 2, 0x0
 
 # user structure of internal Forth variables
 # catch:

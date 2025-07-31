@@ -22,12 +22,18 @@
     Forth thinks that is continous but limited, and grows silently. 
     Really ?
 
-    RiscV are memory mapped, eg. the RP2350 includes 520KiB of SRAM 
-    in ten banks, first eigth banks (0-7) have bits 3:2 striped 
-    address access, the last two banks (8-9) are not striped.
+    Forth starts the compiled dictionary at end of code, because 
+    all memory is linear and equal, except some reserved for I/O.
+
+    RiscV CPUs are memory mapped, eg. the RP2350 includes 
+    520KiB of SRAM in ten banks, first eigth banks (0-7) 
+    have bits 3:2 striped address access, 
+    the last two banks (8-9) are not striped.
 
     The gcc linker ld, have memory map for .text, .data, .bss, .rodata 
     sections and a default segment memory. 
+
+    The .text sections is marked as READONLY.
     
     For sake, 0x2008000 is a good place.
 
