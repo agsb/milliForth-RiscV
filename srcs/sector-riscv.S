@@ -63,9 +63,9 @@
 .equ CELL, 4
 
 # highlander, immediate flag.
-.equ FLAG_IMM, 0x10000000 #1 << 31
+.equ FLAG_IMM, 0x80000000
 
-.equ MASK_IMM, 0x7FFFFFFF #NOT(FLAG_IMM)
+.equ MASK_IMM, 0x7FFFFFFF
 
 # data stack, 36 cells, moves backwards, push decreases before copy
 .equ spz, 36 * CELL
@@ -93,6 +93,33 @@
 # the label 1: is used for get last link address for list dictionary 
 # minimum size of header is two words, why not use hash ?
 ##
+
+.ifdef DJB2
+# makes:
+#   h_name:
+#   .word  link_to_previous_entry
+#   .word  hash of word name | flag
+#   name:
+
+.set last_link, 0x0
+.macro def_word name, label, hash
+.p2align 2, 0x00
+h_\label:
+.word last_link
+.word hash
+.set last_link, h_\label + 0
+.p2align 2, 0x20        
+\label:
+.endm
+.endif
+
+.ifndef DJB2
+# makes:
+#   h_name:
+#   .word  link_to_previous_entry
+#   .byte  strlen(name) + flags
+#   .byte  name + pad
+#   name:
 .set last_link, 0x0
 .macro def_word name, label, flag
 .p2align 2, 0x00
@@ -106,6 +133,8 @@ h_\label:
        .p2align 2, 0x20        
 \label:
 .endm
+.endif
+
 
 #---------------------------------------------------------------------
 # using pre-processor CPP (GNU GCC)
@@ -370,11 +399,12 @@ find:
 
         lw snd, 0 (wrd)
 
-        add trd, zero, snd
+# hash is negative ?
+        slt trd, snd, zero
 
-# mask immediate ?
+# mask immediate
         
-        andi snd, snd, MASK_IMM
+        # andi snd, snd, MASK_IMM
 
 # compare
         beq hsh, snd, 100f
@@ -382,10 +412,6 @@ find:
         j 100b
 
 100:
-        andi thd, trd, FLAG_IMM
-
-# zzzz save in STAT+1 ????
-
         add wrd, wrd, CELL
 
 .endif
@@ -418,9 +444,9 @@ find:
 
 # save it and mask it
 
-        sb snd, STAT+1 (usr)
+        slt trd, snd, zero
 
-        andi snd, snd, 0x7F
+        # andi snd, snd, MASK_IMM
 
 # compare it
 
@@ -445,9 +471,14 @@ find:
 
         # wrd must be 4 byte align !!! zzzz
 
+300:
+
 .endif
 
-300:
+# keep the flag
+
+        sb trd, STAT+1 (usr)
+
         ret
 
 #---------------------------------------------------------------------
@@ -529,7 +560,7 @@ token:
 
         call djb2
 
-        andi hsh, hsh, MASK_IMM
+        # andi hsh, hsh, MASK_IMM
 
 # update toin
 
@@ -752,7 +783,7 @@ mcopy:
         j next 
 
 #---------------------------------------------------------------------
-def_word ";", "semis",  FLAG_IMM
+def_word ";", "semis",  0 #FLAG_IMM
 # update last, panic if colon not lead elsewhere 
         lw idx, ONCE (usr)
         sw idx, LAST (usr)
