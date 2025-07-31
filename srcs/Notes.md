@@ -93,7 +93,7 @@
     No direct memory access, only by register as pointer.
     No register indexed offset, only immediate offsets.
 
-    For Assembler:
+## For Assembler:
 
     1. Why ".equ name, register", does not work ?
     Also r0 must ever be called as zero.
@@ -117,7 +117,7 @@
     reserve one register (usr) to keep the reference to 'user struct'
     and another (ipt) to hold the Forth instruction pointer
 
-    The indirect code defaults:
+    4. The indirect code defaults:
 
 ```
 wpull:
@@ -140,7 +140,7 @@ wpush:
         sw idx, SPT (usr)
 ```
 
-    But which registers ?
+    5. But which registers ?
 
     The convention for R32* ISA for interrupts, keeps ra, t0-t2, a0-a5
     and the gcc __attribute__((interrupt)) keeps which are used inside.
@@ -151,6 +151,10 @@ wpush:
 
     All code must be align to CELL size, also the dictionary headers.
     
+    6. The jal and jalr, save PC+4 in register ra,
+    does only ONE level of call, more levels must 
+    save the register ra elsewhere and load it at ret.
+
 ## IDEAS
 
     _"AI uses hash code as word, Humans uses semantics as word"_
