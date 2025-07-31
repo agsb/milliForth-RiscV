@@ -36,7 +36,14 @@ QFLAGS = -nographic -smp 1 -machine virt -bios none
 GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs \
-	-march=rv32i -mabi=ilp32 -static -Oz 
+	-march=rv32i -mabi=ilp32 -static -Oz \
+	-fPIC -nopie 
+
+#-fno-exceptions \
+#-fno-rtti \
+#-ffunction-sections \
+#-fdata-sections \
+#-fno-stack-protector \
 
 # -fPIC
 # -no-pie
