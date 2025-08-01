@@ -16,34 +16,43 @@
 
 01/07/2025
 
-    Using GCCFLAGS = -nostartfiles -nodefaultlibs \
-                     -march=rv32ic -mabi=ilp32 -static -Oz
+Using GCCFLAGS = -nostartfiles -nodefaultlibs \
+                 -march=rv32ic -mabi=ilp32 -static -Oz
+No errors. 
 
-    size of 0x26C, using s2-s7 and t3-t6, mix 32-bit and 16-bit 
-    opcodes, No errors. 
-
-    Now try optimize for:
+Size of .text is 0x26C bytes, including 0x34 of ecalls, using s2-s7 and t3-t6, mix 32-bit (101) and 16-bit (63) opcodes.
+    
+Now try optimize for use more 16-bit opcodes:
 
         Use zero (x0), ra (x1), sp (x2), s0 (x8), s1 (x9), a1-a5 (x10-x15)
 
         Keep just one level of call, no need backup for ra
 
+        ecall is always a 32-bit size opcode
+
+        no (s0) frame pointer used
         Use sp as reference pointer of user struct with offset
 
         Use s0 as forth instruction pointer
 
-        ecall uses a0, a1, a2, a7, always 32-bit size
-
         keep a0, a1, a2, in memory while ecalls
 
+consider:
 
+        r0 is zero, ever
+        ra is the return address for jal, do not touch :)
+        ecall uses a0, a1, a2, (a7), must be saved 
+        sp is free for use
+        s0 s1 a3 a4 a5 is free for use
+        
+       
 31/07/2025
 
 _"From a 6502 64k memory to a Risc-V 4GB memory, Mind the Gap."_
 
-    Moved .ends: to end of .bss, so dictionary starts at .heap 
+Moved .ends: to end of .bss, so dictionary starts at .heap 
 
-    (relies in .dat, .text, .rodata, .bss linker order) 
+(relies in .dat, .text, .rodata, .bss linker order) 
 
     
 30/07/2025
