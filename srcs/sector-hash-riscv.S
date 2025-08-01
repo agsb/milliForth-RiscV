@@ -251,51 +251,72 @@ main:
 djb2f:
         # easy 3581
         addi hsh, zero, 2000
+
         addi hsh, hsh,  1581
+
 100:
         lb fst, 0 (idx)
+        
         # beq fst, zero, 100f
+        
         beq fst, fth, 100f
+        
         slli snd, hsh, 5
+        
         add hsh, hsh, snd
+        
         xor hsh, hsh, fst
+        
         addi idx, idx, 1
+        
         j 100b
+
 100:    ret
         
 #----------------------------------------------------------------------
 # do what need once
 cold:
 # just for sake
+
         fence
 
 # load user pointer address
+
         la usr, _user
 
 # load word separator
+
         add fth, zero, SPC
 
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
 # link list of headers, aka dictionary
+
         la idx, h_exit
+        
         sw idx, LAST (usr)
 
 # next heap free cell  
+        
         la idx, ends
+        
         sw idx, HERE (usr)
 
 #---------------------------------------------------------------------
 # reset TIB
 reset:
+        
         la idx, _tib
+        
         sw zero, 0 (idx)
 
 #---------------------------------------------------------------------
 abort:
 # reset data stack
+        
         la idx, sp0 
+        
         sw idx, SPT (usr)
 
         # call prompt_erro ('??\n')
@@ -303,10 +324,13 @@ abort:
 #---------------------------------------------------------------------
 quit:
 # reset return stack
+        
         la idx, rp0 
+        
         sw idx, RPT (usr)
 
 # stat is 'interpret' == \0
+        
         sw zero, STAT (usr)
 
         j okey
@@ -315,6 +339,7 @@ quit:
 # the outer loop, need for indirects
 
 resolvept:
+        
         .word okey
 
 #---------------------------------------------------------------------
@@ -325,21 +350,73 @@ okey:
 #---------------------------------------------------------------------
 # get a token or a hash
 resolve:
+        
         call token
 
 #---------------------------------------------------------------------         
 # find de code
 tick:
-        call find
+        
+#---------------------------------------------------------------------         
+# search for a hash in dictionary linked list 
+
+# get the latest link
+        
+        lw lnk, LAST (usr)
+
+100:
+# verify end of dictionary, abort (could be number?)
+        
+        beq lnk, zero, abort
+
+# linked list
+        
+        add wrd, lnk, zero
+
+# get next link 
+        
+        lw lnk, 0 (wrd)
+
+# move to hash
+        
+        add wrd, wrd, CELL
+
+        lw snd, 0 (wrd)
+
+# mask hash flag
+        
+        andi trd, snd, FLAG_IMM
+
+        xor snd, snd, trd
+
+# compare
+        
+        beq hsh, snd, 100f
+
+# next link
+        j 100b
+
+100:
+# move to code
+
+        add wrd, wrd, CELL
+
+# keep the flag
+
+        sb trd, STAT+1 (usr)
 
 #---------------------------------------------------------------------         
 eval:
 # executing ? if == \0
+        
         lb idx, STAT+0 (usr)
+        
         beq idx, zero, execute
 
 # immediate ? if < \0
+        
         lb idx, STAT+1 (usr)
+        
         bne idx, zero, immediate      
 
 # wrd points to start of code or list of references
@@ -365,49 +442,6 @@ immediate:
 
         j pick
 
-#---------------------------------------------------------------------         
-# search for a hash in dictionary linked list 
-find:
-
-# get the latest link
-        lw lnk, LAST (usr)
-
-100:
-# verify end of dictionary, abort (could be number?)
-        beq lnk, zero, abort
-
-# linked list
-        add wrd, lnk, zero
-
-# get next link 
-        lw lnk, 0 (wrd)
-
-# move to hash
-        add wrd, wrd, CELL
-
-        lw snd, 0 (wrd)
-
-# mask hash flag
-        andi trd, snd, FLAG_IMM
-
-        xor snd, snd, trd
-
-# compare
-        beq hsh, snd, 100f
-
-# next link
-        j 100b
-
-100:
-# move to code
-        add wrd, wrd, CELL
-
-# keep the flag
-
-        sb trd, STAT+1 (usr)
-
-        ret
-
 #---------------------------------------------------------------------
 # absolute crude getline, continues until \n
 getline:
@@ -418,9 +452,11 @@ getline:
         sw idx, TOIN (usr)
 
 # end-of-line is newline
+        
         addi trd, zero, 10
 
 # ever start with a space
+        
         add fst, fth, zero
 
 # fill the TIB until \n
@@ -435,6 +471,7 @@ getline:
 #        andi fst, 0x7F
 
 # \n ends 
+        
         bne fst, trd, 100b
 
 # at end-of-line
@@ -463,6 +500,7 @@ getline:
 token:
 
 # last position on tib
+        
         lw idx, TOIN (usr)
 
 # skip spaces
@@ -503,6 +541,7 @@ mask:
 
 #---------------------------------------------------------------------
 wcomma:
+        
         lw idx, HERE (usr)
       
         sw wrd, 0 (idx)
@@ -515,6 +554,7 @@ wcomma:
 
 #---------------------------------------------------------------------
 load2:
+        
         lw idx, SPT (usr)
         
         lw snd, 0 * CELL (idx)
@@ -550,92 +590,137 @@ load2:
 #---------------------------------------------------------------------
 # ( -- c ) 
 def_word "key", "key", 0
+        
         call _getc
+        
         j push1
 
 #---------------------------------------------------------------------
 # ( c -- ) 
 def_word "emit", "emit", 0
+        
         call load2
+        
         call _putc
+        
         j drop1
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
 def_word "!", "store", 0
+        
         call load2
+        
         sw fst, 0 (snd)
 drop2:
+        
         add idx, idx, +1 * CELL
 drop1:
+        
         add idx, idx, +1 * CELL
+        
         sw idx, SPT (usr)
+        
         j next
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
 def_word "@", "fetch", 0
+        
         call load2
+        
         lw fst, 0 (snd)
+        
         j save0
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
 def_word "nand", "nand", 0
+        
         call load2
+        
         and fst, snd, fst
+        
         not fst, fst
+
 save1:
+        
         add idx, idx, +1 * CELL
+        
         sw idx, SPT (usr)
+        
         j save0
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
 def_word "+", "plus", 0
+        
         call load2
+        
         add fst, snd, fst
+        
         j save1
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
 def_word "0#", "zeroq", 0
+
         call load2
+
 isfalse:
+
         beq snd, zero, next
+
 istrue:
+        
         addi fst, zero, TRUE
+        
         j save0
 
 #---------------------------------------------------------------------
 # ( -- state ), return an reference
 def_word "s@", "state", 0 
+        
         add fst, usr, zero 
+
 push1:
+        
         lw idx, SPT (usr)
+        
         addi idx, idx, -1 * CELL
+        
         sw idx, SPT (usr)
+
 save0:
+        
         sw fst, 0 (idx)
+        
         j next
 
 #---------------------------------------------------------------------
 def_word ":", "colon", 0
 # save here, panic if semis not follow elsewhere
+        
         lw fst, HERE (usr)
+        
         sw fst, ONCE (usr)
 
 # stat is 'compile' == 1
+        
         addi fst, zero, ONE
+        
         sw fst, STAT (usr)
 
 # make a header:
 
 # copy last into (here)
+        
         lw wrd, LAST (usr)
+        
         call wcomma
 
 # get following token
+        
         call token
         
 # copy the hash
@@ -648,19 +733,22 @@ finish:
         call wcomma
 
 # done
-        # jmp next
         j next 
 
 #---------------------------------------------------------------------
 def_word ";", "semis",  0 #FLAG_IMM
 # update last, panic if colon not lead elsewhere 
+        
         lw fst, ONCE (usr)
+        
         sw fst, LAST (usr)
 
 # stat is 'interpret' == 0
+        
         sw zero, STAT (usr)
 
 # compound words must ends with exit
+        
         la wrd, exit
 
         j finish
@@ -670,14 +758,8 @@ def_word ";", "semis",  0 #FLAG_IMM
 #
 # this is the Forth heart beat.
 #
-# classic Fig-Forth: ipt is IP, wrd is W
-#
-# for reference: 
-#
-#   nest aka enter or docol, 
-#   unnest aka exit or semis;
-#
-# for milli-forth both stack indexes must be in memory
+# nest aka enter or docol, 
+# unnest aka exit or semis;
 #
 # "why there is no 'docol at start of words ?"
 #
@@ -686,35 +768,50 @@ def_word ";", "semis",  0 #FLAG_IMM
 def_word "exit", "exit", 0
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
+        
         lw idx, RPT (usr)
+        
         lw ipt, 0 (idx)
+        
         addi idx, idx, +1 * CELL
+        
         sw idx, RPT (usr)
 
 next:
 # wrd = (ipt) #; ipt += cell
+        
         lw wrd, 0 (ipt)
+        
         addi ipt, ipt,  +1 * CELL
 
 pick:
 # compare address, if less than 'ends then is a primitive 
+        
         la idx, ends
+        
         blt wrd, idx, jump
 
 nest:   #; enter
 # return push, (rpt) = ipt, rp -= cell
+        
         lw idx, RPT (usr)
+        
         addi idx, idx, -1 * CELL
+        
         sw ipt, 0 (idx)
+        
         sw idx, RPT (usr)
 
 move: 
 # indirect access 
+        
         add ipt, wrd, zero
+        
         j next
 
 jump: 
 # jump to primitive
+        
         jalr zero, 0 (wrd)
 
 
