@@ -14,6 +14,29 @@
 
 ## Done
 
+01/07/2025
+
+    Using GCCFLAGS = -nostartfiles -nodefaultlibs \
+                     -march=rv32ic -mabi=ilp32 -static -Oz
+
+    size of 0x26C, using s2-s7 and t3-t6, mix 32-bit and 16-bit 
+    opcodes, No errors. 
+
+    Now try optimize for:
+
+        Use zero (x0), ra (x1), sp (x2), s0 (x8), s1 (x9), a1-a5 (x10-x15)
+
+        Keep just one level of call, no need backup for ra
+
+        Use sp as reference pointer of user struct with offset
+
+        Use s0 as forth instruction pointer
+
+        ecall uses a0, a1, a2, a7, always 32-bit size
+
+        keep a0, a1, a2, in memory while ecalls
+
+
 31/07/2025
 
 _"From a 6502 64k memory to a Risc-V 4GB memory, Mind the Gap."_

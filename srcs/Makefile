@@ -37,8 +37,9 @@ GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs \
 	-march=rv32ic -mabi=ilp32 -static -Oz \
-	-fPIC \
-	-mno-riscv-attribute
+
+	# -fPIC \
+	# -mno-riscv-attribute
 
 #-fno-exceptions \
 #-fno-rtti \
