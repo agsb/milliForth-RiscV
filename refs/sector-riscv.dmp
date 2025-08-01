@@ -1,0 +1,304 @@
+
+sector-riscv.elf:     file format elf32-littleriscv
+sector-riscv.elf
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000026c  00010094  00010094  00000094  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .bss          00000228  00011300  00011300  00000300  2**2
+                  ALLOC
+  2 .riscv.attributes 0000001f  00000000  00000000  00000300  2**0
+                  CONTENTS, READONLY
+
+Disassembly of section .text:
+
+00010094 <_start>:
+   10094:	2801                	jal	100a4 <_init>
+   10096:	a899                	j	100ec <cold>
+
+00010098 <_exit>:
+   10098:	00000533          	add	a0,zero,zero
+   1009c:	05d00893          	li	a7,93
+   100a0:	00000073          	ecall
+
+000100a4 <_init>:
+   100a4:	8e418593          	addi	a1,gp,-1820 # 113e4 <_pad>
+   100a8:	4605                	li	a2,1
+   100aa:	8082                	ret
+
+000100ac <_getc>:
+   100ac:	4501                	li	a0,0
+   100ae:	03f00893          	li	a7,63
+   100b2:	00000073          	ecall
+   100b6:	0005ae03          	lw	t3,0(a1)
+   100ba:	8082                	ret
+
+000100bc <_putc>:
+   100bc:	01d5a023          	sw	t4,0(a1)
+   100c0:	4505                	li	a0,1
+   100c2:	04000893          	li	a7,64
+   100c6:	00000073          	ecall
+   100ca:	8082                	ret
+
+000100cc <djb2f>:
+   100cc:	7d000a93          	li	s5,2000
+   100d0:	62da8a93          	addi	s5,s5,1581
+   100d4:	000a0e03          	lb	t3,0(s4)
+   100d8:	01fe0963          	beq	t3,t6,100ea <djb2f+0x1e>
+   100dc:	005a9e93          	slli	t4,s5,0x5
+   100e0:	9af6                	add	s5,s5,t4
+   100e2:	01cacab3          	xor	s5,s5,t3
+   100e6:	0a05                	addi	s4,s4,1
+   100e8:	b7f5                	j	100d4 <djb2f+0x8>
+   100ea:	8082                	ret
+
+000100ec <cold>:
+   100ec:	0ff0000f          	fence
+   100f0:	00001917          	auipc	s2,0x1
+   100f4:	21090913          	addi	s2,s2,528 # 11300 <__DATA_BEGIN__>
+   100f8:	02000f93          	li	t6,32
+
+000100fc <warm>:
+   100fc:	00000a17          	auipc	s4,0x0
+   10100:	1c6a0a13          	addi	s4,s4,454 # 102c2 <h_exit>
+   10104:	01492423          	sw	s4,8(s2)
+   10108:	a2418a13          	addi	s4,gp,-1500 # 11524 <ends>
+   1010c:	01492623          	sw	s4,12(s2)
+
+00010110 <reset>:
+   10110:	89418a13          	addi	s4,gp,-1900 # 11394 <_tib>
+   10114:	000a2023          	sw	zero,0(s4)
+
+00010118 <abort>:
+   10118:	99418a13          	addi	s4,gp,-1644 # 11494 <_rpb>
+   1011c:	01492823          	sw	s4,16(s2)
+
+00010120 <quit>:
+   10120:	a2418a13          	addi	s4,gp,-1500 # 11524 <ends>
+   10124:	01492a23          	sw	s4,20(s2)
+   10128:	00092023          	sw	zero,0(s2)
+   1012c:	a019                	j	10132 <okey>
+
+0001012e <resolvept>:
+   1012e:	00010132          	.word	0x00010132
+
+00010132 <okey>:
+   10132:	288d                	jal	101a4 <token>
+
+00010134 <tick>:
+   10134:	00892b03          	lw	s6,8(s2)
+   10138:	fe0b00e3          	beqz	s6,10118 <abort>
+   1013c:	000b0bb3          	add	s7,s6,zero
+   10140:	000bab03          	lw	s6,0(s7)
+   10144:	0b91                	addi	s7,s7,4
+   10146:	000bae83          	lw	t4,0(s7)
+   1014a:	001eff13          	andi	t5,t4,1
+   1014e:	01eeceb3          	xor	t4,t4,t5
+   10152:	01da8363          	beq	s5,t4,10158 <tick+0x24>
+   10156:	b7cd                	j	10138 <tick+0x4>
+   10158:	0b91                	addi	s7,s7,4
+   1015a:	01e900a3          	sb	t5,1(s2)
+
+0001015e <eval>:
+   1015e:	00090a03          	lb	s4,0(s2)
+   10162:	000a0863          	beqz	s4,10172 <execute>
+   10166:	00190a03          	lb	s4,1(s2)
+   1016a:	000a1463          	bnez	s4,10172 <execute>
+
+0001016e <compile>:
+   1016e:	28a9                	jal	101c8 <wcomma>
+   10170:	b7c9                	j	10132 <okey>
+
+00010172 <execute>:
+   10172:	00000997          	auipc	s3,0x0
+   10176:	fbc98993          	addi	s3,s3,-68 # 1012e <resolvept>
+   1017a:	a295                	j	102de <pick>
+
+0001017c <getline>:
+   1017c:	89418a13          	addi	s4,gp,-1900 # 11394 <_tib>
+   10180:	01492223          	sw	s4,4(s2)
+   10184:	4f29                	li	t5,10
+   10186:	000f8e33          	add	t3,t6,zero
+   1018a:	01ca0023          	sb	t3,0(s4)
+   1018e:	0a05                	addi	s4,s4,1
+   10190:	3f31                	jal	100ac <_getc>
+   10192:	ffee1ce3          	bne	t3,t5,1018a <getline+0xe>
+   10196:	000f8e33          	add	t3,t6,zero
+   1019a:	01ca2023          	sw	t3,0(s4)
+   1019e:	0a05                	addi	s4,s4,1
+   101a0:	000a2023          	sw	zero,0(s4)
+
+000101a4 <token>:
+   101a4:	00492a03          	lw	s4,4(s2)
+   101a8:	000a0e03          	lb	t3,0(s4)
+   101ac:	fc0e08e3          	beqz	t3,1017c <getline>
+   101b0:	0a05                	addi	s4,s4,1
+   101b2:	01fe1363          	bne	t3,t6,101b8 <token+0x14>
+   101b6:	bfcd                	j	101a8 <token+0x4>
+   101b8:	3f11                	jal	100cc <djb2f>
+   101ba:	01492223          	sw	s4,4(s2)
+
+000101be <mask>:
+   101be:	001afe13          	andi	t3,s5,1
+   101c2:	01cacab3          	xor	s5,s5,t3
+   101c6:	8082                	ret
+
+000101c8 <wcomma>:
+   101c8:	00c92a03          	lw	s4,12(s2)
+   101cc:	017a2023          	sw	s7,0(s4)
+   101d0:	0a11                	addi	s4,s4,4
+   101d2:	01492623          	sw	s4,12(s2)
+   101d6:	8082                	ret
+
+000101d8 <load2>:
+   101d8:	01092a03          	lw	s4,16(s2)
+   101dc:	000a2e83          	lw	t4,0(s4)
+   101e0:	004a2e03          	lw	t3,4(s4)
+   101e4:	8082                	ret
+
+000101e6 <h_key>:
+	...
+
+000101ee <key>:
+   101ee:	3d7d                	jal	100ac <_getc>
+   101f0:	a8bd                	j	1026e <push1>
+
+000101f2 <h_emit>:
+	...
+
+000101fa <emit>:
+   101fa:	3ff9                	jal	101d8 <load2>
+   101fc:	35c1                	jal	100bc <_putc>
+   101fe:	a809                	j	10210 <drop1>
+
+00010200 <h_store>:
+	...
+
+00010208 <store>:
+   10208:	3fc1                	jal	101d8 <load2>
+   1020a:	01cea023          	sw	t3,0(t4)
+
+0001020e <drop2>:
+   1020e:	0a11                	addi	s4,s4,4
+
+00010210 <drop1>:
+   10210:	0a11                	addi	s4,s4,4
+   10212:	01492823          	sw	s4,16(s2)
+   10216:	a0c9                	j	102d8 <next>
+
+00010218 <h_fetch>:
+	...
+
+00010220 <fetch>:
+   10220:	3f65                	jal	101d8 <load2>
+   10222:	000eae03          	lw	t3,0(t4)
+   10226:	a889                	j	10278 <save0>
+
+00010228 <h_nand>:
+	...
+
+00010230 <nand>:
+   10230:	3765                	jal	101d8 <load2>
+   10232:	01cefe33          	and	t3,t4,t3
+   10236:	fffe4e13          	not	t3,t3
+
+0001023a <save1>:
+   1023a:	0a11                	addi	s4,s4,4
+   1023c:	01492823          	sw	s4,16(s2)
+   10240:	a825                	j	10278 <save0>
+
+00010242 <h_plus>:
+	...
+
+0001024a <plus>:
+   1024a:	3779                	jal	101d8 <load2>
+   1024c:	9e76                	add	t3,t3,t4
+   1024e:	b7f5                	j	1023a <save1>
+
+00010250 <h_zeroq>:
+	...
+
+00010258 <zeroq>:
+   10258:	3741                	jal	101d8 <load2>
+
+0001025a <isfalse>:
+   1025a:	060e8f63          	beqz	t4,102d8 <next>
+
+0001025e <istrue>:
+   1025e:	5e7d                	li	t3,-1
+   10260:	a821                	j	10278 <save0>
+
+00010262 <h_state>:
+	...
+
+0001026a <state>:
+   1026a:	00090e33          	add	t3,s2,zero
+
+0001026e <push1>:
+   1026e:	01092a03          	lw	s4,16(s2)
+   10272:	1a71                	addi	s4,s4,-4
+   10274:	01492823          	sw	s4,16(s2)
+
+00010278 <save0>:
+   10278:	01ca2023          	sw	t3,0(s4)
+   1027c:	a8b1                	j	102d8 <next>
+
+0001027e <h_colon>:
+	...
+
+00010286 <colon>:
+   10286:	00c92e03          	lw	t3,12(s2)
+   1028a:	01c92e23          	sw	t3,28(s2)
+   1028e:	4e05                	li	t3,1
+   10290:	01c92023          	sw	t3,0(s2)
+   10294:	00892b83          	lw	s7,8(s2)
+   10298:	3f05                	jal	101c8 <wcomma>
+   1029a:	3729                	jal	101a4 <token>
+   1029c:	000a8bb3          	add	s7,s5,zero
+
+000102a0 <finish>:
+   102a0:	3725                	jal	101c8 <wcomma>
+   102a2:	a81d                	j	102d8 <next>
+
+000102a4 <h_semis>:
+	...
+
+000102ac <semis>:
+   102ac:	01c92e03          	lw	t3,28(s2)
+   102b0:	01c92423          	sw	t3,8(s2)
+   102b4:	00092023          	sw	zero,0(s2)
+   102b8:	00000b97          	auipc	s7,0x0
+   102bc:	012b8b93          	addi	s7,s7,18 # 102ca <exit>
+   102c0:	b7c5                	j	102a0 <finish>
+
+000102c2 <h_exit>:
+	...
+
+000102ca <exit>:
+   102ca:	01492a03          	lw	s4,20(s2)
+   102ce:	000a2983          	lw	s3,0(s4)
+   102d2:	0a11                	addi	s4,s4,4
+   102d4:	01492a23          	sw	s4,20(s2)
+
+000102d8 <next>:
+   102d8:	0009ab83          	lw	s7,0(s3)
+   102dc:	0991                	addi	s3,s3,4
+
+000102de <pick>:
+   102de:	a2418a13          	addi	s4,gp,-1500 # 11524 <ends>
+   102e2:	014bcc63          	blt	s7,s4,102fa <jump>
+
+000102e6 <nest>:
+   102e6:	01492a03          	lw	s4,20(s2)
+   102ea:	1a71                	addi	s4,s4,-4
+   102ec:	013a2023          	sw	s3,0(s4)
+   102f0:	01492a23          	sw	s4,20(s2)
+
+000102f4 <move>:
+   102f4:	000b89b3          	add	s3,s7,zero
+   102f8:	b7c5                	j	102d8 <next>
+
+000102fa <jump>:
+   102fa:	000b8067          	jr	s7
+	...

@@ -43,13 +43,13 @@ _exit:
 
 # load system call for init
 _init:
-        la a1, _pad
-        addi a2, zero, 1
         ret
 
 # linux ecall for getc
 _getc:
         addi a0, zero, STDIN
+        la a1, _pad
+        addi a2, zero, 1
         addi a7, zero, GETC
         ecall
         lw t3, 0 (a1)
@@ -59,6 +59,8 @@ _getc:
 _putc:
         sw t4, 0 (a1)
         addi a0, zero, STDOUT
+        la a1, _pad
+        addi a2, zero, 1
         addi a7, zero, PUTC
         ecall
         ret

@@ -1,0 +1,304 @@
+
+sector-riscv.elf:     file format elf32-littleriscv
+sector-riscv.elf
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000020e  00010094  00010094  00000094  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .bss          000001e8  000112a4  000112a4  000002a4  2**2
+                  ALLOC
+  2 .riscv.attributes 0000001f  00000000  00000000  000002a2  2**0
+                  CONTENTS, READONLY
+
+Disassembly of section .text:
+
+00010094 <_start>:
+   10094:	a8a9                	j	100ee <cold>
+
+00010096 <_exit>:
+   10096:	00000533          	add	a0,zero,zero
+   1009a:	05d00893          	li	a7,93
+   1009e:	00000073          	ecall
+
+000100a2 <_init>:
+   100a2:	8082                	ret
+
+000100a4 <_getc>:
+   100a4:	4501                	li	a0,0
+   100a6:	8a618593          	addi	a1,gp,-1882 # 11348 <_pad>
+   100aa:	4605                	li	a2,1
+   100ac:	03f00893          	li	a7,63
+   100b0:	00000073          	ecall
+   100b4:	0005ae03          	lw	t3,0(a1)
+   100b8:	8082                	ret
+
+000100ba <_putc>:
+   100ba:	01d5a023          	sw	t4,0(a1)
+   100be:	4505                	li	a0,1
+   100c0:	8a618593          	addi	a1,gp,-1882 # 11348 <_pad>
+   100c4:	4605                	li	a2,1
+   100c6:	04000893          	li	a7,64
+   100ca:	00000073          	ecall
+   100ce:	8082                	ret
+
+000100d0 <djb2f>:
+   100d0:	7d000513          	li	a0,2000
+   100d4:	62d50513          	addi	a0,a0,1581
+   100d8:	00048683          	lb	a3,0(s1)
+   100dc:	01f68863          	beq	a3,t6,100ec <djb2f+0x1c>
+   100e0:	00551713          	slli	a4,a0,0x5
+   100e4:	953a                	add	a0,a0,a4
+   100e6:	8d35                	xor	a0,a0,a3
+   100e8:	0485                	addi	s1,s1,1
+   100ea:	b7fd                	j	100d8 <djb2f+0x8>
+   100ec:	8082                	ret
+
+000100ee <cold>:
+   100ee:	0ff0000f          	fence
+   100f2:	00001117          	auipc	sp,0x1
+   100f6:	1b210113          	addi	sp,sp,434 # 112a4 <__bss_start>
+   100fa:	02000f93          	li	t6,32
+
+000100fe <warm>:
+   100fe:	00000497          	auipc	s1,0x0
+   10102:	17648493          	addi	s1,s1,374 # 10274 <h_exit>
+   10106:	c426                	sw	s1,8(sp)
+   10108:	9e618493          	addi	s1,gp,-1562 # 11488 <ends>
+   1010c:	c626                	sw	s1,12(sp)
+
+0001010e <reset>:
+   1010e:	85618493          	addi	s1,gp,-1962 # 112f8 <_tib>
+   10112:	0004a023          	sw	zero,0(s1)
+
+00010116 <abort>:
+   10116:	95618493          	addi	s1,gp,-1706 # 113f8 <_rpb>
+   1011a:	c826                	sw	s1,16(sp)
+
+0001011c <quit>:
+   1011c:	9e618493          	addi	s1,gp,-1562 # 11488 <ends>
+   10120:	ca26                	sw	s1,20(sp)
+   10122:	c002                	sw	zero,0(sp)
+   10124:	a019                	j	1012a <okey>
+
+00010126 <resolvept>:
+   10126:	0001012a          	.word	0x0001012a
+
+0001012a <okey>:
+   1012a:	2085                	jal	1018a <token>
+
+0001012c <tick>:
+   1012c:	45a2                	lw	a1,8(sp)
+   1012e:	d5e5                	beqz	a1,10116 <abort>
+   10130:	00058633          	add	a2,a1,zero
+   10134:	420c                	lw	a1,0(a2)
+   10136:	0611                	addi	a2,a2,4
+   10138:	4218                	lw	a4,0(a2)
+   1013a:	00177793          	andi	a5,a4,1
+   1013e:	8f3d                	xor	a4,a4,a5
+   10140:	00e50363          	beq	a0,a4,10146 <tick+0x1a>
+   10144:	b7ed                	j	1012e <tick+0x2>
+   10146:	0611                	addi	a2,a2,4
+   10148:	00f100a3          	sb	a5,1(sp)
+
+0001014c <eval>:
+   1014c:	00010483          	lb	s1,0(sp)
+   10150:	c491                	beqz	s1,1015c <execute>
+   10152:	00110483          	lb	s1,1(sp)
+   10156:	e099                	bnez	s1,1015c <execute>
+
+00010158 <compile>:
+   10158:	20b9                	jal	101a6 <wcomma>
+   1015a:	bfc1                	j	1012a <okey>
+
+0001015c <execute>:
+   1015c:	00000417          	auipc	s0,0x0
+   10160:	fca40413          	addi	s0,s0,-54 # 10126 <resolvept>
+   10164:	a215                	j	10288 <pick>
+
+00010166 <getline>:
+   10166:	85618493          	addi	s1,gp,-1962 # 112f8 <_tib>
+   1016a:	c226                	sw	s1,4(sp)
+   1016c:	47a9                	li	a5,10
+   1016e:	000f86b3          	add	a3,t6,zero
+   10172:	00d48023          	sb	a3,0(s1)
+   10176:	0485                	addi	s1,s1,1
+   10178:	3735                	jal	100a4 <_getc>
+   1017a:	fef69ce3          	bne	a3,a5,10172 <getline+0xc>
+   1017e:	000f86b3          	add	a3,t6,zero
+   10182:	c094                	sw	a3,0(s1)
+   10184:	0485                	addi	s1,s1,1
+   10186:	0004a023          	sw	zero,0(s1)
+
+0001018a <token>:
+   1018a:	4492                	lw	s1,4(sp)
+   1018c:	00048683          	lb	a3,0(s1)
+   10190:	daf9                	beqz	a3,10166 <getline>
+   10192:	0485                	addi	s1,s1,1
+   10194:	01f69363          	bne	a3,t6,1019a <token+0x10>
+   10198:	bfd5                	j	1018c <token+0x2>
+   1019a:	3f1d                	jal	100d0 <djb2f>
+   1019c:	c226                	sw	s1,4(sp)
+
+0001019e <mask>:
+   1019e:	00157693          	andi	a3,a0,1
+   101a2:	8d35                	xor	a0,a0,a3
+   101a4:	8082                	ret
+
+000101a6 <wcomma>:
+   101a6:	44b2                	lw	s1,12(sp)
+   101a8:	c090                	sw	a2,0(s1)
+   101aa:	0491                	addi	s1,s1,4
+   101ac:	c626                	sw	s1,12(sp)
+   101ae:	8082                	ret
+
+000101b0 <load2>:
+   101b0:	44c2                	lw	s1,16(sp)
+   101b2:	4098                	lw	a4,0(s1)
+   101b4:	40d4                	lw	a3,4(s1)
+   101b6:	8082                	ret
+
+000101b8 <h_key>:
+	...
+
+000101c0 <key>:
+   101c0:	35d5                	jal	100a4 <_getc>
+   101c2:	a88d                	j	10234 <push1>
+
+000101c4 <h_emit>:
+	...
+
+000101cc <emit>:
+   101cc:	37d5                	jal	101b0 <load2>
+   101ce:	35f5                	jal	100ba <_putc>
+   101d0:	a801                	j	101e0 <drop1>
+
+000101d2 <h_store>:
+	...
+
+000101da <store>:
+   101da:	3fd9                	jal	101b0 <load2>
+   101dc:	c314                	sw	a3,0(a4)
+
+000101de <drop2>:
+   101de:	0491                	addi	s1,s1,4
+
+000101e0 <drop1>:
+   101e0:	0491                	addi	s1,s1,4
+   101e2:	c826                	sw	s1,16(sp)
+   101e4:	a045                	j	10284 <next>
+
+000101e6 <h_fetch>:
+	...
+
+000101ee <fetch>:
+   101ee:	37c9                	jal	101b0 <load2>
+   101f0:	4314                	lw	a3,0(a4)
+   101f2:	a0a1                	j	1023a <save0>
+
+000101f4 <h_nand>:
+	...
+
+000101fc <nand>:
+   101fc:	3f55                	jal	101b0 <load2>
+   101fe:	8ef9                	and	a3,a3,a4
+   10200:	fff6c693          	not	a3,a3
+
+00010204 <save1>:
+   10204:	0491                	addi	s1,s1,4
+   10206:	c826                	sw	s1,16(sp)
+   10208:	a80d                	j	1023a <save0>
+
+0001020a <h_plus>:
+	...
+
+00010212 <plus>:
+   10212:	3f79                	jal	101b0 <load2>
+   10214:	96ba                	add	a3,a3,a4
+   10216:	b7fd                	j	10204 <save1>
+
+00010218 <h_zeroq>:
+	...
+
+00010220 <zeroq>:
+   10220:	3f41                	jal	101b0 <load2>
+
+00010222 <isfalse>:
+   10222:	c32d                	beqz	a4,10284 <next>
+
+00010224 <istrue>:
+   10224:	56fd                	li	a3,-1
+   10226:	a811                	j	1023a <save0>
+
+00010228 <h_state>:
+	...
+
+00010230 <state>:
+   10230:	000106b3          	add	a3,sp,zero
+
+00010234 <push1>:
+   10234:	44c2                	lw	s1,16(sp)
+   10236:	14f1                	addi	s1,s1,-4
+   10238:	c826                	sw	s1,16(sp)
+
+0001023a <save0>:
+   1023a:	c094                	sw	a3,0(s1)
+   1023c:	a0a1                	j	10284 <next>
+
+0001023e <h_colon>:
+	...
+
+00010246 <colon>:
+   10246:	46b2                	lw	a3,12(sp)
+   10248:	ce36                	sw	a3,28(sp)
+   1024a:	4685                	li	a3,1
+   1024c:	c036                	sw	a3,0(sp)
+   1024e:	4622                	lw	a2,8(sp)
+   10250:	3f99                	jal	101a6 <wcomma>
+   10252:	3f25                	jal	1018a <token>
+   10254:	00050633          	add	a2,a0,zero
+
+00010258 <finish>:
+   10258:	37b9                	jal	101a6 <wcomma>
+   1025a:	a02d                	j	10284 <next>
+
+0001025c <h_semis>:
+	...
+
+00010264 <semis>:
+   10264:	46f2                	lw	a3,28(sp)
+   10266:	c436                	sw	a3,8(sp)
+   10268:	c002                	sw	zero,0(sp)
+   1026a:	00000617          	auipc	a2,0x0
+   1026e:	01260613          	addi	a2,a2,18 # 1027c <exit>
+   10272:	b7dd                	j	10258 <finish>
+
+00010274 <h_exit>:
+	...
+
+0001027c <exit>:
+   1027c:	44d2                	lw	s1,20(sp)
+   1027e:	4080                	lw	s0,0(s1)
+   10280:	0491                	addi	s1,s1,4
+   10282:	ca26                	sw	s1,20(sp)
+
+00010284 <next>:
+   10284:	4010                	lw	a2,0(s0)
+   10286:	0411                	addi	s0,s0,4
+
+00010288 <pick>:
+   10288:	9e618493          	addi	s1,gp,-1562 # 11488 <ends>
+   1028c:	00964963          	blt	a2,s1,1029e <jump>
+
+00010290 <nest>:
+   10290:	44d2                	lw	s1,20(sp)
+   10292:	14f1                	addi	s1,s1,-4
+   10294:	c080                	sw	s0,0(s1)
+   10296:	ca26                	sw	s1,20(sp)
+
+00010298 <move>:
+   10298:	00060433          	add	s0,a2,zero
+   1029c:	b7e5                	j	10284 <next>
+
+0001029e <jump>:
+   1029e:	00060067          	jr	a2

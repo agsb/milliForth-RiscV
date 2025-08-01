@@ -1,0 +1,164 @@
+    0411             addi s0,s0,4
+    0485             addi s1,s1,1
+    0485             addi s1,s1,1
+    0485             addi s1,s1,1
+    0485             addi s1,s1,1
+    0491             addi s1,s1,4
+    0491             addi s1,s1,4
+    0491             addi s1,s1,4
+    0491             addi s1,s1,4
+    0491             addi s1,s1,4
+    0611             addi a2,a2,4
+    0611             addi a2,a2,4
+    14f1             addi s1,s1,-4
+    14f1             addi s1,s1,-4
+    2085             jal 10186 <token>
+    20b9             jal 101a2 <wcomma>
+    2801             jal 100a4 <_init>
+    37b9             jal 101a2 <wcomma>
+    37c9             jal 101ac <load2>
+    37d5             jal 101ac <load2>
+    3dc5             jal 100ac <_getc>
+    3dcd             jal 100bc <_putc>
+    3f1d             jal 100cc <djb2f>
+    3f25             jal 100ac <_getc>
+    3f25             jal 10186 <token>
+    3f41             jal 101ac <load2>
+    3f55             jal 101ac <load2>
+    3f79             jal 101ac <load2>
+    3f99             jal 101a2 <wcomma>
+    3fd9             jal 101ac <load2>
+    4010             lw a2,0(s0)
+    4080             lw s0,0(s1)
+    4098             lw a4,0(s1)
+    40d4             lw a3,4(s1)
+    420c             lw a1,0(a2)
+    4218             lw a4,0(a2)
+    4314             lw a3,0(a4)
+    4492             lw s1,4(sp)
+    44b2             lw s1,12(sp)
+    44c2             lw s1,16(sp)
+    44c2             lw s1,16(sp)
+    44d2             lw s1,20(sp)
+    44d2             lw s1,20(sp)
+    4501             li a0,0
+    4505             li a0,1
+    45a2             lw a1,8(sp)
+    4605             li a2,1
+    4622             lw a2,8(sp)
+    4685             li a3,1
+    46b2             lw a3,12(sp)
+    46f2             lw a3,28(sp)
+    47a9             li a5,10
+    56fd             li a3,-1
+    8082             ret
+    8082             ret
+    8082             ret
+    8082             ret
+    8082             ret
+    8082             ret
+    8082             ret
+    8d35             xor a0,a0,a3
+    8d35             xor a0,a0,a3
+    8ef9             and a3,a3,a4
+    8f3d             xor a4,a4,a5
+    953a             add a0,a0,a4
+    96ba             add a3,a3,a4
+    a019             j 10126 <okey>
+    a02d             j 10280 <next>
+    a045             j 10280 <next>
+    a0a1             j 10236 <save0>
+    a0a1             j 10280 <next>
+    a215             j 10284 <pick>
+    a801             j 101dc <drop1>
+    a80d             j 10236 <save0>
+    a811             j 10236 <save0>
+    a88d             j 10230 <push1>
+    a891             j 100ea <cold>
+    b7dd             j 10254 <finish>
+    b7e5             j 10280 <next>
+    b7ed             j 1012a <tick+0x2>
+    b7fd             j 100d4 <djb2f+0x8>
+    b7fd             j 10200 <save1>
+    bfc1             j 10126 <okey>
+    bfd5             j 10188 <token+0x2>
+    c002             sw zero,0(sp)
+    c002             sw zero,0(sp)
+    c036             sw a3,0(sp)
+    c080             sw s0,0(s1)
+    c090             sw a2,0(s1)
+    c094             sw a3,0(s1)
+    c094             sw a3,0(s1)
+    c226             sw s1,4(sp)
+    c226             sw s1,4(sp)
+    c314             sw a3,0(a4)
+    c32d             beqz a4,10280 <next>
+    c426             sw s1,8(sp)
+    c436             sw a3,8(sp)
+    c491             beqz s1,10158 <execute>
+    c626             sw s1,12(sp)
+    c626             sw s1,12(sp)
+    c826             sw s1,16(sp)
+    c826             sw s1,16(sp)
+    c826             sw s1,16(sp)
+    c826             sw s1,16(sp)
+    ca26             sw s1,20(sp)
+    ca26             sw s1,20(sp)
+    ca26             sw s1,20(sp)
+    ce36             sw a3,28(sp)
+    d5e5             beqz a1,10112 <abort>
+    daf9             beqz a3,10162 <getline>
+    e099             bnez s1,10158 <execute>
+000f0ff0           fence
+00670006           jr a2
+00730000           ecall
+00730000           ecall
+00730000           ecall
+00a300f1           sb a5,1(sp)
+01131b21           addi sp,sp,434 # 112a0 <__DATA_BEGIN__>
+01260001           .word 0x00010126
+036300e5           beq a0,a4,10142 <tick+0x1a>
+0413fca4           addi s0,s0,-54 # 10122 <resolvept>
+04170000           auipc s0,0x0
+04330006           add s0,a2,zero
+04830001           lb s1,0(sp)
+04830011           lb s1,1(sp)
+04970000           auipc s1,0x0
+051362d5           addi a0,a0,1581
+05137d00           li a0,2000
+05330000           add a0,zero,zero
+06130126           addi a2,a2,18 # 10278 <exit>
+06170000           auipc a2,0x0
+06330005           add a2,a0,zero
+06b30001           add a3,sp,zero
+089303f0           li a7,63
+08930400           li a7,64
+089305d0           li a7,93
+0f930200           li t6,32
+11170000           auipc sp,0x1
+17130055           slli a4,a0,0x5
+49630096           blt a2,s1,1029a <jump>
+76930015           andi a3,a0,1
+77930017           andi a5,a4,1
+802300d4           sb a3,0(s1)
+84931764           addi s1,s1,374 # 10270 <h_exit>
+84938541           addi s1,gp,-1964 # 112f4 <_tib>
+84938541           addi s1,gp,-1964 # 112f4 <_tib>
+84939541           addi s1,gp,-1708 # 113f4 <_rpb>
+84939e41           addi s1,gp,-1564 # 11484 <ends>
+84939e41           addi s1,gp,-1564 # 11484 <ends>
+84939e41           addi s1,gp,-1564 # 11484 <ends>
+85938a41           addi a1,gp,-1884 # 11344 <_pad>
+86330005           add a2,a1,zero
+86830004           lb a3,0(s1)
+86830004           lb a3,0(s1)
+86b3000f           add a3,t6,zero
+86b3000f           add a3,t6,zero
+886301f6           beq a3,t6,100e8 <djb2f+0x1c>
+936301f6           bne a3,t6,10196 <token+0x10>
+9ce3fef6           bne a3,a5,1016e <getline+0xc>
+a0230004           sw zero,0(s1)
+a0230004           sw zero,0(s1)
+a02301d5           sw t4,0(a1)
+ae030005           lw t3,0(a1)
+c693fff6           not a3,a3

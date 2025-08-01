@@ -1,1 +1,1 @@
-sector-hash-riscv.S
+sector-hash-compressed-riscv.S
