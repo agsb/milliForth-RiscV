@@ -5,11 +5,13 @@
 started at 23/07/2025, agsb@
 vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
 
-This is an implementation of milliForth (sectorforth) 
-concept for RISCV ISA.
+This is an implementation of milliForth (sectorforth) concept for RISCV ISA.
 
-Milliforth uses a minimal set of primitives and functions 
-for make a Forth.
+Milliforth uses a minimal set of primitives and functions for make a Forth.
+
+This version uses DJB2 hashes in headers, instead of size+flags+name+pads. 
+
+No human WORDS. the IMMEDIATE flag is the lowbit (0) of hash.
 
 Options:
 
@@ -17,7 +19,7 @@ Options:
 
     which memory map be used and pages size: default GCC
   
-    simulator of RISCV: spike
+    simulator of RISCV: qemu or spike ?
     
     the heap and stack in memory: .heap at end of .bss, .stack elsewhere ?
 
