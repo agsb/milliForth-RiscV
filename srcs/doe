@@ -1,0 +1,4 @@
+cat $1 | grep '   1' | \
+sed -e 's/          /:/'  | \
+sort -t: -k3 > $1.zz
+wc $1.zz

@@ -145,7 +145,8 @@ h_\label:
 #define fst a3
 #define snd a4
 #define trd a5
-#define fth a6
+
+#define fth t6
 
 #----------------------------------------------------------------------
 #.section .data
@@ -195,13 +196,17 @@ h_\label:
 
 # registers copy
 
-.equ XRA, 10 * CELL
-.equ XRB, 11 * CELL
-.equ XRC, 12 * CELL
+.equ XA0, 15 * CELL
+.equ XA1, 16 * CELL
+.equ XA2, 17 * CELL
+.equ XA3, 18 * CELL
+.equ XA4, 19 * CELL
+.equ XA5, 20 * CELL
+.equ XXX, 21 * CELL
 
 # this is it
 _user:
-.skip XRC
+.skip XXX
 
 # tib grows forward
 _tib:       
@@ -237,10 +242,50 @@ ends: .word 0x0
 _start:
 
 main:
-        #
-        # call _init
-        #
 
+        # call _init
+
+        j cold
+
+#----------------------------------------------------------------------
+# system dependences, linux ecall
+#
+.include "minimal.S"
+
+#----------------------------------------------------------------------
+# djb2 hash function
+# classic djb2 hash algorithm, with XOR, adapted from cdb_hash
+# idx pointer to str
+# fth hold the end of word character ( \0 or spc)
+# uses fst, snd
+# hsh returns the hash 
+djb2f:
+        # easy 3581
+        addi hsh, zero, 2000
+
+        addi hsh, hsh,  1581
+
+100:
+        lb fst, 0 (idx)
+        
+        # beq fst, zero, 100f
+        
+        beq fst, fth, 100f
+        
+        mv snd, hsh
+
+        slli hsh, hsh, 5
+        
+        add hsh, hsh, snd
+        
+        xor hsh, hsh, fst
+        
+        addi idx, idx, 1
+        
+        j 100b
+
+100:    ret
+        
 #----------------------------------------------------------------------
 # do what need once
 cold:
@@ -392,6 +437,9 @@ eval:
 #---------------------------------------------------------------------         
 compile:
 
+# addi snd, zero, 'C'
+# call _putchar
+
         call wcomma
 
         j resolve
@@ -399,6 +447,9 @@ compile:
 #---------------------------------------------------------------------         
 execute:
 immediate:
+
+# addi snd, zero, 'E'
+# call putchar
 
         la ipt, resolvept
 
@@ -415,7 +466,7 @@ getline:
 
 # end-of-line is newline
         
-        addi snd, zero, 10
+        addi trd, zero, 10
 
 # ever start with a space
         
@@ -434,7 +485,7 @@ getline:
 
 # \n ends 
         
-        bne fst, snd, 100b
+        bne fst, trd, 100b
 
 # at end-of-line
 
@@ -461,10 +512,6 @@ getline:
 
 token:
 
-# preserve return
-
-        mv fth, ra
-
 # last position on tib
         
         lw idx, TOIN (usr)
@@ -484,11 +531,7 @@ token:
 
 # make hash
 
-        call djb2
-        
-# restore return
-
-        mv ra, fth
+        call djb2f
 
 # save toin
 
@@ -509,45 +552,6 @@ mask:
 #
 #---------------------------------------------------------------------
 
-#----------------------------------------------------------------------
-# system dependences, linux ecall
-#
-.include "minimal.S"
-
-#----------------------------------------------------------------------
-# djb2 hash function
-# classic djb2 hash algorithm, with XOR, adapted from cdb_hash
-# idx pointer to str
-# fth hold the end of word character ( \0 or spc)
-# uses fst, snd
-# hsh returns the hash 
-djb2:
-        # easy 3581
-        addi hsh, zero, 2000
-
-        addi hsh, hsh,  1581
-
-100:
-        lb fst, 0 (idx)
-        
-        # beq fst, zero, 100f
-        
-        beq fst, fth, 100f
-        
-        mv snd, hsh
-
-        slli hsh, hsh, 5
-        
-        add hsh, hsh, snd
-        
-        xor hsh, hsh, fst
-        
-        addi idx, idx, 1
-        
-        j 100b
-
-100:    ret
-        
 #---------------------------------------------------------------------
 wcomma:
         

@@ -52,12 +52,12 @@ _getc:
         addi a2, zero, 1
         addi a7, zero, GETC
         ecall
-        lw t3, 0 (a1)
+        lw a3, 0 (a1)
         ret
 
 # linux ecall for putc
 _putc:
-        sw t4, 0 (a1)
+        sw a3, 0 (a1)
         addi a0, zero, STDOUT
         la a1, _pad
         addi a2, zero, 1

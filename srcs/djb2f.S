@@ -19,7 +19,8 @@ djb2f:
 100:
         lb fst, 0 (idx)
         beq fst, fth, 100f
-        slli snd, hsh, 5
+        mv snd, hsh
+        slli hsh, hsh, 5
         add hsh, hsh, snd
         xor hsh, hsh, fst
         addi idx, idx, 1
