@@ -144,8 +144,12 @@ h_\label:
 # some auxiliar
 #define fst a3
 #define snd a4
+
+# keep space,
 #define trd a5
-#define fth a6
+
+# keep ra, return addres
+#define fth a6 
 
 #----------------------------------------------------------------------
 #.section .data
@@ -194,14 +198,11 @@ h_\label:
 .equ TAIL, 9 * CELL
 
 # registers copy
-
 .equ XRA, 10 * CELL
-.equ XRB, 11 * CELL
-.equ XRC, 12 * CELL
 
 # this is it
 _user:
-.skip XRC
+.skip XRA
 
 # tib grows forward
 _tib:       
@@ -252,9 +253,9 @@ cold:
 
         la usr, _user
 
-# load word separator
+# load word separator, space
 
-        add fth, zero, SPC
+        add trd, zero, SPC
 
 #----------------------------------------------------------------------
 # wipe the dictionary
@@ -304,7 +305,7 @@ quit:
         j okey
 
 #---------------------------------------------------------------------
-# the outer loop, need for indirects
+# the outer loop, need for indirect
 
 resolvept:
         
@@ -316,7 +317,7 @@ okey:
         # call prompt_okey ('OK\n')
 
 #---------------------------------------------------------------------
-# get a token or a hash
+# get a hash of the token
 resolve:
         
         call token
@@ -349,17 +350,17 @@ tick:
         
         add wrd, wrd, CELL
 
-        lw snd, 0 (wrd)
+        lw fst, 0 (wrd)
 
-# mask hash flag
+# mask hash flag //snd
         
-        andi trd, snd, FLAG_IMM
+        andi snd, fst, FLAG_IMM
 
-        xor snd, snd, trd
+        xor fst, fst, snd
 
 # compare
         
-        beq hsh, snd, 100f
+        beq hsh, fst, 100f
 
 # next link
         j 100b
@@ -369,23 +370,17 @@ tick:
 
         add wrd, wrd, CELL
 
-# keep the flag
-
-        sb trd, STAT+1 (usr)
-
 #---------------------------------------------------------------------         
 eval:
+# immediate ? if i!= 0
+
+        bne snd, zero, immediate      
+
 # executing ? if == \0
         
-        lb idx, STAT+0 (usr)
+        lb fst, STAT+0 (usr)
         
-        beq idx, zero, execute
-
-# immediate ? if < \0
-        
-        lb idx, STAT+1 (usr)
-        
-        bne idx, zero, immediate      
+        beq fst, zero, execute
 
 # wrd points to start of code or list of references
 
@@ -419,7 +414,7 @@ getline:
 
 # ever start with a space
         
-        mv fst, fth
+        mv fst, trd
 
 # fill the TIB until \n
 100:
@@ -440,7 +435,7 @@ getline:
 
 # replace \n with space 
 100:        
-        mv fst, fth
+        mv fst, trd
         
         sw fst, 0 (idx)
 
@@ -469,7 +464,7 @@ token:
         
         lw idx, TOIN (usr)
 
-# skip spaces
+# skip spaces // trd
 100:
         lb fst, 0 (idx)
 
@@ -477,7 +472,7 @@ token:
         
         addi idx, idx, 1
         
-        bne fst, fth, 100f
+        bne fst, trd, 100f
 
         j 100b
 100:
@@ -486,21 +481,21 @@ token:
 
         call djb2
         
-# restore return
-
-        mv ra, fth
-
-# save toin
-
-        sw idx, TOIN (usr)
-
-# mask flag 
+# mask forth flag 
 mask:
 
         andi fst, hsh, FLAG_IMM
 
         xor hsh, hsh, fst
        
+# save toin
+
+        sw idx, TOIN (usr)
+
+# restore return
+
+        mv ra, fth
+
         ret 
 
 #---------------------------------------------------------------------
@@ -532,7 +527,7 @@ djb2:
         
         # beq fst, zero, 100f
         
-        beq fst, fth, 100f
+        beq fst, trd, 100f
         
         mv snd, hsh
 
@@ -666,7 +661,7 @@ def_word "+", "plus", 0
         
         call load2
         
-        add fst, snd, fst
+        add fst, fst, snd
         
         j save1
 
