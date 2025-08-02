@@ -30,7 +30,7 @@ Options:
 the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit 
 [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) or [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
 
-The milliForth is a program called by 'elsewhere alien operational system', and use of registers s2-s7, and t3-t6, as scratch. 
+The milliForth is a program called by 'elsewhere alien operational system', and use registers r0, ra, sp, a0-a6. 
 
 ## Coding
 
