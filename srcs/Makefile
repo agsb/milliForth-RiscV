@@ -25,6 +25,8 @@ ifneq ("$(wildcard $(PASS))", "")
 	NAME =riscv64-unknown-linux-gnu-
 endif
 
+PASS = /opt/riscv/gcc-rp2350
+
 PASS = ${BASE}/${NAME}
 
 QEMU = ${BASE}/qemu-riscv64
@@ -36,7 +38,8 @@ QFLAGS = -nographic -smp 1 -machine virt -bios none
 GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs \
-	   -march=rv32ic -mabi=ilp32 -static -Oz \
+	   -march=rv32ic -mabi=ilp32 \
+	   -static -Os \
 
 # -fomit-frame-pointer
 # -march=rv64ic -mabi=lp64 -static -Oz \

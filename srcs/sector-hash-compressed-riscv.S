@@ -141,11 +141,13 @@ h_\label:
 # word pointer
 #define wrd a2
 
-# some auxiliar
+# generic
 #define fst a3
+
+# generic
 #define snd a4
 
-# keep space,
+# keep ascii space,
 #define trd a5
 
 # keep ra, return addres
@@ -197,12 +199,10 @@ h_\label:
 # heap backward
 .equ TAIL, 9 
 
-# registers copy
-.equ XRA, 10 
 
 # this is it
 _user:
-.skip XRA * CELL
+.skip (TAIL + 1) * CELL
 
 # tib grows forward
 _tib:       
@@ -226,6 +226,7 @@ rp0:       .word
 # start of user dictionary 
 # anything above is not a primitive
 # usually .heap
+# MUST BE AT END OF .BSS
 #----------------------------------------------------------------------
 ends: .word 0x0
 
@@ -234,8 +235,10 @@ ends: .word 0x0
 .p2align 2, 0x0
 
 #----------------------------------------------------------------------
+.ifndef _start
 .globl _start
 _start:
+.endif
 
 main:
         #
@@ -352,7 +355,7 @@ tick:
 
         lw fst, 0 (wrd)
 
-# mask hash flag //snd
+# mask hash flag // snd
         
         andi snd, fst, FLAG_IMM
 
@@ -363,12 +366,14 @@ tick:
         beq hsh, fst, 100f
 
 # next link
-        j 100b
+       
+       j 100b
 
 100:
 # move to code
+# wrd points to or start of code or list of references
 
-        add wrd, wrd, CELL
+       add wrd, wrd, CELL
 
 #---------------------------------------------------------------------         
 eval:
@@ -381,8 +386,6 @@ eval:
         lb fst, STAT+0 (usr)
         
         beq fst, zero, execute
-
-# wrd points to start of code or list of references
 
 #---------------------------------------------------------------------         
 compile:
@@ -435,15 +438,12 @@ getline:
 
 # replace \n with space 
 100:        
-        mv fst, trd
         
-        sw fst, 0 (idx)
+        sw trd, 0 (idx)
 
 # mark eol with \0
 
-        addi idx, idx, ONE
-        
-        sw zero, 0 (idx)
+        sw zero, 1 (idx)
 
         # falltrought
 
@@ -455,11 +455,6 @@ getline:
 # \0 as eol goto getline
 
 token:
-
-# preserve return
-
-        mv fth, ra
-
 # last position on tib
         
         lw idx, TOIN (usr)
@@ -477,10 +472,18 @@ token:
         j 100b
 100:
 
+# preserve return
+
+        mv fth, ra
+
 # make hash
 
         call djb2
         
+# restore return
+
+        mv ra, fth
+
 # mask forth flag 
 mask:
 
@@ -491,10 +494,6 @@ mask:
 # save toin
 
         sw idx, TOIN (usr)
-
-# restore return
-
-        mv ra, fth
 
         ret 
 
@@ -532,7 +531,7 @@ djb2:
         
         xor hsh, hsh, fst
         
-        addi idx, idx, 1
+        addi idx, idx, ONE
         
         j 100b
 
