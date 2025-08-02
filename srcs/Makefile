@@ -36,11 +36,13 @@ QFLAGS = -nographic -smp 1 -machine virt -bios none
 GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs \
-	-march=rv32ic -mabi=ilp32 -static -Oz \
-	-fomit-frame-pointer
+	   -march=rv32ic -mabi=ilp32 -static -Oz \
 
-LDFLAGS = -Wl,--stats 
-# -Wl,-build-id 
+# -fomit-frame-pointer
+# -march=rv64ic -mabi=lp64 -static -Oz \
+# -march=rv32ic -mabi=ilp32 -static -Oz \
+
+LDFLAGS = -Wl,--stats -Wl,-build-id 
 
 ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
 
@@ -75,7 +77,7 @@ clean:
 	
 	$(RM) $(MY).out $(MY).map $(MY).lst \
 	      $(MY).elf $(MY).dmp $(MY).bin \
-	      $(MY).elfs \
+	      $(MY).elfs $(MY).ord \
 	      err out
 
 	      # $(MY).lbl $(MY).lbs $(MY).lbf \

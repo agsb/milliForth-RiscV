@@ -168,41 +168,41 @@ h_\label:
 # name some offsets
 
 # state flag
-.equ STAT, 0 * CELL
+.equ STAT, 0 
 
 # toin next free byte in TIB
-.equ TOIN, 1 * CELL
+.equ TOIN, 1 
 
 # last link cell in heap dictionary linked list
-.equ LAST, 2  * CELL
+.equ LAST, 2  
 
 # next free cell in heap dictionary, aka dpt
-.equ HERE, 3 * CELL
+.equ HERE, 3 
 
 # data stack index
-.equ SPT, 4 * CELL
+.equ SPT, 4 
 
 # return stack index
-.equ RPT, 5 * CELL
+.equ RPT, 5 
 
 # next token in TIB
-.equ TOUT, 6 * CELL
+.equ TOUT, 6 
 
 # hold 'here while compile
-.equ ONCE, 7 * CELL
+.equ ONCE, 7 
 
 # heap forward
-.equ HEAD, 8 * CELL
+.equ HEAD, 8 
 
 # heap backward
-.equ TAIL, 9 * CELL
+.equ TAIL, 9 
 
 # registers copy
-.equ XRA, 10 * CELL
+.equ XRA, 10 
 
 # this is it
 _user:
-.skip XRA
+.skip XRA * CELL
 
 # tib grows forward
 _tib:       
@@ -255,22 +255,22 @@ cold:
 
 # load word separator, space
 
-        add trd, zero, SPC
+        addi trd, zero, SPC
 
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
 # link list of headers, aka dictionary
 
-        la idx, h_exit
+        la hsh, h_exit
         
-        sw idx, LAST (usr)
+        sw hsh, LAST (usr)
 
 # next heap free cell  
         
-        la idx, ends
+        la hsh, ends
         
-        sw idx, HERE (usr)
+        sw hsh, HERE (usr)
 
 #---------------------------------------------------------------------
 # reset TIB
@@ -420,7 +420,7 @@ getline:
 100:
         sb fst, 0 (idx)
         
-        addi idx, idx, 1
+        addi idx, idx, ONE
 
         call _getc
 
@@ -441,7 +441,7 @@ getline:
 
 # mark eol with \0
 
-        addi idx, idx, 1
+        addi idx, idx, ONE
         
         sw zero, 0 (idx)
 
@@ -470,7 +470,7 @@ token:
 
         beq fst, zero, getline
         
-        addi idx, idx, 1
+        addi idx, idx, ONE
         
         bne fst, trd, 100f
 
@@ -613,10 +613,10 @@ def_word "!", "store", 0
         sw fst, 0 (snd)
 drop2:
         
-        add idx, idx, +1 * CELL
+        add idx, idx, CELL
 drop1:
         
-        add idx, idx, +1 * CELL
+        add idx, idx, CELL
         
         sw idx, SPT (usr)
         
@@ -644,7 +644,7 @@ def_word "nand", "nand", 0
 
 save1:
         
-        add idx, idx, +1 * CELL
+        add idx, idx, CELL
         
         sw idx, SPT (usr)
         
