@@ -48,8 +48,8 @@ STRIP = ${PASS}strip
 
 OBJDUMP = ${PASS}objdump
 
-MY = minimal
 MY = sector-riscv
+MY = minimal
 
 ########################################
 

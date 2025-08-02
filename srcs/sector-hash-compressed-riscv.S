@@ -505,11 +505,6 @@ mask:
 #---------------------------------------------------------------------
 
 #----------------------------------------------------------------------
-# system dependences, linux ecall
-#
-.include "minimal.S"
-
-#----------------------------------------------------------------------
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
 # idx pointer to str
@@ -819,9 +814,13 @@ jump:
         jalr zero, 0 (wrd)
 
 
+#----------------------------------------------------------------------
+# system dependences, linux ecall
+#
+.include "minimal.S"
+
 #-----------------------------------------------------------------------
 # BEWARE, MUST BE AT END! MINIMAL THREAD CODE DEPENDS ON IT!
-# ends:
 #       for riscv-unknow-elf moved to end of .bss
 #-----------------------------------------------------------------------
 

@@ -29,22 +29,20 @@ PASS = ${BASE}/${NAME}
 
 QEMU = ${BASE}/qemu-riscv64
 
+QEMU = ${BASE}/qemu-riscv32
+
 QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 GCC = ${PASS}gcc
 
-GCCFLAGS = -static -nostartfiles -nostdlib \
-	-march=rv32i -mabi=ilp32 \
-# -T this.ld 
+GCCFLAGS = -nostartfiles -nodefaultlibs \
+	-march=rv32ic -mabi=ilp32 -static -Oz \
+	-fomit-frame-pointer
 
 LDFLAGS = -Wl,--stats 
-
-# -Wl,--strip-all \ 
-# -Wl,-r -Wl,--no-relax
-# -Wl,-b=elf32-littleriscv 
 # -Wl,-build-id 
 
-ASFLAGS = -Wa,-fno-pic -Wa,-mlittle-endian -Wa,-alms=$@.lst 
+ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
 
 STRIP = ${PASS}strip
 
@@ -61,15 +59,13 @@ $(MY): $(SOURCES:.S=.o)
 
 	$(GCC) $(GCCFLAGS) $(LDFLAGS) $(ASFLAGS) -o $@.elf $@.S 2> err | tee out
 
-	$(STRIP) $@.elf
+	$(PASS)objdump -hda $@.elf > $@.dmp
 
-	$(OBJDUMP) -s -d $@.elf > $@.dmp
+	$(PASS)readelf -a $(MY).elf > $(MY).map
+
+	$(PASS)objcopy --dump-section .text=$(MY).bin $(MY).elf
 
 #	od --endian=little -A x -t x1z -v $@.elf > $@.hex
-
-#	cp $@.s $@.asm
-
-#	sort -k 2 < $@.lbl > $@.lbs
 
 all: 
 	
@@ -78,12 +74,24 @@ all:
 clean:
 	
 	$(RM) $(MY).out $(MY).map $(MY).lst \
-	      $(MY).elf $(MY).dmp $(MY).hex \
+	      $(MY).elf $(MY).dmp $(MY).bin \
+	      $(MY).elfs \
 	      err out
+
 	      # $(MY).lbl $(MY).lbs $(MY).lbf \
 
-qemu: $(TARGET)
-	@qemu-system-riscv32 -M ? | grep virt >/dev/null || exit
+qemu: 
+	#@qemu-system-riscv32 -M ? | grep virt >/dev/null || exit
 	@echo "Press Ctrl-A and then X to exit QEMU"
-	$(QEMU) $(QFLAGS) -kernel sector-riscv.elf
+	$(QEMU) $(QFLAGS) -kernel $@.elf
+
+sort:
+	# extract and ordered the instructions used
+	cat $(MY).dmp | grep '   1' | \
+	sed -e 's/          /:/'  | \
+	sort -t: -k3 > $(MY).ord
+
+extras:
+
+	$(PASS)strip -o $@.elfs $@.elf 
 
