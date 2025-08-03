@@ -16,13 +16,28 @@
 
 03/07/2025
 
-    Doing tests with hash and bit-0 flag use, the use of bit-0 grows 
-    the collisions too much. Return for bit-31.
+    Doing tests with djb2 hash and bit-0 for flag immediate, 
+    the use of bit-0 grows the collisions too much.
+    Return the flag to bit-31.
+
+
+.equ hash_key, 0B876D32 
+.equ hash_emit, 7C6B87D0 
+.equ hash_store, 0002B584 
+.equ hash_fetch, 0002B5E5 
+.equ hash_add, 0002B58E 
+.equ hash_colon, 0002B59F 
+.equ hash_semis, 8002B59E   # with FLAG_IMMEDIATE 
+.equ hash_nand, 7C727500 
+.equ hash_exit, 7C6BBE85 
+.equ hash_bye, 0B874AFB 
+.equ hash_notequal, 00596816 
+.equ hash_userat, 005970D6 
 
 01/07/2025
 
 Using GCCFLAGS = -nostartfiles -nodefaultlibs \
-                 -march=rv32ic -mabi=ilp32 -static -Oz
+                 -march=rv32ic -mabi=ilp32 -static -Os
 No errors. 
 
 Size of .text is 0x26C bytes, including 0x34 of ecalls, using s2-s7 and t3-t6, mix 32-bit (101) and 16-bit (63) opcodes.

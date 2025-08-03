@@ -35,6 +35,19 @@
 
     Not working yet :)
 
+        hash djb2
+
+                0B876D32 : key
+                7C6B87D0 : emit
+                0002B584 : !
+                0002B5E5 : @
+                0002B58E : +
+                0002B59F : :
+                0002B59E : ;
+                7C727500 : nand
+                7C6BBE85 : exit
+                0B874AFB : bye
+
 */
 
 #----------------------------------------------------------------------
@@ -91,6 +104,22 @@
 
 .equ padz, 32
 
+
+#---------------------------------------------------------------------
+# djb2 hash cleared of bit 31
+.equ hash_key, 0x0B876D32 
+.equ hash_emit, 0x7C6B87D0 
+.equ hash_store, 0x0002B584 
+.equ hash_fetch, 0x0002B5E5 
+.equ hash_add, 0x0002B58E 
+.equ hash_colon, 0x0002B59F 
+.equ hash_semis, 0x8002B59E # FLAG_IMM 
+.equ hash_nand, 0x7C727500 
+.equ hash_exit, 0x7C6BBE85 
+.equ hash_bye, 0x0B874AFB 
+.equ hash_notzero, 0x00596816 
+.equ hash_userat, 0x005970D6 
+
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
 #
@@ -102,18 +131,17 @@
 #   name:
 #
 
-# highlander, immediate flag.
+# highlander, immediate flag. using lui 0x80000.000
 .equ FLAG_IMM, 0x80000
 
-.set last_link, 0x0
+#define last_link 0x0
 
-.macro def_word name, label, flag
+.macro def_word name, label, flag, hash
 #.p2align 2, 0x00
 h_\label:
 .word last_link
-
-.word 0x0
-#.set last_link, h_\label + 0
+.word \hash
+#define last_link h_\label
 \label:
 .endm
 
@@ -491,12 +519,10 @@ token:
 # mask forth flag 
 mask:
 
-        lui fst, FLAG_IMM
+        lui fst, FLAG_IMM - 1
 
-        and fst, hsh, fst
+        and hsh, hsh, fst
 
-        xor hsh, hsh, fst
-       
 # save toin
 
         sw idx, TOIN (usr)
@@ -593,7 +619,7 @@ load2:
 
 #---------------------------------------------------------------------
 # ( -- c ) 
-def_word "key", "key", 0
+def_word "key", "key", 0, hash_key
         
         call _getc
         
@@ -601,7 +627,7 @@ def_word "key", "key", 0
 
 #---------------------------------------------------------------------
 # ( c -- ) 
-def_word "emit", "emit", 0
+def_word "emit", "emit", 0, hash_emit
         
         call load2
         
@@ -611,7 +637,7 @@ def_word "emit", "emit", 0
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
-def_word "!", "store", 0
+def_word "!", "store", 0, hash_store
         
         call load2
         
@@ -629,7 +655,7 @@ drop1:
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
-def_word "@", "fetch", 0
+def_word "@", "fetch", 0, hash_fetch
         
         call load2
         
@@ -639,7 +665,7 @@ def_word "@", "fetch", 0
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
-def_word "nand", "nand", 0
+def_word "nand", "nand", 0, hash_nand
         
         call load2
         
@@ -657,7 +683,7 @@ save1:
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
-def_word "+", "plus", 0
+def_word "+", "plus", 0, hash_add
         
         call load2
         
@@ -667,7 +693,7 @@ def_word "+", "plus", 0
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
-def_word "0#", "zeroq", 0
+def_word "0#", "zeroq", 0, hash_notzero
 
         call load2
 
@@ -683,7 +709,7 @@ istrue:
 
 #---------------------------------------------------------------------
 # ( -- state ), return an reference
-def_word "s@", "state", 0 
+def_word "s@", "state", 0, hash_userat
         
         mv fst, usr 
 
@@ -702,7 +728,7 @@ save0:
         j next
 
 #---------------------------------------------------------------------
-def_word ":", "colon", 0
+def_word ":", "colon", 0, hash_colon
 # save here, panic if semis not follow elsewhere
         
         lw fst, HERE (usr)
@@ -740,7 +766,8 @@ finish:
         j next 
 
 #---------------------------------------------------------------------
-def_word ";", "semis",  0 #FLAG_IMM
+#def_word ";", "semis",  0, hash_semmis | FLAG_IMM
+def_word ";", "semis",  0, hash_semis 
 # update last, panic if colon not lead elsewhere 
         
         lw fst, ONCE (usr)
@@ -769,7 +796,7 @@ def_word ";", "semis",  0 #FLAG_IMM
 #
 #---------------------------------------------------------------------
 # ( -- ) 
-def_word "exit", "exit", 0
+def_word "exit", "exit", 0, hash_exit
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
         

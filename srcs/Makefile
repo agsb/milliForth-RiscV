@@ -29,14 +29,17 @@ GCC = ${PASS}gcc
 GCCFLAGS = -nostartfiles -nodefaultlibs \
 	   -march=rv32ic -mabi=ilp32 \
 	   -static -Os \
+	   
+# -fpic -fpie
+# -fomit-frame-pointer \
 
-# 	   -fomit-frame-pointer
 
 # -march=rv64ic -mabi=lp64 -static -Oz \
 # -march=rv32ic -mabi=ilp32 -static -Oz \
 
 LDFLAGS = -Wl,--stats
 
+#-Wl,-no-relax
 #-Wl,-build-id 
 
 ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
