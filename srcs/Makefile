@@ -6,12 +6,9 @@
 # to make: 	make 
 # to clean: 	make clean
 
-.PHONY: clean opt all
+.PHONY: clean all
 
 ########################################
-
-#riscv32-unknown-elf-as exampleAsm.S -o exampleAsm.o
-#riscv32-unknown-elf-ld -o exampleAsm.elf -T asm.ld -m elf32lriscv -nostdlib --no-relax
 
 # default
 BASE = /usr/bin
@@ -21,19 +18,19 @@ NAME = riscv64-unknown-elf-
 PASS = /opt/riscv/
 
 ifneq ("$(wildcard $(PASS))", "")
-	BASE =/opt/riscv/bin/
-	NAME =riscv64-unknown-linux-gnu-
+	BASE = /opt/riscv/bin/
+	NAME = riscv64-unknown-linux-gnu-
 endif
 
+# or optional compiled
 PASS = /opt/riscv/gcc-rp2350
 
+ifneq ("$(wildcard $(PASS))", "")
+	BASE = /opt/riscv/gcc-rp2350/bin/
+	NAME = riscv32-unknown-elf-
+endif
+
 PASS = ${BASE}/${NAME}
-
-QEMU = ${BASE}/qemu-riscv64
-
-QEMU = ${BASE}/qemu-riscv32
-
-QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 GCC = ${PASS}gcc
 
@@ -41,17 +38,26 @@ GCCFLAGS = -nostartfiles -nodefaultlibs \
 	   -march=rv32ic -mabi=ilp32 \
 	   -static -Os \
 
-# -fomit-frame-pointer
+# 	   -fomit-frame-pointer
+
 # -march=rv64ic -mabi=lp64 -static -Oz \
 # -march=rv32ic -mabi=ilp32 -static -Oz \
 
-LDFLAGS = -Wl,--stats -Wl,-build-id 
+LDFLAGS = -Wl,--stats
+
+#-Wl,-build-id 
 
 ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
 
 STRIP = ${PASS}strip
 
 OBJDUMP = ${PASS}objdump
+
+QEMU = ${BASE}qemu-riscv64
+
+QEMU = ${BASE}qemu-riscv32
+
+QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 MY = minimal
 MY = sector-riscv

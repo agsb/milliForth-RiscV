@@ -37,7 +37,7 @@ _start:
 
 # load system call for exit
 _exit:
-        add a0, zero, zero
+        addi a0, zero, STDIN
         addi a7, zero, EXIT
         ecall
 

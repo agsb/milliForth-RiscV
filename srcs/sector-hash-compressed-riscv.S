@@ -67,6 +67,8 @@
 
 .equ TWO, 2
 
+.equ NLC, 10
+
 .equ SPC, 32
 
 # cell size, 4 bytes, 32-bit
@@ -413,7 +415,7 @@ getline:
 
 # end-of-line is newline
         
-        addi snd, zero, 10
+        addi snd, zero, NLC
 
 # ever start with a space
         
@@ -771,7 +773,7 @@ unnest: #; exit
         
         lw ipt, 0 (idx)
         
-        addi idx, idx, +1 * CELL
+        addi idx, idx, CELL
         
         sw idx, RPT (usr)
 
@@ -780,7 +782,7 @@ next:
         
         lw wrd, 0 (ipt)
         
-        addi ipt, ipt,  +1 * CELL
+        addi ipt, ipt, CELL
 
 pick:
 # compare address, if less than 'ends then is a primitive 
