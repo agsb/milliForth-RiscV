@@ -103,7 +103,7 @@
 #
 
 # highlander, immediate flag.
-.equ FLAG_IMM, 0x1
+.equ FLAG_IMM, 0x80000
 
 .set last_link, 0x0
 
@@ -359,7 +359,9 @@ tick:
 
 # mask hash flag // snd
         
-        andi snd, fst, FLAG_IMM
+        lui snd, FLAG_IMM
+
+        and snd, fst, snd
 
         xor fst, fst, snd
 
@@ -489,7 +491,9 @@ token:
 # mask forth flag 
 mask:
 
-        andi fst, hsh, FLAG_IMM
+        lui fst, FLAG_IMM
+
+        and fst, hsh, fst
 
         xor hsh, hsh, fst
        

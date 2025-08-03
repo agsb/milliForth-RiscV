@@ -14,6 +14,11 @@
 
 ## Done
 
+03/07/2025
+
+    Doing tests with hash and bit-0 flag use, the use of bit-0 grows 
+    the collisions too much. Return for bit-31.
+
 01/07/2025
 
 Using GCCFLAGS = -nostartfiles -nodefaultlibs \

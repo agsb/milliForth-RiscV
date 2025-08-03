@@ -11,7 +11,7 @@ Milliforth uses a minimal set of primitives and functions for make a Forth.
 
 This version uses DJB2 hashes in headers, instead of size+flags+name+pads. 
 
-No human WORDS. the IMMEDIATE flag is the lowbit (0) of hash.
+No human WORDS. The IMMEDIATE flag is the MSBit (31) of hash.
 
 Options:
 

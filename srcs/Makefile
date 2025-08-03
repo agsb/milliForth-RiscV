@@ -19,15 +19,7 @@ PASS = /opt/riscv/
 
 ifneq ("$(wildcard $(PASS))", "")
 	BASE = /opt/riscv/bin/
-	NAME = riscv64-unknown-linux-gnu-
-endif
-
-# or optional compiled
-PASS = /opt/riscv/gcc-rp2350
-
-ifneq ("$(wildcard $(PASS))", "")
-	BASE = /opt/riscv/gcc-rp2350/bin/
-	NAME = riscv32-unknown-elf-
+	NAME = riscv32-unknown-linux-gnu-
 endif
 
 PASS = ${BASE}/${NAME}
