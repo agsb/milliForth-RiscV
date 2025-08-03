@@ -111,7 +111,7 @@
 .equ hash_emit, 0x7C6B87D0 
 .equ hash_store, 0x0002B584 
 .equ hash_fetch, 0x0002B5E5 
-.equ hash_add, 0x0002B58E 
+.equ hash_plus, 0x0002B58E 
 .equ hash_colon, 0x0002B59F 
 .equ hash_semis, 0x8002B59E # FLAG_IMM 
 .equ hash_nand, 0x7C727500 
@@ -131,16 +131,14 @@
 #   name:
 #
 
-# highlander, immediate flag. using lui 0x80000.000
+# highlander, immediate flag. using lui 
 .equ FLAG_IMM, 0x80000
 
-#define last_link 0x0
-
-.macro def_word name, label, flag, hash
+.macro def_word name, label, last, hash
 #.p2align 2, 0x00
 h_\label:
-.word last_link
-.word \hash
+        .word \last
+        .word \hash
 #define last_link h_\label
 \label:
 .endm
@@ -617,17 +615,25 @@ load2:
 # 
 #---------------------------------------------------------------------
 
+/*
+h_name:
+        .word h_nameup
+        .word hash_name
+name:
+        code
+*/
+
 #---------------------------------------------------------------------
 # ( -- c ) 
-def_word "key", "key", 0, hash_key
-        
+def_word "key", "key", 0x0, hash_key
+
         call _getc
         
         j push1
 
 #---------------------------------------------------------------------
 # ( c -- ) 
-def_word "emit", "emit", 0, hash_emit
+def_word "emit", "emit", h_key, hash_emit
         
         call load2
         
@@ -637,7 +643,7 @@ def_word "emit", "emit", 0, hash_emit
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
-def_word "!", "store", 0, hash_store
+def_word "!", "store", h_emit, hash_store
         
         call load2
         
@@ -655,7 +661,7 @@ drop1:
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
-def_word "@", "fetch", 0, hash_fetch
+def_word "@", "fetch", h_store, hash_fetch
         
         call load2
         
@@ -665,7 +671,7 @@ def_word "@", "fetch", 0, hash_fetch
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
-def_word "nand", "nand", 0, hash_nand
+def_word "nand", "nand", h_nand, hash_nand
         
         call load2
         
@@ -683,7 +689,7 @@ save1:
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
-def_word "+", "plus", 0, hash_add
+def_word "+", "plus", h_nand, hash_plus
         
         call load2
         
@@ -693,7 +699,7 @@ def_word "+", "plus", 0, hash_add
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
-def_word "0#", "zeroq", 0, hash_notzero
+def_word "0#", "zeroq", h_plus, hash_notzero
 
         call load2
 
@@ -709,7 +715,7 @@ istrue:
 
 #---------------------------------------------------------------------
 # ( -- state ), return an reference
-def_word "s@", "state", 0, hash_userat
+def_word "s@", "state", h_zeroq, hash_userat
         
         mv fst, usr 
 
@@ -728,7 +734,7 @@ save0:
         j next
 
 #---------------------------------------------------------------------
-def_word ":", "colon", 0, hash_colon
+def_word ":", "colon", h_state, hash_colon
 # save here, panic if semis not follow elsewhere
         
         lw fst, HERE (usr)
@@ -766,8 +772,7 @@ finish:
         j next 
 
 #---------------------------------------------------------------------
-#def_word ";", "semis",  0, hash_semmis | FLAG_IMM
-def_word ";", "semis",  0, hash_semis 
+def_word ";", "semis",  h_colon, hash_semis 
 # update last, panic if colon not lead elsewhere 
         
         lw fst, ONCE (usr)
@@ -796,7 +801,7 @@ def_word ";", "semis",  0, hash_semis
 #
 #---------------------------------------------------------------------
 # ( -- ) 
-def_word "exit", "exit", 0, hash_exit
+def_word "exit", "exit", h_semis, hash_exit
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
         
