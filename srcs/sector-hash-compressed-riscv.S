@@ -132,6 +132,8 @@
 #
 
 # highlander, immediate flag. using lui 
+# must load the high 20 bits, then the low 12 bits
+#
 .equ FLAG_IMM, 0x80000
 
 .macro def_word name, label, last, hash
@@ -383,9 +385,13 @@ tick:
 
         lw fst, 0 (wrd)
 
-# mask hash flag // snd
-        
+# set the FLAG
+
         lui snd, FLAG_IMM
+
+        li snd, 0x0
+
+# mask hash flag // snd
 
         and snd, fst, snd
 
@@ -517,7 +523,11 @@ token:
 # mask forth flag 
 mask:
 
+# set the FLAG as complement
+
         lui fst, FLAG_IMM - 1
+
+        li  fst, -1
 
         and hsh, hsh, fst
 

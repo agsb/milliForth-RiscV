@@ -96,6 +96,9 @@ sort:
 	cat $(MY).dmp | grep '   1' | \
 	sed -e 's/          /:/'  | \
 	sort -t: -k3 > $(MY).ord
+	grep '    ......' $(MY).ord > $(MY).16b
+	grep -v '    ......' $(MY).ord > $(MY).32b
+	wc *...c
 
 extras:
 
