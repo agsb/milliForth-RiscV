@@ -27,22 +27,18 @@ PASS = ${BASE}/${NAME}
 GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs \
-	   -march=rv32ic -mabi=ilp32 \
-	   -static -Os \
+	   -march=rv64ic -mabi=lp64 -static -Os \
 	   
-# -fpic -fpie
-# -fomit-frame-pointer \
-
-
-# -march=rv64ic -mabi=lp64 -static -Oz \
-# -march=rv32ic -mabi=ilp32 -static -Oz \
+# -march=rv64ic -mabi=lp64 -static -Os \
+# -march=rv32ic -mabi=ilp32 -static -Os \
 
 LDFLAGS = -Wl,--stats
 
-#-Wl,-no-relax
 #-Wl,-build-id 
 
-ASFLAGS = -Wa,-mlittle-endian -Wa,-alms=$@.lst 
+ASFLAGS = -Wa,-alms=$@.lst 
+
+#-Wa,-mlittle-endian 
 
 STRIP = ${PASS}strip
 
@@ -55,6 +51,7 @@ QEMU = ${BASE}qemu-riscv32
 QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 MY = minimal
+
 MY = sector-riscv
 
 ########################################
@@ -65,11 +62,13 @@ $(MY): $(SOURCES:.S=.o)
 
 	$(GCC) $(GCCFLAGS) $(LDFLAGS) $(ASFLAGS) -o $@.elf $@.S 2> err | tee out
 
-	$(PASS)objdump -hda $@.elf > $@.dmp
+	$(PASS)objdump -hdta $@.elf > $@.dmp
 
 	$(PASS)readelf -a $(MY).elf > $(MY).map
 
-	$(PASS)objcopy --dump-section .text=$(MY).bin $(MY).elf
+	$(PASS)objcopy --dump-section .text=$(MY).sec $(MY).elf
+	
+	$(PASS)objcopy $(MY).elf -O binary $(MY).bin
 
 #	od --endian=little -A x -t x1z -v $@.elf > $@.hex
 
@@ -81,15 +80,13 @@ clean:
 	
 	$(RM) $(MY).out $(MY).map $(MY).lst \
 	      $(MY).elf $(MY).dmp $(MY).bin \
-	      $(MY).elfs $(MY).ord \
+	      $(MY).ord $(MY).sec \
 	      err out
-
-	      # $(MY).lbl $(MY).lbs $(MY).lbf \
 
 qemu: 
 	#@qemu-system-riscv32 -M ? | grep virt >/dev/null || exit
 	@echo "Press Ctrl-A and then X to exit QEMU"
-	$(QEMU) $(QFLAGS) -kernel $@.elf
+	$(QEMU) $(QFLAGS) $@.elf
 
 sort:
 	# extract and ordered the instructions used
@@ -98,7 +95,7 @@ sort:
 	sort -t: -k3 > $(MY).ord
 	grep '    ......' $(MY).ord > $(MY).16b
 	grep -v '    ......' $(MY).ord > $(MY).32b
-	wc *...c
+	wc $(MY).*b
 
 extras:
 
