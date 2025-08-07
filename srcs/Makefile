@@ -12,15 +12,19 @@
 
 # default
 BASE = /usr/bin
+# bare-metal ?
 NAME = riscv64-unknown-elf-
+# on linux ?
+NAME = riscv64-linux-gnu-
 
+# using local ?
 # or optional compiled
-PASS = /opt/riscv/
+# PASS = /opt/riscv/
 
-ifneq ("$(wildcard $(PASS))", "")
-	BASE = /opt/riscv/bin/
-	NAME = riscv32-unknown-linux-gnu-
-endif
+#ifneq ("$(wildcard $(PASS))", "")
+#	BASE = /opt/riscv/bin/
+#	NAME = riscv32-unknown-linux-gnu-
+#endif
 
 PASS = ${BASE}/${NAME}
 
@@ -46,7 +50,7 @@ OBJDUMP = ${PASS}objdump
 
 QEMU = ${BASE}qemu-riscv64
 
-QEMU = ${BASE}qemu-riscv32
+#QEMU = ${BASE}qemu-riscv32
 
 QFLAGS = -nographic -smp 1 -machine virt -bios none
 
@@ -89,7 +93,7 @@ qemu:
 	$(QEMU) $(QFLAGS) $@.elf
 
 sort:
-	# extract and ordered the instructions used
+	# extract, order, count the instructions used
 	cat $(MY).dmp | grep '   1' | \
 	sed -e 's/          /:/'  | \
 	sort -t: -k3 > $(MY).ord

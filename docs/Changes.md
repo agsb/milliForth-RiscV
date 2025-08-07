@@ -2,24 +2,44 @@
 
 ## Todo
 
-    1. parameters for gcc
-
-    2. def_word macro, need resolve how to update
+    ?   def_word macro, need resolve how to update
         link for each word to point the previous,
         linked list
 
-    3.  Code could start at align 2 or must be at align 4 ?
-
-    4.  How use of compressed ISA ?
-
 ## Done
 
-03/07/2025
+04/08/2025
+
+    Using a QEMU Virtual Machine 
+
+    1. At https://bellard.org/jslinux/, with linux Fedora 33 Console, 
+    got a "Hello!" from sector-riscv.elf, 
+    cross compiled in a x86-64 notebook with riscv64-linux-gnu suite; 
+
+    Also followed by a "Segmentation Fault" of course.
+
+    But this solves the VM for tests.
+
+    the ecalls code for _putc and _getc is ok.
+
+    2. local, 
+
+    Installing QEMU: 
+    sudo apt-get install qemu qemu-system-misc qemu-user 
+    
+    Installing GCC:
+    sudo gcc-riscv64-unknown-elf
+
+    the helloworldriscv.S compiles to a.out and "qemu-riscv a.out"
+    does "HeloWorld!".
+
+    Now go to debug.
+
+03/08/2025
 
     Doing tests with djb2 hash and bit-0 for flag immediate, 
     the use of bit-0 grows the collisions too much.
     Return the flag to bit-31.
-
 
 .equ hash_key, 0B876D32 
 .equ hash_emit, 7C6B87D0 
@@ -34,7 +54,7 @@
 .equ hash_notequal, 00596816 
 .equ hash_userat, 005970D6 
 
-01/07/2025
+01/08/2025
 
 Using GCCFLAGS = -nostartfiles -nodefaultlibs \
                  -march=rv32ic -mabi=ilp32 -static -Os
