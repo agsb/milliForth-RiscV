@@ -136,7 +136,8 @@
 #
 .equ FLAG_IMM, 0x80000
 
-.word
+.set last_link, 0
+
 .macro def_word name, label, last, hash
 #.p2align 2, 0x00
 h_\label:
@@ -149,6 +150,16 @@ h_\label:
 # hashes can't be calculated inside macros,
 # all hsh must be by hand.
 # but only for few primitives :)
+
+#---------------------------------------------------------------------
+
+.set cc, 0
+
+.macro putchar value
+        li a3, \value 
+        call _putc
+.set cc, \value
+.endm
 
 #---------------------------------------------------------------------
 # using pre-processor CPP (GNU GCC)
@@ -271,29 +282,30 @@ ends: .word 0x0
 _start:
 .endif
 
+
 main:
 
-        li a3, 72       # 'H'
-        call _putc
-        li a3, 101      #'e'
-        call _putc
-        li a3, 108      #'l'
-        call _putc
-        li a3, 108      #'l'
-        call _putc
-        li a3, 111      #'o'
-        call _putc
-        li a3, 33       #'!'
-        call _putc
-        li a3, 10       #\n
-        call _putc
+        putchar 'H'
+        putchar 'e'
+        putchar 'l'
+        putchar 'l'
+        putchar 'o'
+        putchar ' '
+        putchar 'w'
+        putchar 'o'
+        putchar 'r'
+        putchar 'l'
+        putchar 'd'
+        putchar '\n'
 
-        call exit 
+        # call exit 
 
 
         #
         # call _init
         #
+
+        putchar '0'
 
 #----------------------------------------------------------------------
 # do what need once
@@ -310,6 +322,8 @@ cold:
 
         addi trd, zero, SPC
 
+        putchar '1' 
+
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
@@ -325,6 +339,8 @@ warm:
         
         sw hsh, HERE (usr)
 
+        putchar '2' 
+
 #---------------------------------------------------------------------
 # reset TIB
 reset:
@@ -332,6 +348,8 @@ reset:
         la idx, _tib
         
         sw zero, 0 (idx)
+
+        putchar '3'  
 
 #---------------------------------------------------------------------
 abort:
@@ -342,6 +360,8 @@ abort:
         sw idx, SPT (usr)
 
         # call prompt_erro ('??\n')
+
+        putchar '4'
 
 #---------------------------------------------------------------------
 quit:
@@ -354,6 +374,8 @@ quit:
 # stat is 'interpret' == \0
         
         sw zero, STAT (usr)
+
+        putchar '5'
 
         j okey
 
@@ -373,18 +395,22 @@ okey:
 # get a hash of the token
 resolve:
         
+        putchar '6'
+
         call token
 
 #---------------------------------------------------------------------         
 # find de code
 tick:
-        
+
 #---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
 
 # get the latest link
         
         lw lnk, LAST (usr)
+
+        putchar '7'
 
 100:
 # verify end of dictionary, abort (could be number?)
@@ -425,6 +451,8 @@ tick:
        
        j 100b
 
+       putchar '8'
+
 100:
 # move to code
 # wrd points to or start of code or list of references
@@ -446,6 +474,8 @@ eval:
 #---------------------------------------------------------------------         
 compile:
 
+        putchar 'C'
+
         call wcomma
 
         j resolve
@@ -453,6 +483,8 @@ compile:
 #---------------------------------------------------------------------         
 execute:
 immediate:
+
+        putchar 'E'
 
         la ipt, resolvept
 
@@ -463,6 +495,8 @@ immediate:
 getline:
 # get the TIB 
   
+        putchar 'G'
+
         la idx, _tib
         
         sw idx, TOIN (usr)
@@ -503,6 +537,8 @@ getline:
 
         # falltrought
 
+        putchar 'N'
+
 #---------------------------------------------------------------------
 # in place every token, no rewinds
 # the counter is placed at space before word
@@ -514,6 +550,8 @@ token:
 # last position on tib
         
         lw idx, TOIN (usr)
+
+        putchar 'T' 
 
 # skip spaces // trd
 100:
