@@ -24,6 +24,8 @@
 
     2. local, 
 
+    From https://gist.github.com/Frank-Buss/aa6aa7d4907335e4a529e8cf3e82f47e
+
     Installing QEMU: 
     sudo apt-get install qemu qemu-system-misc qemu-user 
     
