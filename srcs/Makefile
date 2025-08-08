@@ -11,7 +11,7 @@
 ########################################
 
 # default
-BASE = /usr/bin
+BASE = /usr/bin/
 # bare-metal ?
 NAME = riscv64-unknown-elf-
 # on linux ?
@@ -26,7 +26,7 @@ NAME = riscv64-linux-gnu-
 #	NAME = riscv32-unknown-linux-gnu-
 #endif
 
-PASS = ${BASE}/${NAME}
+PASS = ${BASE}${NAME}
 
 GCC = ${PASS}gcc
 
@@ -36,8 +36,9 @@ GCCFLAGS = -nostartfiles -nodefaultlibs \
 # -march=rv64ic -mabi=lp64 -static -Os \
 # -march=rv32ic -mabi=ilp32 -static -Os \
 
-LDFLAGS = -Wl,--stats
+LDFLAGS = 
 
+#-Wl,--stats
 #-Wl,-build-id 
 
 ASFLAGS = -Wa,-alms=$@.lst 
@@ -52,7 +53,7 @@ QEMU = ${BASE}qemu-riscv64
 
 #QEMU = ${BASE}qemu-riscv32
 
-QFLAGS = -nographic -smp 1 -machine virt -bios none
+#QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 MY = minimal
 
@@ -88,9 +89,8 @@ clean:
 	      err out
 
 qemu: 
-	#@qemu-system-riscv32 -M ? | grep virt >/dev/null || exit
-	@echo "Press Ctrl-A and then X to exit QEMU"
-	$(QEMU) $(QFLAGS) $@.elf
+	#@echo "Press Ctrl-A and then X to exit QEMU"
+	$(QEMU) $(QFLAGS) $(MY).elf
 
 sort:
 	# extract, order, count the instructions used

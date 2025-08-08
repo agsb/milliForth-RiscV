@@ -211,40 +211,42 @@ h_\label:
 
 # name some offsets
 
+.equ CELLS, 4
+
 # state flag
-.equ STAT, 0 
+.equ STAT, 0 * CELLS
 
 # toin next free byte in TIB
-.equ TOIN, 1 
+.equ TOIN, 1 * CELLS 
 
 # last link cell in heap dictionary linked list
-.equ LAST, 2  
+.equ LAST, 2 * CELLS
 
 # next free cell in heap dictionary, aka dpt
-.equ HERE, 3 
+.equ HERE, 3 * CELLS
 
 # data stack index
-.equ SPT, 4 
+.equ SPT, 4 * CELLS
 
 # return stack index
-.equ RPT, 5 
+.equ RPT, 5 * CELLS
 
 # next token in TIB
-.equ TOUT, 6 
+.equ TOUT, 6 * CELLS
 
 # hold 'here while compile
-.equ ONCE, 7 
+.equ ONCE, 7 * CELLS
 
 # heap forward
-.equ HEAD, 8 
+.equ HEAD, 8 * CELLS
 
 # heap backward
-.equ TAIL, 9 
+.equ TAIL, 9 * CELLS
 
 
 # this is it
 _user:
-.skip (TAIL + 1) * CELL
+.skip TAIL + 1 * CELLS
 
 # tib grows forward
 _tib:       
@@ -555,6 +557,7 @@ token:
 
 # skip spaces // trd
 100:
+
         lb fst, 0 (idx)
 
         beq fst, zero, getline
@@ -563,8 +566,14 @@ token:
         
         bne fst, trd, 100f
 
+        call _putc
+        
+        putchar '-'
+
         j 100b
 100:
+
+        putchar 'O' 
 
 # preserve return
 
