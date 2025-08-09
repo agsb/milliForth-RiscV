@@ -30,11 +30,12 @@ PASS = ${BASE}${NAME}
 
 GCC = ${PASS}gcc
 
-GCCFLAGS = -nostartfiles -nodefaultlibs \
-	   -march=rv64ic -mabi=lp64 -static -Os \
+GCCFLAGS = -nostartfiles -nodefaultlibs -static -Os \
+	   -march=rv32ic -mabi=ilp32
+	  # -march=rv64ic -mabi=lp64 
 	   
-# -march=rv64ic -mabi=lp64 -static -Os \
-# -march=rv32ic -mabi=ilp32 -static -Os \
+# -march=rv64ic -mabi=lp64 
+# -march=rv32ic -mabi=ilp32
 
 LDFLAGS = 
 

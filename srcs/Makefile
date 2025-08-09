@@ -30,8 +30,8 @@ PASS = ${BASE}${NAME}
 
 GCC = ${PASS}gcc
 
-GCCFLAGS = -nostartfiles -nodefaultlibs \
-	   -march=rv64ic -mabi=lp64 -static -Os \
+GCCFLAGS = -nostartfiles -nodefaultlibs -static -Os \
+	   -march=rv32ic -mabi=ilp32 -static -Os \
 	   
 # -march=rv64ic -mabi=lp64 -static -Os \
 # -march=rv32ic -mabi=ilp32 -static -Os \
@@ -51,7 +51,7 @@ OBJDUMP = ${PASS}objdump
 
 QEMU = ${BASE}qemu-riscv64
 
-#QEMU = ${BASE}qemu-riscv32
+QEMU = ${BASE}qemu-riscv32
 
 #QFLAGS = -nographic -smp 1 -machine virt -bios none
 

@@ -243,6 +243,8 @@ h_\label:
 # heap backward
 .equ TAIL, 9 * CELLS
 
+# stack for preserve ra in nested calls
+.skip 32 * CELLS
 
 # this is it
 _user:
@@ -311,10 +313,6 @@ main:
 
         j cold
 
-marks:
-.word 0x80000000
-.word 0x12345678
-.word 0x00000001
 #----------------------------------------------------------------------
 
 # do what need once

@@ -35,6 +35,7 @@ _pad:
 _start:
 .endif
 
+main:
         li a3, 0x01020304
 
         call puthex
@@ -56,7 +57,7 @@ _init:
 # linux ecall for getc
 _getc:
         addi a0, zero, STDIN
-        la a1, _pad
+        la   a1, _pad
         addi a2, zero, 1
         addi a7, zero, GETC
         ecall
@@ -65,40 +66,52 @@ _getc:
 
 # linux ecall for putc
 _putc:
-        sw a3, 0 (a1)
+                
         addi a0, zero, STDOUT
-        la a1, _pad
+        la   a1, _pad
         addi a2, zero, 1
         addi a7, zero, PUTC
+        sw a3, 0 (a1)
         ecall
         ret
 
 # code a register (32-bit) word in ASCII hexadecimal 
-puthex:
-        addi t0, zero, ' '
-        addi t1, zero, 64
-        add  t2, zero, a3
 
-        srli t3, t2, 24
+puthex:
+
+        #addi s6, zero, ra
+
+        addi s5, zero, 64
+        add  s2, zero, a3
+
+        srli s3, s2, 24
         call 100f
-        srli t3, t2, 16
+        srli s3, s2, 16
         call 100f
-        srli t3, t2, 8
+        srli s3, s2, 8
         call 100f
-        srli t3, t2, 0
+        srli s3, s2, 0
+        call 100f
+
+        #addi ra, zero, s6
+        
+        ret
+
 100:
-        andi t3, t3, 255
-        srli t4, t3, 4
+        andi s3, s3, 255
+        srli s4, s3, 4
         call 200f
-        srli t4, t3, 0
+        srli s4, s3, 0
 200:
-        andi t4, t4, 15
-        ori  t4, t4, 48
-        blt  t4, t1, 300f
-        addi t4, t4, 6
+        andi s4, s4, 15
+        ori  s4, s4, 48
+        blt  s4, s5, 300f
+        addi s4, s4, 6
 300:
-        add a3, zero, t4
+        add a3, zero, s4
+
         call _putc
+        
         ret
 
 
