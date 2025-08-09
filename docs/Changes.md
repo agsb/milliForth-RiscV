@@ -8,6 +8,25 @@
 
 ## Done
 
+09/08/2025
+
+    Risc-V does not handle stack push and pull. The ISA allow any 
+    register acts as stack, but by convention x2 is SP and the linux 
+    loader sets SP to a default memory space.
+
+    MilliFort does not use the SP as language stack, only for internal
+    calls to hold the return address.
+
+    The dictionary grows from the end of .bss and don't know where the 
+    idefault elf SP points. 
+
+    Usually push, decrements SP and store, and pull, fetch
+    and increments SP. Better keep it around.
+
+    Defined _pushra_ and _pullra_ using the default elf stack pointer
+
+
+    
 04/08/2025
 
     Using a QEMU Virtual Machine 

@@ -152,6 +152,26 @@ h_\label:
 # but only for few primitives :)
 
 #---------------------------------------------------------------------
+# for deep nested calls
+#
+
+.ifndef RAS
+
+.equ RAS, defined
+
+.macro pushra
+addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
+sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+.endm
+
+.macro pullra
+lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
+.endm
+
+.endif
+
+#---------------------------------------------------------------------
 
 .set cc, 0
 
@@ -166,13 +186,13 @@ h_\label:
 # for alias register names 
 
 # forth struct pointer, constant 
-#define usr sp
+#define usr s0
 
 # instruction pointer, preserved
-#define ipt s0
+#define ipt s1
 
 # memory index 
-#define idx s1
+#define idx a6
 
 # hash value
 #define hsh a0
@@ -191,9 +211,6 @@ h_\label:
 
 # keep ascii space,
 #define trd a5
-
-# keep ra, return addres
-#define fth a6 
 
 #----------------------------------------------------------------------
 #.section .data
@@ -309,7 +326,12 @@ main:
         # call _init
         #
 
+        putchar '\n'
         putchar '0'
+        putchar ' '
+
+        mv fst, sp
+        call puthex
 
         j cold
 
@@ -321,68 +343,92 @@ cold:
 
         fence
 
-# load user pointer address
-
-        la usr, _user
-
 # load word separator, space
 
         addi trd, zero, SPC
 
+# load user pointer address
+
+        putchar '\n'
         putchar '1' 
+        putchar ' '
+
+        la usr, _user
+
+        mv fst, usr
+        call puthex
 
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
 # link list of headers, aka dictionary
 
-        la hsh, h_exit
+        putchar '\n'
+        putchar '2' 
+        putchar ' '
+
+        la fst, h_exit
         
-        sw hsh, LAST (usr)
+        sw fst, LAST (usr)
+        
+        call puthex
 
 # next heap free cell  
         
-        la hsh, ends
-        
-        sw hsh, HERE (usr)
+        putchar '\n'
+        putchar '3' 
+        putchar ' '
 
-        putchar '2' 
+        la fst, ends
+        
+        sw fst, HERE (usr)
+
+        call puthex
 
 #---------------------------------------------------------------------
 # reset TIB
 reset:
+        putchar '\n'
+        putchar '4' 
+        putchar ' '
         
-        la idx, _tib
-        
-        sw zero, 0 (idx)
+        la fst, _tib
+        sw fst, TOIN (usr)
+        sw zero, 0 (fst)
 
-        putchar '3'  
+        call puthex  
 
 #---------------------------------------------------------------------
 abort:
 # reset data stack
         
-        la idx, sp0 
-        
-        sw idx, SPT (usr)
+        putchar '\n'
+        putchar '5'
+        putchar ' '
+
+        la fst, sp0 
+        sw fst, SPT (usr)
 
         # call prompt_erro ('??\n')
 
-        putchar '4'
+        call puthex  
 
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
-        la idx, rp0 
-        
-        sw idx, RPT (usr)
+        putchar '\n'
+        putchar '6'
+        putchar ' '
+
+        la fst, rp0 
+        sw fst, RPT (usr)
+
+        call puthex 
 
 # stat is 'interpret' == \0
         
         sw zero, STAT (usr)
-
-        putchar '5'
 
         j okey
 
@@ -402,8 +448,6 @@ okey:
 # get a hash of the token
 resolve:
         
-        putchar '6'
-
         call token
 
 #---------------------------------------------------------------------         
@@ -417,13 +461,18 @@ tick:
         
         lw lnk, LAST (usr)
 
-        putchar '7'
-
 100:
 # verify end of dictionary, abort (could be number?)
         
         beq lnk, zero, abort
 
+        putchar '\n'
+        putchar '7'
+        putchar ' '
+
+        mv fst, lnk
+        call puthex
+        
 # linked list
         
         mv wrd, lnk
@@ -458,7 +507,9 @@ tick:
        
        j 100b
 
+       putchar '\n'
        putchar '8'
+       putchar ' '
 
 100:
 # move to code
@@ -522,7 +573,11 @@ getline:
         
         addi idx, idx, ONE
 
+        pushra
+
         call _getc
+
+        pullra 
 
 # 7-bit ascii only 
 #        andi fst, 0x7F
@@ -558,12 +613,19 @@ token:
         
         lw idx, TOIN (usr)
 
+        mv fst, idx
+        call puthex
+
+        putchar '\n' 
         putchar 'T' 
+        putchar ' ' 
 
 # skip spaces // trd
 100:
 
         lb fst, 0 (idx)
+
+        call puthex
 
         beq fst, zero, getline
         
@@ -582,7 +644,7 @@ token:
 
 # preserve return
 
-        mv fth, ra
+        pushra
 
 # make hash
 
@@ -590,7 +652,7 @@ token:
         
 # restore return
 
-        mv ra, fth
+        pullra
 
 # mask forth flag 
 mask:
@@ -872,6 +934,14 @@ def_word ";", "semis",  h_colon, hash_semis
         j finish
 
 #---------------------------------------------------------------------
+# any other primitive word must be before exit
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Beware, exit must be the last word in primitive ditionary !
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
 #
 # this is the Forth heart beat.
@@ -881,7 +951,6 @@ def_word ";", "semis",  h_colon, hash_semis
 #
 # "why there is no 'docol at start of words ?"
 #
-#---------------------------------------------------------------------
 # ( -- ) 
 def_word "exit", "exit", h_semis, hash_exit
 unnest: #; exit
@@ -905,9 +974,9 @@ next:
 pick:
 # compare address, if less than 'ends then is a primitive 
         
-        la idx, ends
+        la idx, exit
         
-        blt wrd, idx, jump
+        ble wrd, idx, jump
 
 nest:   #; enter
 # return push, (rpt) = ipt, rp -= cell
@@ -932,16 +1001,14 @@ jump:
         
         jalr zero, 0 (wrd)
 
+#---------------------------------------------------------------------
+# Beware, exit must be the last word in primitive ditionary !
+#---------------------------------------------------------------------
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
 #
 .include "minimal.S"
-
-#-----------------------------------------------------------------------
-# BEWARE, MUST BE AT END! MINIMAL THREAD CODE DEPENDS ON IT!
-#       for riscv-unknow-elf moved to end of .bss
-#-----------------------------------------------------------------------
 
 .end
 

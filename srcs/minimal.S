@@ -13,9 +13,6 @@
 # linux ecall stuff, 29/07/2025, vide:
 # https://github.com/riscv-software-src/riscv-pk/blob/master/pk/syscall.h
 
-.equ ZERO,      0
-.equ ONE,       1
-.equ TWO,       2
 .equ STDIN,     0
 .equ STDOUT,    1
 .equ GETC,     63
@@ -31,17 +28,44 @@ _pad:
 .endif
 
 #---------------------------------------------------------------------
+.ifndef RAS
+
+.macro pushra
+addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
+sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+.endm
+
+.macro pullra
+lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
+.endm
+
+.endif
+
+#---------------------------------------------------------------------
 .section .text
 
 .ifndef _start
 .globl _start
 _start:
+
+main:
+        li a3, 0x01020304
+
+        call puthex
+
+        li a3, 0x10203040
+
+        call puthex
+
 .endif
+
+#---------------------------------------------------------------------
 
 # load system call for exit
 _exit:
-        li a0, ZERO
-        li a7, EXIT
+        add a0, zero, zero
+        addi a7, zero, EXIT
         ecall
 
 # load system call for init
@@ -50,22 +74,79 @@ _init:
 
 # linux ecall for getc
 _getc:
-        li a0,  STDIN
-        la a1,  _pad
-        li a2,  ONE
-        li a7,  GETC
+        addi a0, zero, STDIN
+        la   a1, _pad
+        addi a2, zero, 1
+        addi a7, zero, GETC
         ecall
-        lw a3,  0 (a1)
+        lw a3, 0 (a1)
         ret
 
 # linux ecall for putc
 _putc:
-        li a0,  STDOUT
-        la a1,  _pad
-        li a2,  ONE
-        li a7,  PUTC
-        sw a3,  0 (a1)
+        addi a0, zero, STDOUT
+        la   a1, _pad
+        addi a2, zero, 1
+        addi a7, zero, PUTC
+        sw a3, 0 (a1)
         ecall
         ret
+
+#---------------------------------------------------------------------
+# code a register (32-bit) word in ASCII hexadecimal 
+#
+# ATT: nested call, relies in pushra and pullra
+#
+puthex:
+
+        pushra
+
+        addi s5, zero, 58
+        add  s2, zero, a3
+
+        srli s3, s2, 24
+        call 100f
+        srli s3, s2, 16
+        call 100f
+        srli s3, s2, 8
+        call 100f
+        srli s3, s2, 0
+        call 100f
+
+        pullra
+
+        ret
+
+100:
+        pushra
+
+        andi s3, s3, 0xFF
+        
+        srli s4, s3, 4
+        call 200f
+        
+        srli s4, s3, 0
+        call 200f
+
+        pullra
+
+        ret
+
+200:
+        pushra
+
+        andi s4, s4, 0x0F
+        ori  s4, s4, 48
+        blt  s4, s5, 300f
+        addi s4, s4, 7
+300:
+        add a3, zero, s4
+
+        call _putc
+        
+        pullra
+
+        ret
+
 
 

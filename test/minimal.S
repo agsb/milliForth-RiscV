@@ -36,13 +36,19 @@ _start:
 .endif
 
 main:
-        li a3, 0x01020304
+        li a3, 0x12345678
 
         call puthex
 
-        li a3, 0x10203040
+        li a3, '\n'
+        call _putc
+
+        li a3, 0x89ABCDEF
 
         call puthex
+
+        li a3, '\n'
+        call _putc
 
 # load system call for exit
 _exit:
@@ -75,13 +81,26 @@ _putc:
         ecall
         ret
 
+#---------------------------------------------------------------------
+
+.macro pushra
+addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
+sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+.endm
+
+.macro pullra
+lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
+.endm
+
+#---------------------------------------------------------------------
 # code a register (32-bit) word in ASCII hexadecimal 
 
 puthex:
 
-        #addi s6, zero, ra
+        pushra
 
-        addi s5, zero, 64
+        addi s5, zero, 58
         add  s2, zero, a3
 
         srli s3, s2, 24
@@ -93,25 +112,39 @@ puthex:
         srli s3, s2, 0
         call 100f
 
-        #addi ra, zero, s6
-        
+        pullra
+
         ret
 
 100:
-        andi s3, s3, 255
+        pushra
+
+        andi s3, s3, 0xFF
+        
         srli s4, s3, 4
         call 200f
+        
         srli s4, s3, 0
+        call 200f
+
+        pullra
+
+        ret
+
 200:
-        andi s4, s4, 15
+        pushra
+
+        andi s4, s4, 0x0F
         ori  s4, s4, 48
         blt  s4, s5, 300f
-        addi s4, s4, 6
+        addi s4, s4, 7
 300:
         add a3, zero, s4
 
         call _putc
         
+        pullra
+
         ret
 
 
