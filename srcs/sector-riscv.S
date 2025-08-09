@@ -309,7 +309,14 @@ main:
 
         putchar '0'
 
+        j cold
+
+marks:
+.word 0x80000000
+.word 0x12345678
+.word 0x00000001
 #----------------------------------------------------------------------
+
 # do what need once
 cold:
 # just for sake
