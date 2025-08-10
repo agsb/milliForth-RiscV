@@ -538,9 +538,41 @@ immediate:
         j pick
 
 #---------------------------------------------------------------------
-# absolute crude getline, continues until \n
-getline:
-# get the TIB 
+# in place every token, no rewinds
+# the counter is placed at space before word
+# returns a c-str
+# \0 as eol goto getline
+
+token:
+
+        pushra
+
+# last position on tib
+        
+100:
+        putchar '\n' 
+        putchar 'T' 
+        putchar ' ' 
+
+        lw idx, TOIN (usr)
+
+        mv fst, idx
+        call puthex
+
+# skip spaces // trd
+200:
+
+        putchar '\n' 
+
+        lb snd, 0 (idx)
+
+        mv fst, snd
+        call puthex
+
+        bne snd, zero, no_gets
+
+# absolute crude getline, just getc until \n
+gets:
   
         putchar '\n'
         putchar 'G'
@@ -558,97 +590,56 @@ getline:
         mv fst, trd
 
 # fill the TIB until \n
-100:
+300:
         sb fst, 0 (idx)
         
         addi idx, idx, ONE
 
-        # pushra
-
         call _getc
-
-        # pullra 
 
 # 7-bit ascii only 
 #        andi fst, 0x7F
 
 # \n ends 
         
-        bne fst, snd, 100b
+        bne fst, snd, 300b
 
 # at end-of-line
 
 # replace \n with space 
-100:        
+400:        
         
-        sw trd, 0 (idx)
+        sb trd, 0 (idx)
 
 # mark eol with \0
 
-        sw zero, 1 (idx)
+        sb zero, 1 (idx)
 
         # falltrought
 
         putchar 'N'
 
-#---------------------------------------------------------------------
-# in place every token, no rewinds
-# the counter is placed at space before word
-# returns a c-str
+        j 100b
 
-# \0 as eol goto getline
-
-token:
-# last position on tib
-        
-        putchar '\n' 
-        putchar 'T' 
-        putchar ' ' 
-
-        lw idx, TOIN (usr)
-
-        mv fst, idx
-        call puthex
-
-# skip spaces // trd
-100:
-
-        putchar '\n' 
-
-        lb snd, 0 (idx)
-
-        mv fst, snd
-        call puthex
-
-        beq snd, zero, getline
+no_gets:
         
         addi idx, idx, ONE
         
-        bne snd, trd, 100f
+        bne snd, trd, 500f
 
-        mv fst, snd
+        mv fst, snd 
 
         call _putc
         
-        putchar '-'
-
-        j 100b
-100:
+        j 200b
+500:
 
         putchar 'H' 
-
-# preserve return
-
-        pushra
 
 # make hash
 
         call djb2
         
-# restore return
-
-        pullra
-
 # mask forth flag 
 mask:
 
@@ -669,6 +660,8 @@ mask:
 
         mv fst, idx
         call puthex
+
+        pullra
 
         ret 
 
@@ -816,7 +809,7 @@ def_word "@", "fetch", h_store, hash_fetch
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
-def_word "nand", "nand", h_nand, hash_nand
+def_word "nand", "nand", h_fetch, hash_nand
         
         call load2
         
