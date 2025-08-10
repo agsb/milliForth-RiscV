@@ -155,6 +155,16 @@ wpush:
     does only ONE level of call, more levels must 
     save the register ra elsewhere and load it at ret.
 
+    7. the ELF format leaves for linux system define the real SP address stack, 
+    better use it for save RA inside deep nested routines.
+
+    8. The RiscV compressed instructions allow X8 to X15, as S0, S1, A0-A5, and 
+    system ecalls uses a0, a1, a2 and a7 in _putc and _getc. The milliForth use 
+    S0 as pointer for user structure, S1 to hold the instruction pointer IPT, 
+    and two groups of registers. A upper group A0, A1, A2, A7 for routines without 
+    ecalls and a lower group A3, A4, A5, A6 for generic routines with ecalls.
+        
+
 ## For Heaps
 
 _"From a 6502 64k memory to a Risc-V 4GB memory, Mind the Gap."_
