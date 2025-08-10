@@ -35,18 +35,7 @@
 
     Not working yet :)
 
-        hash djb2
-
-                0B876D32 : key
-                7C6B87D0 : emit
-                0002B584 : !
-                0002B5E5 : @
-                0002B58E : +
-                0002B59F : :
-                0002B59E : ;
-                7C727500 : nand
-                7C6BBE85 : exit
-                0B874AFB : bye
+    hash djb2
 
 */
 
@@ -66,7 +55,7 @@
 # use_extensions = 1 
 
 #---------------------------------------------------------------------
-# alias 
+# generics alias 
 
 # FORTH 1983
 
@@ -80,9 +69,9 @@
 
 .equ TWO, 2
 
-.equ NLC, 10
+.equ NLC, 10    # \n
 
-.equ SPC, 32
+.equ SPC, 32    # 
 
 # cell size, 4 bytes, 32-bit
 
@@ -172,18 +161,17 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 .endif
 
 #---------------------------------------------------------------------
-
-.set cc, 0
-
+# for easy
 .macro putchar value
         li a3, \value 
         call _putc
-.set cc, \value
 .endm
 
 #---------------------------------------------------------------------
 # using pre-processor CPP (GNU GCC)
 # for alias register names 
+# do not change
+# a0, a1, a2, a7 are used by ecalls
 
 # forth struct pointer, constant 
 #define usr s0
@@ -288,21 +276,22 @@ rp0:       .word
 #-----------------------------------------------------------------------
 # start of user dictionary 
 # anything above is not a primitive
-# usually .heap
-# MUST BE AT END OF .BSS
+# usually at end of .bss (.heap)
 #----------------------------------------------------------------------
-ends: .word 0x0
+here: .word 0x0
 
 #----------------------------------------------------------------------
 .text 
 .p2align 2, 0x0
+
+#define pp .ifdef DEBUG
+#define qq .endif
 
 #----------------------------------------------------------------------
 .ifndef _start
 .globl _start
 _start:
 .endif
-
 
 main:
 
@@ -373,13 +362,13 @@ warm:
         
         call puthex
 
-# next heap free cell  
+# next heap free cell  (end of .bss)
         
         putchar '\n'
         putchar '3' 
         putchar ' '
 
-        la fst, ends
+        la fst, here
         
         sw fst, HERE (usr)
 
@@ -553,6 +542,7 @@ immediate:
 getline:
 # get the TIB 
   
+        putchar '\n'
         putchar 'G'
 
         la idx, _tib
@@ -573,11 +563,11 @@ getline:
         
         addi idx, idx, ONE
 
-        pushra
+        # pushra
 
         call _getc
 
-        pullra 
+        # pullra 
 
 # 7-bit ascii only 
 #        andi fst, 0x7F
@@ -611,27 +601,32 @@ getline:
 token:
 # last position on tib
         
+        putchar '\n' 
+        putchar 'T' 
+        putchar ' ' 
+
         lw idx, TOIN (usr)
 
         mv fst, idx
         call puthex
 
-        putchar '\n' 
-        putchar 'T' 
-        putchar ' ' 
-
 # skip spaces // trd
 100:
 
-        lb fst, 0 (idx)
+        putchar '\n' 
 
+        lb snd, 0 (idx)
+
+        mv fst, snd
         call puthex
 
-        beq fst, zero, getline
+        beq snd, zero, getline
         
         addi idx, idx, ONE
         
-        bne fst, trd, 100f
+        bne snd, trd, 100f
+
+        mv fst, snd
 
         call _putc
         
@@ -640,7 +635,7 @@ token:
         j 100b
 100:
 
-        putchar 'O' 
+        putchar 'H' 
 
 # preserve return
 
@@ -666,8 +661,14 @@ mask:
         and hsh, hsh, fst
 
 # save toin
+        putchar '\n' 
+        putchar 'N' 
+        putchar ' ' 
 
         sw idx, TOIN (usr)
+
+        mv fst, idx
+        call puthex
 
         ret 
 
@@ -972,7 +973,7 @@ next:
         addi ipt, ipt, CELL
 
 pick:
-# compare address, if less than 'ends then is a primitive 
+# compare address, if less or equal than exit then is a primitive 
         
         la idx, exit
         
