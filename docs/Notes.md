@@ -159,10 +159,11 @@ wpush:
     better use it for save RA inside deep nested routines.
 
     8. The RiscV compressed instructions allow X8 to X15, as S0, S1, A0-A5, and 
-    system ecalls uses a0, a1, a2 and a7 in _putc and _getc. The milliForth use 
-    S0 as pointer for user structure, S1 to hold the instruction pointer IPT, 
-    and two groups of registers. A upper group A0, A1, A2, A7 for routines without 
-    ecalls and a lower group A3, A4, A5, A6 for generic routines with ecalls.
+    system ecalls uses A0, A1, A2 and A7. The _putc and _getc uses A3 as argument.
+    
+    9. The milliForth use S0 as pointer for user structure, S1 to hold the instruction 
+    pointer IPT, and two groups of registers. A upper group A0, A1, A2, A7 for 
+    routines without ecalls and a lower group A3, A4, A5, A6 for generic routines with ecalls.
         
 
 ## For Heaps
