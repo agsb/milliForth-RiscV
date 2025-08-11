@@ -96,18 +96,18 @@
 
 #---------------------------------------------------------------------
 # djb2 hash cleared of bit 31
-.equ hash_key, 0x0B876D32 
-.equ hash_emit, 0x7C6B87D0 
+.equ hash_key,   0x0B876D32 
+.equ hash_emit,  0x7C6B87D0 
 .equ hash_store, 0x0002B584 
 .equ hash_fetch, 0x0002B5E5 
-.equ hash_plus, 0x0002B58E 
+.equ hash_plus,  0x0002B58E 
 .equ hash_colon, 0x0002B59F 
 .equ hash_semis, 0x8002B59E # FLAG_IMM 
-.equ hash_nand, 0x7C727500 
-.equ hash_exit, 0x7C6BBE85 
-.equ hash_bye, 0x0B874AFB 
+.equ hash_nand,  0x7C727500 
+.equ hash_exit,  0x7C6BBE85 
+.equ hash_bye,   0x0B874AFB 
 .equ hash_notzero, 0x00596816 
-.equ hash_userat, 0x005970D6 
+.equ hash_userat,  0x005970D6 
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
@@ -121,18 +121,18 @@
 #
 
 # highlander, immediate flag. using lui 
-# must load the high 20 bits, then the low 12 bits
+# must load the high 20 bits, as 0x80000 then
+# the low 12 bits, as 0x000
 #
 .equ FLAG_IMM, 0x80000
 
 .set last_link, 0
-
 .macro def_word name, label, last, hash
 #.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
-#define last_link h_\label
+.set last_link, h_label
 \label:
 .endm
 
@@ -197,7 +197,7 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 # generic
 #define snd a4
 
-# keep ascii space,
+# generic
 #define trd a5
 
 #----------------------------------------------------------------------
@@ -248,9 +248,6 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 # heap backward
 .equ TAIL, 9 * CELLS
 
-# stack for preserve ra in nested calls
-.skip 32 * CELLS
-
 # this is it
 _user:
 .skip TAIL + 1 * CELLS
@@ -284,8 +281,20 @@ here: .word 0x0
 .text 
 .p2align 2, 0x0
 
+#define DEBUG YES
 #define pp .ifdef DEBUG
 #define qq .endif
+
+.macro mhit it
+        putchar '\n'
+        putchar \it+48
+        putchar ' '
+.endm
+
+.macro mhex rg
+        mv fst, \rg
+        call puthex
+.endm
 
 #----------------------------------------------------------------------
 .ifndef _start
@@ -294,33 +303,12 @@ _start:
 .endif
 
 main:
-
-        putchar 'H'
-        putchar 'e'
-        putchar 'l'
-        putchar 'l'
-        putchar 'o'
-        putchar ' '
-        putchar 'w'
-        putchar 'o'
-        putchar 'r'
-        putchar 'l'
-        putchar 'd'
-        putchar '\n'
-
-        # call exit 
-
-
-        #
+        
         # call _init
-        #
+        # call _exit 
 
-        putchar '\n'
-        putchar '0'
-        putchar ' '
-
-        mv fst, sp
-        call puthex
+        mhit 0
+        mhex sp
 
         j cold
 
@@ -332,88 +320,72 @@ cold:
 
         fence
 
-# load word separator, space
-
-        addi trd, zero, SPC
-
 # load user pointer address
 
-        putchar '\n'
-        putchar '1' 
-        putchar ' '
+        mhit 1
 
         la usr, _user
-
-        mv fst, usr
-        call puthex
+        
+        mhex usr
 
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
 # link list of headers, aka dictionary
 
-        putchar '\n'
-        putchar '2' 
-        putchar ' '
+        mhit 2
 
         la fst, h_exit
         
         sw fst, LAST (usr)
         
-        call puthex
+        mhex fst
 
 # next heap free cell  (end of .bss)
         
-        putchar '\n'
-        putchar '3' 
-        putchar ' '
+        mhit 3
 
         la fst, here
         
         sw fst, HERE (usr)
 
-        call puthex
+        mhex fst
 
 #---------------------------------------------------------------------
 # reset TIB
 reset:
-        putchar '\n'
-        putchar '4' 
-        putchar ' '
         
+        mhit 4
+
         la fst, _tib
         sw fst, TOIN (usr)
         sw zero, 0 (fst)
 
-        call puthex  
+        mhex fst
 
 #---------------------------------------------------------------------
 abort:
 # reset data stack
         
-        putchar '\n'
-        putchar '5'
-        putchar ' '
+        mhit 5
 
         la fst, sp0 
         sw fst, SPT (usr)
 
         # call prompt_erro ('??\n')
 
-        call puthex  
+        mhex fst
 
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
-        putchar '\n'
-        putchar '6'
-        putchar ' '
+        mhit 6
 
         la fst, rp0 
         sw fst, RPT (usr)
 
-        call puthex 
+        mhex fst
 
 # stat is 'interpret' == \0
         
@@ -439,6 +411,12 @@ resolve:
         
         call token
 
+        mhit 7
+
+        mhex hsh
+
+        call _getc
+
 #---------------------------------------------------------------------         
 # find de code
 tick:
@@ -455,12 +433,8 @@ tick:
         
         beq lnk, zero, abort
 
-        putchar '\n'
-        putchar '7'
-        putchar ' '
-
-        mv fst, lnk
-        call puthex
+        mhit 7
+        mhex lnk
         
 # linked list
         
@@ -547,6 +521,10 @@ token:
 
         pushra
 
+# load word separator, space
+
+        addi trd, zero, SPC
+
 # last position on tib
         
 100:
@@ -557,6 +535,7 @@ token:
         lw idx, TOIN (usr)
 
         mv fst, idx
+        
         call puthex
 
 # skip spaces // trd
@@ -567,7 +546,7 @@ token:
         lb snd, 0 (idx)
 
         mv fst, snd
-        call puthex
+        call _putc
 
         bne snd, zero, no_gets
 
@@ -607,7 +586,6 @@ gets:
 # at end-of-line
 
 # replace \n with space 
-400:        
         
         sb trd, 0 (idx)
 
@@ -643,6 +621,14 @@ no_gets:
 # mask forth flag 
 mask:
 
+        putchar '\n'
+        putchar 'H'
+        putchar ' '
+
+        mv fst, hsh
+
+        call puthex
+
 # set the FLAG as complement
 
         lui fst, FLAG_IMM - 1
@@ -659,6 +645,7 @@ mask:
         sw idx, TOIN (usr)
 
         mv fst, idx
+
         call puthex
 
         pullra
