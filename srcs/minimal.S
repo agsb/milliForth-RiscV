@@ -46,21 +46,19 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 .section .text
 
 .ifndef _start
+
 .globl _start
+
 _start:
 
 main:
-        li a3, 0x01020304
-
-        call puthex
-
-        li a3, 0x10203040
-
-        call puthex
 
 .endif
 
 #---------------------------------------------------------------------
+#
+#       Note: system ecalls do not use ra for keep return address
+#
 
 # load system call for exit
 _exit:
@@ -93,9 +91,17 @@ _putc:
         ret
 
 #---------------------------------------------------------------------
+#
+# Note: nested user calls must save ra,
+#       relies in pushra and pullra
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
 # code a register (32-bit) word in ASCII hexadecimal 
 #
-# ATT: nested call, relies in pushra and pullra
+# using A3 as argument
+# using S2, S3, S4, S5 as scratch
 #
 puthex:
 

@@ -406,7 +406,7 @@ okey:
         # call prompt_okey ('OK\n')
 
 #---------------------------------------------------------------------
-# get a hash of the token
+# get a hash of the next token
 resolve:
         
         call token
@@ -416,6 +416,7 @@ resolve:
         mhex hsh
 
         call _getc
+        
 
 #---------------------------------------------------------------------         
 # find de code
@@ -433,7 +434,8 @@ tick:
         
         beq lnk, zero, abort
 
-        mhit 7
+        mhit 8
+
         mhex lnk
         
 # linked list
@@ -443,6 +445,10 @@ tick:
 # get next link 
         
         lw lnk, 0 (wrd)
+
+        mhit 9
+
+        mhex lnk
 
 # move to hash
         
@@ -456,6 +462,10 @@ tick:
 
         li snd, 0x0
 
+        mhit 10
+
+        mhex snd
+
 # mask hash flag // snd
 
         and snd, fst, snd
@@ -467,12 +477,13 @@ tick:
         beq hsh, fst, 100f
 
 # next link
+
+       mhit 9
        
        j 100b
 
-       putchar '\n'
-       putchar '8'
-       putchar ' '
+
+       mhit 10
 
 100:
 # move to code
@@ -528,33 +539,24 @@ token:
 # last position on tib
         
 100:
-        putchar '\n' 
-        putchar 'T' 
-        putchar ' ' 
 
         lw idx, TOIN (usr)
 
-        mv fst, idx
+        mhit 'T' - 'A' + 17
+        mhex idx
         
-        call puthex
-
 # skip spaces // trd
 200:
 
-        putchar '\n' 
-
         lb snd, 0 (idx)
-
-        mv fst, snd
-        call _putc
 
         bne snd, zero, no_gets
 
+#---------------------------------------------------------------------
 # absolute crude getline, just getc until \n
 gets:
   
-        putchar '\n'
-        putchar 'G'
+        mhit 'A' - 'A' + 17
 
         la idx, _tib
         
@@ -568,41 +570,41 @@ gets:
         
         mv fst, trd
 
-# fill the TIB until \n
+# loop and fill the TIB until \n
+# no test end of buffer 
 300:
         sb fst, 0 (idx)
         
         addi idx, idx, ONE
 
+# get next char
         call _getc
 
 # 7-bit ascii only 
-#        andi fst, 0x7F
+        andi fst, fst, 127
 
 # \n ends 
-        
         bne fst, snd, 300b
 
 # at end-of-line
+400:
 
 # replace \n with space 
-        
         sb trd, 0 (idx)
 
 # mark eol with \0
-
         sb zero, 1 (idx)
 
-        # falltrought
-
-        putchar 'N'
+        mhit 'N' - 'A' + 17
 
         j 100b
 
+#---------------------------------------------------------------------
 no_gets:
         
         addi idx, idx, ONE
         
+# not a space ?
         bne snd, trd, 500f
 
         mv fst, snd 
@@ -612,8 +614,6 @@ no_gets:
         j 200b
 500:
 
-        putchar 'H' 
-
 # make hash
 
         call djb2
@@ -621,13 +621,8 @@ no_gets:
 # mask forth flag 
 mask:
 
-        putchar '\n'
-        putchar 'H'
-        putchar ' '
-
-        mv fst, hsh
-
-        call puthex
+        mhit 'H' - 'A' + 17
+        mhex hsh
 
 # set the FLAG as complement
 
@@ -637,16 +632,14 @@ mask:
 
         and hsh, hsh, fst
 
-# save toin
-        putchar '\n' 
-        putchar 'N' 
-        putchar ' ' 
+        mhit 'H' - 'A' + 17
+        mhex hsh
 
+# save toin
         sw idx, TOIN (usr)
 
-        mv fst, idx
-
-        call puthex
+        mhit 'N'
+        mhex idx
 
         pullra
 
@@ -662,14 +655,17 @@ mask:
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
 # idx pointer to str
-# fth hold the end of word character ( \0 or spc)
+# trd hold the end of word character ( \0 or spc)
 # uses fst, snd
 # hsh returns the hash 
+# idx returns next space
 djb2:
         # easy 3581
         addi hsh, zero, 2000
 
         addi hsh, hsh,  1581
+
+        addi trd, zero, SPC
 
 100:
         lb fst, 0 (idx)

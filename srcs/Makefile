@@ -53,7 +53,7 @@ QEMU = ${BASE}qemu-riscv64
 
 QEMU = ${BASE}qemu-riscv32
 
-#QFLAGS = -nographic -smp 1 -machine virt -bios none
+#QFLAGS = -nographic -serial mon:stdio -smp 1 -machine virt -bios none
 
 MY = minimal
 
