@@ -8,6 +8,12 @@
 
 ## Done
 
+12/08/2025
+
+    included extras-milliforth for support and debug
+    
+    still in debugs
+
 09/08/2025
 
     Risc-V does not handle stack push and pull. The ISA allow any 
@@ -24,8 +30,6 @@
     and increments SP. Better keep it around.
 
     Defined _pushra_ and _pullra_ using the default elf stack pointer
-
-
     
 04/08/2025
 

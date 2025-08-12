@@ -1,359 +1,329 @@
 
-#----------------------------------------------------------------------
-# extras
+#---------------------------------------------------------------------
+# ( w -- w/2 ) #; shift right
+def_word "2/", "shr", 0
 
-#----------------------------------------------------------------------
+        call load2
+        
+        srli fst, snd, 1
+        
+        j save0
+
+#---------------------------------------------------------------------
+# ( a -- ) execute a jump to a address at top of data stack
+# not change the stack
+def_word "exec", "exec", 0 
+        
+        call load2
+        
+        jalr zero, 0 (snd)
+
+#---------------------------------------------------------------------
+# ( -- ) execute a jump to a reference at IP
+def_word ":$", "docode", 0 
+        
+        jalr zero, 0 (ipt)
+
+#---------------------------------------------------------------------
+# ( -- ) execute a jump to next
+def_word ";$", "donext", 0 
+        
+        j next
+
+#---------------------------------------------------------------------
+# ( -- ) exit forth
+def_word "bye", "bye", 0
+        
+        j _exit
+
+#---------------------------------------------------------------------
 # ( -- ) ae abort
 def_word "abort", "abort_", 0
+        
         j abort
 
-#----------------------------------------------------------------------
+#---------------------------------------------------------------------
 # ( -- ) ae list of data stack
 def_word ".S", "splist", 0
-        lda spt + 0
-        sta fst + 0
-        lda spt + 1
-        sta fst + 1
+        lw fst, SPT (usr)
+
+        putchar 'S' 
         
-        lda #'S'
-        jsr putchar
-        
-        lda #sp0
-        jsr list
-        
-        jmp next
+        call put_spt
+
+        j next
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
 def_word ".R", "rplist", 0
-        lda rpt + 0
-        sta fst + 0
-        lda rpt + 1
-        sta fst + 1
+        lw fst, RPT (usr)
+
+        putchar 'R' 
         
-        lda #'R'
-        jsr putchar
-        
-        lda #rp0
-        jsr list
-        
-        jmp next
+        call put_rpt
 
-#----------------------------------------------------------------------
-#  ae list a sequence of references
-list:
+        j next
 
-        sec
-        sbc fst + 0
-        lsr
-
-        tax
-
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-
-        lda #' '
-        jsr putchar
-
-        txa
-        jsr puthex
-
-        lda #' '
-        jsr putchar
-
-        txa
-        beq @ends
-
-        ldy #0
-@loop:
-        lda #' '
-        jsr putchar
-        iny
-        lda (fst),y 
-        jsr puthex
-        dey
-        lda (fst),y 
-        jsr puthex
-        iny 
-        iny
-        dex
-        bne @loop
-@ends:
-        rts
-        
 #----------------------------------------------------------------------
 # ( -- ) dumps the user dictionary
 def_word "dump", "dump", 0
 
-        lda #0x0
-        sta fst + 0
-        lda #>ends + 1
-        sta fst + 1
+        lw fst, LAST (usr)
 
-        ldx #(fst)
-        ldy #0
+        call put_list
 
-@loop:
-        
-        lda (fst),y
-        jsr putchar
-        jsr incwx
-
-        lda fst + 0
-        cmp here + 0
-        bne @loop
-
-        lda fst + 1
-        cmp here + 1
-        bne @loop
-
-        clc  #; clean
-        jmp next 
+        j next
 
 #----------------------------------------------------------------------
 # ( -- ) words in dictionary, 
 def_word "words", "words", 0
 
-# load lastest
-        lda last + 1
-        sta snd + 1
-        lda last + 0
-        sta snd + 0
+        la fst, no_words
 
-# load here
-        lda here + 1
-        sta trd + 1
-        lda here + 0
-        sta trd + 0
-        
-@loop:
-# lsb linked list
-        lda snd + 0
-        sta fst + 0
+        call put_strz
 
-# verify \0x0
-        ora snd + 1
-        beq @ends
+        j next
 
-# msb linked list
-        lda snd + 1
-        sta fst + 1
-
-@each:       
-
-        lda #10
-        jsr putchar
-
-# put address
-        lda #' '
-        jsr putchar
-
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-
-# put link
-        lda #' '
-        jsr putchar
-
-        ldy #1
-        lda (fst), y
-        jsr puthex
-        dey 
-        lda (fst), y
-        jsr puthex
-
-        ldx #(fst)
-        lda #2
-        jsr addwx
-
-# put size + flag, name
-        ldy #0
-        jsr show_name
-
-# update
-        iny
-        tya
-        ldx #(fst)
-        jsr addwx
-
-# show CFA
-
-        lda #' '
-        jsr putchar
-        
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-
-# check if is a primitive
-        lda fst + 1
-        cmp #>ends + 1
-        bmi @continue
-
-# list references
-        ldy #0
-        jsr show_refer
-
-@continue:
-        
-        lda snd + 0
-        sta trd + 0
-        lda snd + 1
-        sta trd + 1
-
-        ldy #0
-        lda (trd), y
-        sta snd + 0
-        iny
-        lda (trd), y
-        sta snd + 1
-
-        ldx #(trd)
-        lda #2
-        jsr addwx
-
-        jmp @loop 
-
-@ends:
-        clc  #; clean
-        jmp next
+no_words:
+.asciiz "There is no WORDS, no more"
 
 #----------------------------------------------------------------------
-# ae put size and name 
-show_name:
-        lda #' '
-        jsr putchar
-
-        lda (fst), y
-        jsr puthex
-        
-        lda #' '
-        jsr putchar
-
-        lda (fst), y
-        and #$7F
-        tax
-
- @loop:
-        iny
-        lda (fst), y
-        jsr putchar
-        dex
-        bne @loop
-
-@ends:
-        rts
-
-#----------------------------------------------------------------------
-show_refer:
-# ae put references PFA ... 
-
-        ldx #(fst)
-
-@loop:
-        lda #' '
-        jsr putchar
-
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-
-        lda #':'
-        jsr putchar
-        
-        iny 
-        lda (fst), y
-        jsr puthex
-        dey
-        lda (fst), y
-        jsr puthex
-
-        lda #2
-        jsr addwx
-
-# check if ends
-
-        lda fst + 0
-        cmp trd + 0
-        bne @loop
-        lda fst + 1
-        cmp trd + 1
-        bne @loop
-
-@ends:
-        rts
-
-#----------------------------------------------------------------------
-#  ae seek for 'exit to ends a sequence of references
+#  ae see for 'exit to ends a sequence of references
 #  max of 254 references in list
 #
+# ( -- ) words in dictionary, 
+def_word "see", "words", 0
+
 seek:
-        ldy #0
-@loop1:
-        iny
-        beq @ends
-
-        lda (fst), y
-        cmp #>exit
-        bne @loop1
-
-        dey 
-        lda (fst), y
-        cmp #<exit
-        beq @ends
+        call load2
         
-        iny
-        bne @loop1
+        lw fst, snd
 
-@ends:
-        tya
-        lsr
-        clc  #; clean
-        rts
+        la snd, exit
+
+        ble fst, snd, 100f
+
+        call put_seew
+100:
+        j next
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal, swaps order
 def_word ".", "dot", 0
-        lda #' '
-        jsr putchar
-        jsr spull1
-        lda fst + 1
-        jsr puthex
-        lda fst + 0
-        jsr puthex
-        jsr spush1
-        jmp next
 
-#----------------------------------------------------------------------
-# code a byte in ASCII hexadecimal 
+        call load2
+
+        add fst, zero, snd
+
+        call puthex
+
+        j next
+
+#---------------------------------------------------------------------
+#
+# Note: 
+#       nested user calls must save ra, relies in pushra and pullra
+#       these routines uses Sn registers
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# code a register (32-bit) word in ASCII hexadecimal 
+#
 puthex:
-        pha
-        lsr
-        ror
-        ror
-        ror
-        jsr @conv
-        pla
-@conv:
-        and #0x0F
-        ora #$30
-        cmp #$3A
-        bcc @ends
-        adc #0x06
-@ends:
-        clc  #; clean
-        jmp putchar
 
-.endif
+        pushra
+
+        add  s2, zero, a3
+        
+        addi s5, zero, 58
+
+        srli s3, s2, 24
+        call 100f
+        srli s3, s2, 16
+        call 100f
+        srli s3, s2, 8
+        call 100f
+        srli s3, s2, 0
+        call 100f
+
+        add  a3, zero, s2
+
+        pullra
+
+        ret
+
+100:
+        pushra
+
+        andi s3, s3, 0xFF
+        
+        srli s4, s3, 4
+        call 200f
+        
+        srli s4, s3, 0
+        call 200f
+
+        pullra
+
+        ret
+
+200:
+        pushra
+
+        andi s4, s4, 0x0F
+        ori  s4, s4, 48
+        blt  s4, s5, 300f
+        addi s4, s4, 7
+300:
+        add a3, zero, s4
+
+        call _putc
+        
+        pullra
+
+        ret
 
 
-.ifdef numbers
+#---------------------------------------------------------------------
+# emits a stringz in ASCII 
+#
+put_strz:
+        
+        pushra
+
+        call cpys
+
+100:
+        lb s4, 0(s3)
+        
+        beq s4, zero, 900f
+        
+        call _putc
+        
+        addi s3, s3, 1
+
+        j 100b
+
+#---------------------------------------------------------------------
+800:
+        add s2, zero, a3
+
+        add s3, zero, a3
+
+        ret
+
+#---------------------------------------------------------------------
+900:
+
+        add a3, zero, s2
+
+        pullra
+
+        ret
+
+#---------------------------------------------------------------------
+put_seek:
+
+        pushra
+
+        call 800b
+
+100:
+
+        ld s4, 0 (s3)
+
+        putchar '\n'
+
+        mhex s4
+        
+        beq s3, a4, 900b
+
+        addi s3, s3, 4
+
+        j 100b
+        
+#---------------------------------------------------------------------
+put_list:
+
+        pushra
+
+        call 800b
+
+100:
+
+        ld s4, 0 (s3)
+        ld s5, 4 (s3)
+
+        putchar '\n'
+
+        mhex s3
+        
+        mhex s4
+        
+        mhex s5
+
+        beq s4, zero, 900b
+
+        add s3, zero, s4
+
+        j 100b
+
+#---------------------------------------------------------------------
+put_sp:
+
+        pushra
+
+        call 800b
+                
+        add zs5, zero, zero
+
+100:
+        beq s3, sp0, 900b
+
+        putchar '\n'
+
+        mhex s5
+
+        addi s5, s5, 1
+
+        lw s4, 0 (s3)
+
+        mhex s4
+
+        addi s3, s3, 4
+
+        j 100b
+
+#---------------------------------------------------------------------
+put_rp:
+
+        pushra
+
+        call 800b
+
+        add zs5, zero, zero
+                
+100:
+        beq s3, rp0, 900b
+
+        putchar '\n'
+
+        mhex s5
+
+        addi s5, s5, 1
+
+        lw s4, 0 (s3)
+
+        mhex s4
+
+        addi s3, s3, 4
+
+        j 100b
+
+
+.ifdef NOTYET
+
 #----------------------------------------------------------------------
 # code a ASCII $FFFF hexadecimal in a byte
 #  
@@ -405,4 +375,7 @@ number:
         pla
         pla
         rts
+
+.endif
+
 

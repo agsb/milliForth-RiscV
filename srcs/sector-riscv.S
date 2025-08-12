@@ -144,10 +144,6 @@ h_\label:
 # for deep nested calls
 #
 
-.ifndef RAS
-
-.equ RAS, defined
-
 .macro pushra
 addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
 sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
@@ -158,13 +154,28 @@ lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
 addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 .endm
 
-.endif
-
 #---------------------------------------------------------------------
 # for easy
 .macro putchar value
         li a3, \value 
         call _putc
+.endm
+
+.macro putval value
+        add a3, zero, \value 
+        call _putc
+.endm
+
+.macro mhex rg
+        putchar ' '
+        add a3, zero, \rg
+        call puthex
+.endm
+
+.macro mhit it
+        putchar '\n'
+        putchar \it
+        putchar ' '
 .endm
 
 #---------------------------------------------------------------------
@@ -263,12 +274,12 @@ _pad:
 # data stack grows backward
 _spb:       # bottom 
 .skip spz
-sp0:       .word
+sp0:       .word 0x0
 
 # return stack grows backward
 _rpb:       # bottom
 .skip rpz
-rp0:       .word
+rp0:       .word 0x0
 
 #-----------------------------------------------------------------------
 # start of user dictionary 
@@ -281,21 +292,6 @@ here: .word 0x0
 .text 
 .p2align 2, 0x0
 
-#define DEBUG YES
-#define pp .ifdef DEBUG
-#define qq .endif
-
-.macro mhit it
-        putchar '\n'
-        putchar \it+48
-        putchar ' '
-.endm
-
-.macro mhex rg
-        mv fst, \rg
-        call puthex
-.endm
-
 #----------------------------------------------------------------------
 .ifndef _start
 .globl _start
@@ -307,7 +303,8 @@ main:
         # call _init
         # call _exit 
 
-        mhit 0
+        mhit '0'
+
         mhex sp
 
         j cold
@@ -322,7 +319,7 @@ cold:
 
 # load user pointer address
 
-        mhit 1
+        mhit '1'
 
         la usr, _user
         
@@ -333,7 +330,7 @@ cold:
 warm:
 # link list of headers, aka dictionary
 
-        mhit 2
+        mhit '2'
 
         la fst, h_exit
         
@@ -343,7 +340,7 @@ warm:
 
 # next heap free cell  (end of .bss)
         
-        mhit 3
+        mhit '3'
 
         la fst, here
         
@@ -355,7 +352,7 @@ warm:
 # reset TIB
 reset:
         
-        mhit 4
+        mhit '4'
 
         la fst, _tib
         sw fst, TOIN (usr)
@@ -367,7 +364,7 @@ reset:
 abort:
 # reset data stack
         
-        mhit 5
+        mhit '5'
 
         la fst, sp0 
         sw fst, SPT (usr)
@@ -380,7 +377,7 @@ abort:
 quit:
 # reset return stack
         
-        mhit 6
+        mhit '6'
 
         la fst, rp0 
         sw fst, RPT (usr)
@@ -403,7 +400,12 @@ resolvept:
 #---------------------------------------------------------------------
 okey:
 
-        # call prompt_okey ('OK\n')
+# call prompt_okey
+
+        putchar '\n'
+        putchar 'O'
+        putchar 'K'
+        putchar '\n'
 
 #---------------------------------------------------------------------
 # get a hash of the next token
@@ -411,7 +413,7 @@ resolve:
         
         call token
 
-        mhit 7
+        mhit '7'
 
         mhex hsh
 
@@ -434,7 +436,7 @@ tick:
         
         beq lnk, zero, abort
 
-        mhit 8
+        mhit '8'
 
         mhex lnk
         
@@ -446,7 +448,7 @@ tick:
         
         lw lnk, 0 (wrd)
 
-        mhit 9
+        mhit '9'
 
         mhex lnk
 
@@ -478,7 +480,7 @@ tick:
 
 # next link
 
-       mhit 9
+       mhit 'A'
        
        j 100b
 
@@ -542,7 +544,7 @@ token:
 
         lw idx, TOIN (usr)
 
-        mhit 'T' - 'A' + 17
+        mhit 'T'
         mhex idx
         
 # skip spaces // trd
@@ -556,7 +558,7 @@ token:
 # absolute crude getline, just getc until \n
 gets:
   
-        mhit 'A' - 'A' + 17
+        mhit 'G'
 
         la idx, _tib
         
@@ -602,6 +604,8 @@ gets:
 #---------------------------------------------------------------------
 no_gets:
         
+        putchar 'X'
+
         addi idx, idx, ONE
         
 # not a space ?
@@ -621,7 +625,7 @@ no_gets:
 # mask forth flag 
 mask:
 
-        mhit 'H' - 'A' + 17
+        mhit 'H'
         mhex hsh
 
 # set the FLAG as complement
@@ -632,7 +636,7 @@ mask:
 
         and hsh, hsh, fst
 
-        mhit 'H' - 'A' + 17
+        mhit 'H'
         mhex hsh
 
 # save toin
@@ -717,18 +721,7 @@ load2:
 # extras
 #
 #---------------------------------------------------------------------
-.ifdef use_extras
 .include "extras-milliforth.S"
-.endif
-
-#---------------------------------------------------------------------
-#
-# extensions
-#
-#---------------------------------------------------------------------
-.ifdef use_extensions
-.include "extensions-milliforth.S"
-.endif
 
 #---------------------------------------------------------------------
 #
