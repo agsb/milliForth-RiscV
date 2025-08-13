@@ -93,16 +93,15 @@
 
 .equ padz, 32
 
-
 #---------------------------------------------------------------------
-# djb2 hash cleared of bit 31
+# primitives djb2 hash cleared of bit 31
 .equ hash_key,   0x0B876D32 
 .equ hash_emit,  0x7C6B87D0 
 .equ hash_store, 0x0002B584 
 .equ hash_fetch, 0x0002B5E5 
 .equ hash_plus,  0x0002B58E 
 .equ hash_colon, 0x0002B59F 
-.equ hash_semis, 0x8002B59E # FLAG_IMM 
+.equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 .equ hash_nand,  0x7C727500 
 .equ hash_exit,  0x7C6BBE85 
 .equ hash_bye,   0x0B874AFB 
@@ -141,7 +140,7 @@ h_\label:
 # but only for few primitives :)
 
 #---------------------------------------------------------------------
-# for deep nested calls
+# for deep, more than one, nested calls
 #
 
 .macro pushra
@@ -156,13 +155,9 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 
 #---------------------------------------------------------------------
 # for easy
+
 .macro putchar value
         li a3, \value 
-        call _putc
-.endm
-
-.macro putval value
-        add a3, zero, \value 
         call _putc
 .endm
 
@@ -241,12 +236,12 @@ _pad:
 # data stack grows backward
 _spb:       # bottom 
 .skip spz
-sp0:       .word 0x0
+sp0: .word 0x0
 
 # return stack grows backward
 _rpb:       # bottom
 .skip rpz
-rp0:       .word 0x0
+rp0: .word 0x0
 
 #-----------------------------------------------------------------------
 # start of user dictionary 
@@ -271,7 +266,6 @@ main:
         # call _exit 
 
         mhit '0'
-
         mhex sp
 
         j cold
@@ -286,10 +280,10 @@ cold:
 
 # load user pointer address
 
-        mhit '1'
 
         la usr, _user
         
+        mhit '1'
         mhex usr
 
 #----------------------------------------------------------------------
@@ -297,58 +291,58 @@ cold:
 warm:
 # link list of headers, aka dictionary
 
-        mhit '2'
-
         la fst, h_exit
         
         sw fst, LAST (usr)
         
+        mhit '2'
         mhex fst
 
 # next heap free cell  (end of .bss)
         
-        mhit '3'
-
         la fst, here
         
         sw fst, HERE (usr)
 
+        mhit '3'
         mhex fst
 
 #---------------------------------------------------------------------
 # reset TIB
 reset:
         
-        mhit '4'
 
         la fst, _tib
         sw fst, TOIN (usr)
         sw zero, 0 (fst)
 
+        mhit '4'
         mhex fst
 
 #---------------------------------------------------------------------
 abort:
 # reset data stack
         
-        mhit '5'
 
         la fst, sp0 
         sw fst, SPT (usr)
 
-        # call prompt_erro ('??\n')
+        putchar '\n'
+        putchar '?'
+        putchar '?'
+        putchar '\n'
 
+        mhit '5'
         mhex fst
 
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
-        mhit '6'
-
         la fst, rp0 
         sw fst, RPT (usr)
 
+        mhit '6'
         mhex fst
 
 # stat is 'interpret' == \0
@@ -381,9 +375,7 @@ resolve:
         call token
 
         mhit '7'
-
         mhex hsh
-
         call _getc
         
 
@@ -404,7 +396,6 @@ tick:
         beq lnk, zero, abort
 
         mhit '8'
-
         mhex lnk
         
 # linked list
@@ -416,7 +407,6 @@ tick:
         lw lnk, 0 (wrd)
 
         mhit '9'
-
         mhex lnk
 
 # move to hash
@@ -431,8 +421,7 @@ tick:
 
         li snd, 0x0
 
-        mhit 10
-
+        mhit 'A'
         mhex snd
 
 # mask hash flag // snd
@@ -447,16 +436,16 @@ tick:
 
 # next link
 
-       mhit 'A'
+       mhit 'B'
        
        j 100b
 
 
-       mhit 10
-
 100:
 # move to code
 # wrd points to or start of code or list of references
+
+       mhit 'Z'
 
        add wrd, wrd, CELL
 
@@ -537,7 +526,7 @@ gets:
 
 # ever start with a space
         
-        mv fst, trd
+        add fst, zero, trd
 
 # loop and fill the TIB until \n
 # no test end of buffer 
@@ -564,7 +553,7 @@ gets:
 # mark eol with \0
         sb zero, 1 (idx)
 
-        mhit 'N' - 'A' + 17
+        mhit 'L' 
 
         j 100b
 
@@ -578,9 +567,8 @@ no_gets:
 # not a space ?
         bne snd, trd, 500f
 
-        mv fst, snd 
-
-        call _putc
+        #mv fst, snd 
+        #call _putc
         
         j 200b
 500:
