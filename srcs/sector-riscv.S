@@ -44,15 +44,15 @@
 # Stuff for compiler
 #
 
-# .attribute arch, rv32i
-
+#---------------------------------------------------------------------
+# using pre-processor CPP (GNU GCC)
+# for alias register names 
+# do not change
+# a0, a1, a2, a7 are used by ecalls in _putc and _getc
+# a3, a4, a5, a6 are generics
 #---------------------------------------------------------------------
 
-# uncomment to include the extras (sic)
-# use_extras = 1 
-
-# uncomment to include the extensions (sic)
-# use_extensions = 1 
+#include "defines.S"
 
 #---------------------------------------------------------------------
 # generics alias 
@@ -132,7 +132,7 @@
 h_\label:
         .word \last
         .word \hash
-.set last_link, h_label
+.set last_link, h_\label
 \label:
 .endm
 
@@ -178,41 +178,8 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
         putchar ' '
 .endm
 
-#---------------------------------------------------------------------
-# using pre-processor CPP (GNU GCC)
-# for alias register names 
-# do not change
-# a0, a1, a2, a7 are used by ecalls
-
-# forth struct pointer, constant 
-#define usr s0
-
-# instruction pointer, preserved
-#define ipt s1
-
-# memory index 
-#define idx a6
-
-# hash value
-#define hsh a0
-
-# link pointer
-#define lnk a1
-
-# word pointer
-#define wrd a2
-
-# generic
-#define fst a3
-
-# generic
-#define snd a4
-
-# generic
-#define trd a5
-
 #----------------------------------------------------------------------
-#.section .data
+.section .data
 
 # no data
 
@@ -718,20 +685,13 @@ load2:
 
 #---------------------------------------------------------------------
 #
-# extras
-#
-#---------------------------------------------------------------------
-.include "extras-milliforth.S"
-
-#---------------------------------------------------------------------
-#
 # the primitives 
 # 
 #---------------------------------------------------------------------
 
 /*
 h_name:
-        .word h_nameup
+        .word h_name_up
         .word hash_name
 name:
         code
@@ -751,6 +711,8 @@ def_word "emit", "emit", h_key, hash_emit
         
         call load2
         
+        add fst, zero, snd
+
         call _putc
         
         j drop1
@@ -904,14 +866,6 @@ def_word ";", "semis",  h_colon, hash_semis
         j finish
 
 #---------------------------------------------------------------------
-# any other primitive word must be before exit
-#---------------------------------------------------------------------
-
-#---------------------------------------------------------------------
-# Beware, exit must be the last word in primitive ditionary !
-#---------------------------------------------------------------------
-
-#---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
 #
 # this is the Forth heart beat.
@@ -944,7 +898,7 @@ next:
 pick:
 # compare address, if less or equal than exit then is a primitive 
         
-        la idx, exit
+        la idx, ends
         
         ble wrd, idx, jump
 
@@ -971,14 +925,24 @@ jump:
         
         jalr zero, 0 (wrd)
 
-#---------------------------------------------------------------------
-# Beware, exit must be the last word in primitive ditionary !
-#---------------------------------------------------------------------
-
 #----------------------------------------------------------------------
 # system dependences, linux ecall
 #
-.include "minimal.S"
+
+#include "minimal.S"
+
+#---------------------------------------------------------------------
+# any other primitives after exit
+#---------------------------------------------------------------------
+
+#include "extras-milliforth.S"
+
+#---------------------------------------------------------------------
+# Beware, ends must be at last word in primitive ditionary !
+#---------------------------------------------------------------------
+
+ends:
+.word 0xDEADBEEF
 
 .end
 

@@ -1,7 +1,23 @@
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# djb2 hash cleared of bit 31
+.equ hash_sfr, 0x00596858
+.equ hash_exec, 0x7C6BC01E
+.equ hash_docode, 0x0059695B 
+.equ hash_donext, 0x0059697A
+.equ hash_bye, 0x0B874AFB
+.equ hash_abort, 0x0A1DFF4F
+.equ hash_splist, 0x005966B8
+.equ hash_rplist, 0x005966B9
+.equ hash_dump, 0x7C6B2FE9
+.equ hash_words, 0x0B6953F8
+.equ hash_sees, 0x0B878F36
+.equ hash_dot, 0x0002B58B
 
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
-def_word "2/", "shr", 0
+def_word "2/", "sfr", h_exit, 0
 
         call load2
         
@@ -12,7 +28,7 @@ def_word "2/", "shr", 0
 #---------------------------------------------------------------------
 # ( a -- ) execute a jump to a address at top of data stack
 # not change the stack
-def_word "exec", "exec", 0 
+def_word "exec", "exec", h_sfr, 0 
         
         call load2
         
@@ -20,31 +36,31 @@ def_word "exec", "exec", 0
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to a reference at IP
-def_word ":$", "docode", 0 
+def_word ":$", "docode", h_exec, 0 
         
         jalr zero, 0 (ipt)
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to next
-def_word ";$", "donext", 0 
+def_word ";$", "donext", h_docode, 0
         
         j next
 
 #---------------------------------------------------------------------
 # ( -- ) exit forth
-def_word "bye", "bye", 0
+def_word "bye", "byes", h_donext, 0
         
         j _exit
 
 #---------------------------------------------------------------------
 # ( -- ) ae abort
-def_word "abort", "abort_", 0
+def_word "abort", "aborts", h_byes, 0
         
         j abort
 
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
-def_word ".S", "splist", 0
+def_word ".S", "splist", h_aborts, 0
         lw fst, SPT (usr)
 
         putchar 'S' 
@@ -55,7 +71,7 @@ def_word ".S", "splist", 0
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
-def_word ".R", "rplist", 0
+def_word ".R", "rplist", h_splist, 0
         lw fst, RPT (usr)
 
         putchar 'R' 
@@ -66,7 +82,7 @@ def_word ".R", "rplist", 0
 
 #----------------------------------------------------------------------
 # ( -- ) dumps the user dictionary
-def_word "dump", "dump", 0
+def_word "dump", "dump", h_rplist, 0
 
         lw fst, LAST (usr)
 
@@ -76,7 +92,7 @@ def_word "dump", "dump", 0
 
 #----------------------------------------------------------------------
 # ( -- ) words in dictionary, 
-def_word "words", "words", 0
+def_word "words", "words", h_dump, 0
 
         la fst, no_words
 
@@ -85,16 +101,15 @@ def_word "words", "words", 0
         j next
 
 no_words:
-.asciiz "There is no WORDS, no more"
+.asciz "There is no WORDS, no more"
 
 #----------------------------------------------------------------------
 #  ae see for 'exit to ends a sequence of references
 #  max of 254 references in list
 #
 # ( -- ) words in dictionary, 
-def_word "see", "words", 0
+def_word "see", "sees", h_words, 0
 
-seek:
         call load2
         
         lw fst, snd
@@ -103,13 +118,13 @@ seek:
 
         ble fst, snd, 100f
 
-        call put_seew
+        call put_seek
 100:
         j next
 
 #----------------------------------------------------------------------
-# ( u -- u ) print tos in hexadecimal, swaps order
-def_word ".", "dot", 0
+# ( u -- u ) print tos in hexadecimal
+def_word ".", "dot", h_sees, 0
 
         call load2
 
@@ -184,7 +199,6 @@ puthex:
 
         ret
 
-
 #---------------------------------------------------------------------
 # emits a stringz in ASCII 
 #
@@ -197,7 +211,7 @@ put_strz:
 100:
         lb s4, 0(s3)
         
-        beq s4, zero, 900f
+        beq s4, zero, atbot
         
         call _putc
         
@@ -206,7 +220,7 @@ put_strz:
         j 100b
 
 #---------------------------------------------------------------------
-800:
+attop:
         add s2, zero, a3
 
         add s3, zero, a3
@@ -214,7 +228,7 @@ put_strz:
         ret
 
 #---------------------------------------------------------------------
-900:
+atbot:
 
         add a3, zero, s2
 
@@ -227,17 +241,17 @@ put_seek:
 
         pushra
 
-        call 800b
+        call attop
 
 100:
 
-        ld s4, 0 (s3)
+        lw s4, 0 (s3)
 
         putchar '\n'
 
         mhex s4
         
-        beq s3, a4, 900b
+        beq s3, a4, atbot
 
         addi s3, s3, 4
 
@@ -248,12 +262,13 @@ put_list:
 
         pushra
 
-        call 800b
+        call attop
 
 100:
 
-        ld s4, 0 (s3)
-        ld s5, 4 (s3)
+        lw s4, 0 (s3)
+    
+        lw s5, 4 (s3)
 
         putchar '\n'
 
@@ -263,23 +278,22 @@ put_list:
         
         mhex s5
 
-        beq s4, zero, 900b
+        beq s4, zero, atbot
 
         add s3, zero, s4
 
         j 100b
 
 #---------------------------------------------------------------------
-put_sp:
-
+lists:
         pushra
 
-        call 800b
-                
-        add zs5, zero, zero
+        call attop
+
+        add s5, zero, zero
 
 100:
-        beq s3, sp0, 900b
+        beq s3, s6, atbot
 
         putchar '\n'
 
@@ -296,32 +310,20 @@ put_sp:
         j 100b
 
 #---------------------------------------------------------------------
-put_rp:
+put_spt:
 
-        pushra
+        la s6, sp0
 
-        call 800b
+        j lists
 
-        add zs5, zero, zero
-                
-100:
-        beq s3, rp0, 900b
+#---------------------------------------------------------------------
+put_rpt:
 
-        putchar '\n'
+        la s6, rp0
+     
+        j lists
 
-        mhex s5
-
-        addi s5, s5, 1
-
-        lw s4, 0 (s3)
-
-        mhex s4
-
-        addi s3, s3, 4
-
-        j 100b
-
-
+#----------------------------------------------------------------------
 .ifdef NOTYET
 
 #----------------------------------------------------------------------
