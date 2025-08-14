@@ -15,6 +15,8 @@
     Compiling without extras, no errors, but still does no work.
     With extras, comes strange linker errors. 
 
+    routine djb2 tested and okey
+
 12/08/2025
 
     included extras-milliforth for support and debug
