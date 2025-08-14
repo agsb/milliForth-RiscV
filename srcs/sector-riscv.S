@@ -267,12 +267,24 @@ main:
 
         # call _init
 
+        la idx, _zzz
+        
+        call djb2
+
+        add fst, zero, hsh
+
+        call puthex
+
+        call _getc
+
         # call _exit 
 
         mhit '0'
         mhex sp
 
         j cold
+_zzz:
+.asciz "emit "
 
 #----------------------------------------------------------------------
 # do what need once
@@ -621,10 +633,17 @@ mask:
 # hsh returns the hash 
 # idx returns next space
 djb2:
-        # easy 3581
-        addi hsh, zero, 2000
+        # easy 5381
+   
+        addi hsh, zero, 1381
+        
+        addi hsh, hsh, 2000
 
-        addi hsh, hsh,  1581
+        addi hsh, hsh, 2000
+
+        mv fst, hsh
+        call puthex
+        call _getc
 
         addi trd, zero, SPC
 
@@ -635,19 +654,42 @@ djb2:
         
         beq fst, trd, 100f
         
+        mv t0, fst
+
         mv snd, hsh
+
+        mhit 'P'
+        mhex hsh
+        call _getc
 
         slli hsh, hsh, 5
         
+        mhit 'M'
+        mhex hsh
+        call _getc
+
         add hsh, hsh, snd
         
+        mhit 'N'
+        mhex hsh
+        call _getc
+
+        mv fst, t0
+
         xor hsh, hsh, fst
         
         addi idx, idx, ONE
         
+        mhit 'Q'
+        mhex hsh
+        call _getc
+
         j 100b
 
-100:    ret
+100:    
+        putchar 'X'
+
+        ret
         
 #---------------------------------------------------------------------
 wcomma:
