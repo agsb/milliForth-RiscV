@@ -8,6 +8,13 @@
 
 ## Done
 
+14/08/2025
+
+    Done djb2 hashes for extras.
+
+    Compiling without extras, no errors, but still does no work.
+    With extras, comes strange linker errors. 
+
 12/08/2025
 
     included extras-milliforth for support and debug

@@ -17,7 +17,9 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #----------------------------------------------------------------------
- 
+*/
+
+/*
     A MilliForth for RISCV 
  
     original for the RISCV, by Alvaro G. S. Barcellos, 2025
@@ -71,7 +73,7 @@
 
 .equ NLC, 10    # \n
 
-.equ SPC, 32    # 
+.equ SPC, 32    # space
 
 # cell size, 4 bytes, 32-bit
 
@@ -125,19 +127,16 @@
 #
 .equ FLAG_IMM, 0x80000
 
-.set last_link, 0
 .macro def_word name, label, last, hash
 #.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
-.set last_link, h_\label
 \label:
 .endm
 
 # hashes can't be calculated inside macros,
-# all hsh must be by hand.
-# but only for few primitives :)
+# all hashs must be done by hand.
 
 #---------------------------------------------------------------------
 # for deep, more than one, nested calls
@@ -189,41 +188,39 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 
 # name some offsets
 
-.equ CELLS, 4
-
 # state flag
-.equ STAT, 0 * CELLS
+.equ STAT, 0 * CELL
 
 # toin next free byte in TIB
-.equ TOIN, 1 * CELLS 
+.equ TOIN, 1 * CELL 
 
 # last link cell in heap dictionary linked list
-.equ LAST, 2 * CELLS
+.equ LAST, 2 * CELL
 
 # next free cell in heap dictionary, aka dpt
-.equ HERE, 3 * CELLS
+.equ HERE, 3 * CELL
 
 # data stack index
-.equ SPT, 4 * CELLS
+.equ SPT, 4 * CELL
 
 # return stack index
-.equ RPT, 5 * CELLS
+.equ RPT, 5 * CELL
 
 # next token in TIB
-.equ TOUT, 6 * CELLS
+.equ TOUT, 6 * CELL
 
 # hold 'here while compile
-.equ ONCE, 7 * CELLS
+.equ ONCE, 7 * CELL
 
 # heap forward
-.equ HEAD, 8 * CELLS
+.equ HEAD, 8 * CELL
 
 # heap backward
-.equ TAIL, 9 * CELLS
+.equ TAIL, 9 * CELL
 
 # this is it
 _user:
-.skip TAIL + 1 * CELLS
+.skip TAIL + 1 * CELL
 
 # tib grows forward
 _tib:       
@@ -260,9 +257,16 @@ here: .word 0x0
 _start:
 .endif
 
+#----------------------------------------------------------------------
+# do any system inits here
 main:
         
+# just for sake
+
+        fence
+
         # call _init
+
         # call _exit 
 
         mhit '0'
@@ -271,15 +275,9 @@ main:
         j cold
 
 #----------------------------------------------------------------------
-
 # do what need once
 cold:
-# just for sake
-
-        fence
-
 # load user pointer address
-
 
         la usr, _user
         
@@ -313,11 +311,20 @@ reset:
         
 
         la fst, _tib
-        sw fst, TOIN (usr)
         sw zero, 0 (fst)
+        sw fst, TOIN (usr)
 
         mhit '4'
         mhex fst
+
+#---------------------------------------------------------------------
+# reset data stack
+error:
+
+        putchar '\n'
+        putchar '?'
+        putchar '?'
+        putchar '\n'
 
 #---------------------------------------------------------------------
 abort:
@@ -326,11 +333,6 @@ abort:
 
         la fst, sp0 
         sw fst, SPT (usr)
-
-        putchar '\n'
-        putchar '?'
-        putchar '?'
-        putchar '\n'
 
         mhit '5'
         mhex fst
@@ -923,7 +925,7 @@ jump:
 # any other primitives after exit
 #---------------------------------------------------------------------
 
-#include "extras-milliforth.S"
+# #include "extras-milliforth.S"
 
 #---------------------------------------------------------------------
 # Beware, ends must be at last word in primitive ditionary !

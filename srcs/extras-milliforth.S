@@ -1,7 +1,34 @@
+/*
 #---------------------------------------------------------------------
+ 
+  Copyright 2025 Alvaro Gomes Sobral Barcellos <@agsb>
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 2 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+#----------------------------------------------------------------------
+*/
+
+/*
+
+        extra words and routines for milliforth-riscv
+
+*/
 
 #---------------------------------------------------------------------
+#
 # djb2 hash cleared of bit 31
+#
 .equ hash_sfr, 0x00596858
 .equ hash_exec, 0x7C6BC01E
 .equ hash_docode, 0x0059695B 
@@ -12,12 +39,16 @@
 .equ hash_rplist, 0x005966B9
 .equ hash_dump, 0x7C6B2FE9
 .equ hash_words, 0x0B6953F8
-.equ hash_sees, 0x0B878F36
+.equ hash_see, 0x0B878F36
 .equ hash_dot, 0x0002B58B
+
+
+#---------------------------------------------------------------------
+# extras links to last primitive
 
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
-def_word "2/", "sfr", h_exit, 0
+def_word "2/", "sfr", h_exit, hash_sfr
 
         call load2
         
@@ -28,7 +59,7 @@ def_word "2/", "sfr", h_exit, 0
 #---------------------------------------------------------------------
 # ( a -- ) execute a jump to a address at top of data stack
 # not change the stack
-def_word "exec", "exec", h_sfr, 0 
+def_word "exec", "exec", h_sfr, hash_exec
         
         call load2
         
@@ -36,31 +67,31 @@ def_word "exec", "exec", h_sfr, 0
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to a reference at IP
-def_word ":$", "docode", h_exec, 0 
+def_word ":$", "docode", h_exec, hash_docode
         
         jalr zero, 0 (ipt)
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to next
-def_word ";$", "donext", h_docode, 0
+def_word ";$", "donext", h_docode, hash_donext
         
         j next
 
 #---------------------------------------------------------------------
 # ( -- ) exit forth
-def_word "bye", "byes", h_donext, 0
+def_word "bye", "byes", h_donext, hash_bye
         
         j _exit
 
 #---------------------------------------------------------------------
 # ( -- ) ae abort
-def_word "abort", "aborts", h_byes, 0
+def_word "abort", "aborts", h_byes, hash_abort
         
         j abort
 
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
-def_word ".S", "splist", h_aborts, 0
+def_word ".S", "splist", h_aborts, hash_splist
         lw fst, SPT (usr)
 
         putchar 'S' 
@@ -71,7 +102,7 @@ def_word ".S", "splist", h_aborts, 0
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
-def_word ".R", "rplist", h_splist, 0
+def_word ".R", "rplist", h_splist, hash_rplist
         lw fst, RPT (usr)
 
         putchar 'R' 
@@ -82,7 +113,7 @@ def_word ".R", "rplist", h_splist, 0
 
 #----------------------------------------------------------------------
 # ( -- ) dumps the user dictionary
-def_word "dump", "dump", h_rplist, 0
+def_word "dump", "dump", h_rplist, hash_dump
 
         lw fst, LAST (usr)
 
@@ -92,7 +123,7 @@ def_word "dump", "dump", h_rplist, 0
 
 #----------------------------------------------------------------------
 # ( -- ) words in dictionary, 
-def_word "words", "words", h_dump, 0
+def_word "words", "words", h_dump, hash_words
 
         la fst, no_words
 
@@ -108,7 +139,7 @@ no_words:
 #  max of 254 references in list
 #
 # ( -- ) words in dictionary, 
-def_word "see", "sees", h_words, 0
+def_word "see", "sees", h_words, hash_see
 
         call load2
         
@@ -124,7 +155,7 @@ def_word "see", "sees", h_words, 0
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal
-def_word ".", "dot", h_sees, 0
+def_word ".", "dot", h_sees, hash_dot
 
         call load2
 
@@ -141,63 +172,6 @@ def_word ".", "dot", h_sees, 0
 #       these routines uses Sn registers
 #
 #---------------------------------------------------------------------
-
-#---------------------------------------------------------------------
-# code a register (32-bit) word in ASCII hexadecimal 
-#
-puthex:
-
-        pushra
-
-        add  s2, zero, a3
-        
-        addi s5, zero, 58
-
-        srli s3, s2, 24
-        call 100f
-        srli s3, s2, 16
-        call 100f
-        srli s3, s2, 8
-        call 100f
-        srli s3, s2, 0
-        call 100f
-
-        add  a3, zero, s2
-
-        pullra
-
-        ret
-
-100:
-        pushra
-
-        andi s3, s3, 0xFF
-        
-        srli s4, s3, 4
-        call 200f
-        
-        srli s4, s3, 0
-        call 200f
-
-        pullra
-
-        ret
-
-200:
-        pushra
-
-        andi s4, s4, 0x0F
-        ori  s4, s4, 48
-        blt  s4, s5, 300f
-        addi s4, s4, 7
-300:
-        add a3, zero, s4
-
-        call _putc
-        
-        pullra
-
-        ret
 
 #---------------------------------------------------------------------
 # emits a stringz in ASCII 
