@@ -1,11 +1,31 @@
 /*
+#---------------------------------------------------------------------
+ 
+  Copyright 2025 Alvaro Gomes Sobral Barcellos <@agsb>
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 2 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+#----------------------------------------------------------------------
+*/
+
+/*
  Copyright (c) 2025, Alvaro Gomes Sobral Barcellos
+ 
  All rights reserved.
  
  see the disclaimer file in this repository.
 
- minimal elf with exit code
 */
 
 
@@ -21,34 +41,26 @@
 
 #---------------------------------------------------------------------
 .section .bss
-
-.ifndef _pad
-_pad:
-.skip 32
-.endif
+_char:
+.word   0x0
 
 #---------------------------------------------------------------------
 .section .text
 
 .ifndef _start
+
 .globl _start
+
 _start:
-.endif
 
 main:
-        li a3, 0x12345678
 
-        call puthex
+.endif
 
-        li a3, '\n'
-        call _putc
-
-        li a3, 0x89ABCDEF
-
-        call puthex
-
-        li a3, '\n'
-        call _putc
+#---------------------------------------------------------------------
+#
+# Note: system ecalls do not use ra 
+#
 
 # load system call for exit
 _exit:
@@ -57,13 +69,14 @@ _exit:
         ecall
 
 # load system call for init
+# pass system parameters to program 
 _init:
         ret
 
 # linux ecall for getc
 _getc:
         addi a0, zero, STDIN
-        la   a1, _pad
+        la   a1, _char
         addi a2, zero, 1
         addi a7, zero, GETC
         ecall
@@ -72,9 +85,8 @@ _getc:
 
 # linux ecall for putc
 _putc:
-                
         addi a0, zero, STDOUT
-        la   a1, _pad
+        la   a1, _char
         addi a2, zero, 1
         addi a7, zero, PUTC
         sw a3, 0 (a1)
@@ -83,25 +95,16 @@ _putc:
 
 #---------------------------------------------------------------------
 
-.macro pushra
-addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
-sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
-.endm
-
-.macro pullra
-lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
-addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
-.endm
-
 #---------------------------------------------------------------------
 # code a register (32-bit) word in ASCII hexadecimal 
-
+#
 puthex:
 
         pushra
 
-        addi s5, zero, 58
         add  s2, zero, a3
+        
+        addi s5, zero, 58
 
         srli s3, s2, 24
         call 100f
@@ -111,6 +114,8 @@ puthex:
         call 100f
         srli s3, s2, 0
         call 100f
+
+        add  a3, zero, s2
 
         pullra
 
@@ -146,6 +151,4 @@ puthex:
         pullra
 
         ret
-
-
 
