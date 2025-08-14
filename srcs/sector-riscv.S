@@ -641,10 +641,6 @@ djb2:
 
         addi hsh, hsh, 2000
 
-        mv fst, hsh
-        call puthex
-        call _getc
-
         addi trd, zero, SPC
 
 100:
@@ -653,41 +649,20 @@ djb2:
         # beq fst, zero, 100f
         
         beq fst, trd, 100f
-        
-        mv t0, fst
 
         mv snd, hsh
 
-        mhit 'P'
-        mhex hsh
-        call _getc
-
         slli hsh, hsh, 5
         
-        mhit 'M'
-        mhex hsh
-        call _getc
-
         add hsh, hsh, snd
         
-        mhit 'N'
-        mhex hsh
-        call _getc
-
-        mv fst, t0
-
         xor hsh, hsh, fst
         
         addi idx, idx, ONE
         
-        mhit 'Q'
-        mhex hsh
-        call _getc
-
         j 100b
 
 100:    
-        putchar 'X'
 
         ret
         
