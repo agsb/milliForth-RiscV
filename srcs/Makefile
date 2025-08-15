@@ -50,10 +50,12 @@ STRIP = ${PASS}strip
 OBJDUMP = ${PASS}objdump
 
 QEMU = ${BASE}qemu-system-riscv64
-
 QEMU = ${BASE}qemu-system-riscv32
 
-#QFLAGS = -nographic -serial mon:stdio -smp 1 -machine virt -bios none
+QEMU = ${BASE}qemu-riscv64
+QEMU = ${BASE}qemu-riscv32
+
+QFLAGS = -display none -bios none -serial mon:stdio -smp 1 -machine virt 
 
 MY = minimal
 
