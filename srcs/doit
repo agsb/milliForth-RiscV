@@ -1,4 +1,4 @@
 make clean ; make 
-qemu-riscv32 sector-riscv.elf \
- -nographic -serial mon:stdio -smp 1 -machine virt -bios none
+qemu-system-riscv32 sector-riscv.elf \
+ -nographic -serial mon:stdio -m 4G -smp 1 -machine virt -bios none
 

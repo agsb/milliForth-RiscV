@@ -37,8 +37,6 @@
 
     Not working yet :)
 
-    hash djb2
-
 */
 
 #----------------------------------------------------------------------
@@ -110,23 +108,18 @@
 .equ hash_notzero, 0x00596816 
 .equ hash_userat,  0x005970D6 
 
-#---------------------------------------------------------------------
-# macro to define the header of words in dictionary
-#
-# makes:
-#   h_name:
-#   .word  link_to_previous_entry
-#   .byte  strlen(name) + flags
-#   .byte  name + pad
-#   name:
-#
-
 # highlander, immediate flag. using lui 
 # must load the high 20 bits, as 0x80000 then
 # the low 12 bits, as 0x000
 #
 .equ FLAG_IMM, 0x80000
 
+#---------------------------------------------------------------------
+# macro to define the header of words in dictionary
+#
+# hashes can't be calculated inside macros,
+# all hashes must be done by hand.
+#
 .macro def_word name, label, last, hash
 #.p2align 2, 0x00
 h_\label:
@@ -134,9 +127,6 @@ h_\label:
         .word \hash
 \label:
 .endm
-
-# hashes can't be calculated inside macros,
-# all hashs must be done by hand.
 
 #---------------------------------------------------------------------
 # for deep, more than one, nested calls
@@ -154,6 +144,7 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 
 #---------------------------------------------------------------------
 # for easy
+# uses a0, a1, a2, a3, a7
 
 .macro putchar value
         li a3, \value 
@@ -397,8 +388,10 @@ tick:
         
         beq lnk, zero, abort
 
+        mv t0, lnk
         mhit '8'
         mhex lnk
+        mv lnk, t0
         
 # linked list
         
@@ -407,9 +400,6 @@ tick:
 # get next link 
         
         lw lnk, 0 (wrd)
-
-        mhit '9'
-        mhex lnk
 
 # move to hash
         
@@ -423,9 +413,6 @@ tick:
 
         li snd, 0x0
 
-        mhit 'A'
-        mhex snd
-
 # mask hash flag // snd
 
         and snd, fst, snd
@@ -438,8 +425,6 @@ tick:
 
 # next link
 
-       mhit 'B'
-       
        j 100b
 
 
