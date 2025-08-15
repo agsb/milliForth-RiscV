@@ -267,24 +267,12 @@ main:
 
         # call _init
 
-        la idx, _zzz
-        
-        call djb2
-
-        add fst, zero, hsh
-
-        call puthex
-
-        call _getc
-
         # call _exit 
 
         mhit '0'
         mhex sp
 
         j cold
-_zzz:
-.asciz "emit "
 
 #----------------------------------------------------------------------
 # do what need once
