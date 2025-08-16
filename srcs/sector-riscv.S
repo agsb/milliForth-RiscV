@@ -343,8 +343,6 @@ quit:
         
         sw zero, STAT (usr)
 
-        call _getc
-
         j okey
 
 #---------------------------------------------------------------------
@@ -370,9 +368,9 @@ resolve:
         
         call token
 
-        mhit '7'
+        mv t0, hsh
         mhex hsh
-        call _getc
+        mv hsh, t0
         
 
 #---------------------------------------------------------------------         
@@ -490,27 +488,28 @@ token:
 
         lw idx, TOIN (usr)
 
-        mhit 'T'
-        mhex idx
-        
 # skip spaces // trd
 200:
 
         lb snd, 0 (idx)
 
-        bne snd, zero, no_gets
+        beq snd, zero, gets
 
+        bne snd, trd, 500f
+
+        addi idx, idx, ONE
+
+        j 200b
+        
 #---------------------------------------------------------------------
 # absolute crude getline, just getc until \n
 gets:
   
-        mhit 'G'
-
         la idx, _tib
         
         sw idx, TOIN (usr)
 
-# end-of-line is newline
+# end-of-line is newline \n, ^J 
         
         addi snd, zero, NLC
 
@@ -528,10 +527,14 @@ gets:
 # get next char
         call _getc
 
+# echo it
+        call _putc
+
 # 7-bit ascii only 
         andi fst, fst, 127
 
-# \n ends 
+# \n ^J ends the line, no overflow check
+
         bne fst, snd, 300b
 
 # at end-of-line
@@ -543,24 +546,9 @@ gets:
 # mark eol with \0
         sb zero, 1 (idx)
 
-        mhit 'L' 
-
         j 100b
 
 #---------------------------------------------------------------------
-no_gets:
-        
-        putchar 'X'
-
-        addi idx, idx, ONE
-        
-# not a space ?
-        bne snd, trd, 500f
-
-        #mv fst, snd 
-        #call _putc
-        
-        j 200b
 500:
 
 # make hash
@@ -570,8 +558,9 @@ no_gets:
 # mask forth flag 
 mask:
 
-        mhit 'H'
-        mhex hsh
+        mv t0, hsh
+        mhex t0
+        mv hsh, t0
 
 # set the FLAG as complement
 
@@ -579,10 +568,15 @@ mask:
 
         li  fst, -1
 
+        mv t0, fst
+        mhex t0
+        mv fst, t0
+
         and hsh, hsh, fst
 
-        mhit 'H'
-        mhex hsh
+        mv t0, hsh
+        mhex t0
+        mv hsh, t0
 
 # save toin
         sw idx, TOIN (usr)
@@ -609,6 +603,9 @@ mask:
 # hsh returns the hash 
 # idx returns next space
 djb2:
+
+        pushra
+
         # easy 5381
    
         addi hsh, zero, 1381
@@ -639,6 +636,8 @@ djb2:
         j 100b
 
 100:    
+
+        pullra 
 
         ret
         
