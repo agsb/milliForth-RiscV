@@ -166,6 +166,10 @@ def_word ".", "dot", h_sees, hash_dot
         j next
 
 #---------------------------------------------------------------------
+
+.equ h_last, h_dot
+
+#---------------------------------------------------------------------
 #
 # Note: 
 #       nested user calls must save ra, relies in pushra and pullra

@@ -31,7 +31,7 @@ PASS = ${BASE}${NAME}
 GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs -static -Os \
-	   -march=rv32ic -mabi=ilp32 -static -Os \
+	   -march=rv32ic -mabi=ilp32 \
 	   
 # -march=rv64ic -mabi=lp64 -static -Os \
 # -march=rv32ic -mabi=ilp32 -static -Os \
@@ -49,8 +49,8 @@ STRIP = ${PASS}strip
 
 OBJDUMP = ${PASS}objdump
 
-QEMU = ${BASE}qemu-system-riscv64
-QEMU = ${BASE}qemu-system-riscv32
+#QEMU = ${BASE}qemu-system-riscv64
+#QEMU = ${BASE}qemu-system-riscv32
 
 QEMU = ${BASE}qemu-riscv64
 QEMU = ${BASE}qemu-riscv32

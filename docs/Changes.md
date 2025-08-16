@@ -8,6 +8,10 @@
 
 ## Done
 
+15/08/2025
+
+    Need install qemu-system AND qemu-user !
+
 14/08/2025
 
     Done djb2 hashes for extras.

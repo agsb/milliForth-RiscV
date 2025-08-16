@@ -14,8 +14,10 @@
 # fth hold the end of word character ( \0 or spc)
 # snd returns the hash 
 djb2f:
-        addi hsh, zero, 2000
-        addi hsh, hsh,  1581
+        addi hsh, zero, 1381
+        addi hsh, hsh,  2000
+        addi hsh, hsh,  2000
+
 100:
         lb fst, 0 (idx)
         beq fst, fth, 100f

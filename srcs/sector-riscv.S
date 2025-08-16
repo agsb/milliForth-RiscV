@@ -48,8 +48,8 @@
 # using pre-processor CPP (GNU GCC)
 # for alias register names 
 # do not change
-# a0, a1, a2, a7 are used by ecalls in _putc and _getc
-# a3, a4, a5, a6 are generics
+# a3, a0, a1, a2, a7 are used by ecalls in _putc and _getc
+# a4, a5, a6 are generics
 #---------------------------------------------------------------------
 
 #include "defines.S"
@@ -101,16 +101,18 @@
 .equ hash_fetch, 0x0002B5E5 
 .equ hash_plus,  0x0002B58E 
 .equ hash_colon, 0x0002B59F 
-.equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 .equ hash_nand,  0x7C727500 
 .equ hash_exit,  0x7C6BBE85 
 .equ hash_bye,   0x0B874AFB 
 .equ hash_notzero, 0x00596816 
 .equ hash_userat,  0x005970D6 
+.equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 
-# highlander, immediate flag. using lui 
-# must load the high 20 bits, as 0x80000 then
-# the low 12 bits, as 0x000
+
+#---------------------------------------------------------------------
+# highlander, immediate flag. 
+# using lui high 20 bits, as 0x80000 and
+# using li  low 12 bits, as 0x000
 #
 .equ FLAG_IMM, 0x80000
 
@@ -121,7 +123,7 @@
 # all hashes must be done by hand.
 #
 .macro def_word name, label, last, hash
-#.p2align 2, 0x00
+.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
@@ -152,9 +154,9 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 .endm
 
 .macro mhex rg
-        putchar ' '
         add a3, zero, \rg
         call puthex
+        putchar ' '
 .endm
 
 .macro mhit it
@@ -192,10 +194,10 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 .equ HERE, 3 * CELL
 
 # data stack index
-.equ SPT, 4 * CELL
+.equ SPTR, 4 * CELL
 
 # return stack index
-.equ RPT, 5 * CELL
+.equ RPTR, 5 * CELL
 
 # next token in TIB
 .equ TOUT, 6 * CELL
@@ -236,7 +238,13 @@ rp0: .word 0x0
 # anything above is not a primitive
 # usually at end of .bss (.heap)
 #----------------------------------------------------------------------
-here: .word 0x0
+
+h_here: .word 0x0
+
+#----------------------------------------------------------------------
+# keep last entry of primitives
+
+.set h_last, h_exit
 
 #----------------------------------------------------------------------
 .text 
@@ -260,7 +268,8 @@ main:
 
         # call _exit 
 
-        mhit '0'
+        mhit 'Z'
+
         mhex sp
 
         j cold
@@ -272,7 +281,6 @@ cold:
 
         la usr, _user
         
-        mhit '1'
         mhex usr
 
 #----------------------------------------------------------------------
@@ -280,32 +288,28 @@ cold:
 warm:
 # link list of headers, aka dictionary
 
-        la fst, h_exit
+        la fst, h_last
         
         sw fst, LAST (usr)
         
-        mhit '2'
         mhex fst
 
 # next heap free cell  (end of .bss)
         
-        la fst, here
+        la fst, h_here
         
         sw fst, HERE (usr)
 
-        mhit '3'
         mhex fst
 
 #---------------------------------------------------------------------
 # reset TIB
 reset:
-        
 
         la fst, _tib
         sw zero, 0 (fst)
         sw fst, TOIN (usr)
 
-        mhit '4'
         mhex fst
 
 #---------------------------------------------------------------------
@@ -321,11 +325,9 @@ error:
 abort:
 # reset data stack
         
-
         la fst, sp0 
-        sw fst, SPT (usr)
+        sw fst, SPTR (usr)
 
-        mhit '5'
         mhex fst
 
 #---------------------------------------------------------------------
@@ -333,14 +335,15 @@ quit:
 # reset return stack
         
         la fst, rp0 
-        sw fst, RPT (usr)
+        sw fst, RPTR (usr)
 
-        mhit '6'
         mhex fst
 
 # stat is 'interpret' == \0
         
         sw zero, STAT (usr)
+
+        call _getc
 
         j okey
 
@@ -655,7 +658,7 @@ wcomma:
 #---------------------------------------------------------------------
 load2:
         
-        lw idx, SPT (usr)
+        lw idx, SPTR (usr)
         
         lw snd, 0 * CELL (idx)
         
@@ -711,7 +714,7 @@ drop1:
         
         add idx, idx, CELL
         
-        sw idx, SPT (usr)
+        sw idx, SPTR (usr)
         
         j next
 
@@ -739,7 +742,7 @@ save1:
         
         add idx, idx, CELL
         
-        sw idx, SPT (usr)
+        sw idx, SPTR (usr)
         
         j save0
 
@@ -777,11 +780,11 @@ def_word "s@", "state", h_zeroq, hash_userat
 
 push1:
         
-        lw idx, SPT (usr)
+        lw idx, SPTR (usr)
         
         addi idx, idx, -1 * CELL
         
-        sw idx, SPT (usr)
+        sw idx, SPTR (usr)
 
 save0:
         
@@ -860,13 +863,13 @@ def_word "exit", "exit", h_semis, hash_exit
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
         
-        lw idx, RPT (usr)
+        lw idx, RPTR (usr)
         
         lw ipt, 0 (idx)
         
         addi idx, idx, CELL
         
-        sw idx, RPT (usr)
+        sw idx, RPTR (usr)
 
 next:
 # wrd = (ipt) #; ipt += cell
@@ -885,13 +888,13 @@ pick:
 nest:   #; enter
 # return push, (rpt) = ipt, rp -= cell
         
-        lw idx, RPT (usr)
+        lw idx, RPTR (usr)
         
         addi idx, idx, -1 * CELL
         
         sw ipt, 0 (idx)
         
-        sw idx, RPT (usr)
+        sw idx, RPTR (usr)
 
 move: 
 # indirect access 
