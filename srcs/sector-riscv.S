@@ -32,6 +32,8 @@
  
     THIS VERSION USES ONLY HASH HEADERS.
 
+    Made for a little endian RiscV
+
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary will continue at end of .bss.
 
@@ -108,13 +110,13 @@
 .equ hash_userat,  0x005970D6 
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 
-
 #---------------------------------------------------------------------
 # highlander, immediate flag. 
 # using lui high 20 bits, as 0x80000 and
 # using li  low 12 bits, as 0x000
 #
-.equ FLAG_IMM, 0x80000
+.equ FLAG_IMM, 0x80000000
+.equ MASK_IMM, 0x7FFFFFFF
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
@@ -390,8 +392,7 @@ tick:
         beq lnk, zero, abort
 
         mv t0, lnk
-        mhit '8'
-        mhex lnk
+        mhex t0
         mv lnk, t0
         
 # linked list
@@ -410,11 +411,9 @@ tick:
 
 # set the FLAG
 
-        lui snd, FLAG_IMM
+        lui snd, %hi(FLAG_IMM)
 
-        li snd, 0x0
-
-# mask hash flag // snd
+# mask hash flag // snd have the flag
 
         and snd, fst, snd
 
@@ -422,6 +421,16 @@ tick:
 
 # compare
         
+        mv t0, a0 
+        mv t1, a1
+        mv t2, a2
+        mhex t0
+        mhex t1
+        mhex t2
+        mv a2, t0
+        mv a1, t1
+        mv a0, t0
+
         beq hsh, fst, 100f
 
 # next link
@@ -558,31 +567,17 @@ gets:
 # mask forth flag 
 mask:
 
-        mv t0, hsh
-        mhex t0
-        mv hsh, t0
-
 # set the FLAG as complement
 
-        lui fst, FLAG_IMM - 1
-
-        li  fst, -1
-
-        mv t0, fst
-        mhex t0
-        mv fst, t0
+        lui fst, %hi(MASK_IMM)
+        
+        addi fst, fst, %lo(MASK_IMM)
 
         and hsh, hsh, fst
 
-        mv t0, hsh
-        mhex t0
-        mv hsh, t0
-
 # save toin
-        sw idx, TOIN (usr)
 
-        mhit 'N'
-        mhex idx
+        sw idx, TOIN (usr)
 
         pullra
 
