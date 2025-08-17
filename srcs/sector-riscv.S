@@ -201,11 +201,11 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 # return stack index
 .equ RPTR, 5 * CELL
 
-# next token in TIB
-.equ TOUT, 6 * CELL
-
 # hold 'here while compile
-.equ ONCE, 7 * CELL
+.equ ONCE, 6 * CELL
+
+# next token in TIB zzzz
+.equ TOUT, 7 * CELL
 
 # heap forward
 .equ HEAD, 8 * CELL
@@ -884,6 +884,7 @@ jump:
 dumps:
         pushra 
 
+# saves
         mv t0, a0 
         mv t1, a1
         mv t2, a2
@@ -891,8 +892,12 @@ dumps:
         mv t4, a4
         mv t5, a5
         mv t6, a6
-        
+       
+# registers
+
         putchar '\n'
+        putchar 'R'
+        putchar ' '
         
         mhex t0
         mhex t1
@@ -902,13 +907,64 @@ dumps:
         mhex t5
         mhex t6
         
+# user parameters
+
+        putchar '\n'
+        putchar 'U'
+        putchar ' '
+        
+       putchar 'S'
+        putchar ' '
         lw fst, STAT (usr)
         mhex fst
+       
+       putchar 'H'
+        putchar ' '
         lw fst, HERE (usr)
         mhex fst
+       
+       putchar 'L'
+        putchar ' '
         lw fst, LAST (usr)
         mhex fst
+       
+       putchar 'O'
+        putchar ' '
+        lw fst, ONCE (usr)
+        mhex fst
+       
+       putchar 'R'
+        putchar 'P'
+        putchar ' '
+        lw fst, RPTR (usr)
+        mhex fst
+       
+       putchar 'S'
+        putchar 'P'
+        putchar ' '
+        lw fst, SPTR (usr)
+        mhex fst
 
+# data stack
+
+        lw a6, SPTR (usr)
+        la a5, sp0
+        sub a5, a5, a6
+
+        putchar '\n'
+        putchar '='
+
+100:
+        mhex a5
+       
+        lw fst, 0 (a6)
+        mhex fst
+
+        addi a6, a6, 4
+        addi a5, a5, -1
+        bne a5, zero, 100b
+
+# loads
         mv a6, t6
         mv a5, t5
         mv a4, t4
