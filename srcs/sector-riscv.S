@@ -370,11 +370,6 @@ resolve:
         
         call token
 
-        mv t0, hsh
-        mhex hsh
-        mv hsh, t0
-        
-
 #---------------------------------------------------------------------         
 # find de code
 tick:
@@ -391,9 +386,9 @@ tick:
         
         beq lnk, zero, abort
 
-        mv t0, lnk
-        mhex t0
-        mv lnk, t0
+        #mv t0, lnk
+        #mhex t0
+        #mv lnk, t0
         
 # linked list
         
@@ -421,47 +416,32 @@ tick:
 
 # compare
         
-        mv t0, a0 
-        mv t1, a1
-        mv t2, a2
-        mhex t0
-        mhex t1
-        mhex t2
-        mv a2, t0
-        mv a1, t1
-        mv a0, t0
-
-        beq hsh, fst, 100f
-
-# next link
-
-       j 100b
-
+        bne hsh, fst, 100b
 
 100:
 # move to code
 # wrd points to or start of code or list of references
 
-       mhit 'Z'
+        add wrd, wrd, CELL
 
-       add wrd, wrd, CELL
+# zzzz
+
+        call dumps
 
 #---------------------------------------------------------------------         
 eval:
-# immediate ? if i!= 0
+# immediate ? if i != 0
 
         bne snd, zero, immediate      
 
-# executing ? if == \0
+# executing ? if == 0
         
-        lb fst, STAT+0 (usr)
+        lw fst, STAT (usr)
         
         beq fst, zero, execute
 
 #---------------------------------------------------------------------         
 compile:
-
-        putchar 'C'
 
         call wcomma
 
@@ -470,8 +450,6 @@ compile:
 #---------------------------------------------------------------------         
 execute:
 immediate:
-
-        putchar 'E'
 
         la ipt, resolvept
 
@@ -901,6 +879,47 @@ jump:
 # jump to primitive
         
         jalr zero, 0 (wrd)
+
+#----------------------------------------------------------------------
+dumps:
+        pushra 
+
+        mv t0, a0 
+        mv t1, a1
+        mv t2, a2
+        mv t3, a3
+        mv t4, a4
+        mv t5, a5
+        mv t6, a6
+        
+        putchar '\n'
+        
+        mhex t0
+        mhex t1
+        mhex t2
+        mhex t3
+        mhex t4
+        mhex t5
+        mhex t6
+        
+        lw fst, STAT (usr)
+        mhex fst
+        lw fst, HERE (usr)
+        mhex fst
+        lw fst, LAST (usr)
+        mhex fst
+
+        mv a6, t6
+        mv a5, t5
+        mv a4, t4
+        mv a3, t3
+        mv a2, t2
+        mv a1, t1
+        mv a0, t0
+
+        pullra 
+
+        ret
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
