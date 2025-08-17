@@ -884,7 +884,7 @@ jump:
 dumps:
         pushra 
 
-# saves
+savest:
         mv t0, a0 
         mv t1, a1
         mv t2, a2
@@ -895,16 +895,30 @@ dumps:
        
 # registers
 
-        putchar '\n'
+       putchar '\n'
         putchar 'R'
         putchar ' '
         
+       putchar '0'
+        putchar ' '
         mhex t0
+       putchar '1'
+        putchar ' '
         mhex t1
+       putchar '2'
+        putchar ' '
         mhex t2
+       putchar '3'
+        putchar ' '
         mhex t3
+       putchar '4'
+        putchar ' '
         mhex t4
+       putchar '5'
+        putchar ' '
         mhex t5
+       putchar '6'
+        putchar ' '
         mhex t6
         
 # user parameters
@@ -949,10 +963,17 @@ dumps:
 
         lw a6, SPTR (usr)
         la a5, sp0
-        sub a5, a5, a6
 
         putchar '\n'
         putchar '='
+
+#        mhex a6
+
+#        mhex a5
+
+        sub a5, a5, a6
+
+        beq a5, zero, loadst
 
 100:
         mhex a5
@@ -964,7 +985,7 @@ dumps:
         addi a5, a5, -1
         bne a5, zero, 100b
 
-# loads
+loadst:
         mv a6, t6
         mv a5, t5
         mv a4, t4
