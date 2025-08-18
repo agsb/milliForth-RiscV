@@ -77,7 +77,9 @@ $(MY): $(SOURCES:.S=.o)
 	
 	$(PASS)objcopy $(MY).elf -O binary $(MY).bin
 
-#	od --endian=little -A x -t x1z -v $@.elf > $@.hex
+	od --endian=little -A x -t x1 -v $@.sec > $@.hex
+
+	#od --endian=little -A x -t x1z -v $@.sec > $@.hex
 
 all: 
 	

@@ -330,16 +330,12 @@ abort:
         la fst, sp0 
         sw fst, SPTR (usr)
 
-        mhex fst
-
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
         la fst, rp0 
         sw fst, RPTR (usr)
-
-        mhex fst
 
 # stat is 'interpret' == \0
         
@@ -386,10 +382,6 @@ tick:
         
         beq lnk, zero, abort
 
-        #mv t0, lnk
-        #mhex t0
-        #mv lnk, t0
-        
 # linked list
         
         mv wrd, lnk
@@ -423,8 +415,6 @@ tick:
 # wrd points to or start of code or list of references
 
         add wrd, wrd, CELL
-
-# zzzz
 
 #---------------------------------------------------------------------         
 eval:
@@ -1014,15 +1004,21 @@ savesm:
        
 # data stack
 
-        lw a6, HERE (usr)
-        la a5, h_here
-
         putchar '\n'
         putchar '='
+        
+        lw a6, STAT (usr)
 
         mhex a6
 
+        putchar '='
+
+        lw a6, HERE (usr)
+        la a5, h_here
+
         mhex a5
+        
+        mhex a6
 
         putchar '='
 
