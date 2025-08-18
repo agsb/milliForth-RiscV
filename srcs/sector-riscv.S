@@ -932,14 +932,14 @@ savest:
         lw fst, STAT (usr)
         mhex fst
        
-       putchar 'H'
-        putchar ' '
-        lw fst, HERE (usr)
-        mhex fst
-       
        putchar 'L'
         putchar ' '
         lw fst, LAST (usr)
+        mhex fst
+       
+       putchar 'H'
+        putchar ' '
+        lw fst, HERE (usr)
         mhex fst
        
        putchar 'O'
