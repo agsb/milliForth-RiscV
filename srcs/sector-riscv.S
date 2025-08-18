@@ -426,8 +426,6 @@ tick:
 
 # zzzz
 
-        call dumps
-
 #---------------------------------------------------------------------         
 eval:
 # immediate ? if i != 0
@@ -800,6 +798,9 @@ finish:
         call wcomma
 
 # done
+
+        call maps
+
         j next 
 
 #---------------------------------------------------------------------
@@ -969,7 +970,7 @@ savest:
 
 #        mhex a6
 
-#        mhex a5
+        mhex a5
 
         sub a5, a5, a6
 
@@ -986,6 +987,58 @@ savest:
         bne a5, zero, 100b
 
 loadst:
+        mv a6, t6
+        mv a5, t5
+        mv a4, t4
+        mv a3, t3
+        mv a2, t2
+        mv a1, t1
+        mv a0, t0
+
+        pullra 
+
+        ret
+
+#----------------------------------------------------------------------
+maps:
+        pushra 
+
+savesm:
+        mv t0, a0 
+        mv t1, a1
+        mv t2, a2
+        mv t3, a3
+        mv t4, a4
+        mv t5, a5
+        mv t6, a6
+       
+# data stack
+
+        lw a6, HERE (usr)
+        la a5, h_here
+
+        putchar '\n'
+        putchar '='
+
+        mhex a6
+
+        mhex a5
+
+        putchar '='
+
+        beq a6, a5, loadsm
+
+100:
+        putchar '\n'
+        mhex a5
+        
+        lw a4, 0 (a5)
+        mhex a4
+       
+        addi a5, a5, 4
+        bne a5, a6, 100b
+
+loadsm:
         mv a6, t6
         mv a5, t5
         mv a4, t4
