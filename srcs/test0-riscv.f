@@ -15,6 +15,11 @@
  : 10 8 2 + ;
  : 13 8 4 + 1 + ;
  : 32 16 16 + ;
+ 
+ : cr 10 emit ;
+ : nl 13 emit ;
+ : spc 32 ;
+
 
  : cell 4 ;
 
@@ -30,19 +35,19 @@
  : sp s@ S4 + ;
  : rp s@ S5 + ;
 
- : cr 10 emit ;
- : nl 13 emit ;
- : spc 32 ;
-
  : dup sp @ @ ;
+
+ 1 1 + 
+
+ 1 1 nand 
+
+ key emit 
 
  1 2 4 8
  
- sp
+ sp @ @
 
- @
-
- @
+ 0
 
  16
 
@@ -51,10 +56,6 @@
  0
 
  : over sp @ cell + @ ;
-
- over 
-
- 0
 
  : invert dup nand ;
  : and nand invert ;
@@ -76,29 +77,6 @@
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
  : 80h 1 2* 2* 2* 2* 2* 2* 2* ;
  : flag 80h 2** 2** 2** ;
-
-1
-2
-4
-8
-16
-32
-+ + + + + 
-
-dup +
-dup +
-dup +
-dup +
-dup +
-dup +
-dup +
-dup +
- 
- 80h
- 
- 1
-
- 2**
 
  flag
 

@@ -781,53 +781,34 @@ load2:
 # ( -- c ) 
 def_word "key", "key", 0x0, hash_key
 
-        lw idx, SPTR (usr)
-        
-        add idx, idx, -1 * CELL
-
-        sw idx, SPTR (usr)
-
         call _getc
-        
-        sw fst, 0 (idx)
-        
-        j next
+
+        j push1
 
 #---------------------------------------------------------------------
 # ( c -- ) 
 def_word "emit", "emit", h_key, hash_emit
         
-        lw idx, SPTR (usr)
+        call load2
         
-        lw fst, 0 (idx)
+        mv fst, snd
 
         call _putc
-        
-        add idx, idx, 1 * CELL
 
-        sw idx, SPTR (usr)
-
-        j next
+        j save0
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
 def_word "!", "store", h_emit, hash_store
         
-        lw idx, SPTR (usr)
-        
-        lw fst, 0 (idx)
+        call load2
 
-        add idx, idx, CELL
+        sw fst, 0 (snd)
 
-        lw snd, 0 (idx)
+drop1:
+        addi idx, idx, CELL
 
-        add idx, idx, CELL
-
-        sw snd, 0 (fst)
-
-        sw idx, SPTR (usr)
-        
-        j next
+        j save0
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
@@ -839,72 +820,48 @@ def_word "@", "fetch", h_store, hash_fetch
 
         lw fst, 0 (fst)
         
-        sw fst, 0 (idx)
-
-        j next
+        j keep0
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
 def_word "nand", "nand", h_fetch, hash_nand
         
-        lw idx, SPTR (usr)
-        
-        lw fst, 0 (idx)
-
-        add idx, idx, CELL
-
-        lw snd, 0 (idx)
+        call load2
 
         and fst, fst, snd
         
         not fst, fst
 
-        sw fst, 0 (idx)
-
-        sw idx, SPTR (usr)
-
-        j next
+        j keep0
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
 def_word "+", "plus", h_nand, hash_plus
         
-        lw idx, SPTR (usr)
-        
-        lw fst, 0 (idx)
-
-        add idx, idx, CELL
-
-        lw snd, 0 (idx)
+        call load2
 
         add fst, fst, snd
         
-        sw fst, 0 (idx)
-
-        sw idx, SPTR (usr)
-
-        j next
+        j keep0
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
 def_word "0#", "zeroq", h_plus, hash_notzero
 
-        lw idx, SPTR (usr)
+        call load2
         
-        lw fst, 0 (idx)
-
 isfalse:
 
-        beq fst, zero, 100f
+        beq snd, zero, 100f
 
 istrue:
         
-        addi fst, zero, TRUE
+        addi snd, zero, TRUE
         
 100:
-        sw fst, 0 (idx)
+        mv fst, snd 
 
-        j next
+        j push1
 
 #---------------------------------------------------------------------
 # ( -- state ), return an reference
@@ -913,18 +870,18 @@ def_word "s@", "state", h_zeroq, hash_userat
         mv fst, usr 
 
 push1:
-        
+
         lw idx, SPTR (usr)
         
-        addi idx, idx, -1 * CELL
-        
+        add idx, idx, -1 * CELL
+
 keep0:
 
-        sw idx, SPTR (usr)
+        sw fst, 0 (idx)
 
 save0:
 
-        sw fst, 0 (idx)
+        sw idx, SPTR (usr)
         
         j next
 
