@@ -115,7 +115,11 @@
 # using lui high 20 bits, as 0x80000 and
 # using li  low 12 bits, as 0x000
 #
+
+# -2147483648
 .equ FLAG_IMM, 0x80000000
+
+# +2147483647
 .equ MASK_IMM, 0x7FFFFFFF
 
 #---------------------------------------------------------------------
@@ -440,6 +444,8 @@ compile:
 execute:
 immediate:
 
+        call datas
+
         la ipt, resolvept
 
         j pick
@@ -617,17 +623,6 @@ wcomma:
         ret
 
 #---------------------------------------------------------------------
-load2:
-        
-        lw idx, SPTR (usr)
-        
-        lw snd, 0 * CELL (idx)
-        
-        lw fst, 1 * CELL (idx)
-
-        ret
-
-#---------------------------------------------------------------------
 #
 # the primitives 
 # 
@@ -640,6 +635,17 @@ h_name:
 name:
         code
 */
+
+#---------------------------------------------------------------------
+load2:
+        
+        lw idx, SPTR (usr)
+        
+        lw snd, 0 * CELL (idx)
+        
+        lw fst, 1 * CELL (idx)
+
+        ret
 
 #---------------------------------------------------------------------
 # ( -- c ) 
@@ -787,8 +793,6 @@ def_word ":", "colon", h_state, hash_colon
 #---------------------------------------------------------------------
 finish:
 
-        call hashs
-
         call wcomma
 
 # done
@@ -815,9 +819,10 @@ def_word ";", "semis",  h_colon, hash_semis
 
         call wcomma
 
-        call maps
+        # call shows
 
         j next 
+
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
 #
@@ -976,30 +981,35 @@ dumps:
         lw fst, SPTR (usr)
         mhex fst
 
+        j loads
+
+#----------------------------------------------------------------------
+datas:
+        pushra 
+
+        call saves
+
 # data stack
 
         lw a6, SPTR (usr)
+
         la a5, sp0
-
-        putchar '\n'
-        putchar '='
-
-#        mhex a6
-
-        mhex a5
 
         sub a5, a5, a6
 
         beq a5, zero, loads
 
+        putchar '\n'
+        putchar '='
+
+        mhex a6
+
 100:
-        mhex a5
-       
-        lw fst, 0 (a6)
-        mhex fst
+        lw a3, 0 (a6)
+        mhex a3
 
         addi a6, a6, 4
-        addi a5, a5, -1
+        addi a5, a5, -4
         bne a5, zero, 100b
 
         j loads
@@ -1055,6 +1065,36 @@ maps:
        
         addi a5, a5, 4
         bne a5, a6, 100b
+
+        j loads
+
+#----------------------------------------------------------------------
+shows:
+        pushra 
+
+        call saves
+
+# data stack
+
+        putchar '\n'
+
+        la a6, exit
+
+        lw a5, LAST (usr)
+
+
+100:
+        putchar '\n'
+        
+        mhex a5
+
+        lw a4, 0 (a5)
+        
+        mhex a4
+       
+        addi a5, a5, 4
+
+        bne a4, a6, 100b
 
         j loads
 

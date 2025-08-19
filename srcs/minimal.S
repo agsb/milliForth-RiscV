@@ -81,6 +81,10 @@ _getc:
         addi a7, zero, GETC
         ecall
         lw a3, 0 (a1)
+        
+        #EOF?
+        beq a3, zero, _exit
+
         ret
 
 # linux ecall for putc
