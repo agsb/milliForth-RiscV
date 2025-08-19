@@ -1,4 +1,6 @@
 
+ : void ;
+
  : -1 s@ s@ nand s@ nand ;
  :  0 -1 -1 nand ;
  :  1 -1 -1 + -1 nand ;
@@ -10,17 +12,17 @@
  : 16 8 8 + ;
  : 20 12 8 + ;
 
- : 10 8 2 +'s' ;
+ : 10 8 2 + ;
  : 13 8 4 + 1 + ;
  : 32 16 16 + ;
 
- : CELL 4 ;
+ : cell 4 ;
 
- : S1 CELL ;
- : S2 S1 CELL + ;
- : S3 S2 CELL + ;
- : S4 S3 CELL + ;
- : S5 S4 CELL + ;
+ : S1 cell ;
+ : S2 S1 cell + ;
+ : S3 S2 cell + ;
+ : S4 S3 cell + ;
+ : S5 S4 cell + ;
 
  : toin s@ S1 + ;
  : last s@ S2 + ;
@@ -33,9 +35,7 @@
  : spc 32 ;
 
  : dup sp @ @ ;
- : drop dup - + ;
  : over sp @ cell + @ ;
- : swap over over sp @ FTH + ! sp @ TRD + ! ;
 
  : invert dup nand ;
  : and nand invert ;
@@ -44,22 +44,25 @@
  : <> - 0# ;
  : = <> invert ;
  
+ : drop dup - + ;
+ : swap over over sp @ S3 + ! sp @ S2 + ! ;
+
  : 2dup over over ;
  : 2drop drop drop ;
  
  : allot here @ + here ! ;
- : , here @ ! CELL allot ;
+ : , here @ ! cell allot ;
 
  : 2* dup + ;
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
  : 80h 1 2* 2* 2* 2* 2* 2* 2* 2** 2** 2** ;
- : immediate latest @ CELL + dup @ 80h or swap ! ;
+ : immediate latest @ cell + dup @ 80h or swap ! ;
  
- : >r rp @ @ swap rp @ ! rp @ CELL - rp ! rp @ ! ;
- : r> rp @ @ rp @ CELL + rp ! rp @ @ swap rp @ ! ;
+ : >r rp @ @ swap rp @ ! rp @ cell - rp ! rp @ ! ;
+ : r> rp @ @ rp @ cell + rp ! rp @ @ swap rp @ ! ;
  
  : branch rp @ @ dup @ + rp @ ! ;
- : ?branch 0# invert rp @ @ @ CELL - and rp @ @ + CELL + rp @ ! ;
+ : ?branch 0# invert rp @ @ @ cell - and rp @ @ + cell + rp @ ! ;
  
  : lit rp @ @ dup CEL + rp @ ! @ ;
  : ['] rp @ @ dup CEL + rp @ ! @ ;
