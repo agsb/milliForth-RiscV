@@ -24,7 +24,7 @@
  : S4 S3 cell + ;
  : S5 S4 cell + ;
 
- : toin s@ S1 + ;
+ : >in s@ S1 + ;
  : last s@ S2 + ;
  : here s@ S3 + ;
  : sp s@ S4 + ;
@@ -34,7 +34,7 @@
  : nl 13 emit ;
  : spc 32 ;
 
- : dup sp @ @ @ ;
+ : dup sp @ @ ;
 
  1 2 4 8
  
@@ -44,11 +44,7 @@
 
  @
 
- @
-
  16
-
- dup 
 
  dup 
 
@@ -59,7 +55,6 @@
  over 
 
  0
-
 
  : invert dup nand ;
  : and nand invert ;
