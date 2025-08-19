@@ -89,7 +89,7 @@ clean:
 	
 	$(RM) $(MY).out $(MY).map $(MY).lst \
 	      $(MY).elf $(MY).dmp $(MY).bin \
-	      $(MY).ord $(MY).sec \
+	      $(MY).hex $(MY).sec \
 	      err out
 
 qemu: 

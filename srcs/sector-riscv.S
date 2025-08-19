@@ -204,8 +204,8 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 # hold 'here while compile
 .equ ONCE, 6 * CELL
 
-# next token in TIB zzzz
-.equ TOUT, 7 * CELL
+# hold 'code
+.equ MORE, 7 * CELL
 
 # heap forward
 .equ HEAD, 8 * CELL
@@ -355,7 +355,7 @@ okey:
 
 # call prompt_okey
 
-        putchar '\n'
+        putchar ' '
         putchar 'O'
         putchar 'K'
         putchar '\n'
@@ -380,7 +380,7 @@ tick:
 100:
 # verify end of dictionary, abort (could be number?)
         
-        beq lnk, zero, abort
+        beq lnk, zero, error
 
 # linked list
         
@@ -429,6 +429,7 @@ eval:
         beq fst, zero, execute
 
 #---------------------------------------------------------------------         
+# compiling ? if != 0
 compile:
 
         call wcomma
@@ -565,7 +566,7 @@ mask:
 # idx returns next space
 djb2:
 
-        pushra
+        # pushra
 
         # easy 5381
    
@@ -598,7 +599,7 @@ djb2:
 
 100:    
 
-        pullra 
+        # pullra 
 
         ret
         
@@ -780,16 +781,17 @@ def_word ":", "colon", h_state, hash_colon
         
 # copy the hash
 
-        mv wrd, hsh
+        add wrd, zero, hsh
+
 
 #---------------------------------------------------------------------
 finish:
 
+        call hashs
+
         call wcomma
 
 # done
-
-        call maps
 
         j next 
 
@@ -809,8 +811,13 @@ def_word ";", "semis",  h_colon, hash_semis
         
         la wrd, exit
 
-        j finish
+        # j finish
 
+        call wcomma
+
+        call maps
+
+        j next 
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
 #
@@ -872,10 +879,7 @@ jump:
         jalr zero, 0 (wrd)
 
 #----------------------------------------------------------------------
-dumps:
-        pushra 
-
-savest:
+saves:
         mv t0, a0 
         mv t1, a1
         mv t2, a2
@@ -884,6 +888,28 @@ savest:
         mv t5, a5
         mv t6, a6
        
+        ret
+
+#----------------------------------------------------------------------
+loads:
+        mv a6, t6
+        mv a5, t5
+        mv a4, t4
+        mv a3, t3
+        mv a2, t2
+        mv a1, t1
+        mv a0, t0
+
+        pullra 
+
+        ret
+
+#----------------------------------------------------------------------
+dumps:
+        pushra 
+
+        call saves
+
 # registers
 
        putchar '\n'
@@ -964,7 +990,7 @@ savest:
 
         sub a5, a5, a6
 
-        beq a5, zero, loadst
+        beq a5, zero, loads
 
 100:
         mhex a5
@@ -976,32 +1002,27 @@ savest:
         addi a5, a5, -1
         bne a5, zero, 100b
 
-loadst:
-        mv a6, t6
-        mv a5, t5
-        mv a4, t4
-        mv a3, t3
-        mv a2, t2
-        mv a1, t1
-        mv a0, t0
+        j loads
 
-        pullra 
+#----------------------------------------------------------------------
+hashs:
+        pushra 
 
-        ret
+        call saves
+
+        putchar '\n'
+        putchar 'H'
+        putchar ' '
+        mhex t0
+
+        j loads
 
 #----------------------------------------------------------------------
 maps:
         pushra 
 
-savesm:
-        mv t0, a0 
-        mv t1, a1
-        mv t2, a2
-        mv t3, a3
-        mv t4, a4
-        mv t5, a5
-        mv t6, a6
-       
+        call saves
+
 # data stack
 
         putchar '\n'
@@ -1014,6 +1035,7 @@ savesm:
         putchar '='
 
         lw a6, HERE (usr)
+
         la a5, h_here
 
         mhex a5
@@ -1022,7 +1044,7 @@ savesm:
 
         putchar '='
 
-        beq a6, a5, loadsm
+        beq a6, a5, loads
 
 100:
         putchar '\n'
@@ -1034,18 +1056,7 @@ savesm:
         addi a5, a5, 4
         bne a5, a6, 100b
 
-loadsm:
-        mv a6, t6
-        mv a5, t5
-        mv a4, t4
-        mv a3, t3
-        mv a2, t2
-        mv a1, t1
-        mv a0, t0
-
-        pullra 
-
-        ret
+        j loads
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
