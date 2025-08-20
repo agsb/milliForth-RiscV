@@ -8,7 +8,7 @@ _this file is still a stub_
         nand ( w1 w2 -- NOT(w1 AND w2) )  not and 
         @    ( a -- w )  fetch the value at reference
         !    ( w a -- )  store the value in reference
-        s@   ( -- a )    return veriable _state_ absolute reference
+        s@   ( -- a )    return _state_ absolute address reference
         0#   ( 0 -- 0x0000 | w -- 0xFFFF ) if tos is diferent of zero 
 
         :    ( -- ) init a word definition  
@@ -23,9 +23,7 @@ _this file is still a stub_
         here,   next free byte in heap dictionary (here)
         spt,    actual top of data stack
         rpt,    actual top of return stack
-        tout,   keeps next toin 
-        once,   hold last here while compiling
-        head,   heap pointer, forwards
+        head,   last here, heap pointer, forwards
         tail    stack pointer, backwards
 
 ### the hello_world file
@@ -45,6 +43,9 @@ _this file is still a stub_
         All _sp@_ and _rp@_ changed to sp @ and rp @
 ```
 
+for _shift right_ look for
+https://stackoverflow.com/questions/78708194/logical-shift-right-without-dedicated-shift-instruction
+
 ### the extensions
         
         2/      ( w -- w>>1 )   shift right one bit
@@ -55,11 +56,18 @@ _this file is still a stub_
 
 ### the extras
 
-        abort   ( -- )  abort and reset
-        .S      ( -- )  dumps the data stack
-        .R      ( -- )  dumps the return stack
+        abort   ( -- )      abort and reset
+        .       ( w -- w )  shows cell as hexadecimal
+        .S      ( -- )      dumps the data stack
+        .R      ( -- )      dumps the return stack
+
         dump    ( -- )  dumps the dictionary as binary
-        words   ( -- )  dumps the dictionary as extended
-        .       ( w -- w ) shows cell as hexadecimal
+        words   ( -- )  dumps the dictionary as hashes
 
+### internals
 
+        main, cold, warm, abot, quit
+        token, getline
+        tick, comma
+        eval, execute, compile
+        djb2
