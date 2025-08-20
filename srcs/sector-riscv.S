@@ -349,7 +349,7 @@ resolvept:
 #---------------------------------------------------------------------
 okey:
 
-        call show_data
+        call datas
 
 # call prompt_okey
 
@@ -750,7 +750,7 @@ save1:
 
         sw idx, SPTR (usr)
         
-call show_data
+        call datas
 
         j next
 
@@ -764,7 +764,7 @@ def_word ":", "colon", h_state, hash_colon
 
 # stat is 'compile' == 1
         
-        addi fst, zero, ONE
+        ori fst, zero, ONE
         
         sw fst, STAT (usr)
 
@@ -789,8 +789,6 @@ finish:
 
         call wcomma
 
-# done
-
         j next 
 
 #---------------------------------------------------------------------
@@ -809,13 +807,7 @@ def_word ";", "semis",  h_colon, hash_semis
         
         la wrd, exit
 
-        # j finish
-
-        call wcomma
-
-        # call shows
-
-        j next 
+        j finish
 
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
@@ -904,7 +896,8 @@ loads:
         ret
 
 #----------------------------------------------------------------------
-dumps:
+# 
+shows:
         pushra 
 
         call saves
@@ -958,9 +951,9 @@ dumps:
         lw fst, HERE (usr)
         mhex fst
        
-       putchar 'O'
+       putchar 'D'
         putchar ' '
-        lw fst, ONCE (usr)
+        lw fst, HEAD (usr)
         mhex fst
        
        putchar 'R'
@@ -978,7 +971,7 @@ dumps:
         j loads
 
 #----------------------------------------------------------------------
-show_data:
+datas:
 
         pushra 
 
@@ -1009,7 +1002,7 @@ show_data:
 
 #----------------------------------------------------------------------
 # shows all dictionary
-show_full:
+words:
         pushra 
 
         call saves
@@ -1045,7 +1038,7 @@ show_full:
 
 #----------------------------------------------------------------------
 # show last entry in dictionary
-show_last:
+lasts:
 
         pushra 
 

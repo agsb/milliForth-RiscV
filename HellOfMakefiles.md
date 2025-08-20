@@ -1,14 +1,17 @@
 # Hell of Makefiles
 
-I use the GCC gnu toolchain, for Intel x*86*, ARMs and RiscVs.
+In Linus, I use the GCC gnu toolchain, for Intel x*86*, ARMs and RiscVs.
 there are a defined namespace for each chain, so:
 
-For linux systems, x86-64-linux-gnu, riscv64-linux-gnu, arm-linux-gnueabi and for embeded systems riscv64-unknown-elf, arm-linux-gnueabi, arm-none-eabi.
+For linux systems, x86-64-linux-gnu, riscv64-linux-gnu, arm-linux-gnueabi 
+and for embeded systems riscv64-unknown-elf, arm-linux-gnueabi, arm-none-eabi.
+
+The QEMU uses qemu-system and qemu-user packs.
 
 Common parameters are: 
 
 
-        $(GCCFLAGS) = -nodefaultlibs -nostartfiles -stattic -Os 
+        $(GCCFLAGS) = -nodefaultlibs -nostartfiles -static -Os 
         $(ASFLAGS) = -Wa,-alms=$@.lst 
         $(LDFLAGS) = -Wl,--stats
 
@@ -21,7 +24,5 @@ Common parameters are:
         $(PASS)objcopy --dump-section .text=$(MY).sec $(MY).elf
         
         $(PASS)objcopy $(MY).elf -O binary $(MY).bin
-
-
 
   
