@@ -667,7 +667,7 @@ def_word "emit", "emit", h_key, hash_emit
 
         call _putc
 
-        j save0
+        j keep0
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
@@ -680,7 +680,7 @@ def_word "!", "store", h_emit, hash_store
 drop1:
         addi idx, idx, CELL
 
-        j save0
+        j keep0
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
@@ -704,7 +704,7 @@ def_word "nand", "nand", h_fetch, hash_nand
         
         not fst, fst
 
-        j keep0
+        j save0
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
@@ -714,7 +714,7 @@ def_word "+", "plus", h_nand, hash_plus
 
         add fst, fst, snd
         
-        j keep0
+        j save0
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
@@ -749,11 +749,11 @@ back0:
 
         add idx, idx, -1 * CELL
 
-keep0:
+save0:
 
         sw fst, 0 (idx)
 
-save0:
+keep0:
 
         sw idx, SPTR (usr)
         
