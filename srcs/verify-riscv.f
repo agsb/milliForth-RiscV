@@ -1,7 +1,8 @@
-s@ 0# nand  
-s@ s@ +
-s@ s@ nand
-s@ s@ !
-s@ @
+key 
+emit
 s@
+s@ s@ nand
+s@ s@ +
+s@ s@ !
+s@ 
 

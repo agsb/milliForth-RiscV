@@ -8,6 +8,20 @@
 
 ## Done
 
+20/08/2025
+
+    review and remake of primitives, with better jumps :)
+
+    djb2, nand, plus, state, zeroq, key, emit, working
+
+    including bytwo, as shift right to primitives
+
+    some weird bug in fetch (@) routine
+
+    drop ONCE and MORE offsets, using HEAD and TAIL instead
+
+    How know total memory free and upper limit ?
+
 15/08/2025
 
     Need install qemu-system AND qemu-user !

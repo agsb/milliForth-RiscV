@@ -205,17 +205,11 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 # return stack index
 .equ RPTR, 5 * CELL
 
-# hold 'here while compile
-.equ ONCE, 6 * CELL
-
-# hold 'code
-.equ MORE, 7 * CELL
-
 # heap forward
-.equ HEAD, 8 * CELL
+.equ HEAD, 6 * CELL
 
 # heap backward
-.equ TAIL, 9 * CELL
+.equ TAIL, 7 * CELL
 
 # this is it
 _user:
@@ -568,17 +562,18 @@ mask:
 # uses fst, snd
 # hsh returns the hash 
 # idx returns next space
+
+.equ DJB2, 5381
+
 djb2:
 
         # pushra
 
         # easy 5381
    
-        addi hsh, zero, 1381
-        
-        addi hsh, hsh, 2000
+        lui hsh, %hi(DJB2)
 
-        addi hsh, hsh, 2000
+        addi hsh, hsh, %lo(DJB2)
 
         addi trd, zero, SPC
 
@@ -637,7 +632,7 @@ name:
 
 ### version 1.5.0
 #---------------------------------------------------------------------
-load2:
+pull2:
         
         lw idx, SPTR (usr)
         
@@ -661,26 +656,26 @@ def_word "key", "key", 0x0, hash_key
 # ( c -- ) 
 def_word "emit", "emit", h_key, hash_emit
         
-        call load2
-        
-        mv fst, snd
+        lw idx, SPTR (usr)
 
+        lw fst, 0 (idx)
+        
         call _putc
 
-        j keep0
+        j drop1
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
 def_word "!", "store", h_emit, hash_store
         
-        call load2
+        call pull2
 
         sw fst, 0 (snd)
 
 drop1:
         addi idx, idx, CELL
 
-        j keep0
+        j save1
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
@@ -692,48 +687,46 @@ def_word "@", "fetch", h_store, hash_fetch
 
         lw fst, 0 (fst)
         
-        j keep0
+        j keep1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
 def_word "nand", "nand", h_fetch, hash_nand
         
-        call load2
+        call pull2
 
-        and fst, fst, snd
+        and fst, snd, fst
         
         not fst, fst
 
-        j save0
+        j keep1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
 def_word "+", "plus", h_nand, hash_plus
         
-        call load2
+        call pull2
 
-        add fst, fst, snd
+        add fst, snd, fst
         
-        j save0
+        j keep1
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
 def_word "0#", "zeroq", h_plus, hash_notzero
 
-        call load2
+        call pull2
         
 isfalse:
 
-        beq snd, zero, 100f
+        beq snd, zero, next
 
 istrue:
         
-        addi snd, zero, TRUE
+        # zzzz 32 or 20 or 12 :? its -1 :)
+        addi fst, zero, TRUE
         
-100:
-        mv fst, snd 
-
-        j back0
+        j back1
 
 #---------------------------------------------------------------------
 # ( -- state ), return an reference
@@ -745,18 +738,20 @@ push1:
 
         lw idx, SPTR (usr)
         
-back0:
+back1:
 
         add idx, idx, -1 * CELL
 
-save0:
+keep1:
 
         sw fst, 0 (idx)
 
-keep0:
+save1:
 
         sw idx, SPTR (usr)
         
+call show_data
+
         j next
 
 #---------------------------------------------------------------------
@@ -765,7 +760,7 @@ def_word ":", "colon", h_state, hash_colon
         
         lw fst, HERE (usr)
         
-        sw fst, ONCE (usr)
+        sw fst, HEAD (usr)
 
 # stat is 'compile' == 1
         
@@ -802,7 +797,7 @@ finish:
 def_word ";", "semis",  h_colon, hash_semis 
 # update last, panic if colon not lead elsewhere 
         
-        lw fst, ONCE (usr)
+        lw fst, HEAD (usr)
         
         sw fst, LAST (usr)
 

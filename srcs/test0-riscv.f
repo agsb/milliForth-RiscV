@@ -2,6 +2,9 @@
  : void ;
 
  : -1 s@ s@ nand s@ nand ;
+  
+ : -1 s@ 0# ;
+ 
  :  0 -1 -1 nand ;
  :  1 -1 -1 + -1 nand ;
  :  2  1  1 + ;
