@@ -274,8 +274,6 @@ main:
 
         # call _exit 
 
-        mhit 'Z'
-
         mhex sp
 
         j cold
@@ -357,14 +355,14 @@ resolvept:
 #---------------------------------------------------------------------
 okey:
 
+        call show_data
+
 # call prompt_okey
 
         putchar ' '
         putchar 'O'
         putchar 'K'
         putchar '\n'
-
-        call show_data
 
 #---------------------------------------------------------------------
 # get a hash of the next token
@@ -630,13 +628,14 @@ wcomma:
 
 /*
 h_name:
-        .word h_name_up
-        .word hash_name
+        .word h_link_last_name
+        .word hash_this_name
 name:
-        code
+        asm code
+        j next
 */
 
-### expanded
+### version 1.5.0
 #---------------------------------------------------------------------
 load2:
         
