@@ -98,7 +98,6 @@
 .equ hash_colon, 0x0002B59F 
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 .equ hash_exit,  0x7C6BBE85 
-.equ hash_bye,   0x0B874AFB 
 
 #---------------------------------------------------------------------
 # highlander, immediate flag. 
@@ -634,14 +633,8 @@ pull2:
         ret
 
 #---------------------------------------------------------------------
-# ( -- ) ends forth
-def_word "bye", "bye", 0x0, hash_bye
-
-        j _exit
-
-#---------------------------------------------------------------------
 # ( -- c ) 
-def_word "key", "key", h_bye, hash_bye
+def_word "key", "key", 0x0, hash_bye
 
         call _getc
 

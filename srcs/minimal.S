@@ -30,6 +30,11 @@
 
 
 #---------------------------------------------------------------------
+#
+# Note: system ecalls do not use ra 
+#
+
+#---------------------------------------------------------------------
 # linux ecall stuff, 29/07/2025, vide:
 # https://github.com/riscv-software-src/riscv-pk/blob/master/pk/syscall.h
 
@@ -47,9 +52,7 @@ _char:
 .word   0x0
 
 #---------------------------------------------------------------------
-#
-# Note: system ecalls do not use ra 
-#
+.section .text
 
 # load system call for exit
 _exit:
