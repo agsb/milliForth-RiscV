@@ -636,11 +636,11 @@ pull2:
         
         lw idx, SPTR (usr)
         
-        lw snd, 0 (idx)
+        lw fst, 0 (idx)
         
         add idx, idx, CELL
 
-        lw fst, 0 (idx)
+        lw snd, 0 (idx)
 
         ret
 
@@ -656,13 +656,11 @@ def_word "key", "key", 0x0, hash_key
 # ( c -- ) 
 def_word "emit", "emit", h_key, hash_emit
         
-        lw idx, SPTR (usr)
+        call pull2
 
-        lw fst, 0 (idx)
-        
         call _putc
 
-        j drop1
+        j save1
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
@@ -670,7 +668,7 @@ def_word "!", "store", h_emit, hash_store
         
         call pull2
 
-        sw fst, 0 (snd)
+        sw snd, 0 (fst)
 
 drop1:
         addi idx, idx, CELL
@@ -681,13 +679,11 @@ drop1:
 # ( a -- w ), w = [a]
 def_word "@", "fetch", h_store, hash_fetch
         
-        lw idx, SPTR (usr)
+        call pull2
         
-        lw fst, 0 (idx)
-
         lw fst, 0 (fst)
         
-        j keep1
+        j back1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
@@ -695,7 +691,7 @@ def_word "nand", "nand", h_fetch, hash_nand
         
         call pull2
 
-        and fst, snd, fst
+        and fst, fst, snd
         
         not fst, fst
 
@@ -707,7 +703,7 @@ def_word "+", "plus", h_nand, hash_plus
         
         call pull2
 
-        add fst, snd, fst
+        add fst, fst, snd
         
         j keep1
 
@@ -719,11 +715,10 @@ def_word "0#", "zeroq", h_plus, hash_notzero
         
 isfalse:
 
-        beq snd, zero, next
+        beq fst, zero, next
 
 istrue:
         
-        # zzzz 32 or 20 or 12 :? its -1 :)
         addi fst, zero, TRUE
         
         j back1
@@ -732,7 +727,7 @@ istrue:
 # ( -- state ), return an reference
 def_word "s@", "state", h_zeroq, hash_userat
         
-        mv fst, usr 
+        add fst, zero, usr 
 
 push1:
 
