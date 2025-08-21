@@ -8,6 +8,18 @@
 
 ## Done
 
+21/08/2025
+
+    The first word always take a bad hash.
+        Workaround by using a dummy word (: void ;) first.
+
+    Small changes in Minimal.S, to allow _getc detect EOF
+
+    store (!) and fetch (@) are working as intent.
+
+    DUP is not working as (sp @ @) need (sp @ cell + @).
+        Why ? This will break all other SP access offsets !
+
 20/08/2025
 
     review and remake of primitives, with better jumps :)
