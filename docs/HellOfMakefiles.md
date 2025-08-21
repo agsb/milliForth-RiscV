@@ -8,11 +8,14 @@ and for embeded systems riscv64-unknown-elf, arm-linux-gnueabi, arm-none-eabi.
 
 The QEMU uses qemu-system and qemu-user packs.
 
-Common parameters are: 
+My common parameters are: 
 
 
-        $(GCCFLAGS) = -nodefaultlibs -nostartfiles -static -Os 
+        $(GCCFLAGS) = -nodefaultlibs -nostartfiles -static -Os \
+                      -march=rv32ic -mabi=ilp32 
+
         $(ASFLAGS) = -Wa,-alms=$@.lst 
+
         $(LDFLAGS) = -Wl,--stats
 
         $(PASS)gcc $(GCCFLAGS) $(LDFLAGS) $(ASFLAGS) -o $@.elf $@.S 2> err | tee out
@@ -25,4 +28,5 @@ Common parameters are:
         
         $(PASS)objcopy $(MY).elf -O binary $(MY).bin
 
-  
+        od --endian=little -A x -t x1 -v $(MY).sec > $(MY).hex
+
