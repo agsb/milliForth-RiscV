@@ -32,7 +32,9 @@
  
     THIS VERSION USES ONLY HASH HEADERS.
 
-    Made for a little endian RiscV
+    Stacks moves backwards, decrease and push, pull and increase.
+
+    Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary will continue at end of .bss.
@@ -41,25 +43,19 @@
 
 */
 
-#----------------------------------------------------------------------
-#
-# Stuff for compiler
-#
-
 #---------------------------------------------------------------------
 # using pre-processor CPP (GNU GCC)
 # for alias register names 
-# do not change
+# beware about changes
 # a3, a0, a1, a2, a7 are used by ecalls in _putc and _getc
 # a4, a5, a6 are generics
-#---------------------------------------------------------------------
 
 #include "defines.S"
 
 #---------------------------------------------------------------------
 # generics alias 
 
-# FORTH 1983
+# as FORTH 1983
 
 .equ FALSE, 0
 
@@ -71,19 +67,17 @@
 
 .equ TWO, 2
 
+.equ CELL, 4
+
 .equ NLC, 10    # \n
 
 .equ SPC, 32    # space
 
-# cell size, 4 bytes, 32-bit
-
-.equ CELL, 4
-
-# data stack, 36 cells, moves backwards, push decreases before copy
+# data stack, 36 cells 
 
 .equ spz, 36 * CELL
 
-# return stack, 36 cells, moves backwards, push decreases before copy
+# return stack, 36 cells
 
 .equ rpz, 36 * CELL
 
@@ -91,30 +85,23 @@
 
 .equ tibz, 80
 
-# reserves 32 bytes for pad scratch, moves forwards
-
-.equ padz, 32
-
 #---------------------------------------------------------------------
 # primitives djb2 hash cleared of bit 31
 .equ hash_key,   0x0B876D32 
 .equ hash_emit,  0x7C6B87D0 
 .equ hash_store, 0x0002B584 
 .equ hash_fetch, 0x0002B5E5 
-.equ hash_plus,  0x0002B58E 
-.equ hash_colon, 0x0002B59F 
 .equ hash_nand,  0x7C727500 
-.equ hash_exit,  0x7C6BBE85 
-.equ hash_bye,   0x0B874AFB 
+.equ hash_plus,  0x0002B58E 
 .equ hash_notzero, 0x00596816 
 .equ hash_userat,  0x005970D6 
+.equ hash_colon, 0x0002B59F 
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
+.equ hash_exit,  0x7C6BBE85 
+.equ hash_bye,   0x0B874AFB 
 
 #---------------------------------------------------------------------
 # highlander, immediate flag. 
-# using lui high 20 bits, as 0x80000 and
-# using li  low 12 bits, as 0x000
-#
 
 # -2147483648
 .equ FLAG_IMM, 0x80000000
@@ -181,11 +168,7 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 .p2align 2, 0x0
 
 # user structure of internal Forth variables
-# catch:
-#       the order matters for forth !
-#       stacks have fixed size
-
-# name some offsets
+# accessed as off-sets
 
 # state flag
 .equ STAT, 0 * CELL
@@ -211,17 +194,19 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 # heap backward
 .equ TAIL, 7 * CELL
 
+#----------------------------------------------------------------------
 # this is it
+
 _user:
-.skip TAIL + 1 * CELL
+# user offsets, STAT to TAIL
+.skip 8 * CELL
+
+# reserve, (TAIL + 1) to (TAIL + 8)
+.skip 8 * CELL
 
 # tib grows forward
 _tib:       
 .skip tibz
-
-# pad grows forward
-_pad:       
-.skip padz
 
 # data stack grows backward
 _spb:       # bottom 
@@ -242,18 +227,16 @@ rp0: .word 0x0
 h_here: .word 0x0
 
 #----------------------------------------------------------------------
-# keep last entry of primitives
-
-.set h_last, h_exit
-
-#----------------------------------------------------------------------
 .text 
 .p2align 2, 0x0
 
 #----------------------------------------------------------------------
 .ifndef _start
+
 .globl _start
+
 _start:
+
 .endif
 
 #----------------------------------------------------------------------
@@ -326,12 +309,16 @@ abort:
         la fst, sp0 
         sw fst, SPTR (usr)
 
+        mhex fst
+
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
         la fst, rp0 
         sw fst, RPTR (usr)
+
+        mhex fst
 
 # stat is 'interpret' == \0
         
@@ -349,9 +336,11 @@ resolvept:
 #---------------------------------------------------------------------
 okey:
 
+# call prompt_okey
+
         call datas
 
-# call prompt_okey
+#        call words
 
         putchar ' '
         putchar 'O'
@@ -483,7 +472,7 @@ gets:
         
         sw idx, TOIN (usr)
 
-# end-of-line is newline \n, ^J 
+# end-of-line is \n, ^J 
         
         addi snd, zero, NLC
 
@@ -645,8 +634,14 @@ pull2:
         ret
 
 #---------------------------------------------------------------------
+# ( -- ) ends forth
+def_word "bye", "bye", 0x0, hash_bye
+
+        j _exit
+
+#---------------------------------------------------------------------
 # ( -- c ) 
-def_word "key", "key", 0x0, hash_key
+def_word "key", "key", h_bye, hash_bye
 
         call _getc
 
@@ -745,8 +740,6 @@ save1:
 
         sw idx, SPTR (usr)
         
-        call datas
-
         j next
 
 #---------------------------------------------------------------------
@@ -865,6 +858,11 @@ jump:
         jalr zero, 0 (wrd)
 
 #----------------------------------------------------------------------
+# keep last entry of primitives
+
+.set h_last, h_exit
+
+#----------------------------------------------------------------------
 saves:
         mv t0, a0 
         mv t1, a1
@@ -888,6 +886,73 @@ loads:
 
         pullra 
 
+        ret
+
+#----------------------------------------------------------------------
+# shows all words at dictionary
+words:
+        pushra 
+
+        call saves
+
+# get the latest link
+        
+        lw a5, LAST (s1)
+        
+100:
+# verify end of dictionary
+        
+        beq a5, zero, loads
+
+        add a4, zero, a5
+
+        lw a5, 0 (a4)
+
+        call wordt
+
+        j 100b
+
+
+#----------------------------------------------------------------------
+# shows one word at dictionary
+wordu:
+        pushra 
+
+        call saves
+
+# get the latest link
+        
+        lw a4, LAST (s1)
+
+        call wordt
+
+        j loads
+
+#----------------------------------------------------------------------
+# show entry in dictionary
+wordt:
+
+# set the end-of-word
+
+        la a6, exit
+
+        putchar '\n'
+        putchar '#'
+
+100:
+        putchar '\n'
+        
+        mhex a4
+        
+        lw a3, 0 (a4)
+        
+        mhex a3
+       
+        addi a4, a4, 4
+
+        bne a3, a6, 100b
+
+100:
         ret
 
 #----------------------------------------------------------------------
@@ -951,18 +1016,18 @@ shows:
         lw fst, HEAD (usr)
         mhex fst
        
-       putchar 'R'
-        putchar 'P'
-        putchar ' '
-        lw fst, RPTR (usr)
-        mhex fst
-       
        putchar 'S'
         putchar 'P'
         putchar ' '
         lw fst, SPTR (usr)
         mhex fst
 
+       putchar 'R'
+        putchar 'P'
+        putchar ' '
+        lw fst, RPTR (usr)
+        mhex fst
+       
         j loads
 
 #----------------------------------------------------------------------
@@ -992,73 +1057,6 @@ datas:
         addi a6, a6, 4
         addi a5, a5, -4
         bne a5, zero, 100b
-
-        j loads
-
-#----------------------------------------------------------------------
-# shows all dictionary
-words:
-        pushra 
-
-        call saves
-
-# data stack
-
-        putchar '\n'
-        putchar '='
-        
-        lw a6, HERE (usr)
-
-        la a5, h_here
-
-        mhex a5
-        
-        mhex a6
-
-        putchar '='
-
-        beq a6, a5, loads
-
-100:
-        putchar '\n'
-        mhex a5
-        
-        lw a4, 0 (a5)
-        mhex a4
-       
-        addi a5, a5, 4
-        bne a5, a6, 100b
-
-        j loads
-
-#----------------------------------------------------------------------
-# show last entry in dictionary
-lasts:
-
-        pushra 
-
-        call saves
-
-
-        putchar '\n'
-
-        la a6, exit
-
-        lw a5, LAST (usr)
-
-
-100:
-        putchar '\n'
-        
-        mhex a5
-
-        lw a4, 0 (a5)
-        
-        mhex a4
-       
-        addi a5, a5, 4
-
-        bne a4, a6, 100b
 
         j loads
 
