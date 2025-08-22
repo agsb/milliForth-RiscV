@@ -79,8 +79,6 @@ $(MY): $(SOURCES:.S=.o)
 
 	od --endian=little -A x -t x1 -v $@.sec > $@.hex
 
-	#od --endian=little -A x -t x1z -v $@.sec > $@.hex
-
 all: 
 	
 	$(MY)
