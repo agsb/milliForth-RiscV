@@ -337,7 +337,7 @@ okey:
 
 # call prompt_okey
 
-        call datas
+        call stacks
 
 #        call words
 
@@ -1085,34 +1085,49 @@ shows:
         j loads
 
 #----------------------------------------------------------------------
-datas:
+stacks:
 
         pushra 
 
         call saves
 
-        lw a6, SPTR (usr)
+        putchar '\n'
+        putchar 'S'
 
+        lw a6, SPTR (usr)
         la a5, sp0
 
-        sub a5, a5, a6
-
-        beq a5, zero, loads
+        call stackp
 
         putchar '\n'
+        putchar 'R'
+
+        lw a6, RPTR (usr)
+        la a5, rp0
+
+        call stackp
+
+        j loads
+
+stackp:
         putchar '='
 
         mhex a6
 
+        sub a5, a5, a6
+
+        beq a5, zero, 200
+
 100:
-        lw a3, 0 (a6)
-        mhex a3
+        lw a4, 0 (a6)
+        mhex a4
 
         addi a6, a6, 4
         addi a5, a5, -4
         bne a5, zero, 100b
 
-        j loads
+200:
+        ret
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
