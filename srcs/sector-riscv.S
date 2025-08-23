@@ -334,9 +334,11 @@ okey:
 
 # call prompt_okey
 
-        call stacks
-
-        # call words
+        call stackS
+        
+        call stackR
+        
+        call wordu
 
         putchar ' '
         putchar 'O'
@@ -956,25 +958,27 @@ words:
 
 # get the latest link
         
-        lw a5, LAST (usr)
+        lw a6, LAST (usr)
         
         putchar '\n'
 
-        mhex a5
+        mhex a6
 
 100:
 # verify end of dictionary
         
-        beq a5, zero, loads
+        beq a6, zero, 200f
 
-        add a4, zero, a5
+        add a5, zero, a6
 
-        lw a5, 0 (a4)
+        lw a6, 0 (a5)
 
         call wordt
 
         j 100b
 
+200:
+        j loads
 
 #----------------------------------------------------------------------
 # shows one word at dictionary
@@ -985,7 +989,7 @@ wordu:
 
 # get the latest link
         
-        lw a4, LAST (usr)
+        lw a5, LAST (usr)
 
         call wordt
 
@@ -995,27 +999,31 @@ wordu:
 # show entry in dictionary
 wordt:
 
+        pushra
+
 # set the end-of-word
 
-        la a6, exit
+        la s2, exit
 
         putchar '\n'
         putchar '#'
-
+       
 100:
         putchar '\n'
         
+        mhex a5
+        
+        lw a4, 0 (a5)
+        
         mhex a4
-        
-        lw a3, 0 (a4)
-        
-        mhex a3
        
-        addi a4, a4, 4
+        addi a5, a5, 4
 
-        bne a3, a6, 100b
+        bne a4, s2, 100b
 
 100:
+        pullra
+
         ret
 
 #----------------------------------------------------------------------
