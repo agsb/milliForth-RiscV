@@ -956,7 +956,7 @@ words:
 
 # get the latest link
         
-        lw a5, LAST (s1)
+        lw a5, LAST (usr)
         
         putchar '\n'
 
@@ -985,7 +985,7 @@ wordu:
 
 # get the latest link
         
-        lw a4, LAST (s1)
+        lw a4, LAST (usr)
 
         call wordt
 
@@ -1094,7 +1094,7 @@ shows:
         j loads
 
 #----------------------------------------------------------------------
-stacks:
+stackS:
 
         pushra 
 
@@ -1107,6 +1107,14 @@ stacks:
         la a5, sp0
 
         call stackp
+
+        j loads
+
+stackR:
+
+        pushra 
+
+        call saves
 
         putchar '\n'
         putchar 'R'
