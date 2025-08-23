@@ -200,9 +200,6 @@ _user:
 # user offsets, STAT to TAIL
 .skip 8 * CELL
 
-# reserve, (TAIL + 1) to (TAIL + 8)
-.skip 8 * CELL
-
 # tib grows forward
 _tib:       
 .skip tibz
@@ -339,7 +336,7 @@ okey:
 
         call stacks
 
-#        call words
+        # call words
 
         putchar ' '
         putchar 'O'
@@ -382,11 +379,9 @@ tick:
 
         lw fst, 0 (wrd)
 
-# set the FLAG
+# mask the FLAG
 
         lui snd, %hi(FLAG_IMM)
-
-# mask hash flag // snd have the flag
 
         and snd, fst, snd
 
@@ -397,7 +392,6 @@ tick:
         bne hsh, fst, 100b
 
 100:
-# move to code
 # wrd points to or start of code or list of references
 
         add wrd, wrd, CELL
@@ -418,7 +412,7 @@ eval:
 # compiling ? if != 0
 compile:
 
-        call wcomma
+        call comma
 
         j resolve
 
@@ -435,7 +429,6 @@ immediate:
 # the counter is placed at space before word
 # returns a c-str
 # \0 as eol goto getline
-
 token:
 
         pushra
@@ -457,7 +450,7 @@ token:
 
         beq snd, zero, gets
 
-        bne snd, trd, 500f
+        bne snd, trd, hash
 
         addi idx, idx, ONE
 
@@ -511,7 +504,7 @@ gets:
         j 100b
 
 #---------------------------------------------------------------------
-500:
+hash:
 
 # make hash
 
@@ -554,9 +547,6 @@ mask:
 .equ DJB2, 5381
 
 djb2:
-
-        # pushra
-
         # easy 5381
    
         lui hsh, %hi(DJB2)
@@ -586,12 +576,10 @@ djb2:
 
 100:    
 
-        # pullra 
-
         ret
         
 #---------------------------------------------------------------------
-wcomma:
+comma:
         
         lw idx, HERE (usr)
       
@@ -755,7 +743,7 @@ def_word ":", "colon", h_state, hash_colon
         
         lw wrd, LAST (usr)
         
-        call wcomma
+        call comma
 
 # get following token
         
@@ -768,7 +756,7 @@ def_word ":", "colon", h_state, hash_colon
 #---------------------------------------------------------------------
 finish:
 
-        call wcomma
+        call comma
 
         j next 
 
@@ -855,6 +843,18 @@ jump:
 
 .set h_last, h_exit
 
+#----------------------------------------------------------------------
+# system dependences, linux ecall
+#
+
+#include "minimal.S"
+
+#---------------------------------------------------------------------
+# any other primitives after exit
+#---------------------------------------------------------------------
+
+# #include "extras-milliforth.S"
+
 #---------------------------------------------------------------------
 #
 # extras
@@ -865,6 +865,8 @@ jump:
 puthex:
 
         pushra
+
+        call saves
 
         add  s2, zero, a3
         
@@ -881,12 +883,11 @@ puthex:
 
         add  a3, zero, s2
 
-        pullra
-
-        ret
+        j loads
 
 100:
-        pushra
+
+        pushra 
 
         andi s3, s3, 0xFF
         
@@ -918,26 +919,30 @@ puthex:
 
 #----------------------------------------------------------------------
 saves:
-        mv t0, a0 
-        mv t1, a1
-        mv t2, a2
-        mv t3, a3
-        mv t4, a4
-        mv t5, a5
-        mv t6, a6
+        addi sp, sp, -28
+
+        sw a0,  0 (sp) 
+        sw a1,  4 (sp) 
+        sw a2,  8 (sp) 
+        sw a3, 12 (sp) 
+        sw a4, 16 (sp) 
+        sw a5, 20 (sp) 
+        sw a6, 24 (sp) 
        
         ret
 
 #----------------------------------------------------------------------
 loads:
-        mv a6, t6
-        mv a5, t5
-        mv a4, t4
-        mv a3, t3
-        mv a2, t2
-        mv a1, t1
-        mv a0, t0
-
+        lw a0,  0 (sp) 
+        lw a1,  4 (sp) 
+        lw a2,  8 (sp) 
+        lw a3, 12 (sp) 
+        lw a4, 16 (sp) 
+        lw a5, 20 (sp) 
+        lw a6, 24 (sp) 
+        
+        addi sp, sp, +28
+       
         pullra 
 
         ret
@@ -953,6 +958,10 @@ words:
         
         lw a5, LAST (s1)
         
+        putchar '\n'
+
+        mhex a5
+
 100:
 # verify end of dictionary
         
@@ -1110,36 +1119,30 @@ stacks:
         j loads
 
 stackp:
+        
+        pushra
+
         putchar '='
 
         mhex a6
 
-        sub a5, a5, a6
+        putchar '['
+        putchar ' '
 
-        beq a5, zero, 200
+        beq a5, a6, 200f
 
 100:
         lw a4, 0 (a6)
         mhex a4
-
         addi a6, a6, 4
-        addi a5, a5, -4
-        bne a5, zero, 100b
+        bne a5, a6, 100b
 
 200:
+        putchar ']'
+
+        pullra 
+
         ret
-
-#----------------------------------------------------------------------
-# system dependences, linux ecall
-#
-
-#include "minimal.S"
-
-#---------------------------------------------------------------------
-# any other primitives after exit
-#---------------------------------------------------------------------
-
-# #include "extras-milliforth.S"
 
 #---------------------------------------------------------------------
 # Beware, ends must be at last word in primitive ditionary !

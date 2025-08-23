@@ -8,10 +8,19 @@
 
 ## Done
 
+22/08/2025
+
+    Solved the stack operations problem. Any operation in data stack 
+        using sp becomes self relative and must be offset by one cell. 
+
+    the ( : rp@ rp @ ; ) and ( : sp@ sp @ 4 + ; )
+    
+    the extra 4 + in sp@ is to correct the extra cell for sp in stack;
+
 21/08/2025
 
     The first word always take a bad hash.
-        Workaround by using a dummy word (: void ;) first.
+        Workaround by now, using a dummy word (: void ;) first.
 
     Small changes in Minimal.S, to allow _getc detect EOF
 
