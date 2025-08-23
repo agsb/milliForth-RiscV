@@ -338,8 +338,6 @@ okey:
         
         call stackR
         
-        call wordu
-
         putchar ' '
         putchar 'O'
         putchar 'K'
@@ -778,7 +776,14 @@ def_word ";", "semis",  h_colon, hash_semis
         
         la wrd, exit
 
-        j finish
+        #j finish
+
+        call comma
+
+        call wordu
+
+        j next 
+
 
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
@@ -987,8 +992,6 @@ wordu:
 
         call saves
 
-# get the latest link
-        
         lw a5, LAST (usr)
 
         call wordt
@@ -1003,11 +1006,9 @@ wordt:
 
 # set the end-of-word
 
-        la s2, exit
+        la t0, exit
 
-        putchar '\n'
-        putchar '#'
-       
+        putchar '>'
 100:
         putchar '\n'
         
@@ -1019,9 +1020,8 @@ wordt:
        
         addi a5, a5, 4
 
-        bne a4, s2, 100b
+        bne a4, t0, 100b
 
-100:
         pullra
 
         ret

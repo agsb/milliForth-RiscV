@@ -60,9 +60,19 @@
  : allot here @ + here ! ;
  : , here @ ! cell allot ;
 
+1 2 4 8
+
+over over dup drop drop drop 
+
  : >r rp@ @ swap rp@ ! rp@ cell - rp ! rp@ ! ;
  : r> rp@ @ rp@ cell + rp ! rp@ @ swap rp@ ! ;
  
+ >r 
+
+ dup 
+
+ r>
+
  : branch rp@ @ dup @ + rp@ ! ;
  : ?branch 0# not rp@ @ @ cell - and rp@ @ + cell + rp@ ! ;
  
@@ -76,6 +86,8 @@
  : 80h 1 2* 2* 2* 2* 2* 2* 2* ;
  : IMMEDIATE 80h 2** 2** 2** ;
  
+ IMMEDIATE
+
  : immediate last @ cell + dup @ IMMEDIATE or swap ! ;
  
  : ] 1 s@ ! ;
