@@ -337,7 +337,7 @@ okey:
         call stackS
         
         call stackR
-        
+
         putchar ' '
         putchar 'O'
         putchar 'K'
@@ -1118,6 +1118,7 @@ stackS:
 
         j loads
 
+#----------------------------------------------------------------------
 stackR:
 
         pushra 
@@ -1134,6 +1135,7 @@ stackR:
 
         j loads
 
+#----------------------------------------------------------------------
 stackp:
         
         pushra
