@@ -94,10 +94,14 @@
 .equ hash_nand,  0x7C727500 
 .equ hash_plus,  0x0002B58E 
 .equ hash_notzero, 0x00596816 
-.equ hash_userat,  0x005970D6 
+.equ hash_userat, 0x00596F90
 .equ hash_colon, 0x0002B59F 
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 .equ hash_exit,  0x7C6BBE85 
+
+.equ hash_cell,    0x7C70B163 
+.equ hash_cellplus, 0x0A86DDE8 
+.equ hash_cellless, 0x0A86DDEE
 
 #---------------------------------------------------------------------
 # highlander, immediate flag. 
@@ -169,11 +173,11 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 # user structure of internal Forth variables
 # accessed as off-sets
 
-# state flag
-.equ STAT, 0 * CELL
+# data stack index
+.equ SPTR, 0 * CELL
 
-# toin next free byte in TIB
-.equ TOIN, 1 * CELL 
+# return stack index
+.equ RPTR, 1 * CELL 
 
 # last link cell in heap dictionary linked list
 .equ LAST, 2 * CELL
@@ -181,11 +185,11 @@ addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 # next free cell in heap dictionary, aka dpt
 .equ HERE, 3 * CELL
 
-# data stack index
-.equ SPTR, 4 * CELL
+# toin next free byte in TIB
+.equ TOIN, 4 * CELL
 
-# return stack index
-.equ RPTR, 5 * CELL
+# state flag
+.equ STAT, 5 * CELL
 
 # heap forward
 .equ HEAD, 6 * CELL
@@ -336,8 +340,6 @@ okey:
 
         call stackS
         
-        call stackR
-
         putchar ' '
         putchar 'O'
         putchar 'K'
@@ -622,7 +624,36 @@ pull2:
 
 #---------------------------------------------------------------------
 # ( -- c ) 
-def_word "key", "key", 0x0, hash_key
+def_word "cell", "cell", 0x0, hash_cell
+
+        addi fst, zero, 4
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- c ) 
+def_word "cell+", "cellplus", h_cell, hash_cellplus
+
+        call pull2
+
+        addi fst, fst, +4
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- c ) 
+def_word "cell-", "cellless", h_cellplus, hash_cellless
+
+        call pull2
+
+        addi fst, fst, -4
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- c ) 
+#def_word "key", "key", 0x0, hash_key
+def_word "key", "key", h_cellless, hash_key
 
         call _getc
 
@@ -701,7 +732,7 @@ istrue:
 
 #---------------------------------------------------------------------
 # ( -- state ), return an reference
-def_word "s@", "state", h_zeroq, hash_userat
+def_word "u@", "userat", h_zeroq, hash_userat
         
         add fst, zero, usr 
 
@@ -724,7 +755,7 @@ save1:
         j next
 
 #---------------------------------------------------------------------
-def_word ":", "colon", h_state, hash_colon
+def_word ":", "colon", h_userat, hash_colon
 # save here, panic if semis not follow elsewhere
         
         lw fst, HERE (usr)
@@ -808,6 +839,14 @@ unnest: #; exit
         
         sw idx, RPTR (usr)
 
+
+        lw idx, STAT (usr)
+        bne idx, zero, next
+
+        putchar '<'
+        call stackR
+        call stackS
+
 next:
 # wrd = (ipt) #; ipt += cell
         
@@ -832,6 +871,14 @@ nest:   #; enter
         sw ipt, 0 (idx)
         
         sw idx, RPTR (usr)
+
+
+        lw idx, STAT (usr)
+        bne idx, zero, move
+
+        #putchar '>'
+        call stackR
+        call stackS
 
 move: 
 # indirect access 
@@ -1008,7 +1055,7 @@ wordt:
 
         la t0, exit
 
-        putchar '>'
+        putchar '#'
 100:
         putchar '\n'
         
@@ -1167,6 +1214,7 @@ stackp:
 #---------------------------------------------------------------------
 
 ends:
+
 .word 0xDEADBEEF
 
 .end

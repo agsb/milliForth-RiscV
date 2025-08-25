@@ -8,6 +8,11 @@
 
 ## Done
 
+25/08/2025
+
+    Rewrite of user block, bring SP and RP to top, for less offset 
+        calculations.
+
 22/08/2025
 
     Solved the stack operations problem. Any operation in data stack 
