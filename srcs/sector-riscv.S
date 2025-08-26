@@ -99,10 +99,6 @@
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 .equ hash_exit,  0x7C6BBE85 
 
-.equ hash_cell,    0x7C70B163 
-.equ hash_cellplus, 0x0A86DDE8 
-.equ hash_cellless, 0x0A86DDEE
-
 #---------------------------------------------------------------------
 # highlander, immediate flag. 
 
@@ -124,41 +120,6 @@ h_\label:
         .word \last
         .word \hash
 \label:
-.endm
-
-#---------------------------------------------------------------------
-# for deep, more than one, nested calls
-#
-
-.macro pushra
-addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
-sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
-.endm
-
-.macro pullra
-lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
-addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
-.endm
-
-#---------------------------------------------------------------------
-# for easy
-# uses a0, a1, a2, a3, a7
-
-.macro putchar value
-        li a3, \value 
-        call _putc
-.endm
-
-.macro mhex rg
-        add a3, zero, \rg
-        call puthex
-        putchar ' '
-.endm
-
-.macro mhit it
-        putchar '\n'
-        putchar \it
-        putchar ' '
 .endm
 
 #----------------------------------------------------------------------
@@ -239,6 +200,33 @@ _start:
 
 .endif
 
+#---------------------------------------------------------------------
+# for deep, more than one, nested calls
+#
+
+.equ x_pushra, YES
+
+.macro pushra
+addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
+sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+.endm
+
+.equ x_pullra, YES
+
+.macro pullra
+lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
+.endm
+
+#----------------------------------------------------------------------
+
+.equ x_putchar, YES
+
+.macro putchar value
+       li a3, \value
+       call _putc
+.endm
+
 #----------------------------------------------------------------------
 # do any system inits here
 main:
@@ -251,8 +239,6 @@ main:
 
         # call _exit 
 
-        mhex sp
-
         j cold
 
 #----------------------------------------------------------------------
@@ -262,8 +248,6 @@ cold:
 
         la usr, _user
         
-        mhex usr
-
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
@@ -273,25 +257,19 @@ warm:
         
         sw fst, LAST (usr)
         
-        mhex fst
-
 # next heap free cell  (end of .bss)
         
         la fst, h_here
         
         sw fst, HERE (usr)
 
-        mhex fst
-
 #---------------------------------------------------------------------
 # reset TIB
 reset:
 
         la fst, _tib
-        sw zero, 0 (fst)
+#       sw zero, 0 (fst)
         sw fst, TOIN (usr)
-
-        mhex fst
 
 #---------------------------------------------------------------------
 # reset data stack
@@ -309,16 +287,12 @@ abort:
         la fst, sp0 
         sw fst, SPTR (usr)
 
-        mhex fst
-
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
         la fst, rp0 
         sw fst, RPTR (usr)
-
-        mhex fst
 
 # stat is 'interpret' == \0
         
@@ -338,9 +312,10 @@ okey:
 
 # call prompt_okey
 
-        call stackS
+        #call stackS
+        #call stackR
         
-        putchar ' '
+        putchar '\n'
         putchar 'O'
         putchar 'K'
         putchar '\n'
@@ -531,12 +506,6 @@ mask:
 
         ret 
 
-#---------------------------------------------------------------------
-#
-# generics 
-#
-#---------------------------------------------------------------------
-
 #----------------------------------------------------------------------
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
@@ -624,36 +593,7 @@ pull2:
 
 #---------------------------------------------------------------------
 # ( -- c ) 
-def_word "cell", "cell", 0x0, hash_cell
-
-        addi fst, zero, 4
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- c ) 
-def_word "cell+", "cellplus", h_cell, hash_cellplus
-
-        call pull2
-
-        addi fst, fst, +4
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- c ) 
-def_word "cell-", "cellless", h_cellplus, hash_cellless
-
-        call pull2
-
-        addi fst, fst, -4
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- c ) 
-#def_word "key", "key", 0x0, hash_key
-def_word "key", "key", h_cellless, hash_key
+def_word "key", "key", 0x0, hash_key
 
         call _getc
 
@@ -811,8 +751,6 @@ def_word ";", "semis",  h_colon, hash_semis
 
         call comma
 
-        call wordu
-
         j next 
 
 
@@ -839,14 +777,6 @@ unnest: #; exit
         
         sw idx, RPTR (usr)
 
-
-        lw idx, STAT (usr)
-        bne idx, zero, next
-
-        putchar '<'
-        call stackR
-        call stackS
-
 next:
 # wrd = (ipt) #; ipt += cell
         
@@ -872,14 +802,6 @@ nest:   #; enter
         
         sw idx, RPTR (usr)
 
-
-        lw idx, STAT (usr)
-        bne idx, zero, move
-
-        #putchar '>'
-        call stackR
-        call stackS
-
 move: 
 # indirect access 
         
@@ -893,11 +815,6 @@ jump:
         jalr zero, 0 (wrd)
 
 #----------------------------------------------------------------------
-# keep last entry of primitives
-
-.set h_last, h_exit
-
-#----------------------------------------------------------------------
 # system dependences, linux ecall
 #
 
@@ -907,307 +824,19 @@ jump:
 # any other primitives after exit
 #---------------------------------------------------------------------
 
+#----------------------------------------------------------------------
+# keep last entry of primitives
+
+#.set into_extras, h_exit
+
 # #include "extras-milliforth.S"
 
-#---------------------------------------------------------------------
-#
-# extras
-#
-#---------------------------------------------------------------------
-# code a register (32-bit) word in ASCII hexadecimal 
-#
-puthex:
-
-        pushra
-
-        call saves
-
-        add  s2, zero, a3
-        
-        addi s5, zero, 58
-
-        srli s3, s2, 24
-        call 100f
-        srli s3, s2, 16
-        call 100f
-        srli s3, s2, 8
-        call 100f
-        srli s3, s2, 0
-        call 100f
-
-        add  a3, zero, s2
-
-        j loads
-
-100:
-
-        pushra 
-
-        andi s3, s3, 0xFF
-        
-        srli s4, s3, 4
-        call 200f
-        
-        srli s4, s3, 0
-        call 200f
-
-        pullra
-
-        ret
-
-200:
-        pushra
-
-        andi s4, s4, 0x0F
-        ori  s4, s4, 48
-        blt  s4, s5, 300f
-        addi s4, s4, 7
-300:
-        add a3, zero, s4
-
-        call _putc
-        
-        pullra
-
-        ret
-
 #----------------------------------------------------------------------
-saves:
-        addi sp, sp, -28
+# keep last entry of extras
 
-        sw a0,  0 (sp) 
-        sw a1,  4 (sp) 
-        sw a2,  8 (sp) 
-        sw a3, 12 (sp) 
-        sw a4, 16 (sp) 
-        sw a5, 20 (sp) 
-        sw a6, 24 (sp) 
-       
-        ret
+#.set h_last, from_extras
 
-#----------------------------------------------------------------------
-loads:
-        lw a0,  0 (sp) 
-        lw a1,  4 (sp) 
-        lw a2,  8 (sp) 
-        lw a3, 12 (sp) 
-        lw a4, 16 (sp) 
-        lw a5, 20 (sp) 
-        lw a6, 24 (sp) 
-        
-        addi sp, sp, +28
-       
-        pullra 
-
-        ret
-
-#----------------------------------------------------------------------
-# shows all words at dictionary
-words:
-        pushra 
-
-        call saves
-
-# get the latest link
-        
-        lw a6, LAST (usr)
-        
-        putchar '\n'
-
-        mhex a6
-
-100:
-# verify end of dictionary
-        
-        beq a6, zero, 200f
-
-        add a5, zero, a6
-
-        lw a6, 0 (a5)
-
-        call wordt
-
-        j 100b
-
-200:
-        j loads
-
-#----------------------------------------------------------------------
-# shows one word at dictionary
-wordu:
-        pushra 
-
-        call saves
-
-        lw a5, LAST (usr)
-
-        call wordt
-
-        j loads
-
-#----------------------------------------------------------------------
-# show entry in dictionary
-wordt:
-
-        pushra
-
-# set the end-of-word
-
-        la t0, exit
-
-        putchar '#'
-100:
-        putchar '\n'
-        
-        mhex a5
-        
-        lw a4, 0 (a5)
-        
-        mhex a4
-       
-        addi a5, a5, 4
-
-        bne a4, t0, 100b
-
-        pullra
-
-        ret
-
-#----------------------------------------------------------------------
-# 
-shows:
-        pushra 
-
-        call saves
-
-# registers
-
-       putchar '\n'
-        putchar 'R'
-        putchar ' '
-        
-       putchar '0'
-        putchar ' '
-        mhex t0
-       putchar '1'
-        putchar ' '
-        mhex t1
-       putchar '2'
-        putchar ' '
-        mhex t2
-       putchar '3'
-        putchar ' '
-        mhex t3
-       putchar '4'
-        putchar ' '
-        mhex t4
-       putchar '5'
-        putchar ' '
-        mhex t5
-       putchar '6'
-        putchar ' '
-        mhex t6
-        
-# user parameters
-
-        putchar '\n'
-        putchar 'U'
-        putchar ' '
-        
-       putchar 'S'
-        putchar ' '
-        lw fst, STAT (usr)
-        mhex fst
-       
-       putchar 'L'
-        putchar ' '
-        lw fst, LAST (usr)
-        mhex fst
-       
-       putchar 'H'
-        putchar ' '
-        lw fst, HERE (usr)
-        mhex fst
-       
-       putchar 'D'
-        putchar ' '
-        lw fst, HEAD (usr)
-        mhex fst
-       
-       putchar 'S'
-        putchar 'P'
-        putchar ' '
-        lw fst, SPTR (usr)
-        mhex fst
-
-       putchar 'R'
-        putchar 'P'
-        putchar ' '
-        lw fst, RPTR (usr)
-        mhex fst
-       
-        j loads
-
-#----------------------------------------------------------------------
-stackS:
-
-        pushra 
-
-        call saves
-
-        putchar '\n'
-        putchar 'S'
-
-        lw a6, SPTR (usr)
-        la a5, sp0
-
-        call stackp
-
-        j loads
-
-#----------------------------------------------------------------------
-stackR:
-
-        pushra 
-
-        call saves
-
-        putchar '\n'
-        putchar 'R'
-
-        lw a6, RPTR (usr)
-        la a5, rp0
-
-        call stackp
-
-        j loads
-
-#----------------------------------------------------------------------
-stackp:
-        
-        pushra
-
-        putchar '='
-
-        mhex a6
-
-        putchar '['
-        putchar ' '
-
-        beq a5, a6, 200f
-
-100:
-        lw a4, 0 (a6)
-        mhex a4
-        addi a6, a6, 4
-        bne a5, a6, 100b
-
-200:
-        putchar ']'
-
-        pullra 
-
-        ret
+.set h_last, h_exit
 
 #---------------------------------------------------------------------
 # Beware, ends must be at last word in primitive ditionary !

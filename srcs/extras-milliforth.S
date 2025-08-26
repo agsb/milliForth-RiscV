@@ -42,28 +42,75 @@
 .equ hash_see, 0x0B878F36
 .equ hash_dot, 0x0002B58B
 
+.equ hash_cell,     0x7C70B163
+.equ hash_cellplus, 0x0A86DDE8
+.equ hash_cellless, 0x0A86DDEE
+
+#---------------------------------------------------------------------
+# for deep, more than one, nested calls
+#
+.ifndef x_pushra
+.macro pushra
+addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
+sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+.endm
+.endif
+
+.ifndef x_pullra
+.macro pullra
+lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
+addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
+.endm
+.endif
+
+#---------------------------------------------------------------------
+# for easy
+# uses a0, a1, a2, a3, a7
+
+.ifndef x_putchar
+.macro putchar value
+        li a3, \value 
+        call _putc
+.endm
+.endif
+
+.ifndef x_mhex
+.macro mhex rg
+        add a3, zero, \rg
+        call puthex
+        putchar ' '
+.endm
+.endif
+
+.ifndef x_mhit
+.macro mhit it
+        putchar '\n'
+        putchar \it
+        putchar ' '
+.endm
+.endif
 
 #---------------------------------------------------------------------
 # extras links to last primitive
 
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
-def_word "2/", "sfr", h_exit, hash_sfr
+def_word "2/", "sfr", into_extras, hash_sfr
 
-        call load2
+        call pull2
         
         srli fst, snd, 1
         
-        j save0
+        j keep1
 
 #---------------------------------------------------------------------
 # ( a -- ) execute a jump to a address at top of data stack
 # not change the stack
 def_word "exec", "exec", h_sfr, hash_exec
         
-        call load2
+        call pull2
         
-        jalr zero, 0 (snd)
+        jalr zero, 0 (fst)
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to a reference at IP
@@ -92,47 +139,36 @@ def_word "abort", "aborts", h_byes, hash_abort
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
 def_word ".S", "splist", h_aborts, hash_splist
-        lw fst, SPT (usr)
 
-        putchar 'S' 
-        
-        call put_spt
+        call stackS
 
         j next
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
 def_word ".R", "rplist", h_splist, hash_rplist
-        lw fst, RPT (usr)
 
-        putchar 'R' 
+        call stackR
         
-        call put_rpt
-
         j next
 
 #----------------------------------------------------------------------
-# ( -- ) dumps the user dictionary
+# ( -- ) dumps memory
 def_word "dump", "dump", h_rplist, hash_dump
 
-        lw fst, LAST (usr)
+        call pull2
+        
+        call 
 
-        call put_list
-
-        j next
+        j drop1
 
 #----------------------------------------------------------------------
 # ( -- ) words in dictionary, 
 def_word "words", "words", h_dump, hash_words
 
-        la fst, no_words
-
-        call put_strz
+        call wordf
 
         j next
-
-no_words:
-.asciz "There is no WORDS, no more"
 
 #----------------------------------------------------------------------
 #  ae see for 'exit to ends a sequence of references
@@ -141,33 +177,52 @@ no_words:
 # ( -- ) words in dictionary, 
 def_word "see", "sees", h_words, hash_see
 
-        call load2
-        
-        lw fst, snd
+        call wordu
 
-        la snd, exit
-
-        ble fst, snd, 100f
-
-        call put_seek
-100:
         j next
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal
 def_word ".", "dot", h_sees, hash_dot
 
-        call load2
-
-        add fst, zero, snd
+        call pull2
 
         call puthex
 
         j next
 
+
+#---------------------------------------------------------------------
+# ( -- c ) 
+def_word "cell", "cell", h_dot, hash_cell
+
+        addi fst, zero, 4
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- c ) 
+def_word "cell+", "cellplus", h_cell, hash_cellplus
+
+        call pull2
+
+        addi fst, fst, +4
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- c ) 
+def_word "cell-", "cellless", h_cellplus, hash_cellless
+
+        call pull2
+
+        addi fst, fst, -4
+
+        j push1
+
 #---------------------------------------------------------------------
 
-.equ h_last, h_dot
+.set from_extras, h_cellless
 
 #---------------------------------------------------------------------
 #
@@ -178,128 +233,300 @@ def_word ".", "dot", h_sees, hash_dot
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
-# emits a stringz in ASCII 
+# code a 32-bit word in ASCII hexadecimal 
 #
-put_strz:
-        
+puthex:
+
         pushra
 
-        call cpys
+        call saves
+
+        add  s2, zero, a3
+        
+        addi s5, zero, 58
+
+        srli s3, s2, 24
+        call 100f
+        srli s3, s2, 16
+        call 100f
+        srli s3, s2, 8
+        call 100f
+        srli s3, s2, 0
+        call 100f
+
+        add  a3, zero, s2
+
+        j loads
 
 100:
-        lb s4, 0(s3)
+
+        pushra 
+
+        andi s3, s3, 0xFF
         
-        beq s4, zero, atbot
+        srli s4, s3, 4
+        call 200f
         
-        call _putc
-        
-        addi s3, s3, 1
-
-        j 100b
-
-#---------------------------------------------------------------------
-attop:
-        add s2, zero, a3
-
-        add s3, zero, a3
-
-        ret
-
-#---------------------------------------------------------------------
-atbot:
-
-        add a3, zero, s2
+        srli s4, s3, 0
+        call 200f
 
         pullra
 
         ret
 
-#---------------------------------------------------------------------
-put_seek:
+200:
+        pushra
+
+        andi s4, s4, 0x0F
+        ori  s4, s4, 48
+        blt  s4, s5, 300f
+        addi s4, s4, 7
+300:
+        add a3, zero, s4
+
+        call _putc
+        
+        pullra
+
+        ret
+
+#----------------------------------------------------------------------
+saves:
+        addi sp, sp, -28
+
+        sw a0,  0 (sp) 
+        sw a1,  4 (sp) 
+        sw a2,  8 (sp) 
+        sw a3, 12 (sp) 
+        sw a4, 16 (sp) 
+        sw a5, 20 (sp) 
+        sw a6, 24 (sp) 
+       
+        ret
+
+#----------------------------------------------------------------------
+loads:
+        lw a0,  0 (sp) 
+        lw a1,  4 (sp) 
+        lw a2,  8 (sp) 
+        lw a3, 12 (sp) 
+        lw a4, 16 (sp) 
+        lw a5, 20 (sp) 
+        lw a6, 24 (sp) 
+        
+        addi sp, sp, +28
+       
+        pullra 
+
+        ret
+
+#----------------------------------------------------------------------
+# shows all words at dictionary
+wordf:
+        pushra 
+
+        call saves
+
+# get the latest link
+        
+        lw a6, LAST (usr)
+        
+        putchar '\n'
+
+        mhex a6
+
+100:
+# verify end of dictionary
+        
+        beq a6, zero, 200f
+
+        add a5, zero, a6
+
+        lw a6, 0 (a5)
+
+        call wordt
+
+        j 100b
+
+200:
+        j loads
+
+#----------------------------------------------------------------------
+# shows one word at dictionary
+wordu:
+        pushra 
+
+        call saves
+
+        lw a5, LAST (usr)
+
+        call wordt
+
+        j loads
+
+#----------------------------------------------------------------------
+# show entry in dictionary
+wordt:
 
         pushra
 
-        call attop
+# set the end-of-word
 
+        la t0, exit
+
+        putchar '#'
 100:
+        putchar '\n'
+        
+        mhex a5
+        
+        lw a4, 0 (a5)
+        
+        mhex a4
+       
+        addi a5, a5, 4
 
-        lw s4, 0 (s3)
+        bne a4, t0, 100b
+
+        pullra
+
+        ret
+
+#----------------------------------------------------------------------
+stackS:
+
+        pushra 
+
+        call saves
 
         putchar '\n'
+        putchar 'S'
 
-        mhex s4
+        lw a6, SPTR (usr)
+        la a5, sp0
+
+        call stackp
+
+        j loads
+
+#----------------------------------------------------------------------
+stackR:
+
+        pushra 
+
+        call saves
+
+        putchar '\n'
+        putchar 'R'
+
+        lw a6, RPTR (usr)
+        la a5, rp0
+
+        call stackp
+
+        j loads
+
+#----------------------------------------------------------------------
+stackp:
         
-        beq s3, a4, atbot
-
-        addi s3, s3, 4
-
-        j 100b
-        
-#---------------------------------------------------------------------
-put_list:
-
         pushra
 
-        call attop
+        putchar '='
+
+        mhex a6
+
+        putchar '['
+        putchar ' '
+
+        beq a5, a6, 200f
 
 100:
+        lw a4, 0 (a6)
+        mhex a4
+        addi a6, a6, 4
+        bne a5, a6, 100b
 
-        lw s4, 0 (s3)
-    
-        lw s5, 4 (s3)
+200:
+        putchar ']'
+
+        pullra 
+
+        ret
+
+#----------------------------------------------------------------------
+# 
+shows:
+        pushra 
+
+        call saves
+
+# registers
+
+       putchar '\n'
+        putchar 'R'
+        putchar ' '
+        
+       putchar '0'
+        putchar ' '
+        mhex t0
+       putchar '1'
+        putchar ' '
+        mhex t1
+       putchar '2'
+        putchar ' '
+        mhex t2
+       putchar '3'
+        putchar ' '
+        mhex t3
+       putchar '4'
+        putchar ' '
+        mhex t4
+       putchar '5'
+        putchar ' '
+        mhex t5
+       putchar '6'
+        putchar ' '
+        mhex t6
+        
+# user parameters
 
         putchar '\n'
-
-        mhex s3
+        putchar 'U'
+        putchar ' '
         
-        mhex s4
-        
-        mhex s5
+       putchar 'S'
+        putchar ' '
+        lw fst, STAT (usr)
+        mhex fst
+       
+       putchar 'L'
+        putchar ' '
+        lw fst, LAST (usr)
+        mhex fst
+       
+       putchar 'H'
+        putchar ' '
+        lw fst, HERE (usr)
+        mhex fst
+       
+       putchar 'D'
+        putchar ' '
+        lw fst, HEAD (usr)
+        mhex fst
+       
+       putchar 'S'
+        putchar 'P'
+        putchar ' '
+        lw fst, SPTR (usr)
+        mhex fst
 
-        beq s4, zero, atbot
-
-        add s3, zero, s4
-
-        j 100b
-
-#---------------------------------------------------------------------
-lists:
-        pushra
-
-        call attop
-
-        add s5, zero, zero
-
-100:
-        beq s3, s6, atbot
-
-        putchar '\n'
-
-        mhex s5
-
-        addi s5, s5, 1
-
-        lw s4, 0 (s3)
-
-        mhex s4
-
-        addi s3, s3, 4
-
-        j 100b
-
-#---------------------------------------------------------------------
-put_spt:
-
-        la s6, sp0
-
-        j lists
-
-#---------------------------------------------------------------------
-put_rpt:
-
-        la s6, rp0
-     
-        j lists
+       putchar 'R'
+        putchar 'P'
+        putchar ' '
+        lw fst, RPTR (usr)
+        mhex fst
+       
+        j loads
 
 #----------------------------------------------------------------------
 .ifdef NOTYET
