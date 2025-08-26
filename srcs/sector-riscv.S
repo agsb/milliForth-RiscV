@@ -824,19 +824,26 @@ jump:
 # any other primitives after exit
 #---------------------------------------------------------------------
 
+.equ EXTRAS, YES
+
+.ifdef EXTRAS
 #----------------------------------------------------------------------
 # keep last entry of primitives
 
-#.set into_extras, h_exit
+.set into_extras, h_exit
 
-# #include "extras-milliforth.S"
+#include "extras-milliforth.S"
 
 #----------------------------------------------------------------------
 # keep last entry of extras
 
-#.set h_last, from_extras
+.set h_last, from_extras
+
+.elseif
 
 .set h_last, h_exit
+
+.endif
 
 #---------------------------------------------------------------------
 # Beware, ends must be at last word in primitive ditionary !

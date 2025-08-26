@@ -333,11 +333,13 @@ wordf:
         
         putchar '\n'
 
-        mhex a6
-
 100:
 # verify end of dictionary
         
+        la t0, h_here
+
+        ble a6, t0, 200f
+
         beq a6, zero, 200f
 
         add a5, zero, a6
@@ -370,11 +372,15 @@ wordt:
 
         pushra
 
-# set the end-of-word
+# set the end-of-word as exit address
 
         la t0, exit
 
+        putchar '\n'
         putchar '#'
+
+#        addi a5, a5, 8
+
 100:
         putchar '\n'
         
@@ -385,6 +391,12 @@ wordt:
         mhex a4
        
         addi a5, a5, 4
+
+#        addi a3, a4, -4
+
+#        lw a3, 0 (a3)
+
+#        mhex a3
 
         bne a4, t0, 100b
 
@@ -433,7 +445,7 @@ stackp:
 
         putchar '='
 
-        mhex a6
+        mhex a5
 
         putchar '['
         putchar ' '
@@ -441,9 +453,9 @@ stackp:
         beq a5, a6, 200f
 
 100:
-        lw a4, 0 (a6)
+        addi a5, a5, -4
+        lw a4, 0 (a5)
         mhex a4
-        addi a6, a6, 4
         bne a5, a6, 100b
 
 200:
