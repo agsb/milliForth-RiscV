@@ -1,5 +1,5 @@
-
  : void ;
+
  : | .S .R ;
 
  : -1 u@ 0# ;
@@ -50,19 +50,21 @@
  : allot here @ + here ! ;
  : , here @ ! cell allot ;
 
- : >r | rp@ | @ | swap | rp@ | ! | rp@ | cell- | rp | ! | rp@ | ! | ;
+ : >r | rp@ @ swap rp@ ! | rp@ | cell- | rp | ! | rp@ | ! | ;
 
- : r> | rp@ @ | rp@ cell+ rp ! | rp@ @ swap rp@ ! ;
+ : r> | rp@ @ | rp@ cell+ rp ! | rp@ @ swap rp@ ! | ;
 
- : toto u@ 0# dup not >r drop r> ;
+ : toto1 u@ 0# dup not >r drop r> ;
 
- : toto u@ >r r> ;
+ : toto3 | u@ | 0# | >r | r> | ;
 
- : toto | u@ | 0# | >r | r> | ;
+ : toto | u@ | >r | r> | ;
 
  words 
 
  toto
+
+ bye 
 
  : branch rp@ @ dup @ + rp@ ! ;
  : ?branch 0# not rp@ @ @ cell- and rp@ @ + cell+ rp@ ! ;

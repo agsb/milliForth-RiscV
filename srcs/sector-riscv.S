@@ -524,7 +524,7 @@ djb2:
 
         addi hsh, hsh, %lo(DJB2)
 
-        addi trd, zero, SPC
+        # addi trd, zero, SPC
 
 100:
         lb fst, 0 (idx)
@@ -533,7 +533,7 @@ djb2:
         
         beq fst, trd, 100f
 
-        mv snd, hsh
+        add snd, zero, hsh
 
         slli hsh, hsh, 5
         
@@ -704,7 +704,7 @@ def_word ":", "colon", h_userat, hash_colon
 
 # stat is 'compile' == 1
         
-        ori fst, zero, ONE
+        add fst, zero, ONE
         
         sw fst, STAT (usr)
 
@@ -720,7 +720,7 @@ def_word ":", "colon", h_userat, hash_colon
         
         call token
         
-# copy the hash
+# copy hash into (here)
 
         add wrd, zero, hsh
 
@@ -747,12 +747,7 @@ def_word ";", "semis",  h_colon, hash_semis
         
         la wrd, exit
 
-        #j finish
-
-        call comma
-
-        j next 
-
+        j finish
 
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine

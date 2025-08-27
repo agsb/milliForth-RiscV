@@ -336,10 +336,6 @@ wordf:
 100:
 # verify end of dictionary
         
-        la t0, h_here
-
-        ble a6, t0, 200f
-
         beq a6, zero, 200f
 
         add a5, zero, a6
@@ -347,6 +343,10 @@ wordf:
         lw a6, 0 (a5)
 
         call wordt
+
+        la t0, h_here
+
+        blt a6, t0, 200f
 
         j 100b
 
