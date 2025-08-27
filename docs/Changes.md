@@ -14,8 +14,10 @@
     compiled dictionary, goes to be 0x20. All other words hashses
     and linked list does pretty well. Why ?
 
-    Its in first `colon` use and the link, references and exit
-    are all okey. Maybe first use of token inside ?
+    Its a problem at first `colon` use and the link, references 
+    and exit are all okey. Maybe first use of token inside ?
+
+    Sure both rp@ and sp@ must have a cell offset added.
 
 25/08/2025
 
@@ -27,9 +29,9 @@
     Solved the stack operations problem. Any operation in data stack 
         using sp becomes self relative and must be offset by one cell. 
 
-    the ( : rp@ rp @ ; ) and ( : sp@ sp @ 4 + ; )
+    the ( : rp@ rp @ cell + ; ) and ( : sp@ sp @ cell + ; )
     
-    the extra 4 + in sp@ is to correct the extra cell for sp in stack;
+    the extra cell + is to correct the extra cell in stacks;
 
 21/08/2025
 

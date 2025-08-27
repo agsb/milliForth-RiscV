@@ -13,21 +13,21 @@
  :  4 2 2 + ;
 
  : sp u@ ;
- : rp sp cell+ ;
- : last rp cell+ ;
- : here last cell+ ;
- : >in here cell+ ;
- : state >in cell+ ;
+ : rp sp cell + ;
+ : last rp cell + ;
+ : here last cell + ;
+ : >in here cell + ;
+ : state >in cell + ;
 
- : rp@ rp @ cell+ ;
+ : rp@ rp @ cell + ;
  
- : sp@ sp @ cell+ ;
+ : sp@ sp @ cell + ;
  
  : dup sp@ @ ;
 
- : over sp@ cell+ @ ;
+ : over sp@ cell + @ ;
  
- : swap over over sp@ cell cell cell+ + + ! sp@ cell + ! ;
+ : swap over over sp@ cell + cell + cell + ! sp@ cell + ! ;
 
  : not dup nand ;
 
@@ -50,29 +50,25 @@
  : allot here @ + here ! ;
  : , here @ ! cell allot ;
 
- : >r | rp@ @ swap rp@ ! | rp@ | cell- | rp | ! | rp@ | ! | ;
+ : >r | rp@ @ swap rp@ ! | rp@ cell - rp ! | rp@ ! | ;
 
- : r> | rp@ @ | rp@ cell+ rp ! | rp@ @ swap rp@ ! | ;
-
- : toto1 u@ 0# dup not >r drop r> ;
-
- : toto3 | u@ | 0# | >r | r> | ;
-
- : toto | u@ | >r | r> | ;
-
- words 
-
- toto
-
- bye 
+ : r> | rp@ @ | rp@ cell + rp ! | rp@ @ swap rp@ ! | ;
 
  : branch rp@ @ dup @ + rp@ ! ;
- : ?branch 0# not rp@ @ @ cell- and rp@ @ + cell+ rp@ ! ;
+ : ?branch 0# not rp@ @ @ cell - and rp@ @ + cell + rp@ ! ;
  
- : lit rp@ @ dup cell+ rp@ ! @ ;
- : ['] rp@ @ dup cell+ rp@ ! @ ;
+ : lit rp@ @ dup cell + rp@ ! @ ;
+ : ['] rp@ @ dup cell + rp@ ! @ ;
+
+ 0 1 2 cell 
  
  : rot >r swap r> swap ;
+
+ .S
+
+ rot
+
+ .S
 
  : 2* dup + ;
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
@@ -81,11 +77,33 @@
  
  IMMEDIATE
 
- : immediate last @ cell+ dup @ IMMEDIATE or swap ! ;
+ : immediate last @ cell + dup @ IMMEDIATE or swap ! ;
  
  : ] 1 u@ ! ;
  : [ 0 u@ ! ; immediate
  
+ : 12 [ 4 4 + 4 + ] ;
+
+ : 24 [ 12 12 + ] ;
+
+ 12
+
+ .S 
+ 
+ words 
+
+ sp@ dup 24 24 + 
+
+ .S 
+
++ 
+
+.S 
+
+ dump
+
+ bye 
+
  : if ['] ?branch , here @ 0 , ; immediate
  : then dup here @ swap - swap ! ; immediate
  : else ['] branch , here @ 0 , swap dup 
@@ -116,7 +134,7 @@
  : parse in> drop >in @ swap 0 begin over in> 
      <> while 1 + repeat swap bl 
      = if >in dup @ 1 - swap ! then ;
- : word in> drop begin dup in> <> until >in @ cell- >in ! parse ;
+ : word in> drop begin dup in> <> until >in @ cell - >in ! parse ;
  
  : [char] ['] lit , bl word drop c@ , ; immediate
  : ." [char] " parse type ; immediate

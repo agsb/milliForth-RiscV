@@ -128,14 +128,14 @@ h_\label:
 #----------------------------------------------------------------------
 .section .data
 
-# no data
+# There are no data.
 
 #----------------------------------------------------------------------
 .section .bss
 .p2align 2, 0x0
 
 # user structure of internal Forth variables
-# accessed as off-sets
+# accessed as offsets
 
 # data stack index
 .equ SPTR, 0 * CELL
@@ -160,6 +160,15 @@ h_\label:
 
 # heap backward
 .equ TAIL, 7 * CELL
+
+/* also good names :)
+
+ONCE, MORE, 
+HOOK, LOSE,
+MISS, LOCK,
+SKIP, SCAN,
+
+*/
 
 #----------------------------------------------------------------------
 # this is it
@@ -204,27 +213,28 @@ _start:
 .endif
 
 #---------------------------------------------------------------------
-# for deep, more than one, nested calls
+# for deep, more than one, nested calls, use callee
+#
+# riscv does not have automatic hidden SP push/pull
 #
 
-.equ x_pushra, YES
-
+#----------------------------------------------------------------------
+.global pushra
 .macro pushra
 addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
 sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
 .endm
 
-.equ x_pullra, YES
-
+#----------------------------------------------------------------------
+.global pullra
 .macro pullra
 lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
 addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
 .endm
 
 #----------------------------------------------------------------------
-
-.equ x_putchar, YES
-
+# easy pretty print
+.global putchar
 .macro putchar value
        li a3, \value
        call _putc
@@ -488,27 +498,7 @@ hash:
 
 # make hash
 
-        call djb2
         
-# mask forth flag 
-mask:
-
-# set the FLAG as complement
-
-        lui fst, %hi(MASK_IMM)
-        
-        addi fst, fst, %lo(MASK_IMM)
-
-        and hsh, hsh, fst
-
-# save toin
-
-        sw idx, TOIN (usr)
-
-        pullra
-
-        ret 
-
 #----------------------------------------------------------------------
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
@@ -549,6 +539,23 @@ djb2:
         j 100b
 
 100:    
+
+# mask forth flag 
+mask:
+
+# set the FLAG as complement
+
+        lui fst, %hi(MASK_IMM)
+        
+        addi fst, fst, %lo(MASK_IMM)
+
+        and hsh, hsh, fst
+
+# save toin
+
+        sw idx, TOIN (usr)
+
+        pullra
 
         ret
         

@@ -46,34 +46,6 @@
 .equ hash_cellplus, 0x0A86DDE8
 .equ hash_cellless, 0x0A86DDEE
 
-#---------------------------------------------------------------------
-# for deep, more than one, nested calls
-#
-.ifndef x_pushra
-.macro pushra
-addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
-sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
-.endm
-.endif
-
-.ifndef x_pullra
-.macro pullra
-lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
-addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
-.endm
-.endif
-
-#---------------------------------------------------------------------
-# for easy
-# uses a0, a1, a2, a3, a7
-
-.ifndef x_putchar
-.macro putchar value
-        li a3, \value 
-        call _putc
-.endm
-.endif
-
 .ifndef x_mhex
 .macro mhex rg
         add a3, zero, \rg
@@ -158,7 +130,7 @@ def_word "dump", "dump", h_rplist, hash_dump
 
         call pull2
         
-        call 
+        call dumps
 
         j drop1
 
@@ -172,7 +144,6 @@ def_word "words", "words", h_dump, hash_words
 
 #----------------------------------------------------------------------
 #  ae see for 'exit to ends a sequence of references
-#  max of 254 references in list
 #
 # ( -- ) words in dictionary, 
 def_word "see", "sees", h_words, hash_see
@@ -201,28 +172,8 @@ def_word "cell", "cell", h_dot, hash_cell
         j push1
 
 #---------------------------------------------------------------------
-# ( -- c ) 
-def_word "cell+", "cellplus", h_cell, hash_cellplus
 
-        call pull2
-
-        addi fst, fst, +4
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- c ) 
-def_word "cell-", "cellless", h_cellplus, hash_cellless
-
-        call pull2
-
-        addi fst, fst, -4
-
-        j push1
-
-#---------------------------------------------------------------------
-
-.set from_extras, h_cellless
+.set from_extras, h_cell
 
 #---------------------------------------------------------------------
 #
@@ -464,6 +415,49 @@ stackp:
         pullra 
 
         ret
+
+#----------------------------------------------------------------------
+# 
+dumps:
+    
+        pushra 
+
+        call saves
+
+        putchar '\n'
+
+        # last
+        add a5, zero, fst
+
+        mhex a5
+
+        # init
+        add a6, zero, snd
+
+        mhex a6
+
+        # many
+        sub a5, a5, a6
+
+        mhex a5
+
+100:
+        addi t0, zero, 8
+        putchar '\n'
+        mhex a6
+        putchar ':'
+        putchar ' '
+200:
+        lw a4, 0 (a6)
+        mhex a4
+        addi a6, a6, 4
+        addi a5, a5, -4
+        
+        addi t0, t0, -1
+        beq t0, zero, 100b
+        bne a5, zero, 200b
+
+        j loads
 
 #----------------------------------------------------------------------
 # 
