@@ -69,9 +69,11 @@
 
 .equ CELL, 4
 
-.equ NLC, 10    # \n
+.equ NL, 10    # \n
 
-.equ SPC, 32    # space
+.equ CR, 13    # \r
+
+.equ BL, 32    # space
 
 # data stack, 36 cells 
 
@@ -84,6 +86,14 @@
 # Terminal input buffer 80 bytes, (but 72 is enough), moves forwards
 
 .equ tibz, 80
+
+# highlander, immediate flag, unique 
+
+# -2147483648
+.equ FLAG_IMM, 0x80000000
+
+# +2147483647
+.equ MASK_IMM, 0x7FFFFFFF
 
 #---------------------------------------------------------------------
 # primitives djb2 hash cleared of bit 31
@@ -100,19 +110,12 @@
 .equ hash_exit,  0x7C6BBE85 
 
 #---------------------------------------------------------------------
-# highlander, immediate flag. 
-
-# -2147483648
-.equ FLAG_IMM, 0x80000000
-
-# +2147483647
-.equ MASK_IMM, 0x7FFFFFFF
-
-#---------------------------------------------------------------------
 # macro to define the header of words in dictionary
 #
-# hashes can't be calculated inside macros,
-# all hashes must be done by hand.
+# In rellocable programs, 
+# names can`t be composed, 
+# last  can't be calculated, 
+# inside macros, then must be done by hand.
 #
 .macro def_word name, label, last, hash
 .p2align 2, 0x00
@@ -412,7 +415,7 @@ token:
 
 # load word separator, space
 
-        addi trd, zero, SPC
+        addi trd, zero, BL
 
 # last position on tib
         
@@ -443,7 +446,7 @@ gets:
 
 # end-of-line is \n, ^J 
         
-        addi snd, zero, NLC
+        addi snd, zero, NL
 
 # ever start with a space
         
@@ -524,7 +527,7 @@ djb2:
 
         addi hsh, hsh, %lo(DJB2)
 
-        # addi trd, zero, SPC
+        # addi trd, zero, BL
 
 100:
         lb fst, 0 (idx)
@@ -834,7 +837,9 @@ jump:
 
 .set h_last, from_extras
 
-.elseif
+.endif
+
+.ifndef EXTRAS
 
 .set h_last, h_exit
 

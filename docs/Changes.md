@@ -8,6 +8,15 @@
 
 ## Done
 
+27/08/2025
+
+    A phanton from past ages, the hash of the first word of  
+    compiled dictionary, goes to be 0x20. All other words hashses
+    and linked list does pretty well. Why ?
+
+    Its in first `colon` use and the link, references and exit
+    are all okey. Maybe first use of token inside ?
+
 25/08/2025
 
     Rewrite of user block, bring SP and RP to top, for less offset 

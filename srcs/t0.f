@@ -19,7 +19,7 @@
  : >in here cell+ ;
  : state >in cell+ ;
 
- : rp@ rp @ ;
+ : rp@ rp @ cell+ ;
  
  : sp@ sp @ cell+ ;
  
