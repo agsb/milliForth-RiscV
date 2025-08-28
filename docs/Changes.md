@@ -10,7 +10,7 @@
 
 27/08/2025
 
-    A phanton from past ages, the hash of the first word of  
+    A phantom from past ages, the hash of the first word of  
     compiled dictionary, goes to be 0x20. All other words hashses
     and linked list does pretty well. Why ?
 
@@ -18,6 +18,16 @@
     and exit are all okey. Maybe first use of token inside ?
 
     Sure both rp@ and sp@ must have a cell offset added.
+
+    The user structure, now composed of 8 words, with 
+    SPTR, RPTR, stack pointers
+    LAST, HERE, dictionary pointers
+    TOIN, STAT, terminal input buffer pointer and state of interpreter
+    HEAD, TAIL, keep last here and a free cell
+
+    The free cell could be used instead of >r and r> in words, 
+        when only for one level is need and >b b> sequence.
+        why ? no overhead on return address stack
 
 25/08/2025
 

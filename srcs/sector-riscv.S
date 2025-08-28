@@ -174,7 +174,7 @@ SKIP, SCAN,
 # this is it
 
 _user:
-# user offsets, STAT to TAIL
+# user offsets, down to TAIL
 .skip 8 * CELL
 
 # tib grows forward
