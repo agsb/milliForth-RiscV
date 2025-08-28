@@ -10,6 +10,9 @@
     
     S0 : relative data stack position, at entry
     R0 : relative return stack position, at entry
+
+note: both sp@ and rp@ must be offset by one cell to get the correct top values.
+
     
 ## >R
 
