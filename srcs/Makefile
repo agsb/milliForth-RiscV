@@ -32,6 +32,7 @@ GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs -static -Os \
 	   -march=rv32ic -mabi=ilp32 \
+	   -mrelax --save-temps
 
 # -Wl,-Ttext,0
 # -march=rv64ic -mabi=lp64 -static -Os \

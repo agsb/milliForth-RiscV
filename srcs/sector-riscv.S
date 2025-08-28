@@ -252,8 +252,6 @@ main:
 
         # call _exit 
 
-        j cold
-
 #----------------------------------------------------------------------
 # do what need once
 cold:
@@ -267,13 +265,11 @@ warm:
 # link list of headers, aka dictionary
 
         la fst, h_last
-        
         sw fst, LAST (usr)
         
 # next heap free cell  (end of .bss)
         
         la fst, h_here
-        
         sw fst, HERE (usr)
 
 #---------------------------------------------------------------------
@@ -281,7 +277,6 @@ warm:
 reset:
 
         la fst, _tib
-#       sw zero, 0 (fst)
         sw fst, TOIN (usr)
 
 #---------------------------------------------------------------------
@@ -351,13 +346,13 @@ tick:
         lw lnk, LAST (usr)
 
 100:
-# verify end of dictionary, abort (could be number?)
+# verify end of dictionary, take care to abort
         
-        beq lnk, zero, error
+        beq lnk, zero, care
 
 # linked list
         
-        mv wrd, lnk
+        add wrd, zero, lnk
 
 # get next link 
         
@@ -369,7 +364,7 @@ tick:
 
         lw fst, 0 (wrd)
 
-# mask the FLAG
+# mask the FLAG and hold it in snd
 
         lui snd, %hi(FLAG_IMM)
 
@@ -381,13 +376,12 @@ tick:
         
         bne hsh, fst, 100b
 
-100:
+#---------------------------------------------------------------------         
+eval:
 # wrd points to or start of code or list of references
 
         add wrd, wrd, CELL
 
-#---------------------------------------------------------------------         
-eval:
 # immediate ? if i != 0
 
         bne snd, zero, immediate      
@@ -413,6 +407,19 @@ immediate:
         la ipt, resolvept
 
         j pick
+
+#---------------------------------------------------------------------
+# unexpected end of dictionary
+#
+care:
+        # compiling ?
+        lw fst, STAT (usr)
+        bne fst, zero, 100f
+        # wipe remains
+        lw fst, HEAD (usr)
+        sw fst, HERE (usr)
+100:
+        j error
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
@@ -494,35 +501,24 @@ gets:
         j 100b
 
 #---------------------------------------------------------------------
-hash:
-
-# make hash
-
-        
+.equ DJB2, 5381
 #----------------------------------------------------------------------
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
 # idx pointer to str
-# trd hold the end of word character ( \0 or spc)
-# uses fst, snd
+# trd holds the end of word  
+# uses fst, snd, trd
 # hsh returns the hash 
-# idx returns next space
-
-.equ DJB2, 5381
-
+# idx returns next space after
+hash:
 djb2:
         # easy 5381
    
         lui hsh, %hi(DJB2)
-
         addi hsh, hsh, %lo(DJB2)
-
-        # addi trd, zero, BL
 
 100:
         lb fst, 0 (idx)
-        
-        # beq fst, zero, 100f
         
         beq fst, trd, 100f
 
@@ -790,14 +786,14 @@ next:
         addi ipt, ipt, CELL
 
 pick:
-# compare address, if less or equal than exit then is a primitive 
+# compare address, if is a primitive then jumps 
         
         la idx, ends
         
         ble wrd, idx, jump
 
 nest:   #; enter
-# return push, (rpt) = ipt, rp -= cell
+# return push, rp -= cell, (rpt) = ipt
         
         lw idx, RPTR (usr)
         

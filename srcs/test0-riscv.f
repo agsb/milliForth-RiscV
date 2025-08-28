@@ -1,7 +1,8 @@
-
  : void ;
 
- : -1 s@ 0# ;
+ : | .S .R ;
+
+ : -1 u@ 0# ;
  :  0 -1 -1 nand ;
  
  : TRUE -1 ;
@@ -10,25 +11,13 @@
  :  1 -1 -1 + -1 nand ;
  :  2 1 1 + ;
  :  4 2 2 + ;
- :  8 4 4 + ;
- : 12 8 4 + ;
- : 16 8 8 + ;
- : 20 12 8 + ;
 
- : cell 4 ;
-
- : S1 cell ;
- : S2 S1 cell + ;
- : S3 S2 cell + ;
- : S4 S3 cell + ;
- : S5 S4 cell + ;
-
- : state s@ ;
- : >in s@ S1 + ;
- : last s@ S2 + ;
- : here s@ S3 + ;
- : sp s@ S4 + ;
- : rp s@ S5 + ;
+ : sp u@ ;
+ : rp sp cell + ;
+ : last rp cell + ;
+ : here last cell + ;
+ : >in here cell + ;
+ : state >in cell + ;
 
  : rp@ rp @ cell + ;
  
@@ -37,8 +26,8 @@
  : dup sp@ @ ;
 
  : over sp@ cell + @ ;
-
- : swap over over sp@ S3 + ! sp@ S1 + ! ;
+ 
+ : swap over over sp@ cell + cell + cell + ! sp@ cell + ! ;
 
  : not dup nand ;
 
@@ -55,20 +44,22 @@
  : drop dup - + ;
 
  : 2dup over over ;
+
  : 2drop drop drop ;
 
  : allot here @ + here ! ;
  : , here @ ! cell allot ;
 
  : >r rp@ @ swap rp@ ! rp@ cell - rp ! rp@ ! ;
+
  : r> rp@ @ rp@ cell + rp ! rp@ @ swap rp@ ! ;
- 
+
  : branch rp@ @ dup @ + rp@ ! ;
  : ?branch 0# not rp@ @ @ cell - and rp@ @ + cell + rp@ ! ;
  
  : lit rp@ @ dup cell + rp@ ! @ ;
  : ['] rp@ @ dup cell + rp@ ! @ ;
- 
+
  : rot >r swap r> swap ;
 
  : 2* dup + ;
@@ -76,12 +67,10 @@
  : 80h 1 2* 2* 2* 2* 2* 2* 2* ;
  : IMMEDIATE 80h 2** 2** 2** ;
  
- IMMEDIATE
-
  : immediate last @ cell + dup @ IMMEDIATE or swap ! ;
  
- : ] 1 s@ ! ;
- : [ 0 s@ ! ; immediate
+ : ] 1 state ! ;
+ : [ 0 state ! ; immediate
  
  : if ['] ?branch , here @ 0 , ; immediate
  : then dup here @ swap - swap ! ; immediate
@@ -100,26 +89,36 @@
      ['] 2dup , ['] = , ['] ?branch , 
      here @ - , ['] 2drop , ; immediate
  
+ :  8 lit [ 4 4 + , ] ;
+ 
+ : 16 lit [ 8 8 + , ] ;
+ 
  : bl lit [ 16 16 + , ] ;
+
  : cr lit [ 8 2 + , ] emit ;
+ 
  : nl lit [ 8 4 + 1 + , ] emit ;
 
  : CHAR lit [ 16 1 - 2* 2* 2* 2* 16 1 - or , ] ;
 
  : c@ @ CHAR and ;
+
  : type 0 do dup c@ emit 1 + loop drop ;
  
  : in> >in @ c@ >in dup @ 1 + swap ! ;
- : parse in> drop >in @ swap 0 begin over in> 
-     <> while 1 + repeat swap bl 
-     = if >in dup @ 1 - swap ! then ;
+
+ : parse | in> | drop | >in | @ | swap | 0 
+        | begin | over in> <> while 1 + repeat 
+        | swap bl = if >in dup @ 1 - swap ! then ;
+
  : word in> drop begin dup in> <> until >in @ cell - >in ! parse ;
  
  : [char] ['] lit , bl word drop c@ , ; immediate
- : ." [char] " parse type ; immediate
- 
+
  : ( [char] ) parse drop drop ; immediate
  
+ : ." [char] " parse type ; immediate
+
  ." Hello world " cr
  
  ." That's all Folks !" cr

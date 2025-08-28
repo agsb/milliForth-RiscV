@@ -107,35 +107,29 @@
  
  : in> >in @ c@ >in dup @ 1 + swap ! ;
 
- : parse in> drop >in @ swap 0 
-        begin over in> <> while 1 + repeat 
-        swap bl = if >in dup @ 1 - swap ! then ;
+ : parse | in> | drop | >in | @ | swap | 0 
+        | begin | over in> <> while 1 + repeat 
+        | swap bl = if >in dup @ 1 - swap ! then ;
 
  : word in> drop begin dup in> <> until >in @ cell - >in ! parse ;
  
+ word "this will be not good" .S 
+
+
  : [char] ['] lit , bl word drop c@ , ; immediate
-
- : loops 0 16 0 do dup . cr 1 + loop ; 
-
- : loopb 0 begin dup . cr 1 + dup 16 = until ;
- 
- : loopd 0 begin dup . cr 16 <> while 1 + repeat ;
-
- loops 
-
- loopb
-
- loopd 
-
-
-bye
-
- : ( [char] ) parse drop drop ; immediate
 
  see
 
- : ." [char] " parse type ; immediate
+ : ( [char] ) parse ; immediate
+ see
  
+ : ( [char] ) parse drop ; immediate
+ see
+ 
+ : ( [char] ) parse drop drop ; immediate
+ see
+ 
+ : ." [char] " parse type ; immediate
  see
 
  ." Hello world " cr
