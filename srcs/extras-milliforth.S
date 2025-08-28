@@ -76,13 +76,15 @@ def_word "2/", "sfr", into_extras, hash_sfr
         j keep1
 
 #---------------------------------------------------------------------
-# ( a -- ) execute a jump to a address at top of data stack
-# not change the stack
+# ( a -- ) execute a word address at top of data stack
+# not change the data stack
 def_word "exec", "exec", h_sfr, hash_exec
         
         call pull2
         
-        jalr zero, 0 (fst)
+        add wrd, zero, fst
+
+        j pick
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to a reference at IP
@@ -125,7 +127,7 @@ def_word ".R", "rplist", h_splist, hash_rplist
         j next
 
 #----------------------------------------------------------------------
-# ( -- ) dumps memory
+# ( a b -- a b ) dumps memory between a and b
 def_word "dump", "dump", h_rplist, hash_dump
 
         call pull2
@@ -135,7 +137,7 @@ def_word "dump", "dump", h_rplist, hash_dump
         j drop1
 
 #----------------------------------------------------------------------
-# ( -- ) words in dictionary, 
+# ( -- ) list all words in compiled dictionary, 
 def_word "words", "words", h_dump, hash_words
 
         call wordf
@@ -143,9 +145,7 @@ def_word "words", "words", h_dump, hash_words
         j next
 
 #----------------------------------------------------------------------
-#  ae see for 'exit to ends a sequence of references
-#
-# ( -- ) words in dictionary, 
+# ( -- ) list last word in dictionary, 
 def_word "see", "sees", h_words, hash_see
 
         call wordu
@@ -164,7 +164,7 @@ def_word ".", "dot", h_sees, hash_dot
 
 
 #---------------------------------------------------------------------
-# ( -- c ) 
+# ( -- w ) size of a cell 
 def_word "cell", "cell", h_dot, hash_cell
 
         addi fst, zero, 4
