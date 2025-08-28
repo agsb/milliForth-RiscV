@@ -28,63 +28,70 @@ Options:
 ## ISA
 
 the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit 
-[ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) or [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
+    [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) 
+or 
+    [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
 
-The milliForth is a program called by 'elsewhere alien operational system', and use registers r0, ra, sp, a0-a6. 
+The milliForth is a program called by 'elsewhere alien operational system', 
+and use registers r0, ra, sp, s0, s1, a0-a7, t0-t1. 
 
 ## Coding
 
 *"qemu -kernel loads the kernel at 0x80000000 and causes each hart (i.e. core of CPU) to jump there."*
 
-For assembler, use [standart Risc-V](https://github.com/riscv-non-isa/riscv-asm-manual) style with pre-processor directives eg. #define.
+For assembler, use [standart Risc-V](https://github.com/riscv-non-isa/riscv-asm-manual) style 
+with pre-processor directives eg. #define.
 
-For now, using riscv-unknown-elf-gcc 15.0 suit with spike and qemu emulators for a single core minimal footprint Forth thread.  
+For now, using riscv-unknown-elf-gcc 15.0 suit with spike and qemu emulators for a 
+single core minimal footprint Forth thread.  
 
 I hope it uses far less than 4k bytes, without a user dictionary.
 
 The milliForth must use memory pointers for data stack and return stack, because does fetch and store from a special 'user structure', which contains the user variables for Forth (state, toin, last, here, spt, dpt, tout, once, heap, tail).
 
-This version includes: 
+This version uses DJB2 hash for dictionary entries and includes: 
 
 ```
 primitives:
 
-    s@    return the address of user structure
+    u@    return the address of user structure
+    0#    if top of data stack is not zero returns -1
+
     +     adds two values at top of data stack
     nand  logic not and the two values at top of data stack
+    
     @     fetch a value of cell wich address at top of data stack
     !     store a value into a cell wich address at top of data stack
-    0#    test if top of data stack is not zero
 
-    :     starts compilng a new word
+    :     starts compiling a new word
     ;     stops compiling a new word
+    
     exit  ends a word
 
-    key   get a char from default terminal (system dependent)
-    emit  put a char into default terminal (system dependent)
+    key   get a char from default terminal (stdin)
+    emit  put a char into default terminal (stdout)
         
 only internals: 
     
     main, cold, warm, quit, djb2, 
     token, skip, scan, getline, 
-    tick, find, compile, execute, comma, memcopy 
+    tick, find, compile, execute, comma,  
 
     unnest, next, nest, pick, jump, 
 
-    ps. exit is unnest, next is not the NEXT of FOR loop    
+    ps. exit is unnest, nest is enter,
+        next is not the NEXT of FOR loop    
 
 with externals:
 
     _getc, _putc, _exit, _init, 
 
-extensions: (selectable)
+extras: (selectable)
 
     2/      shift right one bit
     exec    jump to address at top of spt
     :$      jump to (ipt)   
     ;$      jump to next 
-
-extras:    (selectable)
 
     bye     ends the Forth, return to system
     abort   restart the Forth
@@ -93,10 +100,11 @@ extras:    (selectable)
     .       show cell at top of data stack
     words   extended list the words in dictionary
     dump    list contents of dictionary in binary
+    see     list compiled contents of last word
 
 A my_hello_world.FORTH alternate version with dictionary for use;
 
-The sp@ and rp@ are now derived from s@ in the my_hello_world.FORTH
+The sp@ and rp@ are now derived from u@ in the my_hello_world.FORTH
 
 ```
 
@@ -117,7 +125,7 @@ the originals files are edited for lines with less than 80 bytes
 
 the bf.FORTH and hello_world.FORTH are from original milliForth[^1]
 
-the my_hello_world.FORTH is adapted for miiliforth-6502
+the my_hello_world.FORTH is adapted for miiliforth-riscv
 
 ## References
 

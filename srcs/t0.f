@@ -50,9 +50,9 @@
  : allot here @ + here ! ;
  : , here @ ! cell allot ;
 
- : >r | rp@ @ swap rp@ ! | rp@ cell - rp ! | rp@ ! | ;
+ : >r rp@ @ swap rp@ ! rp@ cell - rp ! rp@ ! ;
 
- : r> | rp@ @ | rp@ cell + rp ! | rp@ @ swap rp@ ! | ;
+ : r> rp@ @ rp@ cell + rp ! rp@ @ swap rp@ ! ;
 
  : branch rp@ @ dup @ + rp@ ! ;
  : ?branch 0# not rp@ @ @ cell - and rp@ @ + cell + rp@ ! ;
@@ -60,50 +60,18 @@
  : lit rp@ @ dup cell + rp@ ! @ ;
  : ['] rp@ @ dup cell + rp@ ! @ ;
 
- 0 1 2 cell 
- 
  : rot >r swap r> swap ;
-
- .S
-
- rot
-
- .S
 
  : 2* dup + ;
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
  : 80h 1 2* 2* 2* 2* 2* 2* 2* ;
  : IMMEDIATE 80h 2** 2** 2** ;
  
- IMMEDIATE
-
  : immediate last @ cell + dup @ IMMEDIATE or swap ! ;
  
- : ] 1 u@ ! ;
- : [ 0 u@ ! ; immediate
+ : ] 1 state ! ;
+ : [ 0 state ! ; immediate
  
- : 12 [ 4 4 + 4 + ] ;
-
- : 24 [ 12 12 + ] ;
-
- 12
-
- .S 
- 
- words 
-
- sp@ dup 24 24 + 
-
- .S 
-
-+ 
-
-.S 
-
- dump
-
- bye 
-
  : if ['] ?branch , here @ 0 , ; immediate
  : then dup here @ swap - swap ! ; immediate
  : else ['] branch , here @ 0 , swap dup 
@@ -121,26 +89,55 @@
      ['] 2dup , ['] = , ['] ?branch , 
      here @ - , ['] 2drop , ; immediate
  
+ :  8 lit [ 4 4 + , ] ;
+ 
+ : 16 lit [ 8 8 + , ] ;
+ 
  : bl lit [ 16 16 + , ] ;
+
  : cr lit [ 8 2 + , ] emit ;
+ 
  : nl lit [ 8 4 + 1 + , ] emit ;
 
  : CHAR lit [ 16 1 - 2* 2* 2* 2* 16 1 - or , ] ;
 
  : c@ @ CHAR and ;
+
  : type 0 do dup c@ emit 1 + loop drop ;
  
  : in> >in @ c@ >in dup @ 1 + swap ! ;
- : parse in> drop >in @ swap 0 begin over in> 
-     <> while 1 + repeat swap bl 
-     = if >in dup @ 1 - swap ! then ;
+
+ : parse in> drop >in @ swap 0 
+        begin over in> <> while 1 + repeat 
+        swap bl = if >in dup @ 1 - swap ! then ;
+
  : word in> drop begin dup in> <> until >in @ cell - >in ! parse ;
  
  : [char] ['] lit , bl word drop c@ , ; immediate
+
+ : loops 0 16 0 do dup . cr 1 + loop ; 
+
+ : loopb 0 begin dup . cr 1 + dup 16 = until ;
+ 
+ : loopd 0 begin dup . cr 16 <> while 1 + repeat ;
+
+ loops 
+
+ loopb
+
+ loopd 
+
+
+bye
+
+ : ( [char] ) parse drop drop ; immediate
+
+ see
+
  : ." [char] " parse type ; immediate
  
- : ( [char] ) parse drop drop ; immediate
- 
+ see
+
  ." Hello world " cr
  
  ." That's all Folks !" cr

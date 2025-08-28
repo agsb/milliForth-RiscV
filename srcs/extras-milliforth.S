@@ -424,15 +424,13 @@ dumps:
 
         call saves
 
-        putchar '\n'
-
         # last
-        add a5, zero, fst
+        add a5, zero, a3
 
         mhex a5
 
         # init
-        add a6, zero, snd
+        add a6, zero, a4
 
         mhex a6
 
@@ -440,6 +438,8 @@ dumps:
         sub a5, a5, a6
 
         mhex a5
+
+        putchar '\n'
 
 100:
         addi t0, zero, 8

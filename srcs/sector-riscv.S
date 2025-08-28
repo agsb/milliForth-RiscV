@@ -285,7 +285,7 @@ reset:
         sw fst, TOIN (usr)
 
 #---------------------------------------------------------------------
-# reset data stack
+# reset stacks
 error:
 
         putchar '\n'
@@ -325,9 +325,9 @@ okey:
 
 # call prompt_okey
 
-        #call stackS
-        #call stackR
-        
+        lw fst, STAT (usr)
+        bne fst, zero, resolve
+
         putchar '\n'
         putchar 'O'
         putchar 'K'
