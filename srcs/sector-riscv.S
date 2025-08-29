@@ -161,15 +161,6 @@ h_\label:
 # heap backward
 .equ TAIL, 7 * CELL
 
-/* also good names :)
-
-ONCE, MORE, 
-HOOK, LOSE,
-MISS, LOCK,
-SKIP, SCAN,
-
-*/
-
 #----------------------------------------------------------------------
 # this is it
 
@@ -255,6 +246,7 @@ main:
 #----------------------------------------------------------------------
 # do what need once
 cold:
+
 # load user pointer address
 
         la usr, _user
@@ -348,7 +340,7 @@ tick:
 100:
 # verify end of dictionary, take care to abort
         
-        beq lnk, zero, care
+        beq lnk, zero, error    
 
 # linked list
         
@@ -411,7 +403,7 @@ immediate:
 #---------------------------------------------------------------------
 # unexpected end of dictionary
 #
-care:
+miss:
         # compiling ?
         lw fst, STAT (usr)
         bne fst, zero, 100f
@@ -477,12 +469,15 @@ gets:
         addi idx, idx, ONE
 
 # get next char
+
         call _getc
 
 # echo it
+
         call _putc
 
 # 7-bit ascii only 
+
         andi fst, fst, 127
 
 # \n ^J ends the line, no overflow check
@@ -546,6 +541,10 @@ mask:
         addi fst, fst, %lo(MASK_IMM)
 
         and hsh, hsh, fst
+
+        # zzzz
+        
+        add t6, zero, hsh
 
 # save toin
 
@@ -730,6 +729,8 @@ def_word ":", "colon", h_userat, hash_colon
 
         add wrd, zero, hsh
 
+        add wrd, zero, t6
+
 #---------------------------------------------------------------------
 finish:
 
@@ -760,8 +761,7 @@ def_word ";", "semis",  h_colon, hash_semis
 #
 # this is the Forth heart beat.
 #
-# nest aka enter or docol, 
-# unnest aka exit or semis;
+# nest aka enter or docol, unnest aka exit or semis;
 #
 # "why there is no 'docol at start of words ?"
 #

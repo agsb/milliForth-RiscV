@@ -46,21 +46,17 @@
 .equ hash_cellplus, 0x0A86DDE8
 .equ hash_cellless, 0x0A86DDEE
 
-.ifndef x_mhex
 .macro mhex rg
         add a3, zero, \rg
         call puthex
         putchar ' '
 .endm
-.endif
 
-.ifndef x_mhit
 .macro mhit it
         putchar '\n'
         putchar \it
         putchar ' '
 .endm
-.endif
 
 #---------------------------------------------------------------------
 # extras links to last primitive
@@ -157,6 +153,12 @@ def_word "see", "sees", h_words, hash_see
 def_word ".", "dot", h_sees, hash_dot
 
         call pull2
+
+        call puthex
+
+        putchar ' '
+
+        mv fst, t6
 
         call puthex
 

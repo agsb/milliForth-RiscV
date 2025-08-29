@@ -1,10 +1,22 @@
  : void ;
+see .
 
  : | .S .R ;
 
+see .
+
  : -1 u@ 0# ;
- :  0 -1 -1 nand ;
- 
+
+see .
+
+:  0 -1 -1 nand ;
+
+see .
+
+words
+
+bye
+
  : TRUE -1 ;
  : FALSE 0 ;
 
