@@ -158,10 +158,6 @@ def_word ".", "dot", h_sees, hash_dot
 
         putchar ' '
 
-        mv fst, t6
-
-        call puthex
-
         j next
 
 
@@ -245,7 +241,7 @@ puthex:
 
 #----------------------------------------------------------------------
 saves:
-        addi sp, sp, -28
+        addi sp, sp, -32
 
         sw a0,  0 (sp) 
         sw a1,  4 (sp) 
@@ -254,6 +250,7 @@ saves:
         sw a4, 16 (sp) 
         sw a5, 20 (sp) 
         sw a6, 24 (sp) 
+        sw a7, 28 (sp) 
        
         ret
 
@@ -266,9 +263,16 @@ loads:
         lw a4, 16 (sp) 
         lw a5, 20 (sp) 
         lw a6, 24 (sp) 
+        lw a7, 28 (sp) 
         
-        addi sp, sp, +28
+        addi sp, sp, +32
        
+        ret
+
+returns:
+
+        call loads
+
         pullra 
 
         ret
@@ -289,7 +293,7 @@ wordf:
 100:
 # verify end of dictionary
         
-        beq a6, zero, 200f
+        beq a6, zero, returns
 
         add a5, zero, a6
 
@@ -299,12 +303,9 @@ wordf:
 
         la t0, h_here
 
-        blt a6, t0, 200f
+        blt a6, t0, returns
 
         j 100b
-
-200:
-        j loads
 
 #----------------------------------------------------------------------
 # shows one word at dictionary
@@ -317,7 +318,7 @@ wordu:
 
         call wordt
 
-        j loads
+        j returns
 
 #----------------------------------------------------------------------
 # show entry in dictionary
@@ -345,12 +346,6 @@ wordt:
        
         addi a5, a5, 4
 
-#        addi a3, a4, -4
-
-#        lw a3, 0 (a3)
-
-#        mhex a3
-
         bne a4, t0, 100b
 
         pullra
@@ -372,7 +367,7 @@ stackS:
 
         call stackp
 
-        j loads
+        j returns
 
 #----------------------------------------------------------------------
 stackR:
@@ -389,7 +384,7 @@ stackR:
 
         call stackp
 
-        j loads
+        j returns
 
 #----------------------------------------------------------------------
 stackp:
@@ -459,7 +454,7 @@ dumps:
         beq t0, zero, 100b
         bne a5, zero, 200b
 
-        j loads
+        j returns
 
 #----------------------------------------------------------------------
 # 
@@ -534,7 +529,7 @@ shows:
         lw fst, RPTR (usr)
         mhex fst
        
-        j loads
+        j returns
 
 #----------------------------------------------------------------------
 .ifdef NOTYET

@@ -1,9 +1,14 @@
- : void ;
+.
+
+: void ;
+
 see .
 
  : | .S .R ;
 
 see .
+
+bye
 
  : -1 u@ 0# ;
 
@@ -14,8 +19,6 @@ see .
 see .
 
 words
-
-bye
 
  : TRUE -1 ;
  : FALSE 0 ;

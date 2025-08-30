@@ -36,6 +36,8 @@
 
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
+    Riscv does not have automatic hidden SP push/pull
+
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary will continue at end of .bss.
 
@@ -112,23 +114,47 @@
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
 #
-# In rellocable programs, 
-# names can`t be composed, 
-# last  can't be calculated, 
-# inside macros, then must be done by hand.
-#
+.global def_word
+
 .macro def_word name, label, last, hash
-.p2align 2, 0x00
+#.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
 \label:
 .endm
 
+#---------------------------------------------------------------------
+# for deep, more than one, nested calls, use callee
+#
+.global pushra
+
+.macro pushra
+        addi sp, sp, -4   
+        sw   ra, 0(sp)    
+.endm
+
+.global pullra
+
+.macro pullra
+        lw   ra, 0(sp)    
+        addi sp, sp, +4   
+.endm
+
+#----------------------------------------------------------------------
+# easy pretty print one char
+#
+.global putchar
+
+.macro putchar value
+       li a3, \value
+       call _putc
+.endm
+
 #----------------------------------------------------------------------
 .section .data
 
-# There are no data.
+# There is no spoon.
 
 #----------------------------------------------------------------------
 .section .bss
@@ -162,15 +188,15 @@ h_\label:
 .equ TAIL, 7 * CELL
 
 #----------------------------------------------------------------------
-# this is it
+# and this is it
 
 _user:
-# user offsets, down to TAIL
+# user parameter offsets
 .skip 8 * CELL
 
-# tib grows forward
-_tib:       
-.skip tibz
+# reserved for locals 
+_locals:
+.skip 8 * CELL
 
 # data stack grows backward
 _spb:       # bottom 
@@ -182,71 +208,40 @@ _rpb:       # bottom
 .skip rpz
 rp0: .word 0x0
 
-#-----------------------------------------------------------------------
-# start of user dictionary 
-# anything above is not a primitive
-# usually at end of .bss (.heap)
-#----------------------------------------------------------------------
+# tib grows forward
+_tib:       
+.skip tibz
 
+# start of user dictionary 
 h_here: .word 0x0
+
+#-----------------------------------------------------------------------
+# at end of .bss (.heap) 
+#----------------------------------------------------------------------
 
 #----------------------------------------------------------------------
 .text 
 .p2align 2, 0x0
 
 #----------------------------------------------------------------------
-.ifndef _start
-
 .globl _start
 
 _start:
 
-.endif
-
-#---------------------------------------------------------------------
-# for deep, more than one, nested calls, use callee
-#
-# riscv does not have automatic hidden SP push/pull
-#
-
 #----------------------------------------------------------------------
-.global pushra
-.macro pushra
-addi sp, sp, -4   # Decrement stack pointer by 4 bytes (for a word)
-sw   ra, 0(sp)    # Store the value in register a0 at the new stack top
-.endm
-
-#----------------------------------------------------------------------
-.global pullra
-.macro pullra
-lw   ra, 0(sp)    # Store the value in register a0 at the new stack top
-addi sp, sp, +4   # Decrement stack pointer by 4 bytes (for a word)
-.endm
-
-#----------------------------------------------------------------------
-# easy pretty print
-.global putchar
-.macro putchar value
-       li a3, \value
-       call _putc
-.endm
-
-#----------------------------------------------------------------------
-# do any system inits here
+# do any system inits
 main:
-        
 # just for sake
 
         fence
-
+#xxx
         # call _init
 
         # call _exit 
 
 #----------------------------------------------------------------------
-# do what need once
+# do what need be only once
 cold:
-
 # load user pointer address
 
         la usr, _user
@@ -264,6 +259,9 @@ warm:
         la fst, h_here
         sw fst, HERE (usr)
 
+# xxx wise
+        sw fst, HEAD (usr)
+
 #---------------------------------------------------------------------
 # reset TIB
 reset:
@@ -275,6 +273,7 @@ reset:
 # reset stacks
 error:
 
+# xxx 
         putchar '\n'
         putchar '?'
         putchar '?'
@@ -312,6 +311,7 @@ okey:
 
 # call prompt_okey
 
+# xxx
         lw fst, STAT (usr)
         bne fst, zero, resolve
 
@@ -327,11 +327,9 @@ resolve:
         call token
 
 #---------------------------------------------------------------------         
-# find de code
-tick:
-
-#---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
+#
+tick:
 
 # get the latest link
         
@@ -346,7 +344,7 @@ tick:
         
         add wrd, zero, lnk
 
-# get next link 
+# move next link 
         
         lw lnk, 0 (wrd)
 
@@ -374,18 +372,18 @@ eval:
 
         add wrd, wrd, CELL
 
-# immediate ? if i != 0
+# immediate ? 
 
         bne snd, zero, immediate      
 
-# executing ? if == 0
+# executing ? if state == 0
         
         lw fst, STAT (usr)
         
         beq fst, zero, execute
 
 #---------------------------------------------------------------------         
-# compiling ? if != 0
+# compiling ? if state != 0
 compile:
 
         call comma
@@ -402,7 +400,8 @@ immediate:
 
 #---------------------------------------------------------------------
 # unexpected end of dictionary
-#
+# wipe remains compiled
+# xxx
 miss:
         # compiling ?
         lw fst, STAT (usr)
@@ -412,6 +411,10 @@ miss:
         sw fst, HERE (usr)
 100:
         j error
+
+#---------------------------------------------------------------------
+# xxx
+#include "hexy.S"
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
@@ -446,14 +449,15 @@ token:
         j 200b
         
 #---------------------------------------------------------------------
-# absolute crude getline, just getc until \n
+# absolute crude getline, no overflow check, the _getc handle EOF
+#
 gets:
   
         la idx, _tib
         
         sw idx, TOIN (usr)
 
-# end-of-line is \n, ^J 
+# end-of-line is \n, ^J
         
         addi snd, zero, NL
 
@@ -477,10 +481,10 @@ gets:
         call _putc
 
 # 7-bit ascii only 
-
+# xxx
         andi fst, fst, 127
 
-# \n ^J ends the line, no overflow check
+# \n ^J ends the line
 
         bne fst, snd, 300b
 
@@ -497,6 +501,7 @@ gets:
 
 #---------------------------------------------------------------------
 .equ DJB2, 5381
+.equ SFHT, 5
 #----------------------------------------------------------------------
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
@@ -519,7 +524,7 @@ djb2:
 
         add snd, zero, hsh
 
-        slli hsh, hsh, 5
+        slli hsh, hsh, SFHT
         
         add hsh, hsh, snd
         
@@ -534,18 +539,13 @@ djb2:
 # mask forth flag 
 mask:
 
-# set the FLAG as complement
-
         lui fst, %hi(MASK_IMM)
         
         addi fst, fst, %lo(MASK_IMM)
 
         and hsh, hsh, fst
 
-        # zzzz
-        
-        add t6, zero, hsh
-
+#---------------------------------------------------------------------
 # save toin
 
         sw idx, TOIN (usr)
@@ -564,6 +564,8 @@ comma:
         addi idx, idx, CELL
       
         sw idx, HERE (usr)
+
+        mhey hsh 
 
         ret
 
@@ -682,19 +684,15 @@ def_word "u@", "userat", h_zeroq, hash_userat
         add fst, zero, usr 
 
 push1:
-
         lw idx, SPTR (usr)
         
 back1:
-
         add idx, idx, -1 * CELL
 
 keep1:
-
         sw fst, 0 (idx)
 
 save1:
-
         sw idx, SPTR (usr)
         
         j next
@@ -729,9 +727,6 @@ def_word ":", "colon", h_userat, hash_colon
 
         add wrd, zero, hsh
 
-        add wrd, zero, t6
-
-#---------------------------------------------------------------------
 finish:
 
         call comma
@@ -852,6 +847,7 @@ jump:
 # Beware, ends must be at last word in primitive ditionary !
 #---------------------------------------------------------------------
 
+#---------------------------------------------------------------------
 ends:
 
 .word 0xDEADBEEF

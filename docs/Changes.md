@@ -2,11 +2,26 @@
 
 ## Todo
 
-    ?   def_word macro, need resolve how to update
-        link for each word to point the previous,
-        linked list
 
 ## Done
+
+30/08/2025
+
+    Still buged with 0x20 first hash.
+
+    TIB never wraps to between line.
+
+    On rellocable assembler code, the linker could not use relative
+    address to make the linked list automatics with insertion order,
+    any reference address must be explicit.
+
+    Finaly included 8 cells for locals and temporary user parameters. 
+    It could be used instead >r r>, or to pass parameters between words
+
+    What hapen when have a error while compiling a word ?
+        a) continue compiling until ends, last word mangled.
+        b) wipe all previous compiled, empty heap from trash.
+        c) returns to interpret state, leave trash into heap.
 
 27/08/2025
 
@@ -25,7 +40,8 @@
     TOIN, STAT, terminal input buffer pointer and state of interpreter
     HEAD, TAIL, keep last here and a free cell
 
-    The free cell could be used instead of >r and r> in words, 
+    Next eight cells are free for locals.  
+    These free cells could be used instead of >r and r> in words, 
         when only for one level is need and >b b> sequence.
         why ? no overhead on return address stack
 
