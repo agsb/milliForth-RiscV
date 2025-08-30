@@ -565,7 +565,7 @@ comma:
       
         sw idx, HERE (usr)
 
-        mhey hsh 
+        # mhey hsh 
 
         ret
 

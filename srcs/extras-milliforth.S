@@ -205,7 +205,7 @@ puthex:
 
         add  a3, zero, s2
 
-        j loads
+        j returns
 
 100:
 
@@ -532,60 +532,39 @@ shows:
         j returns
 
 #----------------------------------------------------------------------
-.ifdef NOTYET
-
-#----------------------------------------------------------------------
-# code a ASCII $FFFF hexadecimal in a byte
+# code a ASCII $0-F(Z) hexadecimal in a value
 #  
 number:
 
-        ldy #0
+        pushra
 
-        jsr @very
-        asl
-        asl
-        asl
-        asl
-        sta fst + 1
+        call saves
 
-        iny 
-        jsr @very
-        ora fst + 1
-        sta fst + 1
-        
-        iny 
-        jsr @very
-        asl
-        asl
-        asl
-        asl
-        sta fst + 0
+        add wrd, zero, zero
+        add trd, zero, 8
+100:
+        call digit
+        slli wrd, wrd, 4
+        or wrd, wrd, fst
+        addi trd, trd, -1
+        bne trd, zero, 100b
 
-        iny 
-        jsr @very
-        ora fst + 0
-        sta fst + 0
+        j returns
 
-        clc #; clean
-        rts
+digit:
+        #; any valid digit, 0-9 and A-Z, do not care 
+        lw fst, 0 (idx)
+        addi fst, fst, -48
+        blt fst, zero, 200f
+        addi snd, zero, 10
+        blt fst, snd, 100f
+        addi fst, fst, 7 
+100:
+# is_okey
+        ret
 
-@very:
-        lda (tout), y
-        sec
-        sbc #$30
-        bmi @erro
-        cmp #10
-        bcc @ends
-        sbc #0x07
-        #; any valid digit, A-Z, do not care 
-@ends:
-        rts
-
-@erro:
-        pla
-        pla
-        rts
-
-.endif
+200:
+# is_error
+        ret
 
 
