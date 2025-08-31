@@ -1,24 +1,11 @@
-.
 
-: void ;
-
-see .
+ : void ;
 
  : | .S .R ;
 
-see .
-
-bye
-
  : -1 u@ 0# ;
 
-see .
-
-:  0 -1 -1 nand ;
-
-see .
-
-words
+ :  0 -1 -1 nand ;
 
  : TRUE -1 ;
  : FALSE 0 ;
@@ -122,33 +109,22 @@ words
  
  : in> >in @ c@ >in dup @ 1 + swap ! ;
 
- : parse | in> | drop | >in | @ | swap | 0 
-        | begin | over in> <> while 1 + repeat 
-        | swap bl = if >in dup @ 1 - swap ! then ;
+ : parse in> drop >in @ swap 0 
+        begin over in> <> while 1 + repeat 
+        swap bl = if >in dup @ 1 - swap ! then ;
 
  : word in> drop begin dup in> <> until >in @ cell - >in ! parse ;
  
- word "this will be not good" .S 
-
-
  : [char] ['] lit , bl word drop c@ , ; immediate
 
- see
+ words
 
- : ( [char] ) parse ; immediate
- see
- 
- : ( [char] ) parse drop ; immediate
- see
- 
  : ( [char] ) parse drop drop ; immediate
- see
  
  : ." [char] " parse type ; immediate
- see
-
+ 
  ." Hello world " cr
  
  ." That's all Folks !" cr
  
-
+ words 
