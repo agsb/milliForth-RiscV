@@ -565,8 +565,6 @@ comma:
       
         sw idx, HERE (usr)
 
-        # mhey hsh 
-
         ret
 
 #---------------------------------------------------------------------
@@ -717,6 +715,8 @@ def_word ":", "colon", h_userat, hash_colon
         
         lw wrd, LAST (usr)
         
+        mhey wrd
+
         call comma
 
 # get following token
@@ -728,6 +728,8 @@ def_word ":", "colon", h_userat, hash_colon
         add wrd, zero, hsh
 
 finish:
+
+        mhey wrd 
 
         call comma
 

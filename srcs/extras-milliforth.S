@@ -128,6 +128,10 @@ def_word "dump", "dump", h_rplist, hash_dump
 
         call pull2
         
+        # xxx 
+        lw fst, HERE (usr)
+        la snd, h_here
+
         call dumps
 
         j drop1
@@ -333,8 +337,6 @@ wordt:
         putchar '\n'
         putchar '#'
 
-#        addi a5, a5, 8
-
 100:
         putchar '\n'
         
@@ -421,12 +423,12 @@ dumps:
 
         call saves
 
-        # last
+        # last (tos)
         add a5, zero, a3
 
         mhex a5
 
-        # init
+        # init (nos)
         add a6, zero, a4
 
         mhex a6

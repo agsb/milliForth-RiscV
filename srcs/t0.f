@@ -1,5 +1,5 @@
 
- : void ;
+ : void u@ 0# ;
 
  : | .S .R ;
 
@@ -8,7 +8,14 @@
  :  0 -1 -1 nand ;
 
  : TRUE -1 ;
- : FALSE 0 ;
+
+: FALSE 0 ;
+
+ TRUE FALSE
+
+ dump
+
+ bye
 
  :  1 -1 -1 + -1 nand ;
  :  2 1 1 + ;

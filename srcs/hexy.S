@@ -1,30 +1,34 @@
 #---------------------------------------------------------------------
-#
+# easy it
 #
 .macro mhey rg
+
         add a3, zero, \rg
+
+        pushra
 
         call saves
         
         call puthey
 
         call loads
+
+        pullra 
         
 .endm
-#
-# code a 32-bit word in ASCII hexadecimal 
+#---------------------------------------------------------------------
+# code a 32-bit word in ASCII hexadecimal, same as puthex
 #
 puthey:
 
         pushra
 
-        # call saves
-
         add  s2, zero, a3
         
-        addi s5, zero, 58
+        addi s5, zero, ':'
 
-        addi fst, zero, ' '
+        addi a3, zero, ' '
+        
         call _putc
 
         srli s3, s2, 24
@@ -37,8 +41,6 @@ puthey:
         call 100f
 
         add  a3, zero, s2
-
-        # call loads
 
         pullra
 
