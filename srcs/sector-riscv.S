@@ -89,6 +89,10 @@
 
 .equ tibz, 80
 
+# PAD for temporary formating etc
+
+.equ padz, 48
+
 # highlander, immediate flag, unique 
 
 # -2147483648
@@ -212,6 +216,11 @@ rp0: .word 0x0
 _tib:       
 .skip tibz
 
+#xxx
+# pad grows forward
+_pad:       
+.skip padz
+
 # start of user dictionary 
 h_here: .word 0x0
 
@@ -234,7 +243,6 @@ main:
 # just for sake
 
         fence
-#xxx
         # call _init
 
         # call _exit 
@@ -258,9 +266,6 @@ warm:
         
         la fst, h_here
         sw fst, HERE (usr)
-
-# xxx wise
-        sw fst, HEAD (usr)
 
 #---------------------------------------------------------------------
 # reset TIB
@@ -715,8 +720,6 @@ def_word ":", "colon", h_userat, hash_colon
         
         lw wrd, LAST (usr)
         
-        mhey wrd
-
         call comma
 
 # get following token
@@ -728,8 +731,6 @@ def_word ":", "colon", h_userat, hash_colon
         add wrd, zero, hsh
 
 finish:
-
-        mhey wrd 
 
         call comma
 
@@ -787,7 +788,7 @@ pick:
         
         la idx, ends
         
-        ble wrd, idx, jump
+        blt wrd, idx, jump
 
 nest:   #; enter
 # return push, rp -= cell, (rpt) = ipt

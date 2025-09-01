@@ -5,15 +5,15 @@
     Sectorforth and Milliforth was made for x86 and Z80 arch 
     and uses full 16-bit registers. 
  
-    The way at 6502 is to use page zero and lots of lda/sta.
+    The way at 6502 is use page zero and lots of lda/sta.
  
-    The way of RiscV is to use linear memory and 32-bit registers.
+    The way of RiscV and ARM is use linear memory and 32-bit registers.
  
     Focus in size not performance.
  
     why ? For understand better my skills, riscv code and thread codes
  
-    how ? Programming a old Forth for new 32-bit cpu ISA
+    how ? Programming a old Forth for new cpu ISAs
  
     what ? Design the best minimal Forth engine and vocabulary
  
@@ -22,15 +22,13 @@
     Uses cell with 32-bits;
  
     All user structure, data (36 cells) and return (36 cells) stacks, 
-    TIB (80 bytes) and PIC (32 bytes) are in sequence; 
+    TIB (80 bytes), PAD (32 bytes) and locals (8 cells) are in sequence; 
  
-    TIB and PIC grows forward, stacks grows backwards;
+    TIB and PAD grows forward, stacks grows backwards;
  
     No overflow or underflow checks;
  
-    No numbers only words;
- 
-    The header order is LINK, SIZE+FLAG, NAME+PAD.
+    No numbers only words (yet);
  
     Only IMMEDIATE flag used as $80, no hide, no compile;
  
@@ -42,7 +40,9 @@
  
     No TOS or ROS registers, all values keeped at stacks;
  
-    PAD (scratchpad) is for temporaries, formats, buffers, etc;  
+    Locals are fixed and not stack.
+
+    PAD is for temporaries, formats, buffers, etc;  
 
     TIB (terminal input buffer) is like a stream;
  
@@ -77,8 +77,8 @@
     "when the heap moves forward, the stack moves backward"; 
  
     The stack movement to be:
-        pull is 'fetch and increase'
         push is 'decrease and store'
+        pull is 'fetch and increase'
  
     Stacks represented as (standart)
         (w1 w2 w3 -- u1 u2), (w1 w2 w3 -- u1 u2)
@@ -90,7 +90,10 @@
  
     A 32-bit processor with 32-bit address space and reduced ISA;
  
+    The header order is LINK, HASH and code or references.
+ 
     No direct memory access, only by register as pointer.
+
     No register indexed offset, only immediate offsets.
 
 ## For Assembler:
@@ -170,19 +173,25 @@ wpush:
 
 _"From a 6502 64k memory to a Risc-V 4GB memory, Mind the Gap."_
 
-The milliforth-riscv is a memory program that runs in SRAM and Forth thinks that is continous but limited, and grows silently. 
+The milliforth-riscv is a memory program that runs in SRAM and Forth
+thinks that is continous but limited, and grows silently. 
 
 Really ?
 
-Forth starts the compiled dictionary at end of code, because all memory is linear and equal, except some reserved for I/O.
+Forth starts the compiled dictionary at end of code, 
+because all memory is linear and equal, except some reserved for I/O.
 
-RiscV CPUs are memory mapped, eg. the RP2350 includes 520KiB of SRAM in ten banks, first eigth banks (0-7) have bits 3:2 striped address access, the last two banks (8-9) are not striped.
+RiscV CPUs are memory mapped, eg. the RP2350 includes 520KiB of SRAM 
+in ten banks, first eigth banks (0-7) have bits 3:2 striped address 
+access, the last two banks (8-9) are not striped.
 
-The gcc linker ld, have memory map for .data, .text, .bss, .rodata sections and a default segment memory. 
+The gcc linker ld, have memory map for .data, .text, .bss, .rodata 
+sections and a default segment memory. 
     
 Where are the .heap and .stack ? Forth needs those @!@
 
-The Minimal Inderect Thread Code, for a linear memory model relies in known where are the primitives.
+The Minimal Inderect Thread Code, for a linear memory model relies 
+in known where are the primitives.
     
 Maybe without .rodata, at end of .bss could be a good place to start...
     
@@ -210,23 +219,36 @@ _" there is no spoon "_
 
 Going to use DJB2 hash for represent the words at dictionary.
     
-Splited the code of sector-riscv in two kinds, one using the traditional name header with /link, size+flag, name+pad/ and other using a hash header with /link, hash/.
+Splited the code of sector-riscv in two kinds, one using the traditional 
+name header with /link, size+flag, name+pad/ and other using a 
+hash header with /link, hash/.
 
-This will simplify the lookup of dictionary, as just do one single comparation of 4-bytes, and reduce the problem of find where code starts before the name, which could be padded to align with 4-bytes.
+This will simplify the lookup of dictionary, as just do one single 
+comparation of 4-bytes, and reduce the problem of find where code 
+starts before the name, which could be padded to align with 4-bytes.
 
-The usual flags in Forth uses some high bits at the size byte of name c-str. 
+The usual flags in Forth uses some high bits at the size byte 
+of name c-str. 
 
-In Riscv ISA, can't use /andi rd, rs, 0x8000000/ with the 31 bit, because the imm is restrict within +/- 2047. Some alternatives uses 2 or 3 instructions.
+In Riscv ISA, can't use /andi rd, rs, 0x8000000/ with the 31 bit, 
+because the imm is restrict within +/- 2047. 
+Some alternatives uses 2 or 3 instructions.
 
-Using hash, there is no size+flag byte + name string, no more. Only four bytes hash with lower bits as flags.
+Using hash, there is no size+flag byte + name string, no more. 
+Only four bytes hash with lower bit or higher bit as flags.
 
-When the immediate flag (FLAG_IMM) is the bit 0, could use _ori|andi|xori rd, rs, 0x1_ to test, set and flip the flag
+When the immediate flag (FLAG_IMM) is the bit 0, could use 
+_ori|andi|xori rd, rs, 0x1_ to test, set and flip the flag, but needs
+shift left the operands nash and letter, more one bit or
+define 0x8000000 and 0x7FFFFFF as constants
     
 Catchs: 
 
-To clear the bit 0 use a _andi rd, hsh, 0x1_ then _or hsh, hash, rd_ after hash calculation.
+To clear the bit 0 use a _andi rd, hsh, 0x1_ 
+then _or hsh, hash, rd_ after hash calculation.
         
 All valid hashes will be even. 
         
-Can not calculate the hash within a macro, need a program to calculate the hashes for primitives and make the headers by hand.
+Can not calculate the hash within a macro, need a program to calculate 
+the hashes for primitives and make the headers by hand.
 
