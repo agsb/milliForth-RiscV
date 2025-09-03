@@ -109,7 +109,7 @@
 .equ hash_fetch, 0x0002B5E5 
 .equ hash_nand,  0x7C727500 
 .equ hash_plus,  0x0002B58E 
-.equ hash_notzero, 0x00596816 
+.equ hash_zeroq, 0x00596816 
 .equ hash_userat, 0x00596F90
 .equ hash_colon, 0x0002B59F 
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
@@ -120,8 +120,8 @@
 #
 .global def_word
 
-.macro def_word name, label, last, hash
-#.p2align 2, 0x00
+.macro def_word name, label, hash, last
+.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
@@ -266,8 +266,6 @@ cold:
 
         la usr, _user
         
-        mhey usr
-
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
@@ -276,14 +274,10 @@ warm:
         la fst, h_here
         sw fst, HERE (usr)
 
-        mhey fst
-
 # link list of headers, aka dictionary
 
         la fst, h_last
         sw fst, LAST (usr)
-        
-        mhey fst
 
 #---------------------------------------------------------------------
 # reset TIB
@@ -292,7 +286,6 @@ reset:
         la fst, _tib
         sw fst, TOIN (usr)
 
-        mhey fst
 #---------------------------------------------------------------------
 # reset stacks
 error:
@@ -310,16 +303,12 @@ abort:
         la fst, sp0 
         sw fst, SPTR (usr)
 
-        mhey fst
-
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
         la fst, rp0 
         sw fst, RPTR (usr)
-
-        mhey fst
 
 # stat is 'interpret' == \0
         
@@ -366,7 +355,7 @@ tick:
 100:
 # verify end of dictionary, take care to abort
         
-        beq lnk, zero, error    
+        beq lnk, zero, miss    
 
 # linked list
         
@@ -414,7 +403,7 @@ eval:
 # compiling ? if state != 0
 compile:
 
-        call comma
+        call docomma
 
         j resolve
 
@@ -429,7 +418,7 @@ immediate:
 #---------------------------------------------------------------------
 # unexpected end of dictionary
 # wipe remains compiled
-# xxx
+# xxx (---------------------------------------------------------------
 miss:
         # compiling ?
         lw fst, STAT (usr)
@@ -439,12 +428,13 @@ miss:
         sw fst, HERE (usr)
 100:
         j error
+# xxx )---------------------------------------------------------------
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
 # the counter is placed at space before word
 # returns a c-str
-# \0 as eol goto getline
+# \0 as eol, goto getline
 token:
 
         pushra
@@ -472,8 +462,9 @@ token:
         j 200b
         
 #---------------------------------------------------------------------
-# absolute crude getline, no overflow check, the _getc handle EOF
-#
+# absolute crude getline, 
+# no overflow, no line edit, no clues
+# the _getc handle EOF
 gets:
   
         la idx, _tib
@@ -489,7 +480,6 @@ gets:
         add fst, zero, trd
 
 # loop and fill the TIB until \n
-# no test end of buffer 
 300:
         sb fst, 0 (idx)
         
@@ -520,11 +510,9 @@ gets:
 # mark eol with \0
         sb zero, 1 (idx)
 
+# back to token
         j 100b
 
-#---------------------------------------------------------------------
-.equ DJB2, 5381
-.equ SFHT, 5
 #----------------------------------------------------------------------
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
@@ -533,6 +521,10 @@ gets:
 # uses fst, snd, trd
 # hsh returns the hash 
 # idx returns next space after
+#---------------------------------------------------------------------
+.equ DJB2, 5381
+.equ SFHT, 5
+#---------------------------------------------------------------------
 hash:
 djb2:
         # easy 5381
@@ -543,7 +535,7 @@ djb2:
 100:
         lb fst, 0 (idx)
         
-        beq fst, trd, 100f
+        beq fst, trd, 200f
 
         add snd, zero, hsh
 
@@ -557,18 +549,16 @@ djb2:
         
         j 100b
 
-100:    
+#---------------------------------------------------------------------
+200:    
 
 # mask forth flag 
 mask:
 
         lui fst, %hi(MASK_IMM)
         
-        # addi fst, fst, %lo(MASK_IMM)
-
         and hsh, hsh, fst
 
-#---------------------------------------------------------------------
 # save toin
 
         sw idx, TOIN (usr)
@@ -578,7 +568,7 @@ mask:
         ret
         
 #---------------------------------------------------------------------
-comma:
+docomma:
         
         lw idx, HERE (usr)
       
@@ -621,7 +611,7 @@ pull2:
 
 #---------------------------------------------------------------------
 # ( -- c ) 
-def_word "key", "key", 0x0, hash_key
+def_word "key", "key", hash_key, 0x0
 
         call _getc
 
@@ -629,7 +619,7 @@ def_word "key", "key", 0x0, hash_key
 
 #---------------------------------------------------------------------
 # ( c -- ) 
-def_word "emit", "emit", h_key, hash_emit
+def_word "emit", "emit", hash_emit, h_key
         
         call pull2
 
@@ -639,7 +629,7 @@ def_word "emit", "emit", h_key, hash_emit
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
-def_word "!", "store", h_emit, hash_store
+def_word "!", "store", hash_store, h_emit
         
         call pull2
 
@@ -652,7 +642,7 @@ drop1:
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
-def_word "@", "fetch", h_store, hash_fetch
+def_word "@", "fetch", hash_fetch, h_store
         
         call pull2
         
@@ -662,7 +652,7 @@ def_word "@", "fetch", h_store, hash_fetch
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
-def_word "nand", "nand", h_fetch, hash_nand
+def_word "nand", "nand", hash_nand, h_fetch
         
         call pull2
 
@@ -674,7 +664,7 @@ def_word "nand", "nand", h_fetch, hash_nand
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
-def_word "+", "plus", h_nand, hash_plus
+def_word "+", "plus", hash_plus, h_nand
         
         call pull2
 
@@ -684,7 +674,7 @@ def_word "+", "plus", h_nand, hash_plus
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
-def_word "0#", "zeroq", h_plus, hash_notzero
+def_word "0#", "zeroq", hash_zeroq, h_plus
 
         call pull2
         
@@ -700,7 +690,7 @@ istrue:
 
 #---------------------------------------------------------------------
 # ( -- state ), return an reference
-def_word "u@", "userat", h_zeroq, hash_userat
+def_word "u@", "userat", hash_userat, h_zeroq
         
         add fst, zero, usr 
 
@@ -719,7 +709,8 @@ save1:
         j next
 
 #---------------------------------------------------------------------
-def_word ":", "colon", h_userat, hash_colon
+# ( -- ), 
+def_word ":", "colon", hash_colon, h_userat
 # save here, panic if semis not follow elsewhere
         
         lw fst, HERE (usr)
@@ -732,13 +723,13 @@ def_word ":", "colon", h_userat, hash_colon
         
         sw fst, STAT (usr)
 
-# make a header:
+create:
 
 # copy last into (here)
         
         lw wrd, LAST (usr)
         
-        call comma
+        call docomma
 
 # get following token
         
@@ -748,16 +739,15 @@ def_word ":", "colon", h_userat, hash_colon
 
         add wrd, zero, hsh
 
-finish:
+comma:
 
-        call comma
-
-        mhey wrd 
+        call docomma
 
         j next 
 
 #---------------------------------------------------------------------
-def_word ";", "semis",  h_colon, hash_semis 
+# ( -- )
+def_word ";", "semis", hash_semis, h_colon 
 # update last, panic if colon not lead elsewhere 
         
         lw fst, HEAD (usr)
@@ -768,11 +758,12 @@ def_word ";", "semis",  h_colon, hash_semis
         
         sw zero, STAT (usr)
 
+finish:
 # compound words must ends with exit
         
         la wrd, exit
 
-        j finish
+        j comma
 
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
@@ -784,7 +775,7 @@ def_word ";", "semis",  h_colon, hash_semis
 # "why there is no 'docol at start of words ?"
 #
 # ( -- ) 
-def_word "exit", "exit", h_semis, hash_exit
+def_word "exit", "exit", hash_exit, h_semis
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
         
@@ -851,7 +842,7 @@ jump:
 
 .set into_extras, h_exit
 
-# include "extras-milliforth.S"
+#include "extras-milliforth.S"
 
 #----------------------------------------------------------------------
 # keep last entry of extras
@@ -870,10 +861,10 @@ jump:
 # Beware, ends must be at last word in primitive ditionary !
 #---------------------------------------------------------------------
 
-#---------------------------------------------------------------------
 ends:
 
 .word 0xDEADBEEF
 
+#---------------------------------------------------------------------
 .end
 

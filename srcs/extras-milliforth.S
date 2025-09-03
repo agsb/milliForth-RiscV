@@ -63,7 +63,7 @@
 
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
-def_word "2/", "sfr", into_extras, hash_sfr
+def_word "2/", "sfr", hash_sfr, into_extras
 
         call pull2
         
@@ -74,7 +74,7 @@ def_word "2/", "sfr", into_extras, hash_sfr
 #---------------------------------------------------------------------
 # ( a -- ) execute a word address at top of data stack
 # not change the data stack
-def_word "exec", "exec", h_sfr, hash_exec
+def_word "exec", "exec", hash_exec, h_sfr
         
         call pull2
         
@@ -84,31 +84,31 @@ def_word "exec", "exec", h_sfr, hash_exec
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to a reference at IP
-def_word ":$", "docode", h_exec, hash_docode
+def_word ":$", "docode", hash_docode, h_exec
         
         jalr zero, 0 (ipt)
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to next
-def_word ";$", "donext", h_docode, hash_donext
+def_word ";$", "donext", hash_donext, h_docode
         
         j next
 
 #---------------------------------------------------------------------
 # ( -- ) exit forth
-def_word "bye", "byes", h_donext, hash_bye
+def_word "bye", "byes", hash_bye, h_donext
         
         j _exit
 
 #---------------------------------------------------------------------
 # ( -- ) ae abort
-def_word "abort", "aborts", h_byes, hash_abort
+def_word "abort", "aborts", hash_abort, h_byes
         
         j abort
 
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
-def_word ".S", "splist", h_aborts, hash_splist
+def_word ".S", "splist", hash_splist, h_aborts
 
         call stackS
 
@@ -116,7 +116,7 @@ def_word ".S", "splist", h_aborts, hash_splist
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
-def_word ".R", "rplist", h_splist, hash_rplist
+def_word ".R", "rplist", hash_rplist, h_splist
 
         call stackR
         
@@ -124,7 +124,7 @@ def_word ".R", "rplist", h_splist, hash_rplist
 
 #----------------------------------------------------------------------
 # ( a b -- a b ) dumps memory between a and b
-def_word "dump", "dump", h_rplist, hash_dump
+def_word "dump", "dump", hash_dump, h_rplist
 
         call pull2
         
@@ -138,7 +138,7 @@ def_word "dump", "dump", h_rplist, hash_dump
 
 #----------------------------------------------------------------------
 # ( -- ) list all words in compiled dictionary, 
-def_word "words", "words", h_dump, hash_words
+def_word "words", "words", hash_words, h_dump
 
         call wordf
 
@@ -146,7 +146,7 @@ def_word "words", "words", h_dump, hash_words
 
 #----------------------------------------------------------------------
 # ( -- ) list last word in dictionary, 
-def_word "see", "sees", h_words, hash_see
+def_word "see", "sees", hash_see, h_words
 
         call wordu
 
@@ -154,7 +154,7 @@ def_word "see", "sees", h_words, hash_see
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal
-def_word ".", "dot", h_sees, hash_dot
+def_word ".", "dot", hash_dot, h_sees
 
         call pull2
 
@@ -167,7 +167,7 @@ def_word ".", "dot", h_sees, hash_dot
 
 #---------------------------------------------------------------------
 # ( -- w ) size of a cell 
-def_word "cell", "cell", h_dot, hash_cell
+def_word "cell", "cell", hash_cell, h_dot
 
         addi fst, zero, 4
 
@@ -543,21 +543,24 @@ number:
         call saves
 
         add wrd, zero, zero
-        add trd, zero, 8
+        add lnk, zero, 8
 100:
+        lw fst, 0 (idx)
+        beq fst, trd, 200f
         call digit
         slli wrd, wrd, 4
         or wrd, wrd, fst
-        addi trd, trd, -1
-        bne trd, zero, 100b
-
+        addi lnk, lnk, -1
+        bne lnk, zero, 100b
+200:
         j returns
 
 digit:
         #; any valid digit, 0-9 and A-Z, do not care 
-        lw fst, 0 (idx)
         addi fst, fst, -48
         blt fst, zero, 200f
+        addi snd, zero, 'Z'
+        bgt fst, snd, 200f
         addi snd, zero, 10
         blt fst, snd, 100f
         addi fst, fst, 7 
@@ -567,6 +570,7 @@ digit:
 
 200:
 # is_error
+        add fst, zero, zero
         ret
 
 
