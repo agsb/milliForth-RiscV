@@ -361,7 +361,7 @@ tick:
 100:
 # verify end of dictionary, take care to abort
         
-        beq lnk, zero, miss    
+        beq lnk, zero, error    # miss    
 
 # linked list
         
@@ -562,6 +562,8 @@ djb2:
 mask:
 
         lui fst, %hi(MASK_IMM)
+
+        add fst, fst, %lo(MASK_IMM)
         
         and hsh, hsh, fst
 
