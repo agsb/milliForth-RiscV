@@ -5,12 +5,6 @@
  : | .S .R ;
  see
 
- words
-
- dump
-
- bye 
-
  : -1 u@ 0# ;
  see
 

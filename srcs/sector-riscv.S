@@ -489,6 +489,8 @@ gets:
 300:
         sb fst, 0 (idx)
         
+        putchar '\n'
+
         addi idx, idx, ONE
 
 # get next char
@@ -582,9 +584,7 @@ docomma:
       
         sw wrd, 0 (idx)
       
-        mhex idx 
-
-        mhex wrd        
+        #mhex wrd        
 
         addi idx, idx, CELL
       
