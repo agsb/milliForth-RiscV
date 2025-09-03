@@ -117,8 +117,9 @@ def_word "dump", "dump", hash_dump, h_rplist
         call pull2
         
         # xxx 
-        lw fst, HERE (usr)
-        la snd, h_here
+        
+        la fst, h_here
+        lw snd, HERE (usr)
 
         call dumps
 
@@ -410,39 +411,38 @@ dumps:
         pushra 
 
         call saves
-
-        # last (tos)
+        
         add a5, zero, a3
+        
+        add a6, zero, a4
 
         mhex a5
-
-        # init (nos)
-        add a6, zero, a4
 
         mhex a6
 
-        # many
-        sub a5, a5, a6
+        sub a6, a6, a5
 
-        mhex a5
+        mhex a6
 
         putchar '\n'
 
 100:
         addi t0, zero, 8
         putchar '\n'
-        mhex a6
+        mhex a5
         putchar ':'
         putchar ' '
 200:
-        lw a4, 0 (a6)
+        lw a4, 0 (a5)
+        
         mhex a4
-        addi a6, a6, 4
-        addi a5, a5, -4
+
+        addi a5, a5, 4
+        addi a6, a6, -4
         
         addi t0, t0, -1
         beq t0, zero, 100b
-        bne a5, zero, 200b
+        bne a6, zero, 200b
 
         j returns
 

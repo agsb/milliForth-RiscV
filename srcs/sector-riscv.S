@@ -578,12 +578,14 @@ mask:
 #---------------------------------------------------------------------
 docomma:
 
-        mhex wrd        
-
         lw idx, HERE (usr)
       
         sw wrd, 0 (idx)
       
+        mhex idx 
+
+        mhex wrd        
+
         addi idx, idx, CELL
       
         sw idx, HERE (usr)
