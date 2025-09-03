@@ -46,18 +46,6 @@
 .equ hash_cellplus, 0x0A86DDE8
 .equ hash_cellless, 0x0A86DDEE
 
-.macro mhex rg
-        add a3, zero, \rg
-        call puthex
-        putchar ' '
-.endm
-
-.macro mhit it
-        putchar '\n'
-        putchar \it
-        putchar ' '
-.endm
-
 #---------------------------------------------------------------------
 # extras links to last primitive
 
@@ -158,7 +146,7 @@ def_word ".", "dot", hash_dot, h_sees
 
         call pull2
 
-        call puthex
+        call showhex
 
         putchar ' '
 
@@ -188,7 +176,7 @@ def_word "cell", "cell", hash_cell, h_dot
 #---------------------------------------------------------------------
 # code a 32-bit word in ASCII hexadecimal 
 #
-puthex:
+showhex:
 
         pushra
 

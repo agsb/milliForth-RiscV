@@ -1,7 +1,7 @@
 #---------------------------------------------------------------------
 # easy it
 #
-.macro mhey rg
+.macro mhex rg
 
         add a3, zero, \rg
 
@@ -9,7 +9,7 @@
 
         call saves
         
-        call puthey
+        call puthex
 
         call loads
 
@@ -17,9 +17,9 @@
         
 .endm
 #---------------------------------------------------------------------
-# code a 32-bit word in ASCII hexadecimal, same as puthex
+# code a 32-bit word in ASCII hexadecimal
 #
-puthey:
+puthex:
 
         pushra
 

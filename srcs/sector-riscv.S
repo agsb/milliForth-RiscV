@@ -155,6 +155,12 @@ h_\label:
        call _putc
 .endm
 
+.macro mhit it
+        putchar '\n'
+        putchar \it
+        putchar ' '
+.endm
+
 #----------------------------------------------------------------------
 .section .data
 
@@ -569,7 +575,9 @@ mask:
         
 #---------------------------------------------------------------------
 docomma:
-        
+
+        mhex wrd        
+
         lw idx, HERE (usr)
       
         sw wrd, 0 (idx)
