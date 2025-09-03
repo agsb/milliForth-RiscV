@@ -1,21 +1,21 @@
 
  : void u@ 0# ;
-see
+ see
 
  : | .S .R ;
-see
+ see
 
  : -1 u@ 0# ;
-see
+ see
 
  :  0 -1 -1 nand ;
-see
+ see
 
  : TRUE -1 ;
-see
+ see
 
  : FALSE 0 ;
-see
+ see
 
  :  1 -1 -1 + -1 nand ;
  see
@@ -195,3 +195,5 @@ see
  ." That's all Folks !" cr
  
  words 
+
+ dump

@@ -222,7 +222,8 @@ _pad:
 .skip padz
 
 # start of user dictionary 
-h_here: .word 0x0
+h_here: 
+        .word 0x0
 
 #-----------------------------------------------------------------------
 # at end of .bss (.heap) 
@@ -231,6 +232,11 @@ h_here: .word 0x0
 #----------------------------------------------------------------------
 .text 
 .p2align 2, 0x0
+
+#---------------------------------------------------------------------
+# xxx
+
+#include "hexy.S"
 
 #----------------------------------------------------------------------
 .globl _start
@@ -243,9 +249,15 @@ main:
 # just for sake
 
         fence
-        # call _init
 
-        # call _exit 
+/*
+        call _init
+
+        la snd, h_here
+        
+        sw fst, 0 (snd)
+
+*/
 
 #----------------------------------------------------------------------
 # do what need be only once
@@ -254,18 +266,24 @@ cold:
 
         la usr, _user
         
+        mhey usr
+
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
+# next heap free cell
+        
+        la fst, h_here
+        sw fst, HERE (usr)
+
+        mhey fst
+
 # link list of headers, aka dictionary
 
         la fst, h_last
         sw fst, LAST (usr)
         
-# next heap free cell  (end of .bss)
-        
-        la fst, h_here
-        sw fst, HERE (usr)
+        mhey fst
 
 #---------------------------------------------------------------------
 # reset TIB
@@ -274,6 +292,7 @@ reset:
         la fst, _tib
         sw fst, TOIN (usr)
 
+        mhey fst
 #---------------------------------------------------------------------
 # reset stacks
 error:
@@ -291,12 +310,16 @@ abort:
         la fst, sp0 
         sw fst, SPTR (usr)
 
+        mhey fst
+
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
         la fst, rp0 
         sw fst, RPTR (usr)
+
+        mhey fst
 
 # stat is 'interpret' == \0
         
@@ -317,8 +340,8 @@ okey:
 # call prompt_okey
 
 # xxx
-        lw fst, STAT (usr)
-        bne fst, zero, resolve
+#        lw fst, STAT (usr)
+#        bne fst, zero, resolve
 
         putchar '\n'
         putchar 'O'
@@ -418,10 +441,6 @@ miss:
         j error
 
 #---------------------------------------------------------------------
-# xxx
-#include "hexy.S"
-
-#---------------------------------------------------------------------
 # in place every token, no rewinds
 # the counter is placed at space before word
 # returns a c-str
@@ -434,10 +453,9 @@ token:
 
         addi trd, zero, BL
 
-# last position on tib
-        
 100:
 
+# last position on tib
         lw idx, TOIN (usr)
 
 # skip spaces // trd
@@ -487,7 +505,7 @@ gets:
 
 # 7-bit ascii only 
 # xxx
-        andi fst, fst, 127
+       andi fst, fst, 127
 
 # \n ^J ends the line
 
@@ -546,7 +564,7 @@ mask:
 
         lui fst, %hi(MASK_IMM)
         
-        addi fst, fst, %lo(MASK_IMM)
+        # addi fst, fst, %lo(MASK_IMM)
 
         and hsh, hsh, fst
 
@@ -690,7 +708,7 @@ push1:
         lw idx, SPTR (usr)
         
 back1:
-        add idx, idx, -1 * CELL
+        addi idx, idx, -1 * CELL
 
 keep1:
         sw fst, 0 (idx)
@@ -733,6 +751,8 @@ def_word ":", "colon", h_userat, hash_colon
 finish:
 
         call comma
+
+        mhey wrd 
 
         j next 
 
@@ -831,7 +851,7 @@ jump:
 
 .set into_extras, h_exit
 
-#include "extras-milliforth.S"
+# include "extras-milliforth.S"
 
 #----------------------------------------------------------------------
 # keep last entry of extras

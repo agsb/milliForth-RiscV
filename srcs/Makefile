@@ -17,15 +17,6 @@ NAME = riscv64-unknown-elf-
 # on linux ?
 NAME = riscv64-linux-gnu-
 
-# using local ?
-# or optional compiled
-# PASS = /opt/riscv/
-
-#ifneq ("$(wildcard $(PASS))", "")
-#	BASE = /opt/riscv/bin/
-#	NAME = riscv32-unknown-linux-gnu-
-#endif
-
 PASS = ${BASE}${NAME}
 
 GCC = ${PASS}gcc
@@ -33,7 +24,7 @@ GCC = ${PASS}gcc
 GCCFLAGS = -nostartfiles -nodefaultlibs -static -Os \
 	   -march=rv32ic -mabi=ilp32 \
 	   
-# -mrelax --save-temps
+# -fPIC -Wl,--no-relax
 # -Wl,-Ttext,0
 # -march=rv64ic -mabi=lp64 -static -Os \
 # -march=rv32ic -mabi=ilp32 -static -Os \

@@ -5,6 +5,28 @@
 
 ## Done
 
+02/09/2025
+
+ this easy linked-list generator macro does x86, 6502, ARMs, but 
+ not works with riscv-chain-gcc.
+
+ #---------------------------------------------------------------------
+ # macro to define the header of words in dictionary
+ #
+ .global def_word
+ .set h_last, 0x0
+ .macro def_word name, label, hash
+ .p2align 2, 0x00
+ h_\label:
+         .word h_last
+         .set  h_last, h_\label
+         .word \hash
+ \label:
+ .endm
+ #---------------------------------------------------------------------
+
+ gcc linker does "Error: redefined symbol cannot be used on reloc"
+
 30/08/2025
 
     Still buged with 0x20 first hash.

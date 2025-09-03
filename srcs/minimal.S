@@ -42,6 +42,8 @@
 .equ _ONE,       1
 .equ _STDIN,     0
 .equ _STDOUT,    1
+
+.equ _SBRK,     45
 .equ _GETC,     63
 .equ _PUTC,     64
 .equ _EXIT,     93
@@ -63,6 +65,7 @@ _exit:
 # load system call for init
 # pass system parameters to program 
 _init:
+        
         ret
 
 # linux ecall for getc
@@ -86,7 +89,27 @@ _putc:
         addi a2, zero, _ONE
         addi a7, zero, _PUTC
         sw a3, 0 (a1)
+
+_rets:
         ecall
         ret
 
+/*
 #---------------------------------------------------------------------
+.set FORTH_SIZE,65536
+
+_sbrk:
+        addi a0, zero, _ZERO
+        addi a7, zero, _SBRK
+        ecall
+        
+        # this is where here is
+        add a3, zero, a0
+
+        # gets more memory
+        lui  a1, %hi(FORTH_SIZE)
+        addi a1, a1, %lo(FORTH_SIZE)
+        add a0, a0, a1
+
+        j _rets
+*/
