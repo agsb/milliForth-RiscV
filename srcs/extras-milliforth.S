@@ -296,9 +296,9 @@ wordf:
 
         la t0, h_here
 
-        blt a6, t0, returns
+        bge a6, t0, 100b
 
-        j 100b
+        j returns
 
 #----------------------------------------------------------------------
 # shows one word at dictionary
@@ -321,10 +321,7 @@ wordt:
 
 # set the end-of-word as exit address
 
-        la t0, exit
-
-        putchar '\n'
-        putchar '#'
+        la a6, exit
 
 100:
         putchar '\n'
@@ -335,9 +332,9 @@ wordt:
         
         mhex a4
        
-        addi a5, a5, 4
+        addi a5, a5, CELL
 
-        bne a4, t0, 100b
+        bne a4, a6, 100b
 
         pullra
 
@@ -353,8 +350,8 @@ stackS:
         putchar '\n'
         putchar 'S'
 
-        lw a6, SPTR (usr)
-        la a5, sp0
+        lw a5, SPTR (usr)
+        la a6, sp0
 
         call stackp
 
@@ -370,8 +367,8 @@ stackR:
         putchar '\n'
         putchar 'R'
 
-        lw a6, RPTR (usr)
-        la a5, rp0
+        lw a5, RPTR (usr)
+        la a6, rp0
 
         call stackp
 
@@ -387,17 +384,20 @@ stackp:
         mhex a5
 
         putchar '['
-        putchar ' '
 
         beq a5, a6, 200f
 
 100:
-        addi a5, a5, -4
         lw a4, 0 (a5)
+        
         mhex a4
+        
+        addi a5, a5, CELL
+        
         bne a5, a6, 100b
 
 200:
+        putchar ' '
         putchar ']'
 
         pullra 

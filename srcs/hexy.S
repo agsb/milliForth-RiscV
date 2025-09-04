@@ -1,7 +1,27 @@
-#---------------------------------------------------------------------
-# easy it
+#----------------------------------------------------------------------
+# easy pretty print one char
 #
+.global putchar
+
+#---------------------------------------------------------------------
+.macro putchar value
+       add t0, zero, a3
+       li a3, \value
+       call _putc
+       add a3, zero, t0
+.endm
+
+#---------------------------------------------------------------------
+.macro mhit it
+        putchar '\n'
+        putchar \it
+        putchar ' '
+.endm
+
+#---------------------------------------------------------------------
 .macro mhex rg
+
+        add t0, zero, a3
 
         add a3, zero, \rg
 
@@ -15,6 +35,7 @@
 
         pullra 
         
+        add a3, zero, t0
 .endm
 #---------------------------------------------------------------------
 # code a 32-bit word in ASCII hexadecimal
@@ -25,7 +46,7 @@ puthex:
 
         add  s2, zero, a3
         
-        addi s5, zero, ':'
+        addi s5, zero, 58
 
         addi a3, zero, ' '
         
@@ -33,10 +54,13 @@ puthex:
 
         srli s3, s2, 24
         call 100f
+        
         srli s3, s2, 16
         call 100f
+        
         srli s3, s2, 8
         call 100f
+        
         srli s3, s2, 0
         call 100f
 

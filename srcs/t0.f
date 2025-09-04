@@ -22,6 +22,7 @@
 
  :  2 1 1 + ;
  see
+ 
  :  4 2 2 + ;
  see
 
@@ -72,6 +73,12 @@
  see
 
  : drop dup - + ;
+ see
+
+ : nip swap drop ;
+ see
+
+ : tuck swap over ;
  see
 
  : 2dup over over ;

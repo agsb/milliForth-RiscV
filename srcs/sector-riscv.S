@@ -132,33 +132,15 @@ h_\label:
 # for deep, more than one, nested calls, use callee
 #
 .global pushra
-
 .macro pushra
         addi sp, sp, -4   
         sw   ra, 0(sp)    
 .endm
 
 .global pullra
-
 .macro pullra
         lw   ra, 0(sp)    
         addi sp, sp, +4   
-.endm
-
-#----------------------------------------------------------------------
-# easy pretty print one char
-#
-.global putchar
-
-.macro putchar value
-       li a3, \value
-       call _putc
-.endm
-
-.macro mhit it
-        putchar '\n'
-        putchar \it
-        putchar ' '
 .endm
 
 #----------------------------------------------------------------------
@@ -335,8 +317,8 @@ okey:
 # call prompt_okey
 
 # xxx
-#        lw fst, STAT (usr)
-#        bne fst, zero, resolve
+        lw fst, STAT (usr)
+        bne fst, zero, resolve
 
         putchar '\n'
         putchar 'O'
@@ -387,6 +369,10 @@ tick:
 
 # compare
         
+#        mhex hsh
+#        mhex fst
+#        mhit '\n'
+
         bne hsh, fst, 100b
 
 #---------------------------------------------------------------------         
@@ -489,8 +475,6 @@ gets:
 300:
         sb fst, 0 (idx)
         
-        putchar '\n'
-
         addi idx, idx, ONE
 
 # get next char
