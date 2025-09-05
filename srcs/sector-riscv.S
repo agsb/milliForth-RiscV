@@ -394,6 +394,8 @@ eval:
 #---------------------------------------------------------------------         
 # compiling ? if state != 0
 compile:
+        
+        add fst, zero, wrd
 
         call docomma
 
@@ -585,10 +587,8 @@ docomma:
 
         lw idx, HERE (usr)
       
-        sw wrd, 0 (idx)
+        sw fst, 0 (idx)
       
-        #mhex wrd        
-
         addi idx, idx, CELL
       
         sw idx, HERE (usr)
@@ -742,7 +742,7 @@ create:
 
 # copy last into (here)
         
-        lw wrd, LAST (usr)
+        lw fst, LAST (usr)
         
         call docomma
 
@@ -752,7 +752,7 @@ create:
         
 # copy hash into (here)
 
-        add wrd, zero, hsh
+        add fst, zero, hsh
 
 comma:
 
