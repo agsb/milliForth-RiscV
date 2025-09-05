@@ -738,6 +738,8 @@ def_word ":", "colon", hash_colon, h_userat
         
         sw fst, STAT (usr)
 
+# make a header
+
 create:
 
 # copy last into (here)
@@ -776,7 +778,7 @@ def_word ";", "semis", hash_semis, h_colon
 finish:
 # compound words must ends with exit
         
-        la wrd, exit
+        la fst, exit
 
         j comma
 
