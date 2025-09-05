@@ -64,8 +64,8 @@
     Never mess with two underscore variables;
  
     Not using smudge, 
-          colon saves "here" into "once" and 
-          semis loads "lastest" from "once";
+          colon saves "here" into "head" and 
+          semis loads "lastest" from "head";
  
 # For stacks
  
@@ -237,18 +237,10 @@ Some alternatives uses 2 or 3 instructions.
 Using hash, there is no size+flag byte + name string, no more. 
 Only four bytes hash with lower bit or higher bit as flags.
 
-When the immediate flag (FLAG_IMM) is the bit 0, could use 
-_ori|andi|xori rd, rs, 0x1_ to test, set and flip the flag, but needs
-shift left the operands nash and letter, more one bit or
-define 0x8000000 and 0x7FFFFFF as constants
+When the immediate flag (FLAG_IMM)
+define 0x8000000 and 0x7FFFFFF as constants to mask it in hashes.
     
-Catchs: 
-
-To clear the bit 0 use a _andi rd, hsh, 0x1_ 
-then _or hsh, hash, rd_ after hash calculation.
-        
-All valid hashes will be even. 
-        
-Can not calculate the hash within a macro, need a program to calculate 
-the hashes for primitives and make the headers by hand.
+Can not calculate the hash within a assembler macro, 
+need a program to calculate the hashes for primitives 
+and make the headers by hand.
 

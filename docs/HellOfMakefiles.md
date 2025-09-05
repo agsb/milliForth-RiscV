@@ -8,11 +8,11 @@ and for embeded systems riscv64-unknown-elf, arm-linux-gnueabi, arm-none-eabi.
 
 The QEMU uses qemu-system and qemu-user packs.
 
-My common parameters are: 
+My common parameters are: xxxx is the ISA
 
 
-        $(GCCFLAGS) = -nodefaultlibs -nostartfiles -static -Os \
-                      -march=rv32ic -mabi=ilp32 
+        $(GCCFLAGS) = -nodefaultlibs -nostartfiles -static -Oz \
+                      -march=xxxx -mabi=xxxx 
 
         $(ASFLAGS) = -Wa,-alms=$@.lst 
 

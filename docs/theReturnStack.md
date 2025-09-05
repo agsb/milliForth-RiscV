@@ -1,6 +1,6 @@
 # the return stack
 
-    cell = 4 bytes for riscV
+    cell = 4 bytes 
     RP : hold the contents of return stack
     = : repeats the last value at left
 

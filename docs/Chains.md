@@ -36,11 +36,14 @@ _this file is still a stub_
 
         : 10 6 4 + ;
 
-        : sp s@ 8 + ;
+        : sp u@ 0 + ;
 
-        : rp s@ 10 + ;
+        : rp u@ cell + ;
 
-        All _sp@_ and _rp@_ changed to sp @ and rp @
+        : sp@ sp @ cell + ;
+
+        : rp@ sp @ cell + ;
+
 ```
 
 for _shift right_ look for
@@ -49,10 +52,8 @@ https://stackoverflow.com/questions/78708194/logical-shift-right-without-dedicat
 ### the extensions
         
         2/      ( w -- w>>1 )   shift right one bit
-        exec    ( a -- )        jump to top of stack address
-        >r      ( w -- )( -- w ) move from data into return stack
-        r>      ( -- w )( w -- ) move from return into data stack
-        bye     ( -- )  ends the Forth
+        exec    ( a -- )        execute the address at top of stack
+        bye     ( -- )          ends the Forth
 
 ### the extras
 
@@ -62,12 +63,15 @@ https://stackoverflow.com/questions/78708194/logical-shift-right-without-dedicat
         .R      ( -- )      dumps the return stack
 
         dump    ( -- )  dumps the dictionary as binary
-        words   ( -- )  dumps the dictionary as hashes
+        see     ( -- )  dumps last word in dictionary 
+        words   ( -- )  dumps the dictionary
 
 ### internals
 
-        main, cold, warm, abot, quit
-        token, getline
-        tick, comma
+        main, cold, warm, abort, quit
+        resolve, token, gets
+        tick, create, comma
         eval, execute, compile
         djb2
+
+
