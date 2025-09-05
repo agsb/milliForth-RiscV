@@ -343,7 +343,7 @@ tick:
 100:
 # verify end of dictionary, take care to abort
         
-        beq lnk, zero, error    # miss    
+        beq lnk, zero, miss    
 
 # linked list
         
@@ -412,6 +412,20 @@ immediate:
 # wipe remains compiled
 # xxx (---------------------------------------------------------------
 miss:
+
+        putchar '?'
+
+100:
+        lb fst, 0 (s10)
+        call _putc 
+        beq fst, trd, 100f
+        add s10, s10, 1
+        j 100b
+100:
+        putchar '?'
+
+        j error
+
         # compiling ?
         lw fst, STAT (usr)
         bne fst, zero, 100f
@@ -430,6 +444,7 @@ miss:
 token:
 
         pushra
+
 
 # load word separator, space
 
@@ -518,6 +533,10 @@ gets:
 .equ SFHT, 5
 #---------------------------------------------------------------------
 hash:
+        # xxx
+
+        add s10, zero, idx
+
 djb2:
         # easy 5381
    
