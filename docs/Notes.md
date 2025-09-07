@@ -56,6 +56,9 @@
     No line wrap, do not break words between lines;
  
     No multiuser, no multitask, no checks, not faster;
+
+    IMMEDIATE word only works outside word definition, 
+    it always make latest word immediate.
  
 ## For Devs
  

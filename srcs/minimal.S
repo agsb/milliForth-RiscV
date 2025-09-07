@@ -63,7 +63,6 @@ _exit:
         ecall
 
 # load system call for init
-# pass system parameters to program 
 _init:
         
         ret
