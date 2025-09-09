@@ -96,10 +96,10 @@
 # highlander, immediate flag, unique 
 
 # MSF bit, is the flag
-.equ FLAG_IMM, 0x80
+.equ FLAG_IMM, 128
 
 # LSB bits, are size (32 maximum)
-.equ MASK_IMM, 0x7F
+.equ MASK_IMM, 127
 
 #---------------------------------------------------------------------
 
@@ -109,11 +109,16 @@
 #
 .global def_word
 
-.macro def_word name, label, hash, last
+.macro def_word name, label, last, flag
 .p2align 2, 0x00
 h_\label:
         .word \last
-        .word \hash
+        size = 2 - 1
+        .byte \flag + size
+1:
+        .ascii "\name"
+2:
+        .balign 4, 0x00
 \label:
 .endm
 
@@ -265,15 +270,18 @@ reset:
 
 #---------------------------------------------------------------------
 # reset stacks
-error:
 
+error:
+/*
 # xxx 
         putchar '\n'
         putchar '?'
         putchar '?'
         putchar '\n'
-
+*/
 #---------------------------------------------------------------------
+miss:
+
 abort:
 # reset data stack
         
@@ -305,6 +313,7 @@ okey:
 
 # call prompt_okey
 
+/*
 # xxx
         lw fst, STAT (usr)
         bne fst, zero, resolve
@@ -313,6 +322,7 @@ okey:
         putchar 'O'
         putchar 'K'
         putchar '\n'
+*/
 
 #---------------------------------------------------------------------
 # get a c-str in fst and size in snd
@@ -401,6 +411,7 @@ immediate:
 # unexpected end of dictionary
 # wipe remains compiled
 # xxx (---------------------------------------------------------------
+/*
 miss:
 
         putchar '?'
@@ -424,6 +435,7 @@ miss:
         sw fst, HERE (usr)
 100:
         j error
+*/
 # xxx )---------------------------------------------------------------
 
 #---------------------------------------------------------------------
@@ -475,13 +487,13 @@ token:
 
         sub snd, snd, idx
         
-        subi idx, idx, ONE
+        addi idx, idx, (0 - ONE)
 
         sw snd, 0 (idx)
 
         pullra
 
-        bx lr
+        ret
 
 #---------------------------------------------------------------------
 # absolute crude getline, 
@@ -580,7 +592,7 @@ pull2:
 
 #---------------------------------------------------------------------
 # ( -- c ) 
-def_word "key", "key", hash_key, 0x0
+def_word "key", "key", 0x0, 0x0
 
         call _getc
 
@@ -588,7 +600,7 @@ def_word "key", "key", hash_key, 0x0
 
 #---------------------------------------------------------------------
 # ( c -- ) 
-def_word "emit", "emit", hash_emit, h_key
+def_word "emit", "emit", h_key, 0x0
         
         call pull2
 
@@ -598,7 +610,7 @@ def_word "emit", "emit", hash_emit, h_key
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
-def_word "!", "store", hash_store, h_emit
+def_word "!", "store", h_emit, 0x0
         
         call pull2
 
@@ -611,7 +623,7 @@ drop1:
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
-def_word "@", "fetch", hash_fetch, h_store
+def_word "@", "fetch", h_store, 0x0
         
         call pull2
         
@@ -621,7 +633,7 @@ def_word "@", "fetch", hash_fetch, h_store
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
-def_word "nand", "nand", hash_nand, h_fetch
+def_word "nand", "nand", h_fetch, 0x0
         
         call pull2
 
@@ -633,7 +645,7 @@ def_word "nand", "nand", hash_nand, h_fetch
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
-def_word "+", "plus", hash_plus, h_nand
+def_word "+", "plus", h_nand, 0x0
         
         call pull2
 
@@ -643,7 +655,7 @@ def_word "+", "plus", hash_plus, h_nand
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
-def_word "0#", "zeroq", hash_zeroq, h_plus
+def_word "0#", "zeroq", h_plus, 0x0
 
         call pull2
         
@@ -659,7 +671,7 @@ istrue:
 
 #---------------------------------------------------------------------
 # ( -- state ), return an reference
-def_word "u@", "userat", hash_userat, h_zeroq
+def_word "u@", "userat", h_zeroq, 0x0
         
         add fst, zero, usr 
 
@@ -679,7 +691,7 @@ save1:
 
 #---------------------------------------------------------------------
 # ( -- ), 
-def_word ":", "colon", hash_colon, h_userat
+def_word ":", "colon", h_userat, 0x0
 # save here, panic if semis not follow elsewhere
         
         lw fst, HERE (usr)
@@ -715,14 +727,14 @@ create:
         lw fst, 0 (wrd)
         call docomma
         add wrd, wrd, CELL
-        sub snd, snd, CELL
+        add snd, snd, (0 - CELL)
         bgt snd, zero, 100b
 
         j next 
 
 #---------------------------------------------------------------------
 # ( -- )
-def_word ";", "semis", hash_semis, h_colon 
+def_word ";", "semis", h_colon, FLAG_IMM
 # update last, panic if colon not lead elsewhere 
         
         lw fst, HEAD (usr)
@@ -752,7 +764,7 @@ comma:
 # "why there is no 'docol at start of words ?"
 #
 # ( -- ) 
-def_word "exit", "exit", hash_exit, h_semis
+def_word "exit", "exit", h_semis, 0x0
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
         
