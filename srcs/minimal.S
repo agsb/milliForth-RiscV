@@ -44,9 +44,11 @@
 .equ _STDOUT,    1
 
 .equ _SBRK,     45
+.equ _FCNT,     55
 .equ _GETC,     63
 .equ _PUTC,     64
 .equ _EXIT,     93
+.equ _MMAP,     192
 
 #---------------------------------------------------------------------
 .section .bss
@@ -95,20 +97,26 @@ _rets:
 
 /*
 #---------------------------------------------------------------------
-.set FORTH_SIZE,65536
-
 _sbrk:
-        addi a0, zero, _ZERO
+        add a0, zero, a3
         addi a7, zero, _SBRK
-        ecall
-        
-        # this is where here is
-        add a3, zero, a0
-
-        # gets more memory
-        lui  a1, %hi(FORTH_SIZE)
-        addi a1, a1, %lo(FORTH_SIZE)
-        add a0, a0, a1
-
         j _rets
+
+#---------------------------------------------------------------------
+_fcntl: # fd, cdm, arg
+        add a0, zero, a3
+        add a1, zero, a4
+        add a2, zero, a5
+        addi a7, zero, _FNCT
+        j _rets
+        
+#---------------------------------------------------------------------
+_mmap: # addr, length, prot, flags, fd, pgoffset
+        add a0, zero, 
+        add a1, zero, 
+        add a2, zero, 
+        add a3, zero, 
+        add a4, zero, 
+        add a5, zero, 
+        addi a7, zero, _MMAP
 */
