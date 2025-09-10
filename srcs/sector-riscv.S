@@ -1,1 +1,1 @@
-sector-riscv-name.S
+sector-riscv-hash.S

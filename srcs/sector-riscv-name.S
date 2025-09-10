@@ -113,7 +113,7 @@
 .p2align 2, 0x00
 h_\label:
         .word \last
-        size = 2 - 1
+        size = 2f - 1f
         .byte \flag + size
 1:
         .ascii "\name"
@@ -325,7 +325,7 @@ okey:
 */
 
 #---------------------------------------------------------------------
-# get a c-str in fst and size in snd
+# get a c-str in fst and size in snd, pointer in idx
 resolve:
         
         call token
@@ -342,59 +342,74 @@ tick:
 100:
 # verify end of dictionary
         
-        beq lnk, zero, miss    
+        beq lnk, zero, miss
 
 # linked list
         
-        add wrd, zero, lnk
+        add fst, zero, lnk
 
 # copy next link 
         
-        lw lnk, 0 (wrd)
+        lw lnk, 0 (fst)
 
-        add wrd, wrd, CELL
+        add fst, fst, CELL
 
-# get size and flags, firt byte
+# get size and flags, first byte
 
-        lb fst, 0 (idx)
-        lb snd, 0 (wrd)
+        # from dictionary
+
+        lb snd, 0 (fst)
+
+        # from word token
+
+        lb trd, 0 (idx)
         
         # save the flag
         andi hsh, snd, 0x80
         # wipe the flag 
         andi snd, snd, 0x7F
+        # test size equal
+        bne trd, snd, 100b
 
-        bne fst, snd, 100b
-/*
-        zzzz 
-        check the bytes but read cells
-        colon always writes cells bytes
-        but must verify size bytes
+# crude strcmp
 
+        add t0, zero, idx
+        add t1, zero, fst
 
-*/
+200:
+        addi t0, t0, 1
+        addi t1, t1, 1
+        lb t2, 0 (t0)
+        lb t3, 0 (t1)
+        bne t2, t3, 100b
+
+        addi snd, snd, -1
+        bne snd, zero, 200b
+
+        # need adjust balign 
+        # ((n + 3) & ~3) 
+
+        addi t1, t1, 3
+        andi fst, t1, ~3
+
 #---------------------------------------------------------------------         
 eval:
 # wrd points to or start of code or list of references
 
-        add wrd, wrd, CELL
-
 # immediate ? 
 
-        bne snd, zero, immediate      
+        bne hsh, zero, immediate      
 
 # executing ? if state == 0
         
-        lw fst, STAT (usr)
+        lw snd, STAT (usr)
         
-        beq fst, zero, execute
+        beq snd, zero, execute
 
 #---------------------------------------------------------------------         
 # compiling ? if state != 0
 compile:
         
-        add fst, zero, wrd
-
         call docomma
 
         j resolve
@@ -718,15 +733,13 @@ create:
         
         call token
         
-# fst points to a c-str, snd is sizeof
-
-        add wrd, zero, fst
+# idx points to a c-str, snd is sizeof
 
 # write cells
 100:
-        lw fst, 0 (wrd)
+        lw fst, 0 (idx)
         call docomma
-        add wrd, wrd, CELL
+        add idx, idx, CELL
         add snd, snd, (0 - CELL)
         bgt snd, zero, 100b
 
