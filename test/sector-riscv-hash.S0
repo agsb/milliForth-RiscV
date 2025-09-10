@@ -30,6 +30,8 @@
  
     read notes in this repository.
  
+    THIS VERSION USES ONLY HASH HEADERS.
+
     Stacks moves backwards, decrease and push, pull and increase.
 
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
@@ -38,8 +40,6 @@
 
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary will continue at end of .bss.
-
-    THIS VERSION USES ONLY HASH HEADERS.
 
     Not working yet :)
 
@@ -277,6 +277,7 @@ reset:
 #---------------------------------------------------------------------
 # reset stacks
 error:
+
 /*
 # xxx 
         putchar '\n'
@@ -317,6 +318,7 @@ resolvept:
 okey:
 
 # call prompt_okey
+
 /*
 # xxx
         lw fst, STAT (usr)
@@ -327,6 +329,7 @@ okey:
         putchar 'K'
         putchar '\n'
 */
+
 #---------------------------------------------------------------------
 # get a hash of the next token
 resolve:
@@ -343,41 +346,45 @@ tick:
         lw lnk, LAST (usr)
 
 100:
-# verify end of dictionary, missed, take care to abort
+# verify end of dictionary, take care to abort
         
         beq lnk, zero, miss    
 
 # linked list
         
-        add fst, zero, lnk
+        add wrd, zero, lnk
 
 # move next link 
         
-        lw lnk, 0 (fst)
+        lw lnk, 0 (wrd)
 
 # move to hash
         
-        addi fst, fst, CELL
+        add wrd, wrd, CELL
 
-        lw wrd, 0 (fst)
+        lw fst, 0 (wrd)
 
-# mask the FLAG, hold it in snd
+# mask the FLAG and hold it in snd
 
         lui snd, %hi(FLAG_IMM)
 
-        and snd, wrd, snd
+        and snd, fst, snd
 
-        xor wrd, wrd, snd
+        xor fst, fst, snd
 
 # compare
         
-        bne hsh, wrd, 100b
+#        mhex hsh
+#        mhex fst
+#        mhit '\n'
+
+        bne hsh, fst, 100b
 
 #---------------------------------------------------------------------         
 eval:
 # wrd points to or start of code or list of references
 
-        addi fst, fst, CELL
+        add wrd, wrd, CELL
 
 # immediate ? 
 
@@ -385,14 +392,16 @@ eval:
 
 # executing ? if state == 0
         
-        lw snd, STAT (usr)
+        lw fst, STAT (usr)
         
-        beq snd, zero, execute
+        beq fst, zero, execute
 
 #---------------------------------------------------------------------         
 # compiling ? if state != 0
 compile:
         
+        add fst, zero, wrd
+
         call docomma
 
         j resolve
@@ -444,6 +453,7 @@ miss:
 token:
 
         pushra
+
 
 # load word separator, space
 
@@ -532,6 +542,7 @@ gets:
 .equ SFHT, 5
 #---------------------------------------------------------------------
 hash:
+        # xxx
 
         add s10, zero, idx
 

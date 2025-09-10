@@ -277,13 +277,12 @@ reset:
 #---------------------------------------------------------------------
 # reset stacks
 error:
-/*
+
 # xxx 
         putchar '\n'
         putchar '?'
         putchar '?'
         putchar '\n'
-*/
 
 #---------------------------------------------------------------------
 miss:
@@ -317,7 +316,7 @@ resolvept:
 okey:
 
 # call prompt_okey
-/*
+
 # xxx
         lw fst, STAT (usr)
         bne fst, zero, resolve
@@ -326,7 +325,7 @@ okey:
         putchar 'O'
         putchar 'K'
         putchar '\n'
-*/
+
 #---------------------------------------------------------------------
 # get a hash of the next token
 resolve:
@@ -357,7 +356,7 @@ tick:
 
 # move to hash
         
-        addi fst, fst, CELL
+        add fst, fst, CELL
 
         lw wrd, 0 (fst)
 
@@ -377,7 +376,7 @@ tick:
 eval:
 # wrd points to or start of code or list of references
 
-        addi fst, fst, CELL
+        add fst, fst, CELL
 
 # immediate ? 
 
@@ -444,6 +443,7 @@ miss:
 token:
 
         pushra
+
 
 # load word separator, space
 
@@ -532,6 +532,7 @@ gets:
 .equ SFHT, 5
 #---------------------------------------------------------------------
 hash:
+        # xxx
 
         add s10, zero, idx
 
