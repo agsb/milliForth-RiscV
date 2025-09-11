@@ -71,6 +71,8 @@
 
 .equ CELL, 4
 
+# ascii
+
 .equ NL, 10    # \n
 
 .equ CR, 13    # \r
@@ -102,7 +104,35 @@
 .equ MASK_IMM, 0x7FFFFFFF
 
 #---------------------------------------------------------------------
+# user structure of internal Forth variables
+
+# data stack index
+.equ SPTR, 0 * CELL
+
+# return stack index
+.equ RPTR, 1 * CELL 
+
+# last link cell in heap dictionary linked list
+.equ LAST, 2 * CELL
+
+# next free cell in heap dictionary, aka dpt
+.equ HERE, 3 * CELL
+
+# toin next free byte in TIB
+.equ TOIN, 4 * CELL
+
+# state flag
+.equ STAT, 5 * CELL
+
+# heap forward
+.equ HEAD, 6 * CELL
+
+# heap backward
+.equ TAIL, 7 * CELL
+
+#---------------------------------------------------------------------
 # primitives djb2 hash cleared of bit 31
+
 .equ hash_key,   0x0B876D32 
 .equ hash_emit,  0x7C6B87D0 
 .equ hash_store, 0x0002B584 
@@ -145,6 +175,7 @@ h_\label:
 
 #----------------------------------------------------------------------
 .section .data
+.p2align 2, 0x0
 
 # There is no spoon.
 
@@ -152,34 +183,6 @@ h_\label:
 .section .bss
 .p2align 2, 0x0
 
-# user structure of internal Forth variables
-# accessed as offsets
-
-# data stack index
-.equ SPTR, 0 * CELL
-
-# return stack index
-.equ RPTR, 1 * CELL 
-
-# last link cell in heap dictionary linked list
-.equ LAST, 2 * CELL
-
-# next free cell in heap dictionary, aka dpt
-.equ HERE, 3 * CELL
-
-# toin next free byte in TIB
-.equ TOIN, 4 * CELL
-
-# state flag
-.equ STAT, 5 * CELL
-
-# heap forward
-.equ HEAD, 6 * CELL
-
-# heap backward
-.equ TAIL, 7 * CELL
-
-#----------------------------------------------------------------------
 # and this is it
 
 _user:
@@ -212,10 +215,6 @@ _pad:
 # start of user dictionary 
 h_here: 
         .word 0x0
-
-#-----------------------------------------------------------------------
-# at end of .bss (.heap) 
-#----------------------------------------------------------------------
 
 #----------------------------------------------------------------------
 .text 
@@ -276,17 +275,20 @@ reset:
 
 #---------------------------------------------------------------------
 # reset stacks
+
+miss:
+
 error:
-/*
+
 # xxx 
+.ifdef debug
         putchar '\n'
         putchar '?'
         putchar '?'
         putchar '\n'
-*/
+.endif
 
 #---------------------------------------------------------------------
-miss:
 abort:
 # reset data stack
         
@@ -304,21 +306,13 @@ quit:
         
         sw zero, STAT (usr)
 
-        j okey
-
-#---------------------------------------------------------------------
-# the outer loop, need for indirect
-
-resolvept:
-        
-        .word okey
-
 #---------------------------------------------------------------------
 okey:
 
 # call prompt_okey
-/*
+
 # xxx
+.ifdef debug
         lw fst, STAT (usr)
         bne fst, zero, resolve
 
@@ -326,7 +320,8 @@ okey:
         putchar 'O'
         putchar 'K'
         putchar '\n'
-*/
+.endif
+
 #---------------------------------------------------------------------
 # get a hash of the next token
 resolve:
@@ -351,11 +346,11 @@ tick:
         
         add fst, zero, lnk
 
-# move next link 
+# copy next link 
         
         lw lnk, 0 (fst)
 
-# move to hash
+# copy the hash
         
         addi fst, fst, CELL
 
@@ -375,7 +370,7 @@ tick:
 
 #---------------------------------------------------------------------         
 eval:
-# wrd points to or start of code or list of references
+# fst points to or start of code or list of references
 
         addi fst, fst, CELL
 
@@ -744,7 +739,7 @@ create:
         
         call docomma
 
-# get following token
+# get a hash of the next token
         
         call token
         
@@ -803,7 +798,7 @@ unnest: #; exit
 next:
 # wrd = (ipt) #; ipt += cell
         
-        lw wrd, 0 (ipt)
+        lw fst, 0 (ipt)
         
         addi ipt, ipt, CELL
 
@@ -812,7 +807,7 @@ pick:
         
         la idx, ends
         
-        blt wrd, idx, jump
+        blt fst, idx, jump
 
 nest:   #; enter
 # return push, rp -= cell, (rpt) = ipt
@@ -828,14 +823,21 @@ nest:   #; enter
 move: 
 # indirect access 
         
-        mv ipt, wrd
+        mv ipt, fst
         
         j next
 
 jump: 
 # jump to primitive
         
-        jalr zero, 0 (wrd)
+        jalr zero, 0 (fst)
+
+#---------------------------------------------------------------------
+# the outer loop, need for indirect
+
+resolvept:
+        
+        .word okey
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
@@ -847,23 +849,24 @@ jump:
 # any other primitives after exit
 #---------------------------------------------------------------------
 
-#.equ EXTRAS, YES
+.ifdef debug
 
-.ifdef EXTRAS
+.equ EXTRAS, YES
+
 #----------------------------------------------------------------------
-# keep last entry of primitives
+.ifdef EXTRAS
 
 .set into_extras, h_exit
 
 #include "extras-milliforth.S"
 
-#----------------------------------------------------------------------
-# keep last entry of extras
-
 .set h_last, from_extras
 
 .endif
 
+.endif
+
+#----------------------------------------------------------------------
 .ifndef EXTRAS
 
 .set h_last, h_exit
