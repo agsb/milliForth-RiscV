@@ -26,32 +26,11 @@
 */
 
 #---------------------------------------------------------------------
-#
-# djb2 hash cleared of bit 31
-#
-.equ hash_sfr, 0x00596858
-.equ hash_exec, 0x7C6BC01E
-.equ hash_docode, 0x0059695B 
-.equ hash_donext, 0x0059697A
-.equ hash_bye, 0x0B874AFB
-.equ hash_abort, 0x0A1DFF4F
-.equ hash_splist, 0x005966B8
-.equ hash_rplist, 0x005966B9
-.equ hash_dump, 0x7C6B2FE9
-.equ hash_words, 0x0B6953F8
-.equ hash_see, 0x0B878F36
-.equ hash_dot, 0x0002B58B
-
-.equ hash_cell,     0x7C70B163
-.equ hash_cellplus, 0x0A86DDE8
-.equ hash_cellless, 0x0A86DDEE
-
-#---------------------------------------------------------------------
 # extras links to last primitive
 
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
-def_word "2/", "sfr", hash_sfr, into_extras
+def_word "2/", "sfr", into_extras, 0
 
         call pull2
         
@@ -62,41 +41,39 @@ def_word "2/", "sfr", hash_sfr, into_extras
 #---------------------------------------------------------------------
 # ( a -- ) execute a word address at top of data stack
 # not change the data stack
-def_word "exec", "exec", hash_exec, h_sfr
+def_word "exec", "exec", h_sfr, 0
         
         call pull2
         
-        add wrd, zero, fst
-
         j pick
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to a reference at IP
-def_word ":$", "docode", hash_docode, h_exec
+def_word ":$", "docode", h_exec, 0
         
         jalr zero, 0 (ipt)
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to next
-def_word ";$", "donext", hash_donext, h_docode
+def_word ";$", "donext", h_docode, 0
         
         j next
 
 #---------------------------------------------------------------------
 # ( -- ) exit forth
-def_word "bye", "byes", hash_bye, h_donext
+def_word "bye", "byes", h_donext, 0
         
         j _exit
 
 #---------------------------------------------------------------------
 # ( -- ) ae abort
-def_word "abort", "aborts", hash_abort, h_byes
+def_word "abort", "aborts", h_byes, 0
         
         j abort
 
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
-def_word ".S", "splist", hash_splist, h_aborts
+def_word ".S", "splist", h_aborts, 0
 
         call stackS
 
@@ -104,7 +81,7 @@ def_word ".S", "splist", hash_splist, h_aborts
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
-def_word ".R", "rplist", hash_rplist, h_splist
+def_word ".R", "rplist", h_splist, 0
 
         call stackR
         
@@ -112,7 +89,7 @@ def_word ".R", "rplist", hash_rplist, h_splist
 
 #----------------------------------------------------------------------
 # ( a b -- a b ) dumps memory between a and b
-def_word "dump", "dump", hash_dump, h_rplist
+def_word "dump", "dump", h_rplist, 0
 
         call pull2
         
@@ -127,7 +104,7 @@ def_word "dump", "dump", hash_dump, h_rplist
 
 #----------------------------------------------------------------------
 # ( -- ) list all words in compiled dictionary, 
-def_word "words", "words", hash_words, h_dump
+def_word "words", "words", h_dump, 0
 
         call wordf
 
@@ -135,7 +112,7 @@ def_word "words", "words", hash_words, h_dump
 
 #----------------------------------------------------------------------
 # ( -- ) list last word in dictionary, 
-def_word "see", "sees", hash_see, h_words
+def_word "see", "sees", h_words, 0
 
         call wordu
 
@@ -143,7 +120,7 @@ def_word "see", "sees", hash_see, h_words
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal
-def_word ".", "dot", hash_dot, h_sees
+def_word ".", "dot", h_sees, 0
 
         call pull2
 
@@ -156,7 +133,7 @@ def_word ".", "dot", hash_dot, h_sees
 
 #---------------------------------------------------------------------
 # ( -- w ) size of a cell 
-def_word "cell", "cell", hash_cell, h_dot
+def_word "cell", "cell", h_dot, 0
 
         addi fst, zero, 4
 
@@ -262,6 +239,7 @@ loads:
        
         ret
 
+#----------------------------------------------------------------------
 returns:
 
         call loads
@@ -350,6 +328,7 @@ stackS:
         putchar '\n'
         putchar 'S'
 
+        # a5 << a6
         lw a5, SPTR (usr)
         la a6, sp0
 
@@ -367,6 +346,7 @@ stackR:
         putchar '\n'
         putchar 'R'
 
+        # a5 << a6
         lw a5, RPTR (usr)
         la a6, rp0
 
