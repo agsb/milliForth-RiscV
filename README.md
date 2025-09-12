@@ -24,6 +24,8 @@ Options:
     the heap and stack in memory: .heap at end of .bss, .stack elsewhere ?
 
     systems calls of core functions: linux ecalls
+
+    system stack pointer: not used by Forth.
     
 ## ISA
 
@@ -42,14 +44,17 @@ and use registers r0, ra, sp, s0, s1, a0-a7, t0-t1.
 For assembler, use [standart Risc-V](https://github.com/riscv-non-isa/riscv-asm-manual) style 
 with pre-processor directives eg. #define.
 
-For now, using riscv-unknown-elf-gcc 15.0 suit with spike and qemu emulators for a 
-single core minimal footprint Forth thread.  
+For now, using riscv-unknown-elf-gcc 15.0 suit with qemu emulator
+for a single core minimal footprint Forth thread.  
 
 I hope it uses far less than 4k bytes, without a user dictionary.
 
-The milliForth must use memory pointers for data stack and return stack, because does fetch and store from a special 'user structure', which contains the user variables for Forth (state, toin, last, here, spt, dpt, tout, once, heap, tail).
+The milliForth must use memory pointers for data stack and return stack, 
+because does fetch and store from a special 'user structure', which 
+contains the user variables for Forth 
+(state, toin, last, here, sptr, dptr, heap, tail).
 
-This version uses DJB2 hash for dictionary entries and includes: 
+This version uses DJB2 hash for dictionary entries, and includes: 
 
 ```
 primitives:
@@ -74,7 +79,7 @@ primitives:
 only internals: 
     
     main, cold, warm, quit, djb2, 
-    token, skip, scan, getline, 
+    token, skip, scan, gets, 
     tick, find, compile, execute, comma,  
 
     unnest, next, nest, pick, jump, 
@@ -85,13 +90,12 @@ only internals:
 with externals:
 
     _getc, _putc, _exit, _init, 
+    _sbrk, _fcntl (not used)
 
 extras: (selectable)
 
     2/      shift right one bit
     exec    jump to address at top of spt
-    :$      jump to (ipt)   
-    ;$      jump to next 
 
     bye     ends the Forth, return to system
     abort   restart the Forth
@@ -101,6 +105,10 @@ extras: (selectable)
     words   extended list the words in dictionary
     dump    list contents of dictionary in binary
     see     list compiled contents of last word
+    cell    sizeof a cell, 4 bytes, 32-bits
+
+    :$      jump to (ipt)   
+    ;$      jump to next 
 
 A my_hello_world.FORTH alternate version with dictionary for use;
 
@@ -138,5 +146,6 @@ the my_hello_world.FORTH is adapted for miiliforth-riscv
 [^5]: Forth standart ANSI X3.215-1994: http://www.forth.org/svfig/Win32Forth/DPANS94.txt
 [^6]: Notes and Times: https://github.com/agsb/milliForth-6502/blob/acc2f8ddc6aafb2dec6346e90f5372ee16b38c8c/docs/Notes.md
 [^7]: A minimal thread code for Forth: https://github.com/agsb/immu/blob/main/The_words_in_MTC_Forth.en.pdf
+
 
 
