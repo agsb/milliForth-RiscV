@@ -10,13 +10,14 @@
  
  : FALSE 0 ;
  
- :  1 -1 -1 + -1 nand ;
+ : 1 -1 -1 + -1 nand ;
  
- :  2 1 1 + ;
+ : 2 1 1 + ;
  
+ : 4 2 2 + ;
  
- :  4 2 2 + ;
- 
+ : cell 4 ;
+
  : sp u@ ;
  
  : rp sp cell + ;
@@ -30,7 +31,6 @@
  : state >in cell + ;
  
  : rp@ rp @ cell + ;
- 
  
  : sp@ sp @ cell + ;
  
@@ -131,7 +131,9 @@
  
  : type 0 do dup c@ emit 1 + loop drop ;
  
- : in> >in @ c@ >in dup @ 1 + swap ! ;
+ : create : ['] lit , here @ cell + cell + , ['] exit , 0 state !  
+
+ : in> >in | @ | c@ | >in | dup | @ | 1 | + | swap | ! | ;
  
  : parse in> drop >in @ swap 0 
         begin over in> <> while 1 + repeat 
@@ -139,7 +141,9 @@
  
  : word in> drop begin dup in> <> until >in @ cell - >in ! parse ;
  
- : [char] ['] lit , bl word drop c@ , ; immediate
+ : [char] ['] lit , |  bl word | drop c@ , ; immediate
+
+ [char] # 
  
  : ( [char] ) parse drop drop ; immediate
  

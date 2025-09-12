@@ -406,22 +406,24 @@ immediate:
 # unexpected end of dictionary
 # wipe remains compiled
 # xxx (---------------------------------------------------------------
-/*
+
+.ifdef dismiss
 miss:
 
         putchar '?'
 
 100:
-        lb fst, 0 (s10)
+        lb fst, 0 (wrd)
         call _putc 
         beq fst, trd, 100f
-        add s10, s10, 1
+        add wrd, wrd, 1
         j 100b
 100:
         putchar '?'
 
         j error
 
+wipe:
         # compiling ?
         lw fst, STAT (usr)
         bne fst, zero, 100f
@@ -430,8 +432,10 @@ miss:
         sw fst, HERE (usr)
 100:
         j error
+.endif
+
 # xxx )---------------------------------------------------------------
-*/
+
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
@@ -455,7 +459,7 @@ token:
 200:
 
         lb snd, 0 (idx)
-
+        
         beq snd, zero, gets
 
         bne snd, trd, hash
@@ -530,7 +534,9 @@ gets:
 #---------------------------------------------------------------------
 hash:
 
-        add s10, zero, idx
+.ifdef dismiss
+        add wrd, zero, idx
+.endif 
 
 djb2:
         # easy 5381
@@ -566,6 +572,11 @@ mask:
         add fst, fst, %lo(MASK_IMM)
         
         and hsh, hsh, fst
+
+.ifdef debug
+# \ clear eol
+
+.endif
 
 # save toin
 
