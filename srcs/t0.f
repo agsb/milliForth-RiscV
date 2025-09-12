@@ -133,20 +133,19 @@
  
  : create : ['] lit , here @ cell + cell + , ['] exit , 0 state ! ; 
 
- see
-
  : in> >in @ c@ >in @ 1 + >in ! ;
  
- : parse in> drop >in @ swap 0 
+ : parse in> drop 
+        >in @ swap 0 
         begin over in> <> while 1 + repeat 
         swap bl = if >in @ 1 - >in ! then ;
  
- : word in> drop begin dup in> <> until >in @ 1 - >in ! parse ;
+ : word in> drop 
+        begin dup in> <> until 
+        >in @ 2 - >in ! parse ;
  
  : [char] ['] lit , bl word drop c@ , ; immediate
 
- [char] # 
- 
  : ( [char] ) parse drop drop ; immediate
  
  : ." [char] " parse type ; immediate
@@ -155,7 +154,3 @@
  
  ." That's all Folks !" cr
  
- words 
-
- dump
-
