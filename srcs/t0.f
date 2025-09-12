@@ -131,15 +131,17 @@
  
  : type 0 do dup c@ emit 1 + loop drop ;
  
- : create : ['] lit , here @ cell + cell + , ['] exit , 0 state !  
+ : create : ['] lit , here @ cell + cell + , ['] exit , 0 state ! ; 
 
- : in> >in | @ | c@ | >in | dup | @ | 1 | + | swap | ! | ;
+ see
+
+ : in> >in @ c@ >in dup @ 1 + swap ! | ;
  
  : parse in> drop >in @ swap 0 
         begin over in> <> while 1 + repeat 
         swap bl = if >in dup @ 1 - swap ! then ;
  
- : word in> drop begin dup in> <> until >in @ cell - >in ! parse ;
+ : word in> drop begin dup in> <> until >in @ 1 - >in ! parse ;
  
  : [char] ['] lit , |  bl word | drop c@ , ; immediate
 
