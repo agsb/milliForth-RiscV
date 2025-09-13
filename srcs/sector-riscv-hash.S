@@ -223,19 +223,32 @@ h_here:
 .text 
 .p2align 2, 0x0
 
+.equ debug, YES
+
+.equ dismiss, YES
+
 #---------------------------------------------------------------------
 # xxx
 
-#include "hexy.S"
+.ifdef debug
+
+.globl putchar
+.macro putchar value
+       add t0, zero, a3
+       li a3, \value
+       call _putc
+       add a3, zero, t0
+.endm
+
+#---------------------------------------------------------------------
+#  #include "hexy.S"
+
+.endif
 
 #----------------------------------------------------------------------
 .globl _start
 
 _start:
-
-.equ debug, YES
-
-.equ dismiss, YES
 
 #----------------------------------------------------------------------
 # do any system inits

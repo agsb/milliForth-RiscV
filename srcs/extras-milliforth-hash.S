@@ -43,7 +43,24 @@
 .equ hash_cell, 0x7C70B163
 
 #---------------------------------------------------------------------
-# extras links to last primitive
+.macro mhit it
+        putchar '\n'
+        putchar \it
+        putchar ' '
+.endm
+
+#---------------------------------------------------------------------
+.macro mhex rg
+        pushra
+        call saves
+        add a3, zero, \rg
+        call puthex
+        call loads
+        pullra 
+.endm
+
+#---------------------------------------------------------------------
+# extra primitives
 
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
@@ -56,7 +73,7 @@ def_word "2/", "sfr", hash_sfr, into_extras
         j keep1
 
 #---------------------------------------------------------------------
-# ( -- ) execute a jump to a reference at IP
+# ( -- ) execute a jump and link to a reference at IP
 def_word ":$", "docode", hash_docode, h_sfr
         
         jalr ra, 0 (ipt)
@@ -137,12 +154,13 @@ def_word ".", "dot", hash_dot, h_sees
 
         call pull2
 
-        call showhex
+        #call showhex
+
+        call puthex
 
         putchar ' '
 
         j next
-
 
 #---------------------------------------------------------------------
 # ( -- w ) size of a cell 
@@ -159,70 +177,12 @@ def_word "cell", "cell", hash_cell, h_dot
 #---------------------------------------------------------------------
 #
 # Note: 
-#       nested user calls must save ra, relies in pushra and pullra
-#       these routines uses Sn registers
+#       nested user calls must save ra, 
+#       relies in pushra and pullra
 #
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
-# code a 32-bit word in ASCII hexadecimal 
-#
-showhex:
-
-        pushra
-
-        call saves
-
-        add  s2, zero, a3
-        
-        addi s5, zero, 58
-
-        srli s3, s2, 24
-        call 100f
-        srli s3, s2, 16
-        call 100f
-        srli s3, s2, 8
-        call 100f
-        srli s3, s2, 0
-        call 100f
-
-        add  a3, zero, s2
-
-        j returns
-
-100:
-
-        pushra 
-
-        andi s3, s3, 0xFF
-        
-        srli s4, s3, 4
-        call 200f
-        
-        srli s4, s3, 0
-        call 200f
-
-        pullra
-
-        ret
-
-200:
-        pushra
-
-        andi s4, s4, 0x0F
-        ori  s4, s4, 48
-        blt  s4, s5, 300f
-        addi s4, s4, 7
-300:
-        add a3, zero, s4
-
-        call _putc
-        
-        pullra
-
-        ret
-
-#----------------------------------------------------------------------
 saves:
         addi sp, sp, -32
 
@@ -253,8 +213,6 @@ loads:
         ret
 
 returns:
-
-        putchar '='
 
         call loads
 
@@ -377,6 +335,8 @@ stackp:
 
         mhex a5
 
+        mhex a6
+
         putchar '['
 
         beq a5, a6, 200f
@@ -388,7 +348,7 @@ stackp:
         
         addi a5, a5, CELL
         
-        bne a5, a6, 100b
+        blt a5, a6, 100b
 
 200:
         putchar ' '
@@ -555,4 +515,69 @@ digit:
         add fst, zero, zero
         ret
 
+#---------------------------------------------------------------------
+# code a 32-bit word in ASCII hexadecimal
+#
+.global puthex
+puthex:
+
+        pushra
+
+        add  s2, zero, a3
+        
+        addi s5, zero, 58
+
+        addi a3, zero, ' '
+        
+        call _putc
+
+        srli s3, s2, 24
+        call 100f
+        
+        srli s3, s2, 16
+        call 100f
+        
+        srli s3, s2, 8
+        call 100f
+        
+        srli s3, s2, 0
+        call 100f
+
+        add  a3, zero, s2
+
+        pullra
+
+        ret
+
+100:
+
+        pushra 
+
+        andi s3, s3, 0xFF
+        
+        srli s4, s3, 4
+        call 200f
+        
+        srli s4, s3, 0
+        call 200f
+
+        pullra
+
+        ret
+
+200:
+        pushra
+
+        andi s4, s4, 0x0F
+        ori  s4, s4, 48
+        blt  s4, s5, 300f
+        addi s4, s4, 7
+300:
+        add a3, zero, s4
+
+        call _putc
+        
+        pullra
+
+        ret
 
