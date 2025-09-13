@@ -41,10 +41,7 @@
 .equ hash_words, 0x0B6953F8
 .equ hash_see, 0x0B878F36
 .equ hash_dot, 0x0002B58B
-
-.equ hash_cell,     0x7C70B163
-.equ hash_cellplus, 0x0A86DDE8
-.equ hash_cellless, 0x0A86DDEE
+.equ hash_cell, 0x7C70B163
 
 #---------------------------------------------------------------------
 # extras links to last primitive
@@ -296,9 +293,7 @@ wordf:
 
         la t0, h_here
 
-        bge a6, t0, 100b
-
-        j returns
+        j 100b
 
 #----------------------------------------------------------------------
 # shows one word at dictionary
@@ -428,20 +423,28 @@ dumps:
 
 100:
         addi t0, zero, 8
+        
         putchar '\n'
+        
         mhex a5
+        
         putchar ':'
+        
         putchar ' '
+
 200:
         lw a4, 0 (a5)
         
         mhex a4
 
         addi a5, a5, 4
+        
         addi a6, a6, -4
         
         addi t0, t0, -1
+        
         beq t0, zero, 100b
+        
         bne a6, zero, 200b
 
         j returns

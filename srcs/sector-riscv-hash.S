@@ -20,6 +20,8 @@
 */
 
 /*
+#----------------------------------------------------------------------
+
     A MilliForth for RISCV 
  
     original for the RISCV, by Alvaro G. S. Barcellos, 2025
@@ -43,6 +45,7 @@
 
     Not working yet :)
 
+#----------------------------------------------------------------------
 */
 
 #---------------------------------------------------------------------
@@ -232,6 +235,8 @@ _start:
 
 .equ debug, YES
 
+.equ dismiss, YES
+
 #----------------------------------------------------------------------
 # do any system inits
 main:
@@ -278,7 +283,12 @@ reset:
 #---------------------------------------------------------------------
 # reset stacks
 
+# xxx
+.ifndef dismiss
+
 miss:
+
+.endif
 
 error:
 
@@ -405,23 +415,22 @@ immediate:
 #---------------------------------------------------------------------
 # unexpected end of dictionary
 # wipe remains compiled
-# xxx (---------------------------------------------------------------
 
 .ifdef dismiss
+
 miss:
 
-        putchar '?'
+        putchar '\n'
 
 100:
-        lb fst, 0 (wrd)
+        lb fst, 0 (idx)
         call _putc 
         beq fst, trd, 100f
-        add wrd, wrd, 1
+        add idx, idx, 1
         j 100b
 100:
+        putchar ' '
         putchar '?'
-
-        j error
 
 wipe:
         # compiling ?
@@ -433,9 +442,6 @@ wipe:
 100:
         j error
 .endif
-
-# xxx )---------------------------------------------------------------
-
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
@@ -535,7 +541,9 @@ gets:
 hash:
 
 .ifdef dismiss
+
         add wrd, zero, idx
+
 .endif 
 
 djb2:
@@ -582,6 +590,11 @@ mask:
 
         sw idx, TOIN (usr)
 
+.ifdef dismiss
+
+        add idx, zero, wrd
+
+.endif 
         pullra
 
         ret
