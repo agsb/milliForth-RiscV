@@ -154,6 +154,11 @@
  
  ." That's all Folks !" cr
  
- words
+( words )
 
- dump
+( .S )
+
+( .R )
+
+ dump 
+

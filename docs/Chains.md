@@ -21,8 +21,8 @@ _this file is still a stub_
         toin,   next free byte in terminal input buffer
         last,   latest word in dictionary
         here,   next free byte in heap dictionary (here)
-        spt,    actual top of data stack
-        rpt,    actual top of return stack
+        sptr,   actual top of data stack
+        rptr,   actual top of return stack
         head,   last here, heap pointer, forwards
         tail    stack pointer, backwards
 

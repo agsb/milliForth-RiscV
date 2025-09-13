@@ -856,7 +856,7 @@ move:
 jump: 
 # jump to primitive
         
-        jalr zero, 0 (fst)
+        jalr ra, 0 (fst)
 
 #---------------------------------------------------------------------
 # the outer loop, need for indirect

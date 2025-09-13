@@ -21,21 +21,19 @@
 #---------------------------------------------------------------------
 .macro mhex rg
 
-        add t0, zero, a3
-
-        add a3, zero, \rg
 
         pushra
 
         call saves
         
+        add a3, zero, \rg
+
         call puthex
 
         call loads
 
         pullra 
         
-        add a3, zero, t0
 .endm
 #---------------------------------------------------------------------
 # code a 32-bit word in ASCII hexadecimal

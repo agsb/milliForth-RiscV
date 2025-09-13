@@ -30,7 +30,6 @@
 # djb2 hash cleared of bit 31
 #
 .equ hash_sfr, 0x00596858
-.equ hash_exec, 0x7C6BC01E
 .equ hash_docode, 0x0059695B 
 .equ hash_donext, 0x0059697A
 .equ hash_bye, 0x0B874AFB
@@ -52,26 +51,17 @@ def_word "2/", "sfr", hash_sfr, into_extras
 
         call pull2
         
-        srli fst, snd, 1
+        srli fst, fst, 1
         
         j keep1
 
 #---------------------------------------------------------------------
-# ( a -- ) execute a word address at top of data stack
-# not change the data stack
-def_word "exec", "exec", hash_exec, h_sfr
-        
-        call pull2
-        
-        add wrd, zero, fst
-
-        j pick
-
-#---------------------------------------------------------------------
 # ( -- ) execute a jump to a reference at IP
-def_word ":$", "docode", hash_docode, h_exec
+def_word ":$", "docode", hash_docode, h_sfr
         
-        jalr zero, 0 (ipt)
+        jalr ra, 0 (ipt)
+
+        j next
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump to next
@@ -115,7 +105,10 @@ def_word "dump", "dump", hash_dump, h_rplist
         
         # xxx 
         
+        # init
         la fst, h_here
+
+        # ends
         lw snd, HERE (usr)
 
         call dumps
@@ -261,6 +254,8 @@ loads:
 
 returns:
 
+        putchar '='
+
         call loads
 
         pullra 
@@ -281,17 +276,19 @@ wordf:
         putchar '\n'
 
 100:
-# verify end of dictionary
-        
-        beq a6, zero, returns
+# verify end of compiled dictionary
+
+        blt a6, zero, returns
+
+        la  a3, h_here
+
+        ble a6, a3, returns
 
         add a5, zero, a6
 
         lw a6, 0 (a5)
 
         call wordt
-
-        la t0, h_here
 
         j 100b
 
@@ -316,8 +313,6 @@ wordt:
 
 # set the end-of-word as exit address
 
-        la a6, exit
-
 100:
         putchar '\n'
         
@@ -329,7 +324,11 @@ wordt:
        
         addi a5, a5, CELL
 
-        bne a4, a6, 100b
+        la a3, exit
+
+        bne a4, a3, 100b
+
+        putchar '\n'
 
         pullra
 
@@ -415,19 +414,13 @@ dumps:
 
         mhex a6
 
-        sub a6, a6, a5
-
-        mhex a6
-
-        putchar '\n'
-
 100:
-        addi t0, zero, 8
+        addi t4, zero, 8
         
         putchar '\n'
         
         mhex a5
-        
+
         putchar ':'
         
         putchar ' '
@@ -436,16 +429,14 @@ dumps:
         lw a4, 0 (a5)
         
         mhex a4
-
+        
         addi a5, a5, 4
         
-        addi a6, a6, -4
+        addi t4, t4, -1
         
-        addi t0, t0, -1
+        beq t4, zero, 100b
         
-        beq t0, zero, 100b
-        
-        bne a6, zero, 200b
+        blt a5, a6, 200b
 
         j returns
 

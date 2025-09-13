@@ -5,6 +5,14 @@
 
 ## Done
 
+13/09/2025
+
+    Solved [char] and do overall review of code, tune of extras.
+
+    Changed to **jalr ra, 0 (ipt)** 
+
+    Clean commentaries and use of registers
+
 02/09/2025
 
  this easy linked-list generator macro does x86, 6502, ARMs, but 
@@ -16,7 +24,7 @@
  .global def_word
  .set h_last, 0x0
  .macro def_word name, label, hash
- .p2align 2, 0x00
+ .p2align 4, 0x00
  h_\label:
          .word h_last
          .set  h_last, h_\label

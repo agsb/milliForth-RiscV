@@ -5,13 +5,10 @@
 # a0, a1, a2, a7 are used by ecalls
 
 # forth struct pointer, constant 
-#define usr s0
+#define usr s2
 
 # instruction pointer, preserved
-#define ipt s1
-
-# memory index 
-#define idx a6
+#define ipt s3
 
 # hash value
 #define hsh a0
@@ -30,4 +27,7 @@
 
 # generic
 #define trd a5
+
+# index 
+#define idx a6
 
