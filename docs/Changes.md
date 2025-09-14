@@ -2,8 +2,26 @@
 
 ## Todo
 
+    Done 'create and 'variable. Create replaces <BUILDS
 
 ## Done
+
+14/09/2025
+
+
+    / create the header and 
+    / place the address of cell after 'exit' at TOS
+    : create 
+        here @ : last !
+        ['] lit ,
+        here @ cell + cell + ,
+        ['] exit ,
+        0 state ! ;
+
+    / create and allocate cells after
+    : variable create cells allot ;
+
+    How make CONSTANT ? need make DOES>
 
 13/09/2025
 

@@ -310,21 +310,31 @@
 
  see 
 
+ here @ . drop
+
  : variable create cells allot ;
 
  see 
+
+ here @ . drop
 
  variable tape_head
 
  see 
 
+ here @ . drop
+
  variable loop_depth
 
  see 
 
+ here @ . drop
+
  variable parse_index
 
  see 
+
+ here @ . drop
 
  : runbf 0 parse_index ! 
      begin parse_index @ c@ 
@@ -369,17 +379,9 @@
 
  see 
 
- dup @
-
- see 
-
  .S cr
 
- see 
-
  .R cr
-
- see 
 
  BF( >++++++++[<+++++++++>-]
      <.>++++[<+++++++>-]
@@ -391,9 +393,4 @@
  see 
 
  words
-
- see 
-
-
- see 
 
