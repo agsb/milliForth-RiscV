@@ -4,11 +4,13 @@
     <BUILD CREATE :NONAME DOES>
     process to define new words and families of words.
 
-    from [^1], 
+    from old long thread in comp.language.forth [^1]: 
 
     " DOES> changes the code field, 
     so it does not matter whether CONSTANT
     or VARIABLE is used for defining <BUILDS; "
+
+## Context
 
     Classic Forths with STC DTC ITC, have this header structure:
     
@@ -28,13 +30,13 @@
     
     : VARIABLE CONSTANT ;CODE ... some assembly code.
 
-    The colon (:) word does a dictionary word header with next name,
+    The COLON (:) word does a dictionary word header with next name,
         toggle smudge the entry, copy LATEST to link field, copy HERE 
         to LATEST and change STATE to compiling (1).
     
-    The semis (;) word places a EXIT at end of word definition, 
+    The SEMIS (;) word places a EXIT at end of word definition, 
         toggle smudge the entry and change the STATE 
-        to interpreting (0).
+        to interpreting (0). 
 
     The ;CODE makes the Forth (interpreter) do a literal jump to 
         native code following it. 
@@ -64,7 +66,7 @@
     when is indirect thread, jumps to the contents of that addres,
 
 
-## Classic
+## Non Classic
 
     But MITC, wherever using name or hash, does not have code field.
     
@@ -73,9 +75,29 @@
     word.
 
     Milliforth also does not use any flag other than IMMEDIATE, 
-    no SMUDGE, no COMPILE-ONLY, none.
+    no SMUDGE, no COMPILE-ONLY, none. 
 
+    Also COLON does not update LATEST, SEMIS does. Then if something 
+    goes wrong while compiling the new word, that does not broke 
+    the dictionary access and when complete the compiling, the 
+    new word is pointed by LATEST.
 
+    Using hash version :
+
+    : create 
+        here @ : latest ! / create a header and updates latest
+        ['] exit dup , ,  / two 'exit, one will be changed by does>
+        ;
+
+    : does>
+        r> dup >r   / get next cell after does>
+        latest @ cell cell + + ! / get latest, pass link and hash
+        ;
+    
+    : variable create , does> ;
+    : constant create , does> @ ;
+
+    
 ## References
 
 [1] https://comp.lang.forth.narkive.com/Ie9xB3gq/quick-review-of-builds-and-create-history
