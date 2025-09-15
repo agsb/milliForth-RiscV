@@ -1,8 +1,10 @@
 # <Builds Create Does>
 
     One of most powerfull tools of forth is the 
+    <BUILD CREATE :NONAME DOES>
+    process to define new words and families of words.
 
-    from [^1]
+    from [^1], 
 
     " DOES> changes the code field, 
     so it does not matter whether CONSTANT
@@ -13,27 +15,30 @@
 
     What CREATE and :NONAME really does ?
     
-    CREATE does a header without a list.
+    CREATE does a header and no list (xt), leaves a address at stack.
 
-    :NONAME does a list without a header.
+    :NONAME does a list (xt) and no header, leaves a address at stack.
 
     Classic Forth with STC DTC ITC, have this header structure:
     
-        link field, link to previous word in dictionary linked list
+        link field, link to previous word in dictionary linked list;
     
-        name field, with flags and size at first byte
+        name field, with flags and size at first byte;
     
         code field, what is executed -- jump to this address, 
-                usually DOCOL or para field address
+                usually DOCOL or parameter field address
     
-        para field, native code or list of references
+        parameter field, with native code or a list of references
 
-    But MITC, using name or hash, does not have distincts 
-        code and para fields, what defines how to process is the
-        address inside the sequent cells. 
-        If is a primitive or a compiled word.
+    But MITC, wherever using name or hash, does not have code field.
+    What defines how to process is the address at the cells, to 
+    determine if is a primitive or a compiled word.
+
+    Milliforth also does not use any flag other than IMMEDIATE, 
+    no SMUDGE, no COMPILE-ONLY, none.
 
     What ;CODE does ?
+
 
 
 ## References
