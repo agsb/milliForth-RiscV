@@ -298,5 +298,99 @@
 
  see 
 
- dump
+ : create here @ : last !
+        ['] lit , 
+        here @ cell + cell + , 
+        ['] exit , 
+        0 state ! ;
+
+ see 
+
+ : cells lit [ 4 , ] ;
+
+ see 
+
+ here @ . drop
+
+ : variable create cells allot ;
+
+ see 
+
+ here @ . drop
+
+ variable tape_head
+
+ see 
+
+ here @ . drop
+
+ variable loop_depth
+
+ see 
+
+ here @ . drop
+
+ variable parse_index
+
+ see 
+
+ here @ . drop
+
+ : runbf 0 parse_index ! 
+     begin parse_index @ c@ 
+     dup dup dup dup dup dup dup 
+     [char] , = if key tape_head @ ! then 
+     [char] - = if tape_head @ @ 1 - tape_head @ ! then 
+     [char] + = if tape_head @ @ 1 + tape_head @ ! then 
+     [char] < = if tape_head @ 2 - tape_head ! then 
+     [char] > = if tape_head @ 2 + tape_head ! then 
+     [char] . = if tape_head @ @ emit then 
+
+     [char] [ = tape_head @ @ 0 = and if 1 loop_depth ! 
+     begin parse_index @ 1 + parse_index ! parse_index @ c@ dup 
+     [char] [ = if loop_depth @ 1 + loop_depth ! then 
+     [char] ] = if loop_depth @ 1 - loop_depth ! then 
+     loop_depth @ 0 = until then 
+
+     [char] ] = tape_head @ @ 0 <> and if 1 loop_depth ! 
+     begin parse_index @ 1 - parse_index ! parse_index @ c@ dup 
+     [char] [ = if loop_depth @ 1 - loop_depth ! then 
+     [char] ] = if loop_depth @ 1 + loop_depth ! then 
+     loop_depth @ 0 = until then 
+
+     parse_index @ 1 + parse_index ! 
+     dup parse_index @ = until drop ;
+
+ see 
+
+ : BF( [char] ) parse runbf ; immediate
+
+ see 
+
+ : 48 lit [ 16 16 16 + + , ] ;
+
+ see 
+
+ here @ 48 + tape_head !
+
+ see 
+
+ tape_head
+
+ see 
+
+ .S cr
+
+ .R cr
+
+ BF( >++++++++[<+++++++++>-]
+     <.>++++[<+++++++>-]
+     <+.+++++++..+++.>>++++++[<+++++++>-]
+     <++.------------.>++++++[<+++++++++>-]
+     <+.<.+++.------.--------.>>>++++[<++++++++>-]
+     <+. )
+
+ see 
+
+ words
 
