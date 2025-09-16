@@ -3,7 +3,7 @@ _this file is still a stub_
 # Builds Create Does
 
 One of most powerfull tools of Forth is the 
-    <BUILD CREATE :NONAME DOES>
+    \<BUILD CREATE :NONAME DOES\>
     process to define new words and families of words.
 
 From a old long thread in comp.language.forth [^1]: 
@@ -12,8 +12,7 @@ From a old long thread in comp.language.forth [^1]:
     so it does not matter whether CONSTANT
     or VARIABLE is used for defining <BUILDS; "
 
-The Forth standart for [CREATE](https://forth-standard.org/standard/core/CREATE)
-
+The Forth standart defines [CREATE](https://forth-standard.org/standard/core/CREATE) and [DOES](https://forth-standard.org/standard/core/DOES). In short, CREATE makes a dictionary header and leaves the address of next cell in dictionary and DOES> appends at address a link to the sequence words following DOES>. By the way, DOES> must know exactly what CREATE makes.
 
 ## Context
 
@@ -78,13 +77,15 @@ What defines how to process is the content address at the cells, to
     determine if is bellow a limit, is a primitive else is a compiled 
     word.
 
+In MilliForth, ': is called colon '; is called semis ';S is called exit
+
 Milliforth also does not use any flag other than IMMEDIATE, 
     no SMUDGE, no COMPILE-ONLY, none. 
 
- Also COLON does not update LATEST, SEMIS does. Then if something 
-    goes wrong while compiling the new word, that does not broke 
+ Also colon does not update latest, semis does. Then if something 
+    goes wrong while compiling the new word, does not broke 
     the dictionary access and when complete the compiling, the 
-    new word is pointed by LATEST.
+    new word is pointed by latest.
 
  Using hash version :
 
