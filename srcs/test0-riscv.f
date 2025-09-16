@@ -154,3 +154,10 @@
  
  ." That's all Folks !" cr
  
+ bye
+
+ : :noname here ] ; / there is no docol to append at start
+
+ : create here @ : [ last ! here @ ['] exit dup , , ;
+
+

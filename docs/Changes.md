@@ -1,10 +1,26 @@
 # Changes
 
+    The milliforth uses Minimal Indirect Thread Code, 
+    DJB2 hashes instead flag-size-name-pads in minimal dictionary
+    with only: + nand ! @ : ; 0# u@ exit key emit 
+
 ## Todo
 
-    Done 'create and 'variable. Create replaces <BUILDS
+    maybe 'create and 'variable. Create replaces <BUILDS
 
 ## Done
+
+16/09/2025
+
+    From https://comp.lang.forth.narkive.com/Ie9xB3gq/
+        quick-review-of-builds-and-create-history#post3 :
+
+    "The flash memory can be written many times. 
+    The problem is that it is only possible to change 1 bits to zero bits. 
+    To change zero bits back to ones requires erasing a page."
+
+    Then flash memories, is better make flag bit  
+    for immediate words to be 0 and for normal words to be 1.
 
 14/09/2025
 

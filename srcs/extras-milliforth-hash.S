@@ -222,7 +222,7 @@ returns:
 
 #----------------------------------------------------------------------
 # shows all words at dictionary
-wordf:
+wordfx:
         pushra 
 
         call saves
@@ -251,6 +251,40 @@ wordf:
         j 100b
 
 #----------------------------------------------------------------------
+# shows all words at dictionary
+wordf:
+        pushra 
+
+        call saves
+
+# get the latest link
+        
+        lw a5, LAST (usr)
+        
+        lw a6, HERE (usr)
+        
+        la s7, h_here
+
+        putchar '\n'
+
+100:
+# verify end of compiled dictionary
+
+        blt a5, zero, returns
+
+        ble a5, s7, returns
+
+        add s8, zero, a5
+
+        call wordt
+
+        add a6, zero, s8
+
+        lw a5, 0 (a6)
+
+        j 100b
+
+#----------------------------------------------------------------------
 # shows one word at dictionary
 wordu:
         pushra 
@@ -258,6 +292,8 @@ wordu:
         call saves
 
         lw a5, LAST (usr)
+
+        lw a6, HERE (usr)
 
         call wordt
 
@@ -282,9 +318,7 @@ wordt:
        
         addi a5, a5, CELL
 
-        la a3, exit
-
-        bne a4, a3, 100b
+        bne a5, a6, 100b
 
         putchar '\n'
 
@@ -370,9 +404,13 @@ dumps:
         
         add a6, zero, a4
 
+        putchar '['
+        
         mhex a5
 
         mhex a6
+
+        putchar ']'
 
 100:
         addi t4, zero, 8

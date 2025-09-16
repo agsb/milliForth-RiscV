@@ -1,4 +1,26 @@
 
+;#--------------------------------------------------------------------
+; classic
+; THE ROAD TOWARDS A MINIMAL FORTH ARCHITECTURE, Mikael Patel, 1990
+
+ : : ( -- ) create ] does >r ;
+
+ : variable ( -- ) create 0 , does> ;
+ 
+ : constant ( x -- ) create , does> @ ;
+
+;#--------------------------------------------------------------------
+; alternative
+; https://www.reddit.com/r/Forth/comments/yuytb2/whats_the_usecase_for_create_does/
+
+ : lit, ( x -- ) postpone literal ;
+ 
+ : constant ( x "name" -- )  >r :  r> lit,  postpone ;  ;
+ 
+ : variable ( "name" -- ) align here 0 , constant ;
+
+
+;#--------------------------------------------------------------------
  : creates 
         here @ : last !
         here dup cell + cell + ,
@@ -13,7 +35,7 @@
         ,
         ;
  
- /#--------------------------------------------------------------------
+ ;#--------------------------------------------------------------------
  : create here @ : last !
         ['] lit ,
         here @ cell + cell + ,
