@@ -89,21 +89,25 @@ Milliforth also does not use any flag other than IMMEDIATE,
 
  Using hash version :
 
- : create 
-        here @ : latest ! / create a header and updates latest
-        ['] exit dup , ,  / two 'exit, one will be changed by does>
-        ;
+     : create 
+            here @ 
+            : [                 / create a header
+            latest !            / updates latest and leave 
+            here @              / pass the xt to data stack
+            ['] exit dup , ,    / place two 'exit, first could be used by does>
+            ;
 
- : does>
-        r> dup >r   / get next cell after does>
-        latest @ cell cell + + ! / get latest, pass link and hash
-        ;
+     : does>
+            drop
+            r> dup >r   / get next cell after does>
+            latest @ cell cell + + ! / get latest, pass link and hash
+            ;
 
 But ?
 
- : variable create , does> ;
- 
- : constant create , does> @ ;
+     : variable create 0 , does> , ;
+     
+     : constant create , does> @ ;
    
 ## References
 
