@@ -1,6 +1,6 @@
 _this file is still a stub_
 
-# <Builds Create Does>
+# Builds Create Does
 
 One of most powerfull tools of Forth is the 
     <BUILD CREATE :NONAME DOES>
@@ -11,6 +11,9 @@ From a old long thread in comp.language.forth [^1]:
 " DOES> changes the code field, 
     so it does not matter whether CONSTANT
     or VARIABLE is used for defining <BUILDS; "
+
+The Forth standart for [CREATE](https://forth-standard.org/standard/core/CREATE)
+
 
 ## Context
 
