@@ -231,9 +231,13 @@ h_here:
 .text 
 .p2align 2, 0x0
 
+/*
+
 .equ debug, YES
 
 .equ dismiss, YES
+
+*/
 
 .equ postpones, YES
 
@@ -946,7 +950,7 @@ resolvept:
 
 ends:
 
-.word 0xDEADBEEF
+# .word 0xDEADBEEF
 
 #---------------------------------------------------------------------
 .end

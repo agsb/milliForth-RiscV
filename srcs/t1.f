@@ -1,103 +1,17 @@
- : void u@ 0# ;
- : | .S .R ;
- : -1 u@ 0# ;
- :  0 -1 -1 nand ;
- : TRUE -1 ;
- : FALSE 0 ;
- : 1 -1 -1 + -1 nand ;
- : 2 1 1 + ;
- : 4 2 2 + ;
- : cell 4 ;
- : sp u@ ;
- : rp sp cell + ;
- : last rp cell + ;
- : here last cell + ;
- : >in here cell + ;
- : state >in cell + ;
- : head state cell + ;
- : rp@ rp @ cell + ;
- : sp@ sp @ cell + ;
- : dup sp@ @ ;
- : over sp@ cell + @ ;
- : swap over over sp@ cell + cell + cell + ! sp@ cell + ! ;
- : not dup nand ;
- : and nand not ;
- : or not swap not and not ;
- : - not 1 + + ;
- : <> - 0# ;
- : = <> not ;
- : drop dup - + ;
- : nip swap drop ;
- : tuck swap over ;
- : 2dup over over ;
- : 2drop drop drop ;
- : allot here @ + here ! ;
- : , here @ ! cell allot ;
- : >r rp@ @ swap rp@ ! rp@ cell - rp ! rp@ ! ;
- : r> rp@ @ rp@ cell + rp ! rp@ @ swap rp@ ! ;
- : branch rp@ @ dup @ + rp@ ! ;
- : ?branch 0# not rp@ @ @ cell - and rp@ @ + cell + rp@ ! ;
- : lit rp@ @ dup cell + rp@ ! @ ;
- : ['] rp@ @ dup cell + rp@ ! @ ;
- : rot >r swap r> swap ;
- : 2* dup + ;
- : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
- : 80h 1 2* 2* 2* 2* 2* 2* 2* ;
- : IMMEDIATE 80h 2** 2** 2** ;
- : immediate last @ cell + dup @ IMMEDIATE or swap ! ;
- : ] 1 state ! ;
- : [ 0 state ! ; immediate
- : if ['] ?branch , here @ 0 , ; immediate
- : then dup here @ swap - swap ! ; immediate
- : else ['] branch , here @ 0 , swap dup 
-     here @ swap - swap ! ; immediate
- : begin here @ ; immediate
- : again ['] branch , here @ - , ; immediate
- : until ['] ?branch , here @ - , ; immediate
- : while ['] ?branch , here @ 0 , ; immediate
- : repeat swap ['] branch , here @ - , 
-     dup here @ swap - swap ! ; immediate
- : do here @ ['] >r , ['] >r , ; immediate
- : loop ['] r> , ['] r> , ['] lit , 1 , ['] + , 
-     ['] 2dup , ['] = , ['] ?branch , 
-     here @ - , ['] 2drop , ; immediate
- :  8 lit [ 4 4 + , ] ;
- : 16 lit [ 8 8 + , ] ;
- : bl lit [ 16 16 + , ] ;
- : cr lit [ 8 2 + , ] emit ;
- : nl lit [ 8 4 + 1 + , ] emit ;
- : CHAR lit [ 16 1 - 2* 2* 2* 2* 16 1 - or , ] ;
- : c@ @ CHAR and ;
- : type 0 do dup c@ emit 1 + loop drop ;
- : in> >in @ c@ >in @ 1 + >in ! ;
- : parse in> drop 
-        >in @ swap 0 
-        begin over in> <> while 1 + repeat 
-        swap bl = if >in @ 1 - >in ! then ;
- : word in> drop 
-        begin dup in> <> until 
-        >in @ 2 - >in ! parse ;
- : [char] ['] lit , bl word drop c@ , ; immediate
- : ( [char] ) parse drop drop ; immediate
- : ." [char] " parse type ; immediate
- ." Hello world " cr
- ." That's all Folks !" cr
  : create here @ : last !
         ['] lit , 
         here @ cell + cell + , 
         ['] exit , 
         0 state ! ;
  
- : cells lit [ 4 , ] ;
- here @ . drop
- : variable create cells allot ;
- here @ . drop
+ : variable create cell allot ;
+ 
  variable tape_head
- here @ . drop
+
  variable loop_depth
- here @ . drop
+ 
  variable parse_index
- here @ . drop
+ 
  : runbf 0 parse_index ! 
      begin parse_index @ c@ 
      dup dup dup dup dup dup dup 
@@ -107,19 +21,28 @@
      [char] < = if tape_head @ 2 - tape_head ! then 
      [char] > = if tape_head @ 2 + tape_head ! then 
      [char] . = if tape_head @ @ emit then 
+     
      [char] [ = tape_head @ @ 0 = and if 1 loop_depth ! 
      begin parse_index @ 1 + parse_index ! parse_index @ c@ dup 
      [char] [ = if loop_depth @ 1 + loop_depth ! then 
      [char] ] = if loop_depth @ 1 - loop_depth ! then 
      loop_depth @ 0 = until then 
+ 
      [char] ] = tape_head @ @ 0 <> and if 1 loop_depth ! 
      begin parse_index @ 1 - parse_index ! parse_index @ c@ dup 
      [char] [ = if loop_depth @ 1 - loop_depth ! then 
      [char] ] = if loop_depth @ 1 + loop_depth ! then 
      loop_depth @ 0 = until then 
+     
      parse_index @ 1 + parse_index ! 
+     
      dup parse_index @ = until drop ;
- : 48 lit [ 16 16 16 + + , ] ;
+
+ : 64 lit [ 16 16 + 16 + 16 + , ] ;
+ 
  : BF( [char] ) parse runbf ; immediate
+ 
  here @ 48 + tape_head !
+ 
  BF( >++++++++[<+++++++++>-] <.>++++[<+++++++>-] <+.+++++++..+++.>>++++++[<+++++++>-] <++.------------.>++++++[<+++++++++>-] <+.<.+++.------.--------.>>>++++[<++++++++>-] <+. )
+

@@ -28,6 +28,8 @@
         In FigForth sources ;S was called semis and ; was called 
         semicolon, but in milliforth, ;S is exit and ; is semis. 
 
+    Still the first word bug stays, it corrupts the hash of first word 
+    of dictionary.  
 
 16/09/2025
 

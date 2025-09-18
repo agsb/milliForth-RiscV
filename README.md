@@ -9,26 +9,33 @@ This is an implementation of milliForth (sectorforth) concept for RISCV ISA.
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
-This version uses DJB2 hashes in headers, instead of size+flags+name+pads. 
+This version uses only 556 bytes, not including 62 bytes of system I/O,
+8 bytes of postpone hack, and many bytes for extras words.
 
-No human WORDS. The IMMEDIATE flag is the MSBit (31) of hash.
+No human WORDS. It uses DJB2 hashes in headers, instead of size+flags+name+pads. 
 
-## For verify
+The IMMEDIATE flag is the MSBit (31) of hash.
 
-    use:
+## For use
+
+    The sector-riscv.S is working, also the extra-milliforth.S,
+    could test by:
 
     **cat test0-riscv.f | sh doit.sh | tee z0**
 
-    test0-riscv.f is a incremental dictionary of words
+    test0-riscv.f is a minimal dictionary of words
 
-    t0.f is same as test0-riscv.f
+    t0.f is a minimal set of words, same as test0-riscv.f;
 
-    t1.f is a dictionary with a BrainFu*ck interpreter. (NOT WORK)
+    t1.f is a complement with BrainFu*ck interpreter; (_STUB_)
 
-    t00.f tries about create does> <builds postpone (NOT WORK)
+    Could test by:
 
-    the sector-riscv.S is tested and working, 
-        also the extra-milliforth.S
+    cat t0.f | sh doit.sh | tee z1
+
+    cat t0.f t1.f | sh doit.sh | tee z2
+
+    t00.f tries about <builds create variable constant does> (_STUB_)
     
 ## Compiler Options
 
@@ -64,12 +71,24 @@ with pre-processor directives eg. #define.
 For now, using riscv-unknown-elf-gcc 15.0 suit with qemu emulator
 for a single core minimal footprint Forth thread.  
 
-I hope it uses far less than 4k bytes, without a user dictionary.
+I hope it uses less than 1k byte, without extras and user dictionary.
 
 The milliForth must use memory pointers for data stack and return stack, 
 because does fetch and store from a special 'user structure', which 
 contains the user variables for Forth 
 (state, toin, last, here, sptr, dptr, heap, tail).
+
+## Postpone
+
+Forth standart have postone, instead of compile, and [compile].
+
+In milliforth, a postpone state < 0 always compile the next word, 
+ignoring any flags, and return to compile state = 1. 
+
+So postpone is defined as : postpone -1 state ! ; immediate
+
+
+## internals
 
 This version uses DJB2 hash for dictionary entries, and includes: 
 
