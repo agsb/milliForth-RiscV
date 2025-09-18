@@ -66,6 +66,14 @@
 
 .equ TRUE, -1
 
+# states
+
+.equ EXECUTE, 0
+
+.equ COMPILE, 1
+
+.equ POSTPONE, -1
+
 # usefull
 
 .equ ONE, 1
@@ -226,6 +234,8 @@ h_here:
 .equ debug, YES
 
 .equ dismiss, YES
+
+.equ postpones, YES
 
 #---------------------------------------------------------------------
 # xxx
@@ -393,23 +403,41 @@ tick:
         
         bne hsh, wrd, 100b
 
-#---------------------------------------------------------------------         
-eval:
-# fst points to or start of code or list of references
+# fst points to, start of code or list of references, aka xt
 
         addi fst, fst, CELL
+
+#---------------------------------------------------------------------         
+# hsh have the hash of the word
+# snd have the flags
+# fst have the address after header
+
+eval:
+# what to do ?
+
+        lw trd, STAT (usr)
+        
+# executing ? if state == 0
+
+        beq trd, zero, execute
+
+.ifdef postpones
+# postpone ? if state < 0
+        blt trd, zero, postpone
+.endif
 
 # immediate ? 
 
         bne snd, zero, immediate      
 
-# executing ? if state == 0
-        
-        lw snd, STAT (usr)
-        
-        beq snd, zero, execute
-
 #---------------------------------------------------------------------         
+.ifdef postpones
+# reset state to compile
+postpone:
+        add trd, zero, 1
+        sw trd, STAT (usr)
+.endif
+
 # compiling ? if state != 0
 compile:
         

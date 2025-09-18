@@ -4,13 +4,34 @@
     DJB2 hashes instead flag-size-name-pads in minimal dictionary
     with only: + nand ! @ : ; 0# u@ exit key emit 
 
-## Todo
-
-    maybe 'create and 'variable. Create replaces <BUILDS
-
 ## Done
 
+18/09/2025
+
+    the ['] word only works with non immediate words, is like COMPILE,
+
+    The colon : always set state to compiling and semis ; always set
+    state to interpret.
+
+    While in compile state, immediate words are always executed, so
+    how make postpone, that always compile the next word ?
+
+    The outer interpreter uses state to decide what to do, if execute 
+    or compile, then can use a new state to force the compilation 
+    of next word and go back to compile state. 
+
+    To do this will cost bytes, it will be a option.
+
+    Included code to postpone in eval function
+
+    Note: 
+        In FigForth sources ;S was called semis and ; was called 
+        semicolon, but in milliforth, ;S is exit and ; is semis. 
+
+
 16/09/2025
+
+    Note:
 
     From https://comp.lang.forth.narkive.com/Ie9xB3gq/
         quick-review-of-builds-and-create-history#post3 :
@@ -24,6 +45,7 @@
 
 14/09/2025
 
+    Needs 'create and 'variable. Create replaces <BUILDS
 
     / create the header and 
     / place the address of cell after 'exit' at TOS
