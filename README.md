@@ -13,7 +13,24 @@ This version uses DJB2 hashes in headers, instead of size+flags+name+pads.
 
 No human WORDS. The IMMEDIATE flag is the MSBit (31) of hash.
 
-Options:
+## For verify
+
+    use:
+
+    **cat test0-riscv.f | sh doit.sh | tee z0**
+
+    test0-riscv.f is a incremental dictionary of words
+
+    t0.f is same as test0-riscv.f
+
+    t1.f is a dictionary with a BrainFu*ck interpreter. (NOT WORK)
+
+    t00.f tries about create does> <builds postpone (NOT WORK)
+
+    the sector-riscv.S is tested and working, 
+        also the extra-milliforth.S
+    
+## Compiler Options
 
     compiler suit of RISCV: gcc riscv64-unknown-elf-* -Oz
 
