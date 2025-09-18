@@ -1,8 +1,18 @@
 # Changes
 
     The milliforth uses Minimal Indirect Thread Code, 
-    DJB2 hashes instead flag-size-name-pads in minimal dictionary
+    DJB2 hashes instead flag-size-name-pads, in a 
+    minimal native code dictionary (primitives)
     with only: + nand ! @ : ; 0# u@ exit key emit 
+    and a user structure for main forth variables.
+
+    I need learn about how implement:
+
+    <builds create does> variable constant defer postpone
+
+    postpone are done as extra configuration flag.
+
+    create and variable are in the minimal vocabulary.
 
 ## Done
 

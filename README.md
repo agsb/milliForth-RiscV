@@ -12,9 +12,11 @@ Milliforth uses a minimal set of primitives and functions for make a Forth.
 This version uses only 556 bytes, not including 62 bytes of system I/O,
 8 bytes of postpone hack, and many bytes for extras words.
 
-No human WORDS. It uses DJB2 hashes in headers, instead of size+flags+name+pads. 
+No human WORDS. 
 
-The IMMEDIATE flag is the MSBit (31) of hash.
+It uses DJB2 hashes in headers, instead of size+flags+name+pads. 
+
+Only use a IMMEDIATE flag, at MSBit (31) of hash.
 
 ## For use
 
