@@ -89,6 +89,23 @@ Milliforth also does not use any flag other than IMMEDIATE,
 
  Using hash version :
 
+ works:
+
+    __STUB__
+
+     : create 
+        here @ : [ last !
+        ['] lit ,
+        here @ cell + cell + ,
+        ['] exit ,
+        0 state ! ;
+        
+     : cells lit [ 4 , ] ;
+
+     : variable create cells allot ;
+
+try:
+
      : create 
             here @ 
             : [                 / create a header
