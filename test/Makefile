@@ -17,25 +17,17 @@ NAME = riscv64-unknown-elf-
 # on linux ?
 NAME = riscv64-linux-gnu-
 
-# using local ?
-# or optional compiled
-# PASS = /opt/riscv/
-
-#ifneq ("$(wildcard $(PASS))", "")
-#	BASE = /opt/riscv/bin/
-#	NAME = riscv32-unknown-linux-gnu-
-#endif
-
 PASS = ${BASE}${NAME}
 
 GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs -static -Os \
-	   -march=rv32ic -mabi=ilp32
-	  # -march=rv64ic -mabi=lp64 
+	   -march=rv32ic -mabi=ilp32 \
 	   
-# -march=rv64ic -mabi=lp64 
-# -march=rv32ic -mabi=ilp32
+# -fPIC -Wl,--no-relax
+# -Wl,-Ttext,0
+# -march=rv64ic -mabi=lp64 -static -Os \
+# -march=rv32ic -mabi=ilp32 -static -Os \
 
 LDFLAGS = 
 
@@ -50,16 +42,17 @@ STRIP = ${PASS}strip
 
 OBJDUMP = ${PASS}objdump
 
+#QEMU = ${BASE}qemu-system-riscv64
+#QEMU = ${BASE}qemu-system-riscv32
+
 QEMU = ${BASE}qemu-riscv64
+QEMU = ${BASE}qemu-riscv32
 
-#QEMU = ${BASE}qemu-riscv32
-
-#QFLAGS = -nographic -smp 1 -machine virt -bios none
-
-
-MY = sector-riscv
+QFLAGS = -display none -bios none -serial mon:stdio -smp 1 -machine virt 
 
 MY = minimal
+
+MY = sector-riscv
 
 ########################################
 
@@ -77,7 +70,7 @@ $(MY): $(SOURCES:.S=.o)
 	
 	$(PASS)objcopy $(MY).elf -O binary $(MY).bin
 
-#	od --endian=little -A x -t x1z -v $@.elf > $@.hex
+	od --endian=little -A x -t x1 -v $@.sec > $@.hex
 
 all: 
 	
@@ -87,7 +80,7 @@ clean:
 	
 	$(RM) $(MY).out $(MY).map $(MY).lst \
 	      $(MY).elf $(MY).dmp $(MY).bin \
-	      $(MY).ord $(MY).sec \
+	      $(MY).hex $(MY).sec \
 	      err out
 
 qemu: 

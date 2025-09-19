@@ -30,14 +30,25 @@
 
 
 #---------------------------------------------------------------------
+#
+# Note: system ecalls do not use ra 
+#
+
+#---------------------------------------------------------------------
 # linux ecall stuff, 29/07/2025, vide:
 # https://github.com/riscv-software-src/riscv-pk/blob/master/pk/syscall.h
 
-.equ STDIN,     0
-.equ STDOUT,    1
-.equ GETC,     63
-.equ PUTC,     64
-.equ EXIT,     93
+.equ _ZERO,      0
+.equ _ONE,       1
+.equ _STDIN,     0
+.equ _STDOUT,    1
+
+.equ _SBRK,     45
+.equ _FCNT,     55
+.equ _GETC,     63
+.equ _PUTC,     64
+.equ _EXIT,     93
+.equ _MMAP,     192
 
 #---------------------------------------------------------------------
 .section .bss
@@ -47,108 +58,65 @@ _char:
 #---------------------------------------------------------------------
 .section .text
 
-.ifndef _start
-
-.globl _start
-
-_start:
-
-main:
-
-.endif
-
-#---------------------------------------------------------------------
-#
-# Note: system ecalls do not use ra 
-#
-
 # load system call for exit
 _exit:
-        add a0, zero, zero
-        addi a7, zero, EXIT
+        addi a0, zero, _ZERO
+        addi a7, zero, _EXIT
         ecall
 
 # load system call for init
-# pass system parameters to program 
 _init:
+        
         ret
 
 # linux ecall for getc
 _getc:
-        addi a0, zero, STDIN
+        addi a0, zero, _STDIN
         la   a1, _char
-        addi a2, zero, 1
-        addi a7, zero, GETC
+        addi a2, zero, _ONE
+        addi a7, zero, _GETC
         ecall
         lw a3, 0 (a1)
+        
+        #EOF?
+        beq a0, zero, _exit
+
         ret
 
 # linux ecall for putc
 _putc:
-        addi a0, zero, STDOUT
+        addi a0, zero, _STDOUT
         la   a1, _char
-        addi a2, zero, 1
-        addi a7, zero, PUTC
+        addi a2, zero, _ONE
+        addi a7, zero, _PUTC
         sw a3, 0 (a1)
+
+_rets:
         ecall
         ret
 
+/*
 #---------------------------------------------------------------------
+_sbrk:
+        add a0, zero, a3
+        addi a7, zero, _SBRK
+        j _rets
 
 #---------------------------------------------------------------------
-# code a register (32-bit) word in ASCII hexadecimal 
-#
-puthex:
-
-        pushra
-
-        add  s2, zero, a3
+_fcntl: # fd, cdm, arg
+        add a0, zero, a3
+        add a1, zero, a4
+        add a2, zero, a5
+        addi a7, zero, _FNCT
+        j _rets
         
-        addi s5, zero, 58
-
-        srli s3, s2, 24
-        call 100f
-        srli s3, s2, 16
-        call 100f
-        srli s3, s2, 8
-        call 100f
-        srli s3, s2, 0
-        call 100f
-
-        add  a3, zero, s2
-
-        pullra
-
-        ret
-
-100:
-        pushra
-
-        andi s3, s3, 0xFF
-        
-        srli s4, s3, 4
-        call 200f
-        
-        srli s4, s3, 0
-        call 200f
-
-        pullra
-
-        ret
-
-200:
-        pushra
-
-        andi s4, s4, 0x0F
-        ori  s4, s4, 48
-        blt  s4, s5, 300f
-        addi s4, s4, 7
-300:
-        add a3, zero, s4
-
-        call _putc
-        
-        pullra
-
-        ret
-
+#---------------------------------------------------------------------
+_mmap: # addr, length, prot, flags, fd, pgoffset
+        add a0, zero, 
+        add a1, zero, 
+        add a2, zero, 
+        add a3, zero, 
+        add a4, zero, 
+        add a5, zero, 
+        addi a7, zero, _MMAP
+*/

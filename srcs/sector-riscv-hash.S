@@ -200,7 +200,7 @@ _user:
 # user parameter offsets
 .skip 8 * CELL
 
-# reserved for locals 
+# reserved for locals, dont stacks ! 
 _locals:
 .skip 8 * CELL
 
@@ -218,7 +218,6 @@ rp0: .word 0x0
 _tib:       
 .skip tibz
 
-#xxx
 # pad grows forward
 _pad:       
 .skip padz
@@ -231,15 +230,12 @@ h_here:
 .text 
 .p2align 2, 0x0
 
-/*
+ # .equ debug, YES
 
-.equ debug, YES
+ # .equ dismiss, YES
 
-.equ dismiss, YES
+ # .equ postpones, YES
 
-*/
-
-.equ postpones, YES
 
 #---------------------------------------------------------------------
 # xxx
@@ -253,9 +249,6 @@ h_here:
        call _putc
        add a3, zero, t0
 .endm
-
-#---------------------------------------------------------------------
-#  #include "hexy.S"
 
 .endif
 
@@ -272,6 +265,8 @@ main:
         fence
 
 /*
+# todo, alloc and update memory size
+
         call _init
 
         la snd, h_here
@@ -321,10 +316,12 @@ error:
 
 # xxx 
 .ifdef debug
+
         putchar '\n'
         putchar '?'
         putchar '?'
         putchar '\n'
+
 .endif
 
 #---------------------------------------------------------------------
@@ -352,6 +349,7 @@ okey:
 
 # xxx
 .ifdef debug
+
         lw fst, STAT (usr)
         bne fst, zero, resolve
 
@@ -359,6 +357,7 @@ okey:
         putchar 'O'
         putchar 'K'
         putchar '\n'
+
 .endif
 
 #---------------------------------------------------------------------
@@ -438,7 +437,7 @@ eval:
 .ifdef postpones
 # reset state to compile
 postpone:
-        add trd, zero, 1
+        addi trd, zero, ONE
         sw trd, STAT (usr)
 .endif
 
@@ -471,7 +470,7 @@ miss:
         lb fst, 0 (idx)
         call _putc 
         beq fst, trd, 100f
-        add idx, idx, 1
+        addi idx, idx, ONE
         j 100b
 100:
         putchar ' '
@@ -626,11 +625,6 @@ mask:
         
         and hsh, hsh, fst
 
-.ifdef debug
-# \ clear eol
-
-.endif
-
 # save toin
 
         sw idx, TOIN (usr)
@@ -680,7 +674,7 @@ pull2:
         
         lw fst, 0 (idx)
         
-        add idx, idx, CELL
+        addi idx, idx, CELL
 
         lw snd, 0 (idx)
 
@@ -796,7 +790,7 @@ def_word ":", "colon", hash_colon, h_userat
 
 # stat is 'compile' == 1
         
-        add fst, zero, ONE
+        addi fst, zero, ONE
         
         sw fst, STAT (usr)
 
@@ -894,7 +888,7 @@ nest:   #; enter
 move: 
 # indirect access 
         
-        mv ipt, fst
+        add ipt, zero, fst
         
         j next
 

@@ -20,6 +20,8 @@
 */
 
 /*
+#----------------------------------------------------------------------
+
     A MilliForth for RISCV 
  
     original for the RISCV, by Alvaro G. S. Barcellos, 2025
@@ -43,6 +45,7 @@
 
     Not working yet :)
 
+#----------------------------------------------------------------------
 */
 
 #---------------------------------------------------------------------
@@ -63,6 +66,14 @@
 
 .equ TRUE, -1
 
+# states
+
+.equ EXECUTE, 0
+
+.equ COMPILE, 1
+
+.equ POSTPONE, -1
+
 # usefull
 
 .equ ONE, 1
@@ -70,6 +81,8 @@
 .equ TWO, 2
 
 .equ CELL, 4
+
+# ascii
 
 .equ NL, 10    # \n
 
@@ -102,7 +115,35 @@
 .equ MASK_IMM, 0x7FFFFFFF
 
 #---------------------------------------------------------------------
+# user structure of internal Forth variables
+
+# data stack index
+.equ SPTR, 0 * CELL
+
+# return stack index
+.equ RPTR, 1 * CELL 
+
+# last link cell in heap dictionary linked list
+.equ LAST, 2 * CELL
+
+# next free cell in heap dictionary, aka dpt
+.equ HERE, 3 * CELL
+
+# toin next free byte in TIB
+.equ TOIN, 4 * CELL
+
+# state flag
+.equ STAT, 5 * CELL
+
+# heap forward
+.equ HEAD, 6 * CELL
+
+# heap backward
+.equ TAIL, 7 * CELL
+
+#---------------------------------------------------------------------
 # primitives djb2 hash cleared of bit 31
+
 .equ hash_key,   0x0B876D32 
 .equ hash_emit,  0x7C6B87D0 
 .equ hash_store, 0x0002B584 
@@ -145,6 +186,7 @@ h_\label:
 
 #----------------------------------------------------------------------
 .section .data
+.p2align 2, 0x0
 
 # There is no spoon.
 
@@ -152,41 +194,13 @@ h_\label:
 .section .bss
 .p2align 2, 0x0
 
-# user structure of internal Forth variables
-# accessed as offsets
-
-# data stack index
-.equ SPTR, 0 * CELL
-
-# return stack index
-.equ RPTR, 1 * CELL 
-
-# last link cell in heap dictionary linked list
-.equ LAST, 2 * CELL
-
-# next free cell in heap dictionary, aka dpt
-.equ HERE, 3 * CELL
-
-# toin next free byte in TIB
-.equ TOIN, 4 * CELL
-
-# state flag
-.equ STAT, 5 * CELL
-
-# heap forward
-.equ HEAD, 6 * CELL
-
-# heap backward
-.equ TAIL, 7 * CELL
-
-#----------------------------------------------------------------------
 # and this is it
 
 _user:
 # user parameter offsets
 .skip 8 * CELL
 
-# reserved for locals 
+# reserved for locals, dont stacks ! 
 _locals:
 .skip 8 * CELL
 
@@ -204,7 +218,6 @@ rp0: .word 0x0
 _tib:       
 .skip tibz
 
-#xxx
 # pad grows forward
 _pad:       
 .skip padz
@@ -213,18 +226,33 @@ _pad:
 h_here: 
         .word 0x0
 
-#-----------------------------------------------------------------------
-# at end of .bss (.heap) 
-#----------------------------------------------------------------------
-
 #----------------------------------------------------------------------
 .text 
 .p2align 2, 0x0
 
+ .equ debug, YES
+
+ .equ dismiss, YES
+
+ .equ postpones, YES
+
+
 #---------------------------------------------------------------------
 # xxx
 
-#include "hexy.S"
+.ifdef debug
+
+.globl putchar
+.macro putchar value
+       add t0, zero, a3
+       li a3, \value
+       call _putc
+       add a3, zero, t0
+.endm
+
+#include "puthex.S"
+
+.endif
 
 #----------------------------------------------------------------------
 .globl _start
@@ -239,6 +267,8 @@ main:
         fence
 
 /*
+# todo, alloc and update memory size
+
         call _init
 
         la snd, h_here
@@ -276,16 +306,27 @@ reset:
 
 #---------------------------------------------------------------------
 # reset stacks
+
+# xxx
+.ifndef dismiss
+
+miss:
+
+.endif
+
 error:
 
 # xxx 
+.ifdef debug
+
         putchar '\n'
         putchar '?'
         putchar '?'
         putchar '\n'
 
+.endif
+
 #---------------------------------------------------------------------
-miss:
 abort:
 # reset data stack
         
@@ -303,21 +344,14 @@ quit:
         
         sw zero, STAT (usr)
 
-        j okey
-
-#---------------------------------------------------------------------
-# the outer loop, need for indirect
-
-resolvept:
-        
-        .word okey
-
 #---------------------------------------------------------------------
 okey:
 
 # call prompt_okey
 
 # xxx
+.ifdef debug
+
         lw fst, STAT (usr)
         bne fst, zero, resolve
 
@@ -325,6 +359,8 @@ okey:
         putchar 'O'
         putchar 'K'
         putchar '\n'
+
+.endif
 
 #---------------------------------------------------------------------
 # get a hash of the next token
@@ -350,13 +386,13 @@ tick:
         
         add fst, zero, lnk
 
-# move next link 
+# copy next link 
         
         lw lnk, 0 (fst)
 
-# move to hash
+# copy the hash
         
-        add fst, fst, CELL
+        addi fst, fst, CELL
 
         lw wrd, 0 (fst)
 
@@ -372,23 +408,41 @@ tick:
         
         bne hsh, wrd, 100b
 
-#---------------------------------------------------------------------         
-eval:
-# wrd points to or start of code or list of references
+# fst points to, start of code or list of references, aka xt
 
-        add fst, fst, CELL
+        addi fst, fst, CELL
+
+#---------------------------------------------------------------------         
+# hsh have the hash of the word
+# snd have the flags
+# fst have the address after header
+
+eval:
+# what to do ?
+
+        lw trd, STAT (usr)
+        
+# executing ? if state == 0
+
+        beq trd, zero, execute
+
+.ifdef postpones
+# postpone ? if state < 0
+        blt trd, zero, postpone
+.endif
 
 # immediate ? 
 
         bne snd, zero, immediate      
 
-# executing ? if state == 0
-        
-        lw snd, STAT (usr)
-        
-        beq snd, zero, execute
-
 #---------------------------------------------------------------------         
+.ifdef postpones
+# reset state to compile
+postpone:
+        addi trd, zero, ONE
+        sw trd, STAT (usr)
+.endif
+
 # compiling ? if state != 0
 compile:
         
@@ -407,23 +461,24 @@ immediate:
 #---------------------------------------------------------------------
 # unexpected end of dictionary
 # wipe remains compiled
-# xxx (---------------------------------------------------------------
-/*
+
+.ifdef dismiss
+
 miss:
 
-        putchar '?'
+        putchar '\n'
 
 100:
-        lb fst, 0 (s10)
+        lb fst, 0 (idx)
         call _putc 
         beq fst, trd, 100f
-        add s10, s10, 1
+        addi idx, idx, ONE
         j 100b
 100:
+        putchar ' '
         putchar '?'
 
-        j error
-
+wipe:
         # compiling ?
         lw fst, STAT (usr)
         bne fst, zero, 100f
@@ -432,8 +487,7 @@ miss:
         sw fst, HERE (usr)
 100:
         j error
-# xxx )---------------------------------------------------------------
-*/
+.endif
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
@@ -444,21 +498,20 @@ token:
 
         pushra
 
-
 # load word separator, space
+100:
 
         addi trd, zero, BL
 
-100:
-
 # last position on tib
+
         lw idx, TOIN (usr)
 
 # skip spaces // trd
 200:
 
         lb snd, 0 (idx)
-
+        
         beq snd, zero, gets
 
         bne snd, trd, hash
@@ -532,9 +585,12 @@ gets:
 .equ SFHT, 5
 #---------------------------------------------------------------------
 hash:
-        # xxx
 
-        add s10, zero, idx
+.ifdef dismiss
+
+        add wrd, zero, idx
+
+.endif 
 
 djb2:
         # easy 5381
@@ -575,6 +631,11 @@ mask:
 
         sw idx, TOIN (usr)
 
+.ifdef dismiss
+
+        add idx, zero, wrd
+
+.endif 
         pullra
 
         ret
@@ -586,6 +647,10 @@ docomma:
       
         sw fst, 0 (idx)
       
+        mhex idx 
+
+        mhex fst 
+        
         addi idx, idx, CELL
       
         sw idx, HERE (usr)
@@ -615,7 +680,7 @@ pull2:
         
         lw fst, 0 (idx)
         
-        add idx, idx, CELL
+        addi idx, idx, CELL
 
         lw snd, 0 (idx)
 
@@ -731,7 +796,7 @@ def_word ":", "colon", hash_colon, h_userat
 
 # stat is 'compile' == 1
         
-        add fst, zero, ONE
+        addi fst, zero, ONE
         
         sw fst, STAT (usr)
 
@@ -745,7 +810,7 @@ create:
         
         call docomma
 
-# get following token
+# get a hash of the next token
         
         call token
         
@@ -804,7 +869,7 @@ unnest: #; exit
 next:
 # wrd = (ipt) #; ipt += cell
         
-        lw wrd, 0 (ipt)
+        lw fst, 0 (ipt)
         
         addi ipt, ipt, CELL
 
@@ -813,7 +878,7 @@ pick:
         
         la idx, ends
         
-        blt wrd, idx, jump
+        blt fst, idx, jump
 
 nest:   #; enter
 # return push, rp -= cell, (rpt) = ipt
@@ -829,14 +894,21 @@ nest:   #; enter
 move: 
 # indirect access 
         
-        mv ipt, wrd
+        add ipt, zero, fst
         
         j next
 
 jump: 
 # jump to primitive
         
-        jalr zero, 0 (wrd)
+        jalr ra, 0 (fst)
+
+#---------------------------------------------------------------------
+# the outer loop, need for indirect
+
+resolvept:
+        
+        .word okey
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
@@ -848,23 +920,24 @@ jump:
 # any other primitives after exit
 #---------------------------------------------------------------------
 
-#.equ EXTRAS, YES
+.ifdef debug
 
-.ifdef EXTRAS
+.equ EXTRAS, YES
+
 #----------------------------------------------------------------------
-# keep last entry of primitives
+.ifdef EXTRAS
 
 .set into_extras, h_exit
 
 #include "extras-milliforth.S"
 
-#----------------------------------------------------------------------
-# keep last entry of extras
-
 .set h_last, from_extras
 
 .endif
 
+.endif
+
+#----------------------------------------------------------------------
 .ifndef EXTRAS
 
 .set h_last, h_exit
@@ -877,7 +950,7 @@ jump:
 
 ends:
 
-.word 0xDEADBEEF
+# .word 0xDEADBEEF
 
 #---------------------------------------------------------------------
 .end
