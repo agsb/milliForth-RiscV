@@ -1,6 +1,6 @@
- : create here @ : last !
+ : create here : latest !
         ['] lit , 
-        here @ cell + cell + , 
+        here cell + cell + , 
         ['] exit , 
         0 state ! ;
  
@@ -42,7 +42,7 @@
  
  : BF( [char] ) parse runbf ; immediate
  
- here @ 48 + tape_head !
+ here 64 + tape_head !
  
  BF( >++++++++[<+++++++++>-] <.>++++[<+++++++>-] <+.+++++++..+++.>>++++++[<+++++++>-] <++.------------.>++++++[<+++++++++>-] <+.<.+++.------.--------.>>>++++[<++++++++>-] <+. )
 

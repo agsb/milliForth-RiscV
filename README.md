@@ -3,18 +3,20 @@
 *"To master riding bicycles you have do ride bicycles"*
 
 started at 23/07/2025, agsb@
-vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
+vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) 
+and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
 
-This is an implementation of milliForth (sectorforth) concept for RISCV ISA.
+This is an implementation of milliForth (sector-forth) concept for RISCV ISA.
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
-This version uses only 556 bytes, not including 62 bytes of system I/O,
-8 bytes of postpone hack, and many bytes for extras words.
+This version uses only 618 bytes, 556 bytes of Forth and 62 bytes of 
+    system I/O, not counting ELF headers. 
 
-No human WORDS. 
+Could add 8 bytes of postpone hack and many bytes for extras words.
 
-It uses DJB2 hashes in headers, instead of size+flags+name+pads. 
+No human WORDS. It uses DJB2 hashes in headers, 
+    instead of size+flags+name+pads. 
 
 Only use a IMMEDIATE flag, at MSBit (31) of hash.
 
@@ -31,6 +33,8 @@ Only use a IMMEDIATE flag, at MSBit (31) of hash.
 
     t1.f is a complement with BrainFu*ck interpreter; (_STUB_)
 
+    t2.f is a complemente with hash and more words; (STUB)
+
     Could test by:
 
     cat t0.f | sh doit.sh | tee z1
@@ -39,6 +43,13 @@ Only use a IMMEDIATE flag, at MSBit (31) of hash.
 
     t00.f tries about <builds create variable constant does> (_STUB_)
     
+    PS. 
+
+    There is a esoteric bug that makes the first word hash error.
+
+    The memory management is done by extend the dictionary into .bss,
+        no linux calls for memory allocation. (Anyone ?)
+
 ## Compiler Options
 
     compiler suit of RISCV: gcc riscv64-unknown-elf-* -Oz
@@ -89,6 +100,28 @@ ignoring any flags, and return to compile state = 1.
 
 So postpone is defined as : postpone -1 state ! ; immediate
 
+## Colon and Semis
+
+    The colon **:** makes a header by:
+        1. copy HERE to HEAD
+        2. copy LATEST to first cell;
+        3. calculate the djb2 hash of the next word on TIB;
+        4. copy hash to second cell;
+        5. change STATE to compile (1);
+
+    In compile state, all non immediate words are compiled, 
+        and the immediate words are executed. 
+    
+    With the postpone (<0) hack, the next word 
+        is always compiled and the STATE changed to compile (1)
+
+    The semis **;** ends the word by:
+        1. place a 'EXIT into last cell
+        2. copy HEAD to LATEST
+        3. change STATE to execute (0);
+
+    if the compilation is interrupted, STATE and LATEST keeps 
+        untouched, but some junk was placed and stays into dictionary.
 
 ## internals
 
@@ -128,7 +161,7 @@ only internals:
 with externals:
 
     _getc, _putc, _exit, _init, 
-    _sbrk, _fcntl (not used)
+    _sbrk, _fcntl (both still not used)
 
 extras: (selectable)
 
@@ -139,9 +172,9 @@ extras: (selectable)
     abort   restart the Forth
     .S      list cells in data stack
     .R      list cells in return stack
-    .       show cell at top of data stack
-    words   extended list the words in dictionary
-    dump    list contents of dictionary in binary
+    .       show a copy of the cell at top of data stack, 
+    words   list all compiled words in dictionary order
+    dump    list contents of dictionary in memory order
     see     list compiled contents of last word
     cell    sizeof a cell, 4 bytes, 32-bits
 
@@ -184,6 +217,4 @@ the my_hello_world.FORTH is adapted for miiliforth-riscv
 [^5]: Forth standart ANSI X3.215-1994: http://www.forth.org/svfig/Win32Forth/DPANS94.txt
 [^6]: Notes and Times: https://github.com/agsb/milliForth-6502/blob/acc2f8ddc6aafb2dec6346e90f5372ee16b38c8c/docs/Notes.md
 [^7]: A minimal thread code for Forth: https://github.com/agsb/immu/blob/main/The_words_in_MTC_Forth.en.pdf
-
-
 

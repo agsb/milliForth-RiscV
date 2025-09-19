@@ -1,10 +1,12 @@
- : void u@ 0# ;
+ : void ;
+
  : | .S .R ;
  
  : -1 u@ 0# ;
  :  0 -1 -1 nand ;
  : TRUE -1 ;
  : FALSE 0 ;
+ 
  : 1 -1 -1 + -1 nand ;
  : 2 1 1 + ;
  : 4 2 2 + ;
@@ -13,8 +15,8 @@
  : sp u@ ;
  : rp sp cell + ;
  : latest rp cell + ;
- : here latest cell + ;
- : >in here cell + ;
+ : heap latest cell + ;
+ : >in heap cell + ;
  : state >in cell + ;
  
  : rp@ rp @ cell + ;
@@ -37,8 +39,9 @@
  : 2dup over over ;
  : 2drop drop drop ;
  
- : allot here @ + here ! ;
- : , here @ ! cell allot ;
+ : here heap @ ;
+ : allot here + heap ! ;
+ : , here ! cell allot ;
  : >r rp@ @ swap rp@ ! rp@ cell - rp ! rp@ ! ;
  : r> rp@ @ rp@ cell + rp ! rp@ @ swap rp@ ! ;
  
@@ -60,21 +63,21 @@
  : [ 0 state ! ; immediate
  : postpone -1 state ! ; immediate
  
- : if ['] ?branch , here @ 0 , ; immediate
- : then dup here @ swap - swap ! ; immediate
- : else ['] branch , here @ 0 , swap dup 
-     here @ swap - swap ! ; immediate
- : begin here @ ; immediate
- : again ['] branch , here @ - , ; immediate
- : until ['] ?branch , here @ - , ; immediate
- : while ['] ?branch , here @ 0 , ; immediate
- : repeat swap ['] branch , here @ - , 
-     dup here @ swap - swap ! ; immediate
+ : if ['] ?branch , here 0 , ; immediate
+ : then dup here swap - swap ! ; immediate
+ : else ['] branch , here 0 , swap dup 
+     here swap - swap ! ; immediate
+ : begin here ; immediate
+ : again ['] branch , here - , ; immediate
+ : until ['] ?branch , here - , ; immediate
+ : while ['] ?branch , here 0 , ; immediate
+ : repeat swap ['] branch , here - , 
+     dup here swap - swap ! ; immediate
  
- : do here @ ['] >r , ['] >r , ; immediate
+ : do here ['] >r , ['] >r , ; immediate
  : loop ['] r> , ['] r> , ['] lit , 1 , ['] + , 
      ['] 2dup , ['] = , ['] ?branch , 
-     here @ - , ['] 2drop , ; immediate
+     here - , ['] 2drop , ; immediate
  
  :  8 lit [ 4 4 + , ] ;
  : 16 lit [ 8 8 + , ] ;
