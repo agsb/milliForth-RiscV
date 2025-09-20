@@ -95,10 +95,26 @@ contains the user variables for Forth
 
 Forth standart have postone, instead of compile, and [compile].
 
-In milliforth, a postpone state < 0 always compile the next word, 
-ignoring any flags, and return to compile state = 1. 
+Charles Moore, in 1974 [^8] make use of precedence of word and STATE, to control 
+between "always execute" STATE (0), "compile or execute" STATE (1), "always compile" STATE(2), 
+using a extra STATE and a flag for precedence.
 
-So postpone is defined as : postpone -1 state ! ; immediate
+| situation | STATE | precedence 0 | precedence 1 | precedence 2 |
+| --- | --- | --- | --- | --- |
+| during execution | 0  | execute | execute | execute |
+| during compilation | 1 | compile | execute | execute |
+| after IMMEDIATE | 2 | compile | compile | execute |
+
+In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, and uses STATE (< 0) to always compile the next word, 
+and return to compile STATE (1). 
+
+So postpone is defined as 
+        
+        : postpone -1 state ! ; immediate
+
+and used as
+
+        : xxxx .... postpone word ... ;
 
 ## Colon and Semis
 
@@ -217,4 +233,5 @@ the my_hello_world.FORTH is adapted for miiliforth-riscv
 [^5]: Forth standart ANSI X3.215-1994: http://www.forth.org/svfig/Win32Forth/DPANS94.txt
 [^6]: Notes and Times: https://github.com/agsb/milliForth-6502/blob/acc2f8ddc6aafb2dec6346e90f5372ee16b38c8c/docs/Notes.md
 [^7]: A minimal thread code for Forth: https://github.com/agsb/immu/blob/main/The_words_in_MTC_Forth.en.pdf
+[^8]: Forth: A new way to program: https://adsabs.harvard.edu/full/1974A%26AS...15..497M (Astro. Astrophys. Suppl. 14, 497-511, 1974)
 
