@@ -41,6 +41,8 @@
 
     The header order is LINK, HASH and code or references.
  
+    Added a pack of 8 cells for scratch workspace, generic use.
+
 ## Remarks
  
     This code uses Minimal Indirect Thread Code, aka MITC;

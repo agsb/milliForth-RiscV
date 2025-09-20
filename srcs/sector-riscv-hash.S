@@ -43,8 +43,6 @@
 
     THIS VERSION USES ONLY HASH HEADERS.
 
-    Not working yet :)
-
 #----------------------------------------------------------------------
 */
 
@@ -103,14 +101,14 @@ h_\label:
 .section .bss
 .p2align 2, 0x0
 
-# and this is it
+# This is it
 
 _user:
 # user parameter offsets
 .skip 8 * CELL
 
-# reserved locals, dont stacks ! 
-_locals:
+# scratch workspace, generic use 
+_pack:
 .skip 8 * CELL
 
 # data stack grows backward
@@ -126,10 +124,6 @@ rp0: .word 0x0
 # tib grows forward
 _tib:       
 .skip tibz
-
-# pad grows forward
-_pad:       
-.skip padz
 
 # start of user dictionary 
 h_here: 
@@ -158,10 +152,10 @@ _start:
 main:
 # just for sake
 
-        fence
-
 /*
 # todo, alloc and update memory size
+
+        fence
 
         call _init
 
@@ -240,8 +234,6 @@ quit:
 
 #---------------------------------------------------------------------
 okey:
-
-# call prompt_okey
 
 # xxx
 .ifdef debug

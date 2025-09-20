@@ -81,7 +81,7 @@ _getc:
         #EOF?
         beq a0, zero, _exit
 
-        # uncomment to not always echo
+        # uncomment for no echo
         # ret
 
 # linux ecall for putc

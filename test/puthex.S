@@ -10,7 +10,6 @@
 
 #---------------------------------------------------------------------
 .globl mhit
-
 .macro mhit it
         putchar '\n'
         putchar \it
@@ -19,7 +18,6 @@
 
 #---------------------------------------------------------------------
 .globl mhex
-
 .macro mhex rg
         pushra
         call saves
@@ -33,7 +31,6 @@
 # code a 32-bit word in ASCII hexadecimal
 #
 .global puthex
-
 puthex:
 
         pushra
