@@ -25,9 +25,7 @@ Only use a IMMEDIATE flag, at MSBit (31) of hash.
     The sector-riscv.S is working, also the extra-milliforth.S,
     could test by:
 
-    **cat test0-riscv.f | sh doit.sh | tee z0**
-
-    test0-riscv.f is a minimal dictionary of words
+    **cat t0.f | sh doit.sh | tee t0.x**
 
     t0.f is a minimal set of words, same as test0-riscv.f;
 
@@ -45,7 +43,9 @@ Only use a IMMEDIATE flag, at MSBit (31) of hash.
     
     PS. 
 
-    There is a esoteric bug that makes the first word hash error.
+    Some esoteric bug makes the first word to have hash error.
+
+    All words in lowercase, maybe later could change to uppercase.
 
     The memory management is done by extend the dictionary into .bss,
         no linux calls for memory allocation. (Anyone ?)

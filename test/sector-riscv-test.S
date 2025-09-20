@@ -853,6 +853,8 @@ finish:
 #
 # "why there is no 'docol at start of words ?"
 #
+# ipt must stay reserved outside exit !
+#
 # ( -- ) 
 def_word "exit", "exit", hash_exit, h_semis
 unnest: #; exit
