@@ -6,15 +6,28 @@
     with only: + nand ! @ : ; 0# u@ exit key emit 
     and a user structure for main forth variables.
 
+## Todo
+
     I need learn about how implement:
 
-    <builds create does> variable constant defer postpone
+    <builds create does> variable constant 
+    defer postpone align 
 
-    postpone are done as extra configuration flag.
+    = postpone is done, as extra configuration flag.
 
-    create and variable are in the minimal vocabulary.
+    = create and variable, are in the minimal vocabulary.
 
+    DPANS94: 
+        PAD shall be at least 84 bytes.
+        PIC (2*32)+2, at least 66 bytes.
+
+
+    
 ## Done
+
+20/09/2025
+
+    Rename files and update documents. Another review of code.
 
 18/09/2025
 

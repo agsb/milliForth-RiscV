@@ -22,17 +22,24 @@
     Uses cell with 32-bits;
  
     All user structure, data (36 cells) and return (36 cells) stacks, 
-    TIB (80 bytes), PAD (32 bytes) and locals (8 cells) are in sequence; 
+    TIB (80 bytes) and locals (8 cells) are in sequence; 
+
+    PAD (84 bytes) and PIC (68 bytes) must be allocated if need;
  
-    TIB and PAD grows forward, stacks grows backwards;
+    TIB, PAD, PIC grows forward, stacks grows backwards;
  
-    No overflow or underflow checks;
+    No overflow or underflow stack checks;
  
     No numbers only words (yet);
  
-    Only IMMEDIATE flag used as $80, no hide, no compile;
+    Only IMMEDIATE flag used as $8000, no hide, no compile, no extras;
  
     As ANSI Forth 1983: FALSE is 0 and TRUE is -1 ;
+ 
+    Uses DJB2 Hash instead of size-name-pad in header of words in
+        dictionary.
+
+    The header order is LINK, HASH and code or references.
  
 ## Remarks
  
@@ -40,9 +47,11 @@
  
     No TOS or ROS registers, all values keeped at stacks;
  
-    Locals are fixed and not stack.
+    Locals are fixed variables and do not stack.
 
     PAD is for temporaries, formats, buffers, etc;  
+
+    PIC is for number formating;
 
     TIB (terminal input buffer) is like a stream;
  
@@ -60,15 +69,15 @@
     IMMEDIATE word only works outside word definition, 
     it always make latest word immediate.
  
+    Not using smudge, 
+          colon saves HERE into HEAD and 
+          semis loads LATEST from HEAD;
+ 
 ## For Devs
  
     Chuck Moore uses 64 columns, be wise, obey rule 72 CPL; 
  
     Never mess with two underscore variables;
- 
-    Not using smudge, 
-          colon saves "here" into "head" and 
-          semis loads "lastest" from "head";
  
 # For stacks
  
@@ -93,35 +102,40 @@
  
     A 32-bit processor with 32-bit address space and reduced ISA;
  
-    The header order is LINK, HASH and code or references.
- 
-    No direct memory access, only by register as pointer.
+    There is no automatic pull and push of SP.
 
-    No register indexed offset, only immediate offsets.
+    There is no immediate values in comparations.
+
+    Only 12-bits immediate adds.
+
+    No direct memory access, only accessed using a register as pointer.
+
+    No register indexed offset, only immediate offsets (+/- 1024 bytes).
 
 ## For Assembler:
 
     1. Why ".equ name, register", does not work ?
-    Also r0 must ever be called as zero.
+        Also r0 must ever be called as zero.
 
     I dunno about another way to make register name alias
     but using cpp to pre-process the alias, eg. 
     #define mytmp  t1     
 
     2. All memory access is by a register eg. 
-    # load
-        lw rd, offset (ro); 
-    # save
-        sw ro, offset (rd);
+    
+        # load
+            lw rd, offset (ro); 
+        # save
+            sw ro, offset (rd);
     
     3. Forth uses a 'user struct' with variables and pointers, then 
     for each memory reference "la rd, reference_memory" is really
     two instructions "auipc rd" and "li rd", or "addi rd, gp, offset"
+    
     For sake of size better keep the reference in a register 
-    and do offsets "lw rd, offser (rf)"
-
-    reserve one register (usr) to keep the reference to 'user struct'
-    and another (ipt) to hold the Forth instruction pointer
+    and do offsets "lw rd, offser (rf)" then reserve one register (usr)
+    to keep the reference to 'user struct' and another (ipt) to hold 
+    the Forth instruction pointer. Those must be keeped untouched.
 
     4. The indirect code defaults:
 
@@ -135,6 +149,7 @@ wpull:
         addi idx, idx, +1 * CELL
 # save the index
         sw idx, SPT (usr)
+
 wpush:
 # load the index of data stack
         lw idx, SPT (usr)
@@ -151,25 +166,30 @@ wpush:
     The convention for R32* ISA for interrupts, keeps ra, t0-t2, a0-a5
     and the gcc __attribute__((interrupt)) keeps which are used inside.
 
-    The convention for R32* linux ecalls uses a0, a1, a2, a7 registers.
+    The convention for R32* linux ecalls read and writes, 
+        uses a0, a1, a2, a7 registers.
 
-    Then best registers to use are s2-s11 and t3-t6. 
+    Then best registers to use are s2-s11 and t3-t6 ? 
 
     All code must be align to CELL size, also the dictionary headers.
     
     6. The jal and jalr, save PC+4 in register ra,
-    does only ONE level of call, more levels must 
-    save the register ra elsewhere and load it at ret.
+        does only ONE level of call, more levels must 
+        save the register ra elsewhere and load it at ret.
 
-    7. the ELF format leaves for linux system define the real SP address stack, 
-    better use it for save RA inside deep nested routines.
+    7. the ELF format leaves for linux system define the real 
+        SP address stack, better use it for save RA inside deep 
+        nested routines.
 
-    8. The RiscV compressed instructions allow X8 to X15, as S0, S1, A0-A5, and 
-    system ecalls uses A0, A1, A2 and A7. The _putc and _getc uses A3 as argument.
+    8. The RiscV compressed instructions allow X8 to X15, 
+        as S0, S1, A0-A5, and system ecalls uses A0, A1, A2 and A7. 
+        The _putc and _getc uses A3 as argument.
     
-    9. The milliForth use S0 as pointer for user structure, S1 to hold the instruction 
-    pointer IPT, and two groups of registers. A upper group A0, A1, A2, A7 for 
-    routines without ecalls and a lower group A3, A4, A5, A6 for generic routines with ecalls.
+    9. The milliForth use S10 as pointer for user structure, 
+        S11 to hold the instruction pointer IPT, and two groups of 
+        registers. A upper group A0, A1, A2, A7 for routines without 
+        ecalls and a lower group A3, A4, A5, A6 for generic routines 
+        with ecalls.
         
 
 ## For Heaps
