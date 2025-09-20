@@ -58,6 +58,14 @@
 #include "defines.S"
 
 #---------------------------------------------------------------------
+
+# .equ debug, YES
+
+# .equ dismiss, YES
+
+# .equ postpones, YES
+
+#---------------------------------------------------------------------
 # macro to define the header of words in dictionary
 #
 .global def_word
@@ -76,12 +84,12 @@ h_\label:
 .global pushra
 .macro pushra
         addi sp, sp, -4   
-        sw   ra, 0(sp)    
+        sw ra, 0(sp)    
 .endm
 
 .global pullra
 .macro pullra
-        lw   ra, 0(sp)    
+        lw ra, 0(sp)    
         addi sp, sp, +4   
 .endm
 
@@ -131,24 +139,12 @@ h_here:
 .text 
 .p2align 2, 0x0
 
- # .equ debug, YES
-
- # .equ dismiss, YES
-
- # .equ postpones, YES
-
 #---------------------------------------------------------------------
 # xxx
 
 .ifdef debug
 
-.globl putchar
-.macro putchar value
-       add t0, zero, a3
-       li a3, \value
-       call _putc
-       add a3, zero, t0
-.endm
+#include "puthex.S"
 
 .endif
 
@@ -446,13 +442,13 @@ gets:
 
         call _getc
 
-# echo it
+# echo it, if need
 
-        call _putc
+        # call _putc
 
-# 7-bit ascii only 
-# xxx
-       andi fst, fst, 127
+# 7-bit ascii only ?
+
+        andi fst, fst, 127
 
 # \n ^J ends the line
 
@@ -660,7 +656,7 @@ istrue:
         j back1
 
 #---------------------------------------------------------------------
-# see above the order of variables
+# beware variables order
 # ( -- sptr) return an reference
 def_word "u@", "userat", hash_userat, h_zeroq
         
@@ -720,7 +716,7 @@ comma:
         j next 
 
 #---------------------------------------------------------------------
-# ( -- ) ; ake figforth semicolon
+# ( -- ) ; aka figforth semicolon
 def_word ";", "semis", hash_semis, h_colon 
 # update last, panic if colon not lead elsewhere 
         
@@ -755,13 +751,13 @@ def_word "exit", "exit", hash_exit, h_semis
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
         
-        lw idx, RPTR (usr)
+        lw trd, RPTR (usr)
         
-        lw ipt, 0 (idx)
+        lw ipt, 0 (trd)
         
-        addi idx, idx, CELL
+        addi trd, trd, CELL
         
-        sw idx, RPTR (usr)
+        sw trd, RPTR (usr)
 
 next:
 # wrd = (ipt) ; ipt += cell
@@ -773,20 +769,25 @@ next:
 pick:
 # compare address, if is a primitive then jumps, MITC 
         
-        la idx, ends
+        la trd, ends
         
-        blt fst, idx, jump
+        bge fst, trd, nest
+
+jump: 
+# jump to primitive
+        
+        jalr ra, 0 (fst)
 
 nest:   #; enter
 # return push, rp -= cell, (rpt) = ipt
         
-        lw idx, RPTR (usr)
+        lw trd, RPTR (usr)
         
-        addi idx, idx, -1 * CELL
+        addi trd, trd, -1 * CELL
         
-        sw ipt, 0 (idx)
+        sw ipt, 0 (trd)
         
-        sw idx, RPTR (usr)
+        sw trd, RPTR (usr)
 
 move: 
 # indirect access 
@@ -794,11 +795,6 @@ move:
         add ipt, zero, fst
         
         j next
-
-jump: 
-# jump to primitive
-        
-        jalr ra, 0 (fst)
 
 #---------------------------------------------------------------------
 # the outer loop, need for indirect

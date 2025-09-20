@@ -58,103 +58,12 @@
 #include "defines.S"
 
 #---------------------------------------------------------------------
-# generics alias 
 
-# as FORTH 1983
+# .equ debug, YES
 
-.equ FALSE, 0
+# .equ dismiss, YES
 
-.equ TRUE, -1
-
-# states
-
-.equ EXECUTE, 0
-
-.equ COMPILE, 1
-
-.equ POSTPONE, -1
-
-# usefull
-
-.equ ONE, 1
-
-.equ TWO, 2
-
-.equ CELL, 4
-
-# ascii
-
-.equ NL, 10    # \n
-
-.equ CR, 13    # \r
-
-.equ BL, 32    # space
-
-# data stack, 36 cells 
-
-.equ spz, 36 * CELL
-
-# return stack, 36 cells
-
-.equ rpz, 36 * CELL
-
-# Terminal input buffer 80 bytes, (but 72 is enough), moves forwards
-
-.equ tibz, 80
-
-# PAD for temporary formating etc
-
-.equ padz, 48
-
-# highlander, immediate flag, unique 
-
-# -2147483648
-.equ FLAG_IMM, 0x80000000
-
-# +2147483647
-.equ MASK_IMM, 0x7FFFFFFF
-
-#---------------------------------------------------------------------
-# user structure of internal Forth variables
-
-# data stack index
-.equ SPTR, 0 * CELL
-
-# return stack index
-.equ RPTR, 1 * CELL 
-
-# last link cell in heap dictionary linked list
-.equ LAST, 2 * CELL
-
-# next free cell in heap dictionary, aka dpt
-.equ HERE, 3 * CELL
-
-# toin next free byte in TIB
-.equ TOIN, 4 * CELL
-
-# state flag
-.equ STAT, 5 * CELL
-
-# heap forward
-.equ HEAD, 6 * CELL
-
-# heap backward
-.equ TAIL, 7 * CELL
-
-#---------------------------------------------------------------------
-# primitives djb2 hash cleared of bit 31
-
-.equ hash_key,   0x0B876D32 
-.equ hash_emit,  0x7C6B87D0 
-.equ hash_store, 0x0002B584 
-.equ hash_fetch, 0x0002B5E5 
-.equ hash_nand,  0x7C727500 
-.equ hash_plus,  0x0002B58E 
-.equ hash_zeroq, 0x00596816 
-.equ hash_userat, 0x00596F90
-.equ hash_colon, 0x0002B59F 
-.equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
-.equ hash_exit,  0x7C6BBE85 
+# .equ postpones, YES
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
@@ -175,12 +84,12 @@ h_\label:
 .global pushra
 .macro pushra
         addi sp, sp, -4   
-        sw   ra, 0(sp)    
+        sw ra, 0(sp)    
 .endm
 
 .global pullra
 .macro pullra
-        lw   ra, 0(sp)    
+        lw ra, 0(sp)    
         addi sp, sp, +4   
 .endm
 
@@ -200,7 +109,7 @@ _user:
 # user parameter offsets
 .skip 8 * CELL
 
-# reserved for locals, dont stacks ! 
+# reserved locals, dont stacks ! 
 _locals:
 .skip 8 * CELL
 
@@ -230,25 +139,10 @@ h_here:
 .text 
 .p2align 2, 0x0
 
- .equ debug, YES
-
- .equ dismiss, YES
-
- .equ postpones, YES
-
-
 #---------------------------------------------------------------------
 # xxx
 
 .ifdef debug
-
-.globl putchar
-.macro putchar value
-       add t0, zero, a3
-       li a3, \value
-       call _putc
-       add a3, zero, t0
-.endm
 
 #include "puthex.S"
 
@@ -499,12 +393,12 @@ token:
         pushra
 
 # load word separator, space
-100:
 
         addi trd, zero, BL
 
-# last position on tib
+100:
 
+# last position on tib
         lw idx, TOIN (usr)
 
 # skip spaces // trd
@@ -548,13 +442,13 @@ gets:
 
         call _getc
 
-# echo it
+# echo it, if need
 
-        call _putc
+        # call _putc
 
-# 7-bit ascii only 
-# xxx
-       andi fst, fst, 127
+# 7-bit ascii only ? $7F
+
+        andi fst, fst, 127
 
 # \n ^J ends the line
 
@@ -647,10 +541,6 @@ docomma:
       
         sw fst, 0 (idx)
       
-        mhex idx 
-
-        mhex fst 
-        
         addi idx, idx, CELL
       
         sw idx, HERE (usr)
@@ -766,7 +656,8 @@ istrue:
         j back1
 
 #---------------------------------------------------------------------
-# ( -- state ), return an reference
+# beware variables order
+# ( -- sptr) return an reference
 def_word "u@", "userat", hash_userat, h_zeroq
         
         add fst, zero, usr 
@@ -786,7 +677,7 @@ save1:
         j next
 
 #---------------------------------------------------------------------
-# ( -- ), 
+# ( -- ), ; aka figforth colon 
 def_word ":", "colon", hash_colon, h_userat
 # save here, panic if semis not follow elsewhere
         
@@ -825,7 +716,7 @@ comma:
         j next 
 
 #---------------------------------------------------------------------
-# ( -- )
+# ( -- ) ; aka figforth semicolon
 def_word ";", "semis", hash_semis, h_colon 
 # update last, panic if colon not lead elsewhere 
         
@@ -855,43 +746,48 @@ finish:
 #
 # ipt must stay reserved outside exit !
 #
-# ( -- ) 
+# ( -- ) ; aka figforth semis
 def_word "exit", "exit", hash_exit, h_semis
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
         
-        lw idx, RPTR (usr)
+        lw trd, RPTR (usr)
         
-        lw ipt, 0 (idx)
+        lw ipt, 0 (trd)
         
-        addi idx, idx, CELL
+        addi trd, trd, CELL
         
-        sw idx, RPTR (usr)
+        sw trd, RPTR (usr)
 
 next:
-# wrd = (ipt) #; ipt += cell
+# wrd = (ipt) ; ipt += cell
         
         lw fst, 0 (ipt)
         
         addi ipt, ipt, CELL
 
 pick:
-# compare address, if is a primitive then jumps 
+# compare address, if is a primitive then jumps, MITC 
         
-        la idx, ends
+        la trd, ends
         
-        blt fst, idx, jump
+        bge fst, trd, nest
+
+jump: 
+# jump to primitive
+        
+        jalr ra, 0 (fst)
 
 nest:   #; enter
 # return push, rp -= cell, (rpt) = ipt
         
-        lw idx, RPTR (usr)
+        lw trd, RPTR (usr)
         
-        addi idx, idx, -1 * CELL
+        addi trd, trd, -1 * CELL
         
-        sw ipt, 0 (idx)
+        sw ipt, 0 (trd)
         
-        sw idx, RPTR (usr)
+        sw trd, RPTR (usr)
 
 move: 
 # indirect access 
@@ -899,11 +795,6 @@ move:
         add ipt, zero, fst
         
         j next
-
-jump: 
-# jump to primitive
-        
-        jalr ra, 0 (fst)
 
 #---------------------------------------------------------------------
 # the outer loop, need for indirect
@@ -931,7 +822,7 @@ resolvept:
 
 .set into_extras, h_exit
 
-#include "extras-milliforth.S"
+#include "extras-riscv.S"
 
 .set h_last, from_extras
 

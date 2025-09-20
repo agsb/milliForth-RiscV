@@ -5,10 +5,10 @@
 # a0, a1, a2, a7 are used by ecalls
 
 # forth struct pointer, constant 
-#define usr s10
+#define usr s0
 
 # instruction pointer, preserved
-#define ipt s11
+#define ipt s1
 
 # hash value
 #define hsh a0

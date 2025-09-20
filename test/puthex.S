@@ -1,5 +1,14 @@
 
 #---------------------------------------------------------------------
+.globl putchar
+.macro putchar value
+       add t0, zero, a3
+       li a3, \value
+       call _putc
+       add a3, zero, t0
+.endm
+
+#---------------------------------------------------------------------
 .globl mhit
 
 .macro mhit it
