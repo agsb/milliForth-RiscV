@@ -6,24 +6,17 @@
     with only: + nand ! @ : ; 0# u@ exit key emit 
     and a user structure for main forth variables.
 
-## Todo
-
-    I need learn about how implement:
-
-    <builds create does> variable constant 
-    defer postpone align 
-
-    = postpone is done, as extra configuration flag.
-
-    = create and variable, are in the minimal vocabulary.
-
-    DPANS94: 
-        PAD shall be at least 84 bytes.
-        PIC (2*32)+2, at least 66 bytes.
-
-
-    
 ## Done
+
+21/09/2025
+
+    Found another problem: -1 and .R have same hash, also .R is a
+    standart core word for pretty print numbers.
+
+    Changed 
+        .S to %S, to print data stack, (can make an alias to .S)
+        .R to %R, to print return stack
+        the % is like a stack :)
 
 20/09/2025
 

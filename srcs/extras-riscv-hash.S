@@ -34,8 +34,8 @@
 .equ hash_donext, 0x0059697A
 .equ hash_bye, 0x0B874AFB
 .equ hash_abort, 0x0A1DFF4F
-.equ hash_splist, 0x005966B8
-.equ hash_rplist, 0x005966B9
+.equ hash_splist, 0x005965D3
+.equ hash_rplist, 0x005965D2
 .equ hash_dump, 0x7C6B2FE9
 .equ hash_words, 0x0B6953F8
 .equ hash_see, 0x0B878F36
@@ -83,7 +83,7 @@ def_word "abort", "aborts", hash_abort, h_byes
 
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
-def_word ".S", "splist", hash_splist, h_aborts
+def_word "%S", "splist", hash_splist, h_aborts
 
         call stackS
 
@@ -91,7 +91,7 @@ def_word ".S", "splist", hash_splist, h_aborts
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
-def_word ".R", "rplist", hash_rplist, h_splist
+def_word "%R", "rplist", hash_rplist, h_splist
 
         call stackR
         
@@ -306,7 +306,7 @@ stackR:
 
         lw a5, RPTR (usr)
         la a6, rp0
-
+        
         call stackp
 
         j returns

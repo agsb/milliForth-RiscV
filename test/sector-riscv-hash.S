@@ -57,11 +57,11 @@
 
 #---------------------------------------------------------------------
 
-# .equ debug, YES
+ .equ debug, YES
 
-# .equ dismiss, YES
+ .equ dismiss, YES
 
-# .equ postpones, YES
+ .equ postpones, YES
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
@@ -193,12 +193,35 @@ reset:
         sw fst, TOIN (usr)
 
 #---------------------------------------------------------------------
-# reset stacks
+# unexpected end of dictionary
+miss:
 
 # xxx
 .ifndef dismiss
 
-miss:
+# wipe remains compiled
+
+        putchar '\n'
+
+100:
+        lb fst, 0 (idx)
+        call _putc 
+        beq fst, trd, 100f
+        addi idx, idx, ONE
+        j 100b
+100:
+        putchar '?'
+        putchar '?'
+
+wipe:
+        # compiling ?
+        lw fst, STAT (usr)
+        bne fst, zero, 100f
+        # wipe remains
+        lw fst, HEAD (usr)
+        sw fst, HERE (usr)
+100:
+        j error
 
 .endif
 
@@ -343,37 +366,6 @@ immediate:
         la ipt, resolvept
 
         j pick
-
-#---------------------------------------------------------------------
-# unexpected end of dictionary
-# wipe remains compiled
-
-.ifdef dismiss
-
-miss:
-
-        putchar '\n'
-
-100:
-        lb fst, 0 (idx)
-        call _putc 
-        beq fst, trd, 100f
-        addi idx, idx, ONE
-        j 100b
-100:
-        putchar ' '
-        putchar '?'
-
-wipe:
-        # compiling ?
-        lw fst, STAT (usr)
-        bne fst, zero, 100f
-        # wipe remains
-        lw fst, HEAD (usr)
-        sw fst, HERE (usr)
-100:
-        j error
-.endif
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds

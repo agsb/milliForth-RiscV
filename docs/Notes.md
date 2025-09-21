@@ -77,7 +77,8 @@
  
 ## For Devs
  
-    Chuck Moore uses 64 columns, be wise, obey rule 72 CPL; 
+    Chuck Moore uses 64 columns. Be wise, obey the rule of 
+        72 characters per line; 
  
     Never mess with two underscore variables;
  
@@ -120,19 +121,41 @@
         Also r0 must ever be called as zero.
 
     I dunno about another way to make register name alias
-    but using cpp to pre-process the alias, eg. 
-    #define mytmp  t1     
+        but using cpp to pre-process the alias, eg. 
+        #define mytmp  t1     
 
-    2. All memory access is by a register eg. 
+    2. All memory access by a register
     
-        # load
-            lw rd, offset (ro); 
-        # save
-            sw ro, offset (rd);
+        # load a address
+            la rd, label or literal
+
+        # load a word
+            lw rv, offset (rd); 
+        
+        # save a word
+            sw rv, offset (rd);
     
+    3. All comparations between registers
+
+        # load a value +/- 1024
+
+            addi, r1, zero, value
+
+        # compare beq, bne, blt, bge etc
+
+            beq r1, zero, offset
+            or
+            beq r1, r2, offset
+
     3. Forth uses a 'user struct' with variables and pointers, then 
     for each memory reference "la rd, reference_memory" is really
-    two instructions "auipc rd" and "li rd", or "addi rd, gp, offset"
+    two instructions 
+        
+            lui rd, %hi(address)
+
+            addi rd, %lo(address)
+            or
+            addi rd, gp, offset
     
     For sake of size better keep the reference in a register 
     and do offsets "lw rd, offser (rf)" then reserve one register (usr)
@@ -184,16 +207,17 @@ wpush:
         nested routines.
 
     8. The RiscV compressed instructions allow X8 to X15, 
-        as S0, S1, A0-A5, and system ecalls uses A0, A1, A2 and A7. 
-        The _putc and _getc uses A3 as argument.
+        as S0, S1, A0-A5, and system ecalls could use A0 to A7. 
+        The _putc and _getc uses iA0, A1, A2, A3, A7 and A3 as argument.
     
-    9. The milliForth use S10 as pointer for user structure, 
-        S11 to hold the instruction pointer IPT, and two groups of 
-        registers. A upper group A0, A1, A2, A7 for routines without 
-        ecalls and a lower group A3, A4, A5, A6 for generic routines 
-        with ecalls.
-        
+    9. The milliForth use S0 as pointer for user structure, 
+        S1 to hold the instruction pointer IPT, and two groups of 
+        registers. A upper group A0, A1, A2 for routines without 
+        ecalls and a lower group A3, A4, A5, for generic routines, 
+        with ecalls. A6 and A7 are scratch.
 
+        In some debug and extras routines more registers could be used.
+        
 ## For Heaps
 
 _"From a 6502 64k memory to a Risc-V 4GB memory, Mind the Gap."_
@@ -224,21 +248,21 @@ Maybe without .rodata, at end of .bss could be a good place to start...
 
 ## For Hash
 
-    _"AI uses hash code as word, Humans uses semantics as word"_
+_"AI uses hash code as word, Humans uses semantics as word"_
      [Liang Ng](https://www.youtube.com/watch?v=sSlM3Mr_9sI)
     
-    Why not use hashes for words ?
+Why not use hashes for words ?
 
-    Moore once used size and first three characters of name as words
+Moore once used size and first three characters of name as words
     in dictionary. Now with 32-bit CPUs the find of a word could be 
     easy, done just one comparation, and the header as: link, hash, code.
 
-    To keep safe from colisions, check the hash of token inside colon (:)
+To keep safe from colisions, check the hash of token inside colon (:)
     and when exists, block that token.
 
-    Also could export a name:hash, to make a list for human reference.
+Also could export a name:hash, to make a list for human reference.
     
-    The hash over 0x00000000 to 0x7FFFFFFF, reserve -1 to IMMEDIATE flag
+The hash over 0x00000000 to 0x7FFFFFFF, reserve -1 to IMMEDIATE flag
 
 _" there is no spoon "_
 

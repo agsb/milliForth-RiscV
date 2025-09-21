@@ -1,0 +1,1 @@
+cat t0.f t2.f | sh doit.sh | tee z 

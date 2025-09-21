@@ -112,7 +112,7 @@ In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1,
     and uses a STATE (< 0) to always compile the next word, 
     and return to compile STATE (1). 
 
-So postpone is defined as 
+So postpone could be defined as 
         
         : postpone -1 state ! ; immediate
 
