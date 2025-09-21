@@ -50,6 +50,9 @@ Only use a IMMEDIATE flag, at MSBit (31) of hash.
     The memory management is done by extend the dictionary into .bss,
         no linux calls for memory allocation. (Anyone ?)
 
+    The source could be compiled with postpone hack, dismiss hack and
+        more complementary native code word.
+
 ## Compiler Options
 
     compiler suit of RISCV: gcc riscv64-unknown-elf-* -Oz
@@ -81,17 +84,17 @@ and use registers r0, ra, sp, s0, s1, a0-a7, t0-t1.
 For assembler, use [standart Risc-V](https://github.com/riscv-non-isa/riscv-asm-manual) style 
 with pre-processor directives eg. #define.
 
-For now, using riscv-unknown-elf-gcc 15.0 suit with qemu emulator
+For now, using riscv-unknown-elf-gcc suit with qemu emulator
 for a single core minimal footprint Forth thread.  
 
-I hope it uses less than 1k byte, without extras and user dictionary.
+~~I hope~~ it uses less than 1k byte, without extras and user dictionary.
 
 The milliForth must use memory pointers for data stack and return stack, 
 because does fetch and store from a special 'user structure', which 
 contains the user variables for Forth 
 (state, toin, last, here, sptr, dptr, heap, tail).
 
-## Postpone
+## Postpone Hack
 
 Forth standart have postone, instead of compile, and [compile].
 
@@ -105,8 +108,9 @@ using a extra STATE and a flag for precedence.
 | during compilation | 1 | compile | execute | execute |
 | after IMMEDIATE | 2 | compile | compile | execute |
 
-In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, and uses STATE (< 0) to always compile the next word, 
-and return to compile STATE (1). 
+In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, 
+    and uses a STATE (< 0) to always compile the next word, 
+    and return to compile STATE (1). 
 
 So postpone is defined as 
         
@@ -115,6 +119,13 @@ So postpone is defined as
 and used as
 
         : xxxx .... postpone word ... ;
+
+## Dismiss hack
+
+    When the compilation of a word is breaked, the LATEST are keepd in
+        order but HERE was advanced with references of words, that junk
+        stays lost in heap. With the Dismiss hack, the HERE returns
+        to previous value before start of compilation.
 
 ## Colon and Semis
 
