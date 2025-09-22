@@ -26,10 +26,10 @@
 #define snd a4
 
 # generic
-#define trd a5
+#define trd a6
 
 # index 
-#define idx a6
+#define idx a5
 
 #---------------------------------------------------------------------
 # generics alias 

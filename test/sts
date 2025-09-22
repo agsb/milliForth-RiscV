@@ -1,0 +1,11 @@
+
+grep -E ' s0|,s0|s0,' sector-riscv.dmp > s0
+grep -E ' s1|,s1|s1,' sector-riscv.dmp > s1
+grep -E ' a0|,a0|a0,' sector-riscv.dmp > a0
+grep -E ' a1|,a1|a1,' sector-riscv.dmp > a1
+grep -E ' a2|,a2|a2,' sector-riscv.dmp > a2
+grep -E ' a3|,a3|a3,' sector-riscv.dmp > a3
+grep -E ' a4|,a4|a4,' sector-riscv.dmp > a4
+grep -E ' a5|,a5|a5,' sector-riscv.dmp > a5
+grep -E ' a6|,a6|a6,' sector-riscv.dmp > a6
+grep -E ' a7|,a7|a7,' sector-riscv.dmp > a7

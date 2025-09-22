@@ -1,0 +1,479 @@
+
+sector-riscv.elf:     file format elf32-littleriscv
+sector-riscv.elf
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .note.gnu.build-id 00000024  000100d4  000100d4  000000d4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  1 .text         0000022c  000100f8  000100f8  000000f8  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .got          0000002c  00011fcc  00011fcc  00000fcc  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  3 .got.plt      00000008  00011ff8  00011ff8  00000ff8  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  4 .bss          000001c0  00012000  00012000  00001000  2**2
+                  ALLOC
+  5 .riscv.attributes 0000001f  00000000  00000000  00001000  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+000100d4 l    d  .note.gnu.build-id	00000000 .note.gnu.build-id
+000100f8 l    d  .text	00000000 .text
+00011fcc l    d  .got	00000000 .got
+00011ff8 l    d  .got.plt	00000000 .got.plt
+00012000 l    d  .bss	00000000 .bss
+00000000 l    d  .riscv.attributes	00000000 .riscv.attributes
+00000000 l    df *ABS*	00000000 ccbOb5f5.o
+00000000 l       *ABS*	00000000 FALSE
+ffffffff l       *ABS*	00000000 TRUE
+00000000 l       *ABS*	00000000 EXECUTE
+00000001 l       *ABS*	00000000 COMPILE
+ffffffff l       *ABS*	00000000 POSTPONE
+00000001 l       *ABS*	00000000 ONE
+00000002 l       *ABS*	00000000 TWO
+00000004 l       *ABS*	00000000 CELL
+0000000a l       *ABS*	00000000 NL
+0000000d l       *ABS*	00000000 CR
+00000020 l       *ABS*	00000000 BL
+00000090 l       *ABS*	00000000 spz
+00000090 l       *ABS*	00000000 rpz
+00000050 l       *ABS*	00000000 tibz
+00000030 l       *ABS*	00000000 padz
+80000000 l       *ABS*	00000000 FLAG_IMM
+7fffffff l       *ABS*	00000000 MASK_IMM
+00000000 l       *ABS*	00000000 SPTR
+00000004 l       *ABS*	00000000 RPTR
+00000008 l       *ABS*	00000000 LAST
+0000000c l       *ABS*	00000000 HERE
+00000010 l       *ABS*	00000000 TOIN
+00000014 l       *ABS*	00000000 STAT
+00000018 l       *ABS*	00000000 HEAD
+0000001c l       *ABS*	00000000 TAIL
+0b876d32 l       *ABS*	00000000 hash_key
+7c6b87d0 l       *ABS*	00000000 hash_emit
+0002b584 l       *ABS*	00000000 hash_store
+0002b5e5 l       *ABS*	00000000 hash_fetch
+7c727500 l       *ABS*	00000000 hash_nand
+0002b58e l       *ABS*	00000000 hash_plus
+00596816 l       *ABS*	00000000 hash_zeroq
+00596f90 l       *ABS*	00000000 hash_userat
+0002b59f l       *ABS*	00000000 hash_colon
+8002b59e l       *ABS*	00000000 hash_semis
+7c6bbe85 l       *ABS*	00000000 hash_exit
+00012000 l       .bss	00000000 _user
+00012020 l       .bss	00000000 _locals
+00012040 l       .bss	00000000 _spb
+000120d0 l       .bss	00000000 sp0
+000120d4 l       .bss	00000000 _rpb
+00012164 l       .bss	00000000 rp0
+00012168 l       .bss	00000000 _tib
+000121b8 l       .bss	00000000 h_here
+000100f8 l       .text	00000000 main
+000100f8 l       .text	00000000 cold
+00010100 l       .text	00000000 warm
+000102a8 l       .text	00000000 h_last
+00010114 l       .text	00000000 reset
+0001011e l       .text	00000000 miss
+0001011e l       .text	00000000 error
+0001011e l       .text	00000000 abort
+00010128 l       .text	00000000 quit
+00010136 l       .text	00000000 okey
+00010136 l       .text	00000000 resolve
+0001016a l       .text	00000000 token
+00010138 l       .text	00000000 tick
+00010152 l       .text	00000000 eval
+00010160 l       .text	00000000 execute
+00010160 l       .text	00000000 immediate
+0001015c l       .text	00000000 compile
+000101d4 l       .text	00000000 docomma
+000102e4 l       .text	00000000 resolvept
+000102c2 l       .text	00000000 pick
+00010182 l       .text	00000000 gets
+000101a6 l       .text	00000000 hash
+000102f4 l       .text	00000000 _getc
+00001505 l       *ABS*	00000000 DJB2
+00000005 l       *ABS*	00000000 SFHT
+000101a6 l       .text	00000000 djb2
+000101c2 l       .text	00000000 mask
+000101de l       .text	00000000 pull2
+000101ea l       .text	00000000 h_key
+000101f2 l       .text	00000000 key
+00010264 l       .text	00000000 push1
+000101f8 l       .text	00000000 h_emit
+00010200 l       .text	00000000 emit
+0001030c l       .text	00000000 _putc
+0001026a l       .text	00000000 save1
+00010208 l       .text	00000000 h_store
+00010210 l       .text	00000000 store
+00010214 l       .text	00000000 drop1
+0001021a l       .text	00000000 h_fetch
+00010222 l       .text	00000000 fetch
+00010266 l       .text	00000000 back1
+00010228 l       .text	00000000 h_nand
+00010230 l       .text	00000000 nand
+00010268 l       .text	00000000 keep1
+0001023a l       .text	00000000 h_plus
+00010242 l       .text	00000000 plus
+00010248 l       .text	00000000 h_zeroq
+00010250 l       .text	00000000 zeroq
+00010252 l       .text	00000000 isfalse
+000102be l       .text	00000000 next
+00010254 l       .text	00000000 istrue
+0001025a l       .text	00000000 h_userat
+00010262 l       .text	00000000 userat
+0001026e l       .text	00000000 h_colon
+00010276 l       .text	00000000 colon
+0001027e l       .text	00000000 create
+00010286 l       .text	00000000 comma
+0001028c l       .text	00000000 h_semis
+00010294 l       .text	00000000 semis
+0001029c l       .text	00000000 finish
+000102b0 l       .text	00000000 exit
+000102a8 l       .text	00000000 h_exit
+000102b0 l       .text	00000000 unnest
+00010324 l       .text	00000000 ends
+000102d2 l       .text	00000000 nest
+000102ce l       .text	00000000 jump
+000102e0 l       .text	00000000 move
+00000000 l       *ABS*	00000000 _ZERO
+00000001 l       *ABS*	00000000 _ONE
+00000000 l       *ABS*	00000000 _STDIN
+00000001 l       *ABS*	00000000 _STDOUT
+0000002d l       *ABS*	00000000 _SBRK
+00000037 l       *ABS*	00000000 _FCNT
+0000003f l       *ABS*	00000000 _GETC
+00000040 l       *ABS*	00000000 _PUTC
+0000005d l       *ABS*	00000000 _EXIT
+000000c0 l       *ABS*	00000000 _MMAP
+000121bc l       .bss	00000000 _char
+000102e8 l       .text	00000000 _exit
+000102f2 l       .text	00000000 _init
+0001031e l       .text	00000000 _rets
+00011fcc l     O .got	00000000 _GLOBAL_OFFSET_TABLE_
+00012800 g       *ABS*	00000000 __global_pointer$
+00012000 g       .got.plt	00000000 __SDATA_BEGIN__
+000100f8 g       .text	00000000 _start
+000121c0 g       .bss	00000000 __BSS_END__
+00012000 g       .bss	00000000 __bss_start
+00012000 g       .got.plt	00000000 __DATA_BEGIN__
+00012000 g       .got.plt	00000000 _edata
+000121c0 g       .bss	00000000 _end
+
+
+
+Disassembly of section .text:
+
+000100f8 <_start>:
+   100f8:	00002417          	auipc	s0,0x2
+   100fc:	ed842403          	lw	s0,-296(s0) # 11fd0 <_GLOBAL_OFFSET_TABLE_+0x4>
+
+00010100 <warm>:
+   10100:	00002697          	auipc	a3,0x2
+   10104:	ee06a683          	lw	a3,-288(a3) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x14>
+   10108:	c454                	sw	a3,12(s0)
+   1010a:	00002697          	auipc	a3,0x2
+   1010e:	eda6a683          	lw	a3,-294(a3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x18>
+   10112:	c414                	sw	a3,8(s0)
+
+00010114 <reset>:
+   10114:	00002697          	auipc	a3,0x2
+   10118:	ec86a683          	lw	a3,-312(a3) # 11fdc <_GLOBAL_OFFSET_TABLE_+0x10>
+   1011c:	c814                	sw	a3,16(s0)
+
+0001011e <abort>:
+   1011e:	00002697          	auipc	a3,0x2
+   10122:	eb66a683          	lw	a3,-330(a3) # 11fd4 <_GLOBAL_OFFSET_TABLE_+0x8>
+   10126:	c014                	sw	a3,0(s0)
+
+00010128 <quit>:
+   10128:	00002697          	auipc	a3,0x2
+   1012c:	eb06a683          	lw	a3,-336(a3) # 11fd8 <_GLOBAL_OFFSET_TABLE_+0xc>
+   10130:	c054                	sw	a3,4(s0)
+   10132:	00042a23          	sw	zero,20(s0)
+
+00010136 <okey>:
+   10136:	2815                	jal	1016a <token>
+
+00010138 <tick>:
+   10138:	440c                	lw	a1,8(s0)
+   1013a:	d1f5                	beqz	a1,1011e <abort>
+   1013c:	86ae                	mv	a3,a1
+   1013e:	428c                	lw	a1,0(a3)
+   10140:	0691                	addi	a3,a3,4
+   10142:	4290                	lw	a2,0(a3)
+   10144:	80000737          	lui	a4,0x80000
+   10148:	8f71                	and	a4,a4,a2
+   1014a:	8e39                	xor	a2,a2,a4
+   1014c:	fec517e3          	bne	a0,a2,1013a <tick+0x2>
+   10150:	0691                	addi	a3,a3,4
+
+00010152 <eval>:
+   10152:	01442803          	lw	a6,20(s0)
+   10156:	00080563          	beqz	a6,10160 <execute>
+   1015a:	e319                	bnez	a4,10160 <execute>
+
+0001015c <compile>:
+   1015c:	28a5                	jal	101d4 <docomma>
+   1015e:	bfe1                	j	10136 <okey>
+
+00010160 <execute>:
+   10160:	00002497          	auipc	s1,0x2
+   10164:	e884a483          	lw	s1,-376(s1) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0x1c>
+   10168:	aaa9                	j	102c2 <pick>
+
+0001016a <token>:
+   1016a:	1171                	addi	sp,sp,-4
+   1016c:	c006                	sw	ra,0(sp)
+   1016e:	02000813          	li	a6,32
+   10172:	481c                	lw	a5,16(s0)
+   10174:	00078703          	lb	a4,0(a5)
+   10178:	c709                	beqz	a4,10182 <gets>
+   1017a:	03071663          	bne	a4,a6,101a6 <djb2>
+   1017e:	0785                	addi	a5,a5,1
+   10180:	bfd5                	j	10174 <token+0xa>
+
+00010182 <gets>:
+   10182:	00002797          	auipc	a5,0x2
+   10186:	e5a7a783          	lw	a5,-422(a5) # 11fdc <_GLOBAL_OFFSET_TABLE_+0x10>
+   1018a:	c81c                	sw	a5,16(s0)
+   1018c:	4729                	li	a4,10
+   1018e:	86c2                	mv	a3,a6
+   10190:	00d78023          	sb	a3,0(a5)
+   10194:	0785                	addi	a5,a5,1
+   10196:	2ab9                	jal	102f4 <_getc>
+   10198:	fee69ce3          	bne	a3,a4,10190 <gets+0xe>
+   1019c:	01078023          	sb	a6,0(a5)
+   101a0:	000780a3          	sb	zero,1(a5)
+   101a4:	b7f9                	j	10172 <token+0x8>
+
+000101a6 <djb2>:
+   101a6:	00001537          	lui	a0,0x1
+   101aa:	50550513          	addi	a0,a0,1285 # 1505 <DJB2>
+   101ae:	00078683          	lb	a3,0(a5)
+   101b2:	01068863          	beq	a3,a6,101c2 <mask>
+   101b6:	872a                	mv	a4,a0
+   101b8:	0516                	slli	a0,a0,0x5
+   101ba:	953a                	add	a0,a0,a4
+   101bc:	8d35                	xor	a0,a0,a3
+   101be:	0785                	addi	a5,a5,1
+   101c0:	b7fd                	j	101ae <djb2+0x8>
+
+000101c2 <mask>:
+   101c2:	800006b7          	lui	a3,0x80000
+   101c6:	fff68693          	addi	a3,a3,-1 # 7fffffff <MASK_IMM>
+   101ca:	8d75                	and	a0,a0,a3
+   101cc:	c81c                	sw	a5,16(s0)
+   101ce:	4082                	lw	ra,0(sp)
+   101d0:	0111                	addi	sp,sp,4
+   101d2:	8082                	ret
+
+000101d4 <docomma>:
+   101d4:	445c                	lw	a5,12(s0)
+   101d6:	c394                	sw	a3,0(a5)
+   101d8:	0791                	addi	a5,a5,4
+   101da:	c45c                	sw	a5,12(s0)
+   101dc:	8082                	ret
+
+000101de <pull2>:
+   101de:	401c                	lw	a5,0(s0)
+   101e0:	4394                	lw	a3,0(a5)
+   101e2:	0791                	addi	a5,a5,4
+   101e4:	4398                	lw	a4,0(a5)
+   101e6:	8082                	ret
+	...
+
+000101ea <h_key>:
+   101ea:	00000000          	.word	0x00000000
+   101ee:	0b876d32          	.word	0x0b876d32
+
+000101f2 <key>:
+   101f2:	2209                	jal	102f4 <_getc>
+   101f4:	a885                	j	10264 <push1>
+	...
+
+000101f8 <h_emit>:
+   101f8:	000101ea          	.word	0x000101ea
+   101fc:	7c6b87d0          	.word	0x7c6b87d0
+
+00010200 <emit>:
+   10200:	3ff9                	jal	101de <pull2>
+   10202:	2229                	jal	1030c <_putc>
+   10204:	a09d                	j	1026a <save1>
+	...
+
+00010208 <h_store>:
+   10208:	000101f8          	.word	0x000101f8
+   1020c:	0002b584          	.word	0x0002b584
+
+00010210 <store>:
+   10210:	37f9                	jal	101de <pull2>
+   10212:	c298                	sw	a4,0(a3)
+
+00010214 <drop1>:
+   10214:	0791                	addi	a5,a5,4
+   10216:	a891                	j	1026a <save1>
+	...
+
+0001021a <h_fetch>:
+   1021a:	00010208          	.word	0x00010208
+   1021e:	0002b5e5          	.word	0x0002b5e5
+
+00010222 <fetch>:
+   10222:	3f75                	jal	101de <pull2>
+   10224:	4294                	lw	a3,0(a3)
+   10226:	a081                	j	10266 <back1>
+
+00010228 <h_nand>:
+   10228:	0001021a          	.word	0x0001021a
+   1022c:	7c727500          	.word	0x7c727500
+
+00010230 <nand>:
+   10230:	377d                	jal	101de <pull2>
+   10232:	8ef9                	and	a3,a3,a4
+   10234:	fff6c693          	not	a3,a3
+   10238:	a805                	j	10268 <keep1>
+
+0001023a <h_plus>:
+   1023a:	00010228          	.word	0x00010228
+   1023e:	0002b58e          	.word	0x0002b58e
+
+00010242 <plus>:
+   10242:	3f71                	jal	101de <pull2>
+   10244:	96ba                	add	a3,a3,a4
+   10246:	a00d                	j	10268 <keep1>
+
+00010248 <h_zeroq>:
+   10248:	0001023a          	.word	0x0001023a
+   1024c:	00596816          	.word	0x00596816
+
+00010250 <zeroq>:
+   10250:	3779                	jal	101de <pull2>
+
+00010252 <isfalse>:
+   10252:	c6b5                	beqz	a3,102be <next>
+
+00010254 <istrue>:
+   10254:	56fd                	li	a3,-1
+   10256:	a801                	j	10266 <back1>
+	...
+
+0001025a <h_userat>:
+   1025a:	00010248          	.word	0x00010248
+   1025e:	00596f90          	.word	0x00596f90
+
+00010262 <userat>:
+   10262:	86a2                	mv	a3,s0
+
+00010264 <push1>:
+   10264:	401c                	lw	a5,0(s0)
+
+00010266 <back1>:
+   10266:	17f1                	addi	a5,a5,-4
+
+00010268 <keep1>:
+   10268:	c394                	sw	a3,0(a5)
+
+0001026a <save1>:
+   1026a:	c01c                	sw	a5,0(s0)
+   1026c:	a889                	j	102be <next>
+
+0001026e <h_colon>:
+   1026e:	0001025a          	.word	0x0001025a
+   10272:	0002b59f          	.word	0x0002b59f
+
+00010276 <colon>:
+   10276:	4454                	lw	a3,12(s0)
+   10278:	cc14                	sw	a3,24(s0)
+   1027a:	4685                	li	a3,1
+   1027c:	c854                	sw	a3,20(s0)
+
+0001027e <create>:
+   1027e:	4414                	lw	a3,8(s0)
+   10280:	3f91                	jal	101d4 <docomma>
+   10282:	35e5                	jal	1016a <token>
+   10284:	86aa                	mv	a3,a0
+
+00010286 <comma>:
+   10286:	37b9                	jal	101d4 <docomma>
+   10288:	a81d                	j	102be <next>
+	...
+
+0001028c <h_semis>:
+   1028c:	0001026e          	.word	0x0001026e
+   10290:	8002b59e          	.word	0x8002b59e
+
+00010294 <semis>:
+   10294:	4c14                	lw	a3,24(s0)
+   10296:	c414                	sw	a3,8(s0)
+   10298:	00042a23          	sw	zero,20(s0)
+
+0001029c <finish>:
+   1029c:	00002697          	auipc	a3,0x2
+   102a0:	d506a683          	lw	a3,-688(a3) # 11fec <_GLOBAL_OFFSET_TABLE_+0x20>
+   102a4:	b7cd                	j	10286 <comma>
+	...
+
+000102a8 <h_exit>:
+   102a8:	0001028c          	.word	0x0001028c
+   102ac:	7c6bbe85          	.word	0x7c6bbe85
+
+000102b0 <exit>:
+   102b0:	00442803          	lw	a6,4(s0)
+   102b4:	00082483          	lw	s1,0(a6)
+   102b8:	0811                	addi	a6,a6,4
+   102ba:	01042223          	sw	a6,4(s0)
+
+000102be <next>:
+   102be:	4094                	lw	a3,0(s1)
+   102c0:	0491                	addi	s1,s1,4
+
+000102c2 <pick>:
+   102c2:	00002817          	auipc	a6,0x2
+   102c6:	d2e82803          	lw	a6,-722(a6) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x24>
+   102ca:	0106d463          	bge	a3,a6,102d2 <nest>
+
+000102ce <jump>:
+   102ce:	000680e7          	jalr	a3
+
+000102d2 <nest>:
+   102d2:	00442803          	lw	a6,4(s0)
+   102d6:	1871                	addi	a6,a6,-4
+   102d8:	00982023          	sw	s1,0(a6)
+   102dc:	01042223          	sw	a6,4(s0)
+
+000102e0 <move>:
+   102e0:	84b6                	mv	s1,a3
+   102e2:	bff1                	j	102be <next>
+
+000102e4 <resolvept>:
+   102e4:	00010136          	.word	0x00010136
+
+000102e8 <_exit>:
+   102e8:	4501                	li	a0,0
+   102ea:	05d00893          	li	a7,93
+   102ee:	00000073          	ecall
+
+000102f2 <_init>:
+   102f2:	8082                	ret
+
+000102f4 <_getc>:
+   102f4:	4501                	li	a0,0
+   102f6:	00002597          	auipc	a1,0x2
+   102fa:	cfe5a583          	lw	a1,-770(a1) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x28>
+   102fe:	4605                	li	a2,1
+   10300:	03f00893          	li	a7,63
+   10304:	00000073          	ecall
+   10308:	4194                	lw	a3,0(a1)
+   1030a:	dd79                	beqz	a0,102e8 <_exit>
+
+0001030c <_putc>:
+   1030c:	4505                	li	a0,1
+   1030e:	00002597          	auipc	a1,0x2
+   10312:	ce65a583          	lw	a1,-794(a1) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x28>
+   10316:	4605                	li	a2,1
+   10318:	04000893          	li	a7,64
+   1031c:	c194                	sw	a3,0(a1)
+
+0001031e <_rets>:
+   1031e:	00000073          	ecall
+   10322:	8082                	ret

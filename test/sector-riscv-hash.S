@@ -57,11 +57,11 @@
 
 #---------------------------------------------------------------------
 
- .equ debug, YES
+# .equ debug, YES
 
- .equ dismiss, YES
+# .equ dismiss, YES
 
- .equ postpones, YES
+# .equ postpones, YES
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
@@ -197,7 +197,7 @@ reset:
 miss:
 
 # xxx
-.ifndef dismiss
+.ifdef dismiss
 
 # wipe remains compiled
 
@@ -293,7 +293,7 @@ tick:
 
 # linked list
         
-        add fst, zero, lnk
+        mv fst, lnk
 
 # copy next link 
         
@@ -329,15 +329,15 @@ tick:
 eval:
 # what to do ?
 
-        lw trd, STAT (usr)
+        lw wrd, STAT (usr)
         
 # executing ? if state == 0
 
-        beq trd, zero, execute
+        beq wrd, zero, execute
 
 .ifdef postpones
 # postpone ? if state < 0
-        blt trd, zero, postpone
+        blt wrd, zero, postpone
 .endif
 
 # immediate ? 
@@ -348,8 +348,8 @@ eval:
 .ifdef postpones
 # reset state to compile
 postpone:
-        addi trd, zero, ONE
-        sw trd, STAT (usr)
+        addi wrd, zero, ONE
+        sw wrd, STAT (usr)
 .endif
 
 # compiling ? if state != 0
@@ -414,7 +414,7 @@ gets:
 
 # ever start with a space
         
-        add fst, zero, trd
+        mv fst, trd
 
 # loop and fill the TIB until \n
 300:
@@ -430,7 +430,7 @@ gets:
 
         # call _putc
 
-# 7-bit ascii only ?
+# 7-bit ascii only
 
         andi fst, fst, 127
 
@@ -466,7 +466,7 @@ hash:
 
 .ifdef dismiss
 
-        add wrd, zero, idx
+        mv wrd, idx
 
 .endif 
 
@@ -481,7 +481,7 @@ djb2:
         
         beq fst, trd, 200f
 
-        add snd, zero, hsh
+        mv snd, hsh
 
         slli hsh, hsh, SFHT
         
@@ -511,7 +511,7 @@ mask:
 
 .ifdef dismiss
 
-        add idx, zero, wrd
+        mv idx, wrd
 
 .endif 
         pullra
@@ -644,7 +644,7 @@ istrue:
 # ( -- sptr) return an reference
 def_word "u@", "userat", hash_userat, h_zeroq
         
-        add fst, zero, usr 
+        mv fst, usr 
 
 push1:
         lw idx, SPTR (usr)
@@ -691,7 +691,7 @@ create:
         
 # copy hash into (here)
 
-        add fst, zero, hsh
+        mv fst, hsh
 
 comma:
 
@@ -776,7 +776,7 @@ nest:   #; enter
 move: 
 # indirect access 
         
-        add ipt, zero, fst
+        mv ipt, fst
         
         j next
 

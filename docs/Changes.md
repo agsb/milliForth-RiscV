@@ -8,6 +8,12 @@
 
 ## Done
 
+22/09/2025
+
+    Small changes to optimize s0-s1-a0-a1-a2-a3-a4-a5 uses
+
+    Now, 556 bytes with Linux I/O
+
 21/09/2025
 
     Found another problem: -1 and .R have same hash, also .R is a
