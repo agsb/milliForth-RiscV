@@ -1,44 +1,5 @@
 
-%S
-
-: ?S cr latest @ . drop heap @ . drop sp@ . drop rp@ cell + . drop cr ;
-
-?S 
-
-%S
-
-%R
-
-%S
-
-: teste dup over over nyet over ;
-
-%S
-
 0 1 2 3 4
-
-%S
-
-%R
-
->r
-
-%S
-
-%R
-
-r>
-
-%S
-
-%R
-
-bye
-
-
-see 
-
-?S
 
 %S cr
 
@@ -46,31 +7,32 @@ see
         dup heap !
         cell + @ . ;
 
-%S cr
+see
+
+: hash  here . : 
+        here . drop
+        dup . heap . !
+        cell + . @ . %S ;
 
 see
 
-?S
+?=
 
 hash void
 
-?S
+?=
 
 hash nand 
 
-?S
+?=
 
 hash exit
 
-?S
+?=
 
-hash :
+bye
 
-?S
-
-hash ;
-
-?S
+: defer here : latest ! ['] exit ['] exit ;
 
 words
 

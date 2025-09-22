@@ -106,3 +106,5 @@
 
  : | %S %R ;
  
+ : ?=  cr sp@ . drop rp@ . drop latest @ . drop heap @ . drop cr ;
+

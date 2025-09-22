@@ -210,8 +210,8 @@ miss:
         addi idx, idx, ONE
         j 100b
 100:
-        putchar '?'
-        putchar '?'
+        putchar 'X'
+        putchar 'X'
 
 wipe:
         # compiling ?
