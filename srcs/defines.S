@@ -78,7 +78,11 @@
 
 # PAD for temporary formating etc
 
-.equ padz, 48
+.equ padz, 84
+
+# PIC for numeric formating etc, (2*32)+4
+
+.equ picz, 64+4 
 
 # highlander, immediate flag, unique 
 
