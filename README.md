@@ -12,7 +12,7 @@ Milliforth uses a minimal set of primitives and functions for make a Forth.
 
 This version with minimal code (.text) uses only 532 bytes, 
     472 bytes of Forth engine and 60 bytes of linux system I/O, 
-    not counting ELF headers. 
+    not counting ELF headers. Used 48 bytes to load fixed address. 
 
 Could add some bytes of postpone hack, and many bytes for extras words.
 

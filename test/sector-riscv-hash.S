@@ -69,7 +69,6 @@
 .global def_word
 
 .macro def_word name, label, hash, last
-#.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
@@ -144,6 +143,7 @@ h_here:
 
 #----------------------------------------------------------------------
 .globl _start
+#.p2align 4, 0x00
 
 _start:
 
@@ -202,11 +202,11 @@ miss:
 # wipe remains compiled
 
         putchar '\n'
-
+# wrd is BL
 100:
         lb fst, 0 (idx)
         call _putc 
-        beq fst, trd, 100f
+        beq fst, wrd, 100f
         addi idx, idx, ONE
         j 100b
 100:
@@ -262,7 +262,7 @@ okey:
 .ifdef debug
 
         lw fst, STAT (usr)
-        bne fst, zero, resolve
+        bne fst, zero, tick
 
         putchar '\n'
         putchar 'O'
@@ -273,15 +273,14 @@ okey:
 
 #---------------------------------------------------------------------
 # get a hash of the next token
-resolve:
+tick:
         
         call token
 
 #---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
 #
-tick:
-
+find:
 # get the latest link
         
         lw lnk, LAST (usr)
@@ -357,13 +356,13 @@ compile:
         
         call docomma
 
-        j resolve
+        j tick
 
 #---------------------------------------------------------------------         
 execute:
 immediate:
 
-        la ipt, resolvept
+        la ipt, tickpt
 
         j pick
 
@@ -376,7 +375,7 @@ token:
 
         pushra
 
-# load word separator, space
+# load word separator, BL is space
 
         addi trd, zero, BL
 
@@ -385,7 +384,7 @@ token:
 # last position on tib
         lw idx, TOIN (usr)
 
-# skip spaces // trd
+# skip spaces // wrd
 200:
 
         lb snd, 0 (idx)
@@ -412,7 +411,7 @@ gets:
         
         addi snd, zero, NL
 
-# ever start with a space
+# ever start with a space, trd is BL
         
         mv fst, trd
 
@@ -422,7 +421,7 @@ gets:
         
         addi idx, idx, ONE
 
-# get next char
+# get next char, wipes a0, a1, a2, a7, returns a3
 
         call _getc
 
@@ -430,9 +429,9 @@ gets:
 
         # call _putc
 
-# 7-bit ascii only
+# cast to 7-bit standart ascii only
 
-        andi fst, fst, 127
+        # andi fst, fst, 127
 
 # \n ^J ends the line
 
@@ -454,8 +453,8 @@ gets:
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
 # idx pointer to str
-# trd holds the end of word  
-# uses fst, snd, trd
+# wrd holds the end of word  
+# uses fst, snd, wrd
 # hsh returns the hash 
 # idx returns next space after
 #---------------------------------------------------------------------
@@ -783,7 +782,7 @@ move:
 #---------------------------------------------------------------------
 # the outer loop, need for indirect
 
-resolvept:
+tickpt:
         
         .word okey
 

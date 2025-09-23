@@ -8,11 +8,18 @@
 
 ## Done
 
+23/09/2025
+
+    Cast _getc and _putc to use a byte instead of a word,
+    solves the "addi 127" bug.
+
+
+
 22/09/2025
 
     Small changes to optimize s0-s1-a0-a1-a2-a3-a4-a5 uses
 
-    Now, 556 bytes with Linux I/O
+    Now, 532 bytes with Linux I/O
 
 21/09/2025
 

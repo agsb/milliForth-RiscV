@@ -69,6 +69,7 @@
 .global def_word
 
 .macro def_word name, label, hash, last
+#.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
@@ -143,7 +144,6 @@ h_here:
 
 #----------------------------------------------------------------------
 .globl _start
-#.p2align 4, 0x00
 
 _start:
 
@@ -194,19 +194,20 @@ reset:
 
 #---------------------------------------------------------------------
 # unexpected end of dictionary
-miss:
 
 # xxx
 .ifdef dismiss
 
+miss:
+
 # wipe remains compiled
 
         putchar '\n'
-# wrd is BL
+
 100:
         lb fst, 0 (idx)
         call _putc 
-        beq fst, wrd, 100f
+        beq fst, trd, 100f
         addi idx, idx, ONE
         j 100b
 100:
@@ -271,6 +272,41 @@ okey:
 
 .endif
 
+        call tick
+
+#---------------------------------------------------------------------         
+# hsh have the hash of the word
+# snd have the flags
+# fst have the address after header
+
+eval:
+# what to do ?
+
+        lw wrd, STAT (usr)
+        
+# executing ? if state == 0
+
+        beq wrd, zero, execute
+
+# immediate ? 
+
+        bne snd, zero, immediate      
+
+# compiling ? if state != 0
+compile:
+        
+        call docomma
+
+        j okey
+
+#---------------------------------------------------------------------         
+execute:
+immediate:
+
+        la ipt, tickpt
+
+        j pick
+        
 #---------------------------------------------------------------------
 # get a hash of the next token
 tick:
@@ -320,51 +356,13 @@ find:
 
         addi fst, fst, CELL
 
-#---------------------------------------------------------------------         
-# hsh have the hash of the word
-# snd have the flags
-# fst have the address after header
+        ret
 
-eval:
-# what to do ?
+miss:
 
-        lw wrd, STAT (usr)
-        
-# executing ? if state == 0
+        mv fst, zero
 
-        beq wrd, zero, execute
-
-.ifdef postpones
-# postpone ? if state < 0
-        blt wrd, zero, postpone
-.endif
-
-# immediate ? 
-
-        bne snd, zero, immediate      
-
-#---------------------------------------------------------------------         
-.ifdef postpones
-# reset state to compile
-postpone:
-        addi wrd, zero, ONE
-        sw wrd, STAT (usr)
-.endif
-
-# compiling ? if state != 0
-compile:
-        
-        call docomma
-
-        j tick
-
-#---------------------------------------------------------------------         
-execute:
-immediate:
-
-        la ipt, tickpt
-
-        j pick
+        ret
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
@@ -375,7 +373,7 @@ token:
 
         pushra
 
-# load word separator, BL is space
+# load word separator, space
 
         addi trd, zero, BL
 
@@ -384,7 +382,7 @@ token:
 # last position on tib
         lw idx, TOIN (usr)
 
-# skip spaces // wrd
+# skip spaces // trd
 200:
 
         lb snd, 0 (idx)
@@ -411,7 +409,7 @@ gets:
         
         addi snd, zero, NL
 
-# ever start with a space, trd is BL
+# ever start with a space
         
         mv fst, trd
 
@@ -421,7 +419,7 @@ gets:
         
         addi idx, idx, ONE
 
-# get next char, wipes a0, a1, a2, a7, returns a3
+# get next char
 
         call _getc
 
@@ -429,9 +427,9 @@ gets:
 
         # call _putc
 
-# cast to 7-bit standart ascii only
+# 7-bit ascii only
 
-        # andi fst, fst, 127
+        andi fst, fst, 127
 
 # \n ^J ends the line
 
@@ -453,8 +451,8 @@ gets:
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
 # idx pointer to str
-# wrd holds the end of word  
-# uses fst, snd, wrd
+# trd holds the end of word  
+# uses fst, snd, trd
 # hsh returns the hash 
 # idx returns next space after
 #---------------------------------------------------------------------

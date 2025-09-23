@@ -69,6 +69,7 @@
 .global def_word
 
 .macro def_word name, label, hash, last
+#.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
@@ -143,7 +144,6 @@ h_here:
 
 #----------------------------------------------------------------------
 .globl _start
-#.p2align 4, 0x00
 
 _start:
 
@@ -202,11 +202,11 @@ miss:
 # wipe remains compiled
 
         putchar '\n'
-# wrd is BL
+
 100:
         lb fst, 0 (idx)
         call _putc 
-        beq fst, wrd, 100f
+        beq fst, trd, 100f
         addi idx, idx, ONE
         j 100b
 100:
@@ -375,7 +375,7 @@ token:
 
         pushra
 
-# load word separator, BL is space
+# load word separator, space
 
         addi trd, zero, BL
 
@@ -384,7 +384,7 @@ token:
 # last position on tib
         lw idx, TOIN (usr)
 
-# skip spaces // wrd
+# skip spaces // trd
 200:
 
         lb snd, 0 (idx)
@@ -411,7 +411,7 @@ gets:
         
         addi snd, zero, NL
 
-# ever start with a space, trd is BL
+# ever start with a space
         
         mv fst, trd
 
@@ -421,7 +421,7 @@ gets:
         
         addi idx, idx, ONE
 
-# get next char, wipes a0, a1, a2, a7, returns a3
+# get next char
 
         call _getc
 
@@ -429,9 +429,9 @@ gets:
 
         # call _putc
 
-# cast to 7-bit standart ascii only
+# 7-bit ascii only
 
-        # andi fst, fst, 127
+        andi fst, fst, 127
 
 # \n ^J ends the line
 
@@ -453,8 +453,8 @@ gets:
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
 # idx pointer to str
-# wrd holds the end of word  
-# uses fst, snd, wrd
+# trd holds the end of word  
+# uses fst, snd, trd
 # hsh returns the hash 
 # idx returns next space after
 #---------------------------------------------------------------------

@@ -76,7 +76,7 @@ _getc:
         addi a2, zero, _ONE
         addi a7, zero, _GETC
         ecall
-        lw a3, 0 (a1)
+        lb a3, 0 (a1)
         
         #EOF?
         beq a0, zero, _exit
@@ -90,7 +90,7 @@ _putc:
         la   a1, _char
         addi a2, zero, _ONE
         addi a7, zero, _PUTC
-        sw a3, 0 (a1)
+        sb a3, 0 (a1)
 
 _rets:
         ecall
