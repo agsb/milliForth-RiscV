@@ -10,8 +10,9 @@ This is an implementation of milliForth (sector-forth) concept for RISCV ISA.
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
-This version with minimal code uses only 560 bytes, 502 bytes of Forth
-    engine and 58 bytes of linux system I/O, not counting ELF headers. 
+This version with minimal code (.text) uses only 532 bytes, 
+    472 bytes of Forth engine and 60 bytes of linux system I/O, 
+    not counting ELF headers. 
 
 Could add some bytes of postpone hack, and many bytes for extras words.
 
@@ -19,6 +20,18 @@ No human WORDS. It uses DJB2 hashes in headers,
     instead of size+flags+name+pads. 
 
 Only use a IMMEDIATE flag, at MSBit (31) of hash.
+
+## For Size
+
+How shink to a minimal compiled size ?
+
+    1. do not need align, the size of opcodes is always 2 or 4 bytes;
+
+    2. choose registers to maximize use of compressed riscv opcodes;
+
+    3. warn the user about possible errors but abandon error checking;
+
+    4. do not speculate;
 
 ## For use
 
@@ -31,7 +44,7 @@ Only use a IMMEDIATE flag, at MSBit (31) of hash.
 
     t1.f is a complement with BrainFu*ck interpreter; (_STUB_)
 
-    t2.f is a complemente with hash and more words; (STUB)
+    t2.f is a complemente with hash and more words; (_STUB_)
 
     Could test by:
 

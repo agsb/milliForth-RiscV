@@ -69,7 +69,7 @@
 .global def_word
 
 .macro def_word name, label, hash, last
-.p2align 2, 0x00
+#.p2align 2, 0x00
 h_\label:
         .word \last
         .word \hash
@@ -735,13 +735,13 @@ def_word "exit", "exit", hash_exit, h_semis
 unnest: #; exit
 # return pull, ipt = (rpt), rpt += cell 
         
-        lw trd, RPTR (usr)
+        lw idx, RPTR (usr)
         
-        lw ipt, 0 (trd)
+        lw ipt, 0 (idx)
         
-        addi trd, trd, CELL
+        addi idx, idx, CELL
         
-        sw trd, RPTR (usr)
+        sw idx, RPTR (usr)
 
 next:
 # wrd = (ipt) ; ipt += cell
@@ -753,9 +753,9 @@ next:
 pick:
 # compare address, if is a primitive then jumps, MITC 
         
-        la trd, ends
+        la idx, ends
         
-        bge fst, trd, nest
+        bge fst, idx, nest
 
 jump: 
 # jump to primitive
@@ -765,13 +765,13 @@ jump:
 nest:   #; enter
 # return push, rp -= cell, (rpt) = ipt
         
-        lw trd, RPTR (usr)
+        lw idx, RPTR (usr)
         
-        addi trd, trd, -1 * CELL
+        addi idx, idx, -1 * CELL
         
-        sw ipt, 0 (trd)
+        sw ipt, 0 (idx)
         
-        sw trd, RPTR (usr)
+        sw idx, RPTR (usr)
 
 move: 
 # indirect access 
