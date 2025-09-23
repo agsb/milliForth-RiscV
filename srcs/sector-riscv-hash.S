@@ -193,35 +193,10 @@ reset:
         sw fst, TOIN (usr)
 
 #---------------------------------------------------------------------
-# unexpected end of dictionary
-miss:
-
 # xxx
-.ifdef dismiss
+.ifndef dismiss
 
-# wipe remains compiled
-
-        putchar '\n'
-# wrd is BL
-100:
-        lb fst, 0 (idx)
-        call _putc 
-        beq fst, wrd, 100f
-        addi idx, idx, ONE
-        j 100b
-100:
-        putchar 'X'
-        putchar 'X'
-
-wipe:
-        # compiling ?
-        lw fst, STAT (usr)
-        bne fst, zero, 100f
-        # wipe remains
-        lw fst, HEAD (usr)
-        sw fst, HERE (usr)
-100:
-        j error
+miss:
 
 .endif
 
@@ -365,6 +340,40 @@ immediate:
         la ipt, tickpt
 
         j pick
+
+#---------------------------------------------------------------------
+# unexpected end of dictionary
+
+# xxx
+.ifdef dismiss
+
+miss:
+
+# wipe remains compiled
+
+        putchar '\n'
+# wrd is BL
+100:
+        lb fst, 0 (idx)
+        call _putc 
+        beq fst, wrd, 100f
+        addi idx, idx, ONE
+        j 100b
+100:
+        putchar 'X'
+        putchar 'X'
+
+wipe:
+        # compiling ?
+        lw fst, STAT (usr)
+        bne fst, zero, 100f
+        # wipe remains
+        lw fst, HEAD (usr)
+        sw fst, HERE (usr)
+100:
+        j error
+
+.endif
 
 #---------------------------------------------------------------------
 # in place every token, no rewinds
