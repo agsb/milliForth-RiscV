@@ -51,8 +51,6 @@
  : lit rp@ @ dup cell + rp@ ! @ ;
  : ['] rp@ @ dup cell + rp@ ! @ ;
  
- : rot >r swap r> swap ;
- 
  : 2* dup + ;
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
  : 80h 1 2* 2* 2* 2* 2* 2* 2* ;
@@ -67,9 +65,11 @@
  : then dup here swap - swap ! ; immediate
  : else ['] branch , here 0 , swap dup 
      here swap - swap ! ; immediate
+ 
  : begin here ; immediate
  : again ['] branch , here - , ; immediate
  : until ['] ?branch , here - , ; immediate
+ 
  : while ['] ?branch , here 0 , ; immediate
  : repeat swap ['] branch , here - , 
      dup here swap - swap ! ; immediate
