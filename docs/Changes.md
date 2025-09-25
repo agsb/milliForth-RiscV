@@ -10,10 +10,19 @@
 
 23/09/2025
 
+    __The "first hash bug", was just a debug error__ but no :(
+
+    Note:  
+    There is NO edit capabilities. 
+        Do not use tabulations for formating.
+        That will create a error impossible see. 
+        The token and gets, allow any character, except \n, 
+        and the external interpreter only use space as separator.
+
+23/09/2025
+
     Cast _getc and _putc to use a byte instead of a word,
     solves the "addi 127" bug.
-
-
 
 22/09/2025
 

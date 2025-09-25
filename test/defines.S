@@ -1,5 +1,4 @@
 #---------------------------------------------------------------------
-# using pre-processor CPP (GNU GCC)
 # for alias register names 
 # do not change
 # a0, a1, a2, a7 are used by ecalls

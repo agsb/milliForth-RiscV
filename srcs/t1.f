@@ -1,5 +1,3 @@
- 
- _STUB_
 
  : create here : latest !
         ['] lit , 

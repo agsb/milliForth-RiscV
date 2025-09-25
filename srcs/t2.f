@@ -1,11 +1,24 @@
 
-_STUB_
+/ test 
+
+
+0 1 2 3 4
+
+%S
 
 : ?S latest @ . drop heap @ . drop sp@ . drop rp@ . drop cr ;
 
-: hash here : 
+see 
+
+?S
+
+bye
+
+
+
+: hash here :  
         dup heap !
-        cell + @ . drop ;
+        cell + @ . ;
 
 see
 

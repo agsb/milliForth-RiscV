@@ -355,12 +355,6 @@ dumps:
         
         add a6, zero, a4
 
-        putchar '['
-        
-        mhex a6
-
-        putchar ']'
-
 100:
         addi t4, zero, 8
         
@@ -375,8 +369,6 @@ dumps:
 200:
         lw a4, 0 (a5)
         
-        mhex a5 
-
         mhex a4
         
         addi a5, a5, 4

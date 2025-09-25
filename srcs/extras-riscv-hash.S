@@ -375,8 +375,6 @@ dumps:
 200:
         lw a4, 0 (a5)
         
-        mhex a5 
-
         mhex a4
         
         addi a5, a5, 4

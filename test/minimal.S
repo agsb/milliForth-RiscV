@@ -99,7 +99,15 @@ _rets:
 /*
 #---------------------------------------------------------------------
 _sbrk:
-        add a0, zero, a3
+        add a0, zero, zero
+        addi a7, zero, _SBRK
+        j _rets
+
+        # this is where here is
+        mov a3, a0
+
+        # add memory 
+        add a0, a0, a2
         addi a7, zero, _SBRK
         j _rets
 
@@ -111,13 +119,4 @@ _fcntl: # fd, cdm, arg
         addi a7, zero, _FNCT
         j _rets
         
-#---------------------------------------------------------------------
-_mmap: # addr, length, prot, flags, fd, pgoffset
-        add a0, zero, 
-        add a1, zero, 
-        add a2, zero, 
-        add a3, zero, 
-        add a4, zero, 
-        add a5, zero, 
-        addi a7, zero, _MMAP
 */

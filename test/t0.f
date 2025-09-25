@@ -1,4 +1,4 @@
- : void ;
+ : TvoidT ;
 
  : -1 u@ 0# ;
  :  0 -1 -1 nand ;
@@ -9,6 +9,7 @@
  : 2 1 1 + ;
  : 3 2 1 + ;
  : 4 2 2 + ;
+
  : cell 4 ;
  
  : sp u@ ;
@@ -49,9 +50,7 @@
  
  : lit rp@ @ dup cell + rp@ ! @ ;
  : ['] rp@ @ dup cell + rp@ ! @ ;
- 
- : rot >r swap r> swap ;
- 
+
  : 2* dup + ;
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
  : 80h 1 2* 2* 2* 2* 2* 2* 2* ;
@@ -66,9 +65,11 @@
  : then dup here swap - swap ! ; immediate
  : else ['] branch , here 0 , swap dup 
      here swap - swap ! ; immediate
+ 
  : begin here ; immediate
  : again ['] branch , here - , ; immediate
  : until ['] ?branch , here - , ; immediate
+ 
  : while ['] ?branch , here 0 , ; immediate
  : repeat swap ['] branch , here - , 
      dup here swap - swap ! ; immediate
@@ -103,8 +104,4 @@
  ." Hello world " cr
  
  ." That's all Folks !" cr
-
- : | %S %R ;
- 
- : ?=  cr sp@ . drop rp@ . drop latest @ . drop heap @ . drop cr ;
 
