@@ -42,9 +42,9 @@ How shink to a minimal compiled size ?
 
     t0.f is a minimal set of words, same as test0-riscv.f;
 
-    t1.f is a complement with BrainFu*ck interpreter; (_STUB_)
+    t1.f is a complemente with hash and more words; (_STUB_)
 
-    t2.f is a complemente with hash and more words; (_STUB_)
+    t4.f is a complement with BrainFu*ck interpreter; (_STUB_)
 
     Could test by:
 
@@ -52,7 +52,7 @@ How shink to a minimal compiled size ?
 
     cat t0.f t1.f | sh doit.sh | tee z2
 
-    t00.f tries about <builds create variable constant does> (_STUB_)
+    t1.f tries about <builds create variable constant does> (_STUB_)
     
     PS. 
 
@@ -74,7 +74,7 @@ How shink to a minimal compiled size ?
   
     simulator of RISCV: qemu or spike ?
     
-    the heap and stack in memory: .heap at end of .bss, .stack elsewhere ?
+    the heap and stack: .heap at end of .bss, .stack elsewhere ?
 
     systems calls of core functions: linux ecalls
 
@@ -105,14 +105,17 @@ for a single core minimal footprint Forth thread.
 The milliForth must use memory pointers for data stack and return stack, 
 because does fetch and store from a special 'user structure', which 
 contains the user variables for Forth 
-(state, toin, last, here, sptr, dptr, heap, tail).
+(state, toin, last, here, sptr, dptr, head, tail).
 
 ## Postpone Hack
 
+__while 'tick is not in the compiled dictionary__
+
 Forth standart have postone, instead of compile, and [compile].
 
-Charles Moore, in 1974 [^8] make use of precedence of word and STATE, to control 
-between "always execute" STATE (0), "compile or execute" STATE (1), "always compile" STATE(2), 
+Charles Moore, in 1974 [^8] make use of precedence of word and STATE, 
+to control between "always execute" STATE (0), 
+"compile or execute" STATE (1), "always compile" STATE(2), 
 using a extra STATE and a flag for precedence.
 
 | situation | STATE | precedence 0 | precedence 1 | precedence 2 |

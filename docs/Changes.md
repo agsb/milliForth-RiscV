@@ -1,23 +1,36 @@
 # Changes
 
-    The milliforth uses Minimal Indirect Thread Code, 
-    DJB2 hashes instead flag-size-name-pads, in a 
-    minimal native code dictionary (primitives)
-    with only: + nand ! @ : ; 0# u@ exit key emit 
-    and a user structure for main forth variables.
+    The milliforth uses Minimal Indirect Thread Code 
+    and DJB2 hashes instead flag-size-name-pads. 
+    With a minimal native code dictionary (primitives),
+        + nand ! @ : ; 0# u@ exit key emit 
+    and a user array for main forth variables.
+    
+    Notes:
+
+    Still using lowercase for words.
+
+    In FigForth, ;S is called semis and ; is called semicolon, 
+        but in Milliforth, ;S is exit and ; is semis. 
+
+## Todo
+    
+    __The "first hash bug", was just a debug error__ 
+            but no :(
 
 ## Done
 
 23/09/2025
 
-    __The "first hash bug", was just a debug error__ but no :(
-
     Note:  
+    
     There is NO edit capabilities. 
         Do not use tabulations for formating.
         That will create a error impossible see. 
         The token and gets, allow any character, except \n, 
         and the external interpreter only use space as separator.
+
+    TIB have 80 bytes and never wraps to between lines.
 
 23/09/2025
 
@@ -36,9 +49,9 @@
     standart core word for pretty print numbers.
 
     Changed 
-        .S to %S, to print data stack, (can make an alias to .S)
+        .S to %S, to print data stack, (usual is .S)
         .R to %R, to print return stack
-        the % is like a stack :)
+        Why ? the % is like a stack :)
 
 20/09/2025
 
@@ -61,10 +74,6 @@
     To do this will cost bytes, it will be a option.
 
     Included code to postpone in eval function
-
-    Note: 
-        In FigForth sources ;S was called semis and ; was called 
-        semicolon, but in milliforth, ;S is exit and ; is semis. 
 
     Still the first word bug stays, it corrupts the hash of first word 
     of dictionary.  
@@ -133,9 +142,7 @@
 
 30/08/2025
 
-    Still buged with 0x20 first hash.
-
-    TIB never wraps to between line.
+    Still buged with first word hash.
 
     On rellocable assembler code, the linker could not use relative
     address to make the linked list automatics with insertion order,
