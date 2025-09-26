@@ -1,4 +1,6 @@
 
+# must be defined for each board and processor 
+
 OUTPUT_ARCH( "riscv" )
 
 ENTRY( _start )

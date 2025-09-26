@@ -1,49 +1,44 @@
-
- : create here : latest !
-        ['] lit , 
-        here cell + cell + , 
-        ['] exit , 
-        0 state ! ;
  
+ 
+ : for ['] >r , begin ; immediate
+ : next ['] r> , ['] lit , [ 1 ] , ['] - , 
+        ['] dup , ['] 0# , ['] ?branch ,
+        here - , ['] drop , ; immediate
+
+ : hook begin >r ;
+ : back r> again ;
+ : ?back r> until ;
+
+ : swip >r swap r> ; 
+ : rot swip swap ;
+ : -rot swap swip ;
+ : flip swap swip swap ;
+
+ : dovar r> dup cell + >r ;
+ : docon r> dup cell + >r @ ;
+ : literal lit lit , , ;
+ : execute >r ;
+
+ : *& sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
+ 
+ : :name here : 0 state ! ;
+ 
+ : :noname here 1 state ! ;
+
+ : hash :name dup heap ! cell + @ ;
+ 
+ : create here :  
+        ['] lit , here cell cell + + , ['] exit , 
+        0 state !  latest !  ;
+
+ : does ;
+
+ : does> ;
+
+ : <builds create 0 , ;
+
  : variable create cell allot ;
- 
- variable tape_head
 
- variable loop_depth
- 
- variable parse_index
- 
- : runbf 0 parse_index ! 
-     begin parse_index @ c@ 
-     dup dup dup dup dup dup dup 
-     [char] , = if key tape_head @ ! then 
-     [char] - = if tape_head @ @ 1 - tape_head @ ! then 
-     [char] + = if tape_head @ @ 1 + tape_head @ ! then 
-     [char] < = if tape_head @ 2 - tape_head ! then 
-     [char] > = if tape_head @ 2 + tape_head ! then 
-     [char] . = if tape_head @ @ emit then 
-     
-     [char] [ = tape_head @ @ 0 = and if 1 loop_depth ! 
-     begin parse_index @ 1 + parse_index ! parse_index @ c@ dup 
-     [char] [ = if loop_depth @ 1 + loop_depth ! then 
-     [char] ] = if loop_depth @ 1 - loop_depth ! then 
-     loop_depth @ 0 = until then 
- 
-     [char] ] = tape_head @ @ 0 <> and if 1 loop_depth ! 
-     begin parse_index @ 1 - parse_index ! parse_index @ c@ dup 
-     [char] [ = if loop_depth @ 1 - loop_depth ! then 
-     [char] ] = if loop_depth @ 1 + loop_depth ! then 
-     loop_depth @ 0 = until then 
-     
-     parse_index @ 1 + parse_index ! 
-     
-     dup parse_index @ = until drop ;
+ : array create allot ;
 
- : 64 lit [ 16 16 + 16 + 16 + , ] ;
- 
- : BF( [char] ) parse runbf ; immediate
- 
- here 64 + tape_head !
- 
- BF( >++++++++[<+++++++++>-] <.>++++[<+++++++>-] <+.+++++++..+++.>>++++++[<+++++++>-] <++.------------.>++++++[<+++++++++>-] <+.<.+++.------.--------.>>>++++[<++++++++>-] <+. )
 
