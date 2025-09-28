@@ -356,17 +356,15 @@ miss:
 100:
         lb fst, 0 (idx)
         call _putc 
-        beq fst, wrd, 100f
+        beq fst, trd, 100f
         addi idx, idx, ONE
         j 100b
 100:
-        putchar 'X'
-        putchar 'X'
 
 wipe:
         # compiling ?
         lw fst, STAT (usr)
-        bne fst, zero, 100f
+        beq fst, zero, 100f
         # wipe remains
         lw fst, HEAD (usr)
         sw fst, HERE (usr)
@@ -432,22 +430,47 @@ gets:
 
 # get next char, wipes a0, a1, a2, a7, returns a3
 
+400:
+
         call _getc
 
 # echo it, if need
 
         # call _putc
 
+.ifdef debug
+
 # cast to 7-bit standart ascii only
 
-        # andi fst, fst, 127
+        andi fst, fst, 127
+
+# allow no controls
+        addi t0, zero, ' '
+        bge fst, t0, 300b
+
+# allow cancel 
+        addi t0, zero, 24
+        beq fst, t0, gets
+
+# allow \n
+        addi t0, zero, 10
+        beq fst, t0, 500f
+
+# allow \r 
+        addi t0, zero, 13
+        beq fst, t0, 500f
+
+# anything wipes
+        j 400b
+
+.endif
 
 # \n ^J ends the line
 
         bne fst, snd, 300b
 
 # at end-of-line
-400:
+500:
 
 # replace \n with space 
         sb trd, 0 (idx)

@@ -1,9 +1,8 @@
  
- 
  : for ['] >r , begin ; immediate
  : next ['] r> , ['] lit , [ 1 ] , ['] - , 
-    ['] dup , ['] 0# , ['] ?branch ,
-    here - , ['] drop , ; immediate
+   ['] dup , ['] 0# , ['] ?branch ,
+   here - , ['] drop , ; immediate
 
  : hook begin >r ;
  : back r> again ;
@@ -16,20 +15,18 @@
 
  : dovar r> dup cell + >r ;
  : docon r> dup cell + >r @ ;
- : literal lit lit , , ;
+ : literal ['] lit , , ;
  : execute >r ;
 
- : *& sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
+ : && sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
  
  : :name here : 0 state ! ;
  
  : :noname here 1 state ! ;
 
- : hash :name dup heap ! cell + @ ;
- 
  : create here : 
-    ['] lit , here cell cell + + , ['] exit , 
-    0 state ! latest ! ;
+   ['] lit , here cell cell + + , ['] exit , 
+   0 state ! latest ! ;
 
  : does ;
 
@@ -41,4 +38,21 @@
 
  : array create allot ;
 
+ : hash :name dup heap ! cell + @ ;
+ 
+ : find latest @ begin
+        over over cell + @ 
+        = if swap drop TRUE
+          else @ dup 
+               if FALSE 
+               else swap drop TRUE 
+               then
+          then 
+        until 
+        dup if cell + cell + then
+        ;
+
+ : ' hash find ;
+
+ : postpone ' , ;
 

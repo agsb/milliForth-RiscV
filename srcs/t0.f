@@ -1,7 +1,7 @@
- : TvoidT ;
+ : void ;
 
  : -1 u@ 0# ;
- :  0 -1 -1 nand ;
+ : 0 -1 -1 nand ;
  : TRUE -1 ;
  : FALSE 0 ;
  
@@ -64,7 +64,7 @@
  : if ['] ?branch , here 0 , ; immediate
  : then dup here swap - swap ! ; immediate
  : else ['] branch , here 0 , swap dup 
-     here swap - swap ! ; immediate
+   here swap - swap ! ; immediate
  
  : begin here ; immediate
  : again ['] branch , here - , ; immediate
@@ -72,14 +72,14 @@
  
  : while ['] ?branch , here 0 , ; immediate
  : repeat swap ['] branch , here - , 
-     dup here swap - swap ! ; immediate
+   dup here swap - swap ! ; immediate
  
  : do here ['] >r , ['] >r , ; immediate
  : loop ['] r> , ['] r> , ['] lit , 1 , ['] + , 
-     ['] 2dup , ['] = , ['] ?branch , 
-     here - , ['] 2drop , ; immediate
+   ['] 2dup , ['] = , ['] ?branch , 
+   here - , ['] 2drop , ; immediate
  
- :  8 lit [ 4 4 + , ] ;
+ : 8 lit [ 4 4 + , ] ;
  : 16 lit [ 8 8 + , ] ;
  : bl lit [ 16 16 + , ] ;
  : cr lit [ 8 2 + , ] emit ;
@@ -90,12 +90,12 @@
  : type 0 do dup c@ emit 1 + loop drop ;
  : in> >in @ c@ >in @ 1 + >in ! ;
  : parse in> drop 
-        >in @ swap 0 
-        begin over in> <> while 1 + repeat 
-        swap bl = if >in @ 1 - >in ! then ;
+   >in @ swap 0 
+   begin over in> <> while 1 + repeat 
+   swap bl = if >in @ 1 - >in ! then ;
  : word in> drop 
-        begin dup in> <> until 
-        >in @ 2 - >in ! parse ;
+   begin dup in> <> until 
+   >in @ 2 - >in ! parse ;
  : [char] ['] lit , bl word drop c@ , ; immediate
  
  : ( [char] ) parse drop drop ; immediate

@@ -2,8 +2,8 @@
  
  : for ['] >r , begin ; immediate
  : next ['] r> , ['] lit , [ 1 ] , ['] - , 
-        ['] dup , ['] 0# , ['] ?branch ,
-        here - , ['] drop , ; immediate
+   ['] dup , ['] 0# , ['] ?branch ,
+   here - , ['] drop , ; immediate
 
  : hook begin >r ;
  : back r> again ;
@@ -27,9 +27,9 @@
 
  : hash :name dup heap ! cell + @ ;
  
- : create here :  
-        ['] lit , here cell cell + + , ['] exit , 
-        0 state !  latest !  ;
+ : create here : 
+   ['] lit , here cell cell + + , ['] exit , 
+   0 state ! latest ! ;
 
  : does ;
 
@@ -41,4 +41,19 @@
 
  : array create allot ;
 
+ : find latest @ begin
+        over over cell + @ 
+        = if swap drop TRUE
+          else @ dup 
+               if FALSE 
+               else swap drop TRUE 
+               then
+          then 
+        until 
+        dup if cell + cell + then
+        ;
+
+ : ' hash find ;
+
+ : postpone ' , ;
 
