@@ -19,7 +19,11 @@
  : literal lit lit , , ;
  : execute >r ;
 
- : *& sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
+ : sp0 lit [ sp@ , ] ;
+
+ : rp0 lit [ rp@ , ] ;
+
+ : && sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
  
  : :name here : 0 state ! ;
  
@@ -41,8 +45,9 @@
 
  : hash :name dup heap ! cell + @ ;
  
- : seek latest @ begin
+ : seek latest @ . begin
         over over cell + @ 
+        IMMEDIATE 1 - and
         = if swap drop TRUE
           else @ dup 
                if FALSE 
@@ -57,14 +62,8 @@
 
  : postpone ' , ;
 
- %S
+ &&
 
- hash hook seek 
- 
- %S
+ sp0 rp0 %S
 
- hash begin seek
- hash again seek
- hash until seek
-
- %S
+&&
