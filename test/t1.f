@@ -1,4 +1,5 @@
  
+ 
  : for ['] >r , begin ; immediate
  : next ['] r> , ['] lit , [ 1 ] , ['] - , 
    ['] dup , ['] 0# , ['] ?branch ,
@@ -15,10 +16,10 @@
 
  : dovar r> dup cell + >r ;
  : docon r> dup cell + >r @ ;
- : literal ['] lit , , ;
+ : literal lit lit , , ;
  : execute >r ;
 
- : && sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
+ : *& sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
  
  : :name here : 0 state ! ;
  
@@ -40,7 +41,7 @@
 
  : hash :name dup heap ! cell + @ ;
  
- : find latest @ begin
+ : seek latest @ begin
         over over cell + @ 
         = if swap drop TRUE
           else @ dup 
@@ -52,7 +53,18 @@
         dup if cell + cell + then
         ;
 
- : ' hash find ;
+ : ' hash seek ;
 
  : postpone ' , ;
 
+ %S
+
+ hash hook seek 
+ 
+ %S
+
+ hash begin seek
+ hash again seek
+ hash until seek
+
+ %S

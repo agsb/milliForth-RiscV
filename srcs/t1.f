@@ -25,8 +25,6 @@
  
  : :noname here 1 state ! ;
 
- : hash :name dup heap ! cell + @ ;
- 
  : create here : 
    ['] lit , here cell cell + + , ['] exit , 
    0 state ! latest ! ;
@@ -41,7 +39,9 @@
 
  : array create allot ;
 
- : find latest @ begin
+ : hash :name dup heap ! cell + @ ;
+ 
+ : seek latest @ begin
         over over cell + @ 
         = if swap drop TRUE
           else @ dup 
@@ -53,7 +53,18 @@
         dup if cell + cell + then
         ;
 
- : ' hash find ;
+ : ' hash seek ;
 
  : postpone ' , ;
 
+ %S
+
+ hash hook seek 
+ 
+ %S
+
+ hash begin seek
+ hash again seek
+ hash until seek
+
+ %S
