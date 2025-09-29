@@ -1,39 +1,3 @@
- 
- 
- : for ['] >r , begin ; immediate
- : next ['] r> , ['] lit , [ 1 ] , ['] - , 
-   ['] dup , ['] 0# , ['] ?branch ,
-   here - , ['] drop , ; immediate
-
- : hook begin >r ;
- : back r> again ;
- : ?back r> until ;
-
- : swip >r swap r> ; 
- : rot swip swap ;
- : -rot swap swip ;
- : flip swap swip swap ;
-
- : dovar r> dup cell + >r ;
- : docon r> dup cell + >r @ ;
- : literal lit lit , , ;
- : execute >r ;
-
- : sp0 lit [ sp@ , ] ;
-
- : rp0 lit [ rp@ , ] ;
-
- : $S sp0 sp@ begin 
-        over over = if exit then
-        dup cr . bl @ . cell +
-        again ;
-
- : && sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
- 
- : :name here : 0 state ! ;
- 
- : :noname here 1 state ! ;
-
  : create here : 
    ['] lit , here cell cell + + , ['] exit , 
    0 state ! latest ! ;
@@ -48,50 +12,22 @@
 
  : array create allot ;
 
- : hash :name dup heap ! cell + @ ;
+ : :name here : 0 state ! ;
  
- : seek latest @ . begin
-        over over cell + @ 
-        IMMEDIATE 1 - and
-        = if swap drop TRUE 
-          else @ dup 
-               if FALSE 
-               else swap drop TRUE 
-               then
-          then 
-        until 
-        dup if cell + cell + then
-        ;
+ : :noname here 1 state ! ;
 
- . hash begin . dup seek 
+ : hash :name dup heap ! cell + @ ;
 
- %S
-
- : xxx
+ : find
         latest @ begin
-        %S
         over over cell + @
         IMMEDIATE 1 - and
-        %S
         = if swap drop TRUE exit then
         @ dup 
         0 = if swap drop FALSE exit then
-        %S
         again ;
  
- . hash begin . 
+ : ' hash find if cell + cell + then ; 
 
+ : postpone ' , ; immediate 
 
- dup xxx .
-
- %S
-
- bye 
-
- : code- find- 
-        if cell + cell + then
-        ;
- 
- : ' hash seek ;
-
- : postpone ' , ;

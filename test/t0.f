@@ -59,7 +59,6 @@
  
  : ] 1 state ! ;
  : [ 0 state ! ; immediate
- : postpone -1 state ! ; immediate
  
  : if ['] ?branch , here 0 , ; immediate
  : then dup here swap - swap ! ; immediate
