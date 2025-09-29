@@ -125,7 +125,6 @@
 .equ hash_fetch, 0x0002B5E5 
 .equ hash_plus,  0x0002B58E 
 .equ hash_zeroq, 0x00596816 
-.equ hash_userat, 0x00596F90
 .equ hash_colon, 0x0002B59F 
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 
@@ -135,6 +134,7 @@
 .equ hash_emit,  0x7C6B87D0 
 .equ hash_exit,  0x7C6BBE85 
 .equ hash_nand,  0x7C727500 
+.equ hash_userat, 0x00596F90
 
 #---------------------------------------------------------------------
 # uppercase
@@ -142,5 +142,6 @@
 .equ hash_EMIT,  0x7C7C87D0
 .equ hash_EXIT,  0x7C7DC745
 .equ hash_NAND,  0x7C8254C0
+.equ hash_USERAT, 0x005973B0
 
 #---------------------------------------------------------------------
