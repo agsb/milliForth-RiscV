@@ -23,6 +23,11 @@
 
  : rp0 lit [ rp@ , ] ;
 
+ : $S sp0 sp@ begin 
+        over over = if exit then
+        dup cr . bl @ . cell +
+        again ;
+
  : && sp@ . drop rp@ . drop latest @ . drop heap @ . drop ;
  
  : :name here : 0 state ! ;
@@ -48,7 +53,7 @@
  : seek latest @ . begin
         over over cell + @ 
         IMMEDIATE 1 - and
-        = if swap drop TRUE
+        = if swap drop TRUE 
           else @ dup 
                if FALSE 
                else swap drop TRUE 
@@ -58,12 +63,35 @@
         dup if cell + cell + then
         ;
 
+ . hash begin . dup seek 
+
+ %S
+
+ : xxx
+        latest @ begin
+        %S
+        over over cell + @
+        IMMEDIATE 1 - and
+        %S
+        = if swap drop TRUE exit then
+        @ dup 
+        0 = if swap drop FALSE exit then
+        %S
+        again ;
+ 
+ . hash begin . 
+
+
+ dup xxx .
+
+ %S
+
+ bye 
+
+ : code- find- 
+        if cell + cell + then
+        ;
+ 
  : ' hash seek ;
 
  : postpone ' , ;
-
- &&
-
- sp0 rp0 %S
-
-&&

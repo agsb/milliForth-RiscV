@@ -81,9 +81,11 @@
  
  : 8 lit [ 4 4 + , ] ;
  : 16 lit [ 8 8 + , ] ;
+ 
  : bl lit [ 16 16 + , ] ;
  : cr lit [ 8 2 + , ] emit ;
  : nl lit [ 8 4 + 1 + , ] emit ;
+ 
  : CHAR lit [ 16 1 - 2* 2* 2* 2* 16 1 - or , ] ;
  : c@ @ CHAR and ;
  
@@ -99,6 +101,7 @@
  : [char] ['] lit , bl word drop c@ , ; immediate
  
  : ( [char] ) parse drop drop ; immediate
+
  : ." [char] " parse type ; immediate
 
  ." Hello world " cr
