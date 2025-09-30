@@ -4,9 +4,10 @@
  hash EXIT .
  hash NAND .
  hash U@ .
- hash bye .
- hash abort .
- hash dump .
- hash words .
- hash see .
- hash cell .
+ hash BYE .
+ hash ABORT .
+ hash DUMP .
+ hash WORDS .
+ hash SEE .
+ hash CELL .
+

@@ -140,7 +140,7 @@
 # uppercase
 .equ hash_KEY,   0x0B87F112
 .equ hash_EMIT,  0x7C7C87D0
-.equ hash_EXIT,  0x7C7DC745
+.equ hash_EXIT,  0x7C7CC745
 .equ hash_NAND,  0x7C8254C0
 .equ hash_USERAT, 0x005973B0
 

@@ -78,11 +78,15 @@
      ['] 2DUP , ['] = , ['] ?BRANCH , 
      HERE - , ['] 2DROP , ; IMMEDIATE
  
+ : CELL LIT [ 4 , ] ;
  :  8 LIT [ 4 4 + , ] ;
  : 16 LIT [ 8 8 + , ] ;
+ 
  : BL LIT [ 16 16 + , ] ;
  : CR LIT [ 8 2 + , ] EMIT ;
  : NL LIT [ 8 4 + 1 + , ] EMIT ;
+ : SPACE BL EMIT ;
+
  : ISCHAR LIT [ 16 1 - 2* 2* 2* 2* 16 1 - OR , ] ;
  : C@ @ ISCHAR AND ;
  
@@ -103,4 +107,7 @@
  ." HELLO WORLD " CR
  
  ." THAT'S ALL FOLKS !" CR
+
+ : ENDS EXIT ;
+
 
