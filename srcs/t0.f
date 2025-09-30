@@ -19,6 +19,8 @@
  : >in heap cell + ;
  : state >in cell + ;
  
+ : \ 0 >in @ ! ;
+
  : rp@ rp @ cell + ;
  : sp@ sp @ cell + ;
  
