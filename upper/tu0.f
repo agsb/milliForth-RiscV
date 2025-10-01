@@ -89,10 +89,16 @@
    DUP HERE SWAP - SWAP ! ; IMMEDIATE
  
  : DO HERE ['] >R , ['] >R , ; IMMEDIATE
+
  : LOOP ['] R> , ['] R> , ['] LIT , 1 , ['] + , 
    ['] 2DUP , ['] = , ['] ?BRANCH , 
    HERE - , ['] 2DROP , ; IMMEDIATE
- 
+
+ : I ['] R> , ['] DUP , ['] >R , ; IMMEDIATE
+
+ : LEAVE ['] R> , ['] R> , 
+         ['] DROP , ['] DROP , ['] EXIT , ; IMMEDIATE
+
  : CELL LIT [ 4 , ] ;
  : 8 LIT [ 4 4 + , ] ;
  : 16 LIT [ 8 8 + , ] ;

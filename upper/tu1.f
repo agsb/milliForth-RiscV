@@ -1,34 +1,19 @@
- 
- : CREATE HERE : 
-   ['] LIT , HERE CELL + CELL + , ['] EXIT , 
-   0 STATE ! LATEST ! ;
 
- : DOES ;
 
- : DOES> ;
+ : && SP@ . DROP RP@ . DROP LATEST @ . DROP HEAP @ . DROP ;
 
- : <BUILDS CREATE 0 , ;
+ : SP0 LIT [ SP@ , ] ;
 
- : VARIABLE CREATE CELL ALLOT ;
+ : RP0 LIT [ RP@ , ] ;
 
- : ARRAY CREATE ALLOT ;
-
- : :NAME HERE : 0 STATE ! ;
- 
- : :NONAME HERE 1 STATE ! ;
-
- : HASH :NAME DUP HEAP ! CELL + @ ;
-
- : FIND
-        LATEST @ BEGIN
-        OVER OVER CELL + @
-        IMMEDIATE 1 - AND
-        = IF SWAP DROP TRUE EXIT THEN
-        @ DUP 
-        0 = IF SWAP DROP FALSE EXIT THEN
+ : DUMPS BEGIN OVER OVER 
+        = IF DROP DROP EXIT THEN
+        CELL +
+        DUP CR . SPACE @ . DROP 
         AGAIN ;
- 
- : ' HASH FIND IF CELL + CELL + THEN ; 
 
- : POSTPONE ' , ; IMMEDIATE 
+ : $S SP0 SP@ DUMPS ;
+ 
+ : $R RP0 RP@ DUMPS ;
+
 

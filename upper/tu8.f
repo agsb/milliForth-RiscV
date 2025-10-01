@@ -1,12 +1,12 @@
  \ modified from sector-forth examples, @Cesar Blum
 
  : ?DUP DUP ?BRANCH [ 4 , ] DUP ;
- : XOR ( x y -- x^y) 2DUP AND INVERT -ROT OR and ;
+ : XOR 2DUP AND INVERT -ROT OR and ;
  : 80000000h LIT [ 0 c, 0 c, 0 c, 80h c, ] ; \ little endian
- : >= ( x y -- flag ) - 80000000h AND 0= ;
- : < ( x y -- flag ) >= INVERT ;
- : <= ( x y -- flag ) 2DUP < -ROT = OR ;
- : 0< ( x -- flag ) 0 < ;
+ : >= - 80000000h AND 0= ;
+ : < >= INVERT ;
+ : <= 2DUP < -ROT = OR ;
+ : 0< 0 < ;
 
  : 2SWAP ROT >R ROT R> ;
  : 2OVER >R >R 2DUP R> R> 2SWAP ;
