@@ -96,6 +96,12 @@
 
  : I ['] R> , ['] DUP , ['] >R , ; IMMEDIATE
 
+ : J ['] R> , ['] R> , ['] R> , 
+     ['] DUP , ['] >R ,
+     ['] SWAP , ['] >R ,
+     ['] SWAP , ['] >R ,
+     ; IMMEDIATE
+
  : LEAVE ['] R> , ['] R> , 
          ['] DROP , ['] DROP , ['] EXIT , ; IMMEDIATE
 
