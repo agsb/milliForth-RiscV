@@ -88,13 +88,14 @@
  : REPEAT SWAP ['] BRANCH , HERE - , 
    DUP HERE SWAP - SWAP ! ; IMMEDIATE
  
+ \ limit first DO ---
  : DO HERE ['] >R , ['] >R , ; IMMEDIATE
 
  : LOOP ['] R> , ['] R> , ['] LIT , 1 , ['] + , 
    ['] 2DUP , ['] = , ['] ?BRANCH , 
    HERE - , ['] 2DROP , ; IMMEDIATE
 
- : I ['] R> , ['] DUP , ['] >R , ; IMMEDIATE
+ : I ['] R> , ['] R> , ['] DUP , ['] >R , ['] >R , ; IMMEDIATE
 
  : J ['] R> , ['] R> , ['] R> , 
      ['] DUP , ['] >R ,
@@ -106,6 +107,8 @@
          ['] DROP , ['] DROP , ['] EXIT , ; IMMEDIATE
 
  : CELL LIT [ 4 , ] ;
+ : CELLS DUP IF 0 SWAP 0 DO CELL + . LOOP THEN ;
+
  : 8 LIT [ 4 4 + , ] ;
  : 16 LIT [ 8 8 + , ] ;
  
