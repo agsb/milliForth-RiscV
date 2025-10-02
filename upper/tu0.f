@@ -103,8 +103,9 @@
      ['] SWAP , ['] >R ,
      ; IMMEDIATE
 
- : LEAVE ['] R> , ['] R> , 
-         ['] DROP , ['] DROP , ['] EXIT , ; IMMEDIATE
+ : LEAVE ['] R> , ['] DROP ,
+         ['] R> , ['] DROP ,
+         ['] EXIT , ; IMMEDIATE
 
  : CELL LIT [ 4 , ] ;
  : CELLS DUP IF 0 SWAP 0 DO CELL + . LOOP THEN ;
