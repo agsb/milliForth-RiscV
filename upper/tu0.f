@@ -107,6 +107,8 @@
          ['] R> , ['] DROP ,
          ['] EXIT , ; IMMEDIATE
 
+ : ?DUP DUP IF DUP THEN ;
+
  : CELL LIT [ 4 , ] ;
  : CELLS DUP IF 0 SWAP 0 DO CELL + . LOOP THEN ;
 
@@ -130,7 +132,7 @@
  : C! DUP @ ffh NOT AND ROT ffh AND OR SWAP ! ;
  : C, HERE C! 1 ALLOT ;
 
- : ALIGN 4 + TRUE 3 - AND ; / 32-bit align for strings
+ : ALIGN 3 + TRUE 3 - AND ; / 32-bit align for strings
  
  : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP ;
  : IN> >IN @ C@ >IN @ 1 + >IN ! ;

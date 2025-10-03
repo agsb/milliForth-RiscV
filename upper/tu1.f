@@ -1,5 +1,4 @@
 
-
  : && SP@ . DROP RP@ . DROP LATEST @ . DROP HEAP @ . DROP ;
 
  : SP0 LIT [ SP@ , ] ;
@@ -16,4 +15,7 @@
  
  : $R RP0 RP@ DUMPS ;
 
+ : ? ( a -- a ) @ . ;
 
+ : LINK>HASH CELL + ;
+ : LINK>BODY CELL + CELL + ;
