@@ -12,7 +12,7 @@ Some bugs are beyond scope of metrics and learning.
     The hash of first compiled word changes after writed at dictionary.
 
     It's have a correct value at function dbj2 and writed in
-    dictionary, then something changes it to a ascii value.
+    dictionary, then something changes the low byte to a ascii value.
     
     If the first line is repeated, all is done correct.
 

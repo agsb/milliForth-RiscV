@@ -152,3 +152,7 @@
  
  ." THAT'S ALL FOLKS !" CR
 
+
+ \ crude multiplication
+ : * DUP IF >R DUP R> 1 DO OVER + . LOOP SWAP DROP THEN ;
+

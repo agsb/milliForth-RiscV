@@ -2,12 +2,17 @@
 
     I need learn about how implement:
 
+    ," " to push a string in dictionary and type it
+
+
     <builds create does> 
     variable constant 
-    defer align
+    defer 
     postpone tick 
 
-    = postpone is done, as extra configuration flag. (temporary?)
+    = align done 
+
+    = postpone is done, as extra configuration flag. (temporary)
 
     = create and variable, are in the minimal vocabulary.
 
