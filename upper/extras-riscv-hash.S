@@ -230,7 +230,7 @@ wordf:
 
         blt a5, zero, returns
 
-        ble a5, s7, returns
+        blt a5, s7, returns
 
         add s8, zero, a5
 

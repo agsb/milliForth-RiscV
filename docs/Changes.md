@@ -20,6 +20,18 @@
 
 ## Done
 
+28/09/2025
+
+    Review for use uppercase for all words, as in Forth-2012.
+
+    Making extras words in files tu0 to tu9, as pseudo vocabularies.
+
+    Getting examples from many Forths to verify implementation.
+
+24/09/2025
+
+    All done, minimal sector-riscv is working as intent.
+
 23/09/2025
 
     Note:  

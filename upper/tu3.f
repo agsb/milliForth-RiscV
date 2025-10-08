@@ -1,4 +1,5 @@
  
+ \ this file is still a stub 
  
  : FOR ['] >R , BEGIN ; IMMEDIATE
  : NEXT ['] R> , ['] LIT , [ 1 ] , ['] - , 

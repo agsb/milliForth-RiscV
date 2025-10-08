@@ -556,6 +556,10 @@ docomma:
       
         sw fst, 0 (idx)
       
+        mhex idx
+
+        mhex fst 
+
         addi idx, idx, CELL
       
         sw idx, HERE (usr)
@@ -789,7 +793,7 @@ pick:
         bge fst, idx, nest
 
 jump: 
-# jump to primitive
+# jump to primitive, native code must ends with a jump to 'exit
         
         jalr ra, 0 (fst)
 

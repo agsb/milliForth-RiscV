@@ -1,4 +1,6 @@
 
+ \ this file is still a stub 
+
 \ adapted from
 \ https://github.com/gerryjackson/forth2012-test-suite/blob/master/src/tester.fr
 \ (C) 1995 JOHNS HOPKINS UNIVERSITY / APPLIED PHYSICS LABORATORY

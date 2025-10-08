@@ -1,4 +1,6 @@
  
+ \ this file is still a stub 
+
  : CREATE HERE : 
    ['] LIT , HERE CELL + CELL + , ['] EXIT , 
    0 STATE ! LATEST ! ;

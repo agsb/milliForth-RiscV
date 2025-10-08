@@ -17,10 +17,10 @@
  : HEAP LATEST CELL + ;
  : >IN HEAP CELL + ;
  : STATE >IN CELL + ;
- 
- : \ 0 >IN @ ! ;
 
- \ SP . RP . LATEST . HEAP . >IN . STATE .
+ : \ 0 >IN @ ! ; \ we have to end-of-line comments
+
+ : _ANY STATE CELL + CELL + ; \ start scratch area with 8 cells
 
  \ pointer relative offsets
 
@@ -75,7 +75,7 @@
  
  : ] 1 STATE ! ;
  : [ 0 STATE ! ; IMMEDIATE
- : POSTPONE -1 STATE ! ; IMMEDIATE
+ \ : POSTPONE -1 STATE ! ; IMMEDIATE
  
  : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE
@@ -132,7 +132,7 @@
  : C! DUP @ ffh NOT AND ROT ffh AND OR SWAP ! ;
  : C, HERE C! 1 ALLOT ;
 
- : ALIGN 3 + TRUE 3 - AND ; / 32-bit align for strings
+ : ALIGN 3 + TRUE 3 - AND ; \ 32-bit align for strings
  
  : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP ;
  : IN> >IN @ C@ >IN @ 1 + >IN ! ;
