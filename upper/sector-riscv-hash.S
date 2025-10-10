@@ -95,6 +95,7 @@ h_\label:
 # There is no spoon.
 
 #----------------------------------------------------------------------
+# always in RAM :)
 .section .bss
 .p2align 2, 0x0
 
@@ -124,7 +125,8 @@ _tib:
 
 # start of user dictionary 
 h_here: 
-        .word 0x0
+.skip RAM_LIMIT - ( h_here - _user )
+h_ends:
 
 #----------------------------------------------------------------------
 .text 

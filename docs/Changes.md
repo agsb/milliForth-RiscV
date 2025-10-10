@@ -22,6 +22,12 @@
 
 10/09/2025
 
+    The .text and .bss uses diferent memory spaces, 
+        for use flash and for use sram, in MCUs
+
+    The size of .bss is now fixed and defined by RAM_LIMIT, 
+        to reserve space for common dictionary. ( 64k * 4 bytes )
+
     no more postpone hack. full postpone support in common vocabulary
 
     full suport for stacks dumps (%S %R) in common vocabulary

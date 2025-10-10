@@ -31,6 +31,12 @@
 #define idx a5
 
 #---------------------------------------------------------------------
+# max size of dictionary 64k * 4 
+# depends on host machine
+
+.equ RAM_LIMIT, 0x40000
+
+#---------------------------------------------------------------------
 # generics alias 
 
 # as FORTH 1983
