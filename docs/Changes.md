@@ -20,6 +20,37 @@
 
 ## Done
 
+10/09/2025
+
+    no more postpone hack. full postpone support in common vocabulary
+
+    full suport for stacks dumps (%S %R) in common vocabulary
+
+    review of extension primitives: 2/ NaN . bye abort
+
+        NaN is not-a-number as $80000000; 
+    
+        2/  is shift rigth one bit;
+
+        .   is show top of stack in hexagesimal, non destructive;
+
+        bye ends the Forth, syscalls _exit
+
+        abort restarts stacks and tib, holding all words compiled
+
+        work in progress:
+
+            %S no more a primitive
+        
+            %R no more a primitive
+
+            see no more a primitive
+
+            dump no more a primitive
+
+        Must choose a name for "jump to follow address" to access
+            native code execution.
+
 28/09/2025
 
     Review for use uppercase for all words, as in Forth-2012.

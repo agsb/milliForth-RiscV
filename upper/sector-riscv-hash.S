@@ -61,8 +61,6 @@
 
  .equ dismiss, YES
 
- .equ postpones, YES
-
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
 #
@@ -309,23 +307,11 @@ eval:
 
         beq wrd, zero, execute
 
-.ifdef postpones
-# postpone ? if state < 0
-        blt wrd, zero, postpone
-.endif
-
 # immediate ? 
 
         bne snd, zero, immediate      
 
 #---------------------------------------------------------------------         
-.ifdef postpones
-# reset state to compile
-postpone:
-        addi wrd, zero, ONE
-        sw wrd, STAT (usr)
-.endif
-
 # compiling ? if state != 0
 compile:
         

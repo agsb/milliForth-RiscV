@@ -296,3 +296,15 @@ Can not calculate the hash within a assembler macro,
 need a program to calculate the hashes for primitives 
 and make the headers by hand.
 
+## For Numbers
+
+To represent short signed integer numbers is use the high bit 
+of the MSB as signal indicator, eg for one byte, 00000001
+to 01111111 ( 1 to 127 ) is positive, 00000000 is zero and 11111111 to
+10000001 ( -1 to -127 ) is negative, and 10000000 is -128. 
+
+In MilliForth, -128 is not a number ( NaN ) and is used to indicate 
+errors as conversion, overflow, undeflow, zero division.
+
+Sure it is extended to 4 bytes cells. 
+
