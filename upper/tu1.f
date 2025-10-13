@@ -31,11 +31,11 @@
 
  : :NONAME HERE 1 STATE ! ;
 
- : HASH :NAME DUP HEAP ! CELL + @ ;
-
  : LINK>HASH CELL + ;
 
  : LINK>BODY CELL + CELL + ;
+
+ : HASH :NAME DUP HEAP ! CELL + @ ;
 
  : FIND LATEST @ BEGIN
         OVER OVER CELL + @

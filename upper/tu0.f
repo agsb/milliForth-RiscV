@@ -76,7 +76,6 @@
  
  : ] 1 STATE ! ;
  : [ 0 STATE ! ; IMMEDIATE
- \ : POSTPONE -1 STATE ! ; IMMEDIATE
  
  : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE
@@ -111,10 +110,11 @@
  : ?DUP DUP IF DUP THEN ;
 
  : CELL LIT [ 4 , ] ;
- : CELLS DUP IF 0 SWAP 0 DO CELL + . LOOP THEN ;
+ : CELLS DUP IF 0 SWAP 0 DO CELL + LOOP THEN ;
 
  : 8 LIT [ 4 4 + , ] ;
  : 16 LIT [ 8 8 + , ] ;
+ : 32 LIT [ 16 16 + , ] ;
  
  : BL LIT [ 16 16 + , ] ;
  : CR LIT [ 8 2 + , ] EMIT ;
@@ -137,10 +137,12 @@
  
  : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP ;
  : IN> >IN @ C@ >IN @ 1 + >IN ! ;
+
  : PARSE IN> DROP 
    >IN @ SWAP 0 
    BEGIN OVER IN> <> WHILE 1 + REPEAT 
    SWAP BL = IF >IN @ 1 - >IN ! THEN ;
+
  : WORD IN> DROP 
    BEGIN DUP IN> <> UNTIL 
    >IN @ 2 - >IN ! PARSE ;
@@ -153,7 +155,4 @@
  
  ." THAT'S ALL FOLKS !" CR
 
-
- \ crude multiplication
- : * DUP IF >R DUP R> 1 DO OVER + . LOOP SWAP DROP THEN ;
 

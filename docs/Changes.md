@@ -8,7 +8,7 @@
     
     Notes:
 
-    Still using lowercase for words.
+    Still using lowercase for words. NOW in uppercase also.
 
     In FigForth, ;S is called semis and ; is called semicolon, 
         but in Milliforth, ;S is exit and ; is semis. 

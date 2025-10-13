@@ -3,6 +3,8 @@
 *"To master riding bicycles you have do ride bicycles"*
 
 started at 23/07/2025, agsb@
+first version at 12/10/2025, @agsb
+
 vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) 
 and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
 
@@ -14,12 +16,12 @@ This version with minimal code (.text) uses only 532 bytes,
     472 bytes of Forth engine and 60 bytes of linux system I/O, 
     not counting ELF headers. Used 48 bytes to load fixed address. 
 
-Could add some bytes of postpone hack, and many bytes for extras words.
+Could add some bytes for extras words, as 2/ NAN ;CODE
 
 No human WORDS. It uses DJB2 hashes in headers, 
     instead of size+flags+name+pads. 
 
-Only use a IMMEDIATE flag, at MSBit (31) of hash.
+Only use a IMMEDIATE flag, at MSBit (31) of hash, also NAN 
 
 ## For Size
 
@@ -59,11 +61,13 @@ How shink to a minimal compiled size ?
     Some esoteric bug makes the first word to have hash error.
 
     All words in lowercase, maybe later could change to uppercase.
+        ** now a uppercase version is done **
 
-    The memory management is done by extend the dictionary into .bss,
+    The memory management is done by extend the dictionary 
+        into .bss, by reserve .skip bytes, defaults to 64k * 4
         no linux calls for memory allocation. (Anyone ?)
 
-    The source could be compiled with postpone hack, dismiss hack and
+    The source could be compiled with dismiss hack and
         more complementary native code word.
 
 ## Compiler Options
@@ -72,9 +76,9 @@ How shink to a minimal compiled size ?
 
     which memory map be used and pages size: default GCC
   
-    simulator of RISCV: qemu or spike ?
+    simulator of RISCV: qemu 
     
-    the heap and stack: .heap at end of .bss, .stack elsewhere ?
+    the heap and stack: .heap at end of .bss, .stack elsewhere.
 
     systems calls of core functions: linux ecalls
 
@@ -100,7 +104,7 @@ with pre-processor directives eg. #define.
 For now, using riscv-unknown-elf-gcc suit with qemu emulator
 for a single core minimal footprint Forth thread.  
 
-~~I hope~~ it uses less than 1k byte, without extras and user dictionary.
+It uses less than 1k byte, without extras and user dictionary.
 
 The milliForth must use memory pointers for data stack and return stack, 
 because does fetch and store from a special 'user structure', which 
@@ -125,23 +129,8 @@ using a extra STATE and a flag for precedence.
 | after IMMEDIATE | 2 | compile | compile | execute |
 
 In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, 
-    and uses a STATE (< 0) to always compile the next word, 
-    and return to compile STATE (1). 
 
-So postpone could be defined as 
-        
-        : postpone -1 state ! ; immediate
-
-and used as
-
-        : xxxx .... postpone word ... ;
-
-## Dismiss hack
-
-    When the compilation of a word is breaked, the LATEST are keepd in
-        order but HERE was advanced with references of words, that junk
-        stays lost in heap. With the Dismiss hack, the HERE returns
-        to previous value before start of compilation.
+Postpone is : POSTPONE ' , ; classics 
 
 ## Colon and Semis
 
@@ -155,9 +144,6 @@ and used as
     In compile state, all non immediate words are compiled, 
         and the immediate words are executed. 
     
-    With the postpone (<0) hack, the next word 
-        is always compiled and the STATE changed to compile (1)
-
     The semis **;** ends the word by:
         1. place a 'EXIT into last cell
         2. copy HEAD to LATEST
@@ -165,6 +151,15 @@ and used as
 
     if the compilation is interrupted, STATE and LATEST keeps 
         untouched, but some junk was placed and stays into dictionary.
+
+## Dismiss hack
+
+When the compilation of a word break, the LATEST are keepd in order 
+but HERE was advanced with references of words compiled, that junk 
+stays lost in heap. 
+
+With the dismiss hack, the HERE returns to previous value before start 
+the last compilation.
 
 ## internals
 
@@ -198,7 +193,7 @@ only internals:
 
     unnest, next, nest, pick, jump, 
 
-    ps. exit is unnest, nest is enter,
+    ps. exit is unnest, nest is enter/docol,
         next is not the NEXT of FOR loop    
 
 with externals:
@@ -209,20 +204,19 @@ with externals:
 extras: (selectable)
 
     2/      shift right one bit
-    exec    jump to address at top of spt
+    NAN     places 0x80000000 at top of stack
+    ;CODE   execute native code at instruction pointer (IP)
 
-    bye     ends the Forth, return to system
     abort   restart the Forth
+    bye     ends the Forth, return to system
+
+    .       show a copy of the cell at top of data stack, 
     .S      list cells in data stack
     .R      list cells in return stack
-    .       show a copy of the cell at top of data stack, 
     words   list all compiled words in dictionary order
     dump    list contents of dictionary in memory order
     see     list compiled contents of last word
     cell    sizeof a cell, 4 bytes, 32-bits
-
-    :$      jump to (ipt)   
-    ;$      jump to next 
 
 A my_hello_world.FORTH alternate version with dictionary for use;
 

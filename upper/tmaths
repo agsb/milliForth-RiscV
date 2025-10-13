@@ -1,0 +1,33 @@
+
+ \ crude math
+
+ : <  - 0< ;
+
+ : > SWAP < ;
+
+ : * DUP IF >R DUP R> 1 DO OVER + LOOP SWAP DROP THEN ;
+
+ : 2/
+        0 16 16 + 2 DO 
+        %S
+        OVER ISIMMEDIATE AND IF 1 + THEN  
+        DUP + SWAP
+        DUP + SWAP
+        LOOP
+        ;
+SEE
+ :  7 [ 4 2 + 1 + , ] ;
+SEE
+ : 48 [ 16 16 + 16 + , ] ;
+SEE
+ : 58 [ 48 8 + 2 + , ] ;
+SEE
+ : PUTC
+        ffh AND 
+        48 OR DUP
+        58 > IF 7 + THEN
+        EMIT
+        ;
+ SEE
+ 52 DUP PUTC PUTC
+

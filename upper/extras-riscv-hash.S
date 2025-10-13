@@ -30,23 +30,17 @@
 # djb2 hash cleared of bit 31
 #
 .equ hash_sfr, 0x00596858
-.equ hash_docode, 0x0059695B 
-.equ hash_donext, 0x0059697A
-.equ hash_bye, 0x0B874AFB
-.equ hash_abort, 0x0A1DFF4F
+.equ hash_dot, 0x0002B58B
 .equ hash_splist, 0x005965D3
 .equ hash_rplist, 0x005965D2
-.equ hash_dump, 0x7C6B2FE9
-.equ hash_words, 0x0B6953F8
-.equ hash_see, 0x0B878F36
-.equ hash_dot, 0x0002B58B
-.equ hash_cell, 0x7C70B163
 
+.equ  hash_NAN, 0x0B87D404
 .equ  hash_BYE, 0x0B874AFB 
 .equ  hash_ABORT, 0x0A1DFF4F 
+.equ  hash_DOCODE, 0x075D9A73 
 .equ  hash_DUMP, 0x7C6B2FE9 
 .equ  hash_WORDS, 0x0B6953F8 
-.equ  hash_SEE, 0x0B878F36 
+.equ  hash_SEE, 0x0B881316 
 .equ  hash_CELL, 0x7C70B163 
 
 #---------------------------------------------------------------------
@@ -63,28 +57,30 @@ def_word "2/", "sfr", hash_sfr, into_extras
         j keep1
 
 #---------------------------------------------------------------------
+# ( -- ) push 0x80000000
+def_word "NAN", "nan", hash_NAN, h_sfr
+        
+        lui fst, %hi(0x80000000)
+
+        j push1
+
+#---------------------------------------------------------------------
 # ( -- ) execute a jump and link to a reference at IP
-def_word ":$", "docode", hash_docode, h_sfr
+def_word ";CODE", "docode", hash_DOCODE, h_nan
         
         jalr ra, 0 (ipt)
 
         j next
 
 #---------------------------------------------------------------------
-# ( -- ) execute a jump to next
-def_word ";$", "donext", hash_donext, h_docode
-        
-        j next
-
-#---------------------------------------------------------------------
 # ( -- ) exit forth
-def_word "BYE", "byes", hash_bye, h_donext
+def_word "BYE", "byes", hash_BYE, h_docode
         
         j _exit
 
 #---------------------------------------------------------------------
 # ( -- ) ae abort
-def_word "ABORT", "aborts", hash_abort, h_byes
+def_word "ABORT", "aborts", hash_ABORT, h_byes
         
         j abort
 
@@ -106,25 +102,17 @@ def_word "%R", "rplist", hash_rplist, h_splist
 
 #----------------------------------------------------------------------
 # ( a b -- a b ) dumps memory between a and b
-def_word "DUMP", "dump", hash_dump, h_rplist
+def_word "DUMP", "dump", hash_DUMP, h_rplist
 
         call pull2
         
-        # xxx 
-        
-        # init
-        la fst, h_here
-
-        # ends
-        lw snd, HERE (usr)
-
         call dumps
 
         j drop1
 
 #----------------------------------------------------------------------
 # ( -- ) list all words in compiled dictionary, 
-def_word "WORDS", "words", hash_words, h_dump
+def_word "WORDS", "words", hash_WORDS, h_dump
 
         call wordf
 
@@ -132,7 +120,7 @@ def_word "WORDS", "words", hash_words, h_dump
 
 #----------------------------------------------------------------------
 # ( -- ) list last word in dictionary, 
-def_word "SEE", "sees", hash_see, h_words
+def_word "SEE", "sees", hash_SEE, h_words
 
         call wordu
 
@@ -152,7 +140,7 @@ def_word ".", "dot", hash_dot, h_sees
 
 #---------------------------------------------------------------------
 # ( -- w ) size of a cell 
-def_word "CELL", "cell", hash_cell, h_dot
+def_word "CELL", "cell", hash_CELL, h_dot
 
         addi fst, zero, 4
 
