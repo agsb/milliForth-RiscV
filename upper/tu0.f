@@ -128,7 +128,9 @@
    0< IF FALSE EXIT THEN
    TRUE ;
 
- : ffh LIT [ 16 1 - 2* 2* 2* 2* 16 1 - OR , ] ;
+ : 0fh LIT [ 16 1 - , ] ;
+ : ffh LIT [ 0fh 2* 2* 2* 2* 0fh OR , ] ;
+
  : C@ @ ffh AND ;
  : C! DUP @ ffh NOT AND ROT ffh AND OR SWAP ! ;
  : C, HERE C! 1 ALLOT ;

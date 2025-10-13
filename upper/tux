@@ -7,33 +7,58 @@
 
  : * DUP IF >R DUP R> 1 DO OVER + LOOP SWAP DROP THEN ;
 
- : 2/
-        0 16 16 + 2 DO 
-        %S
+ : 2/   0 32 1 DO 
         OVER ISIMMEDIATE AND IF 1 + THEN  
         DUP + SWAP
         DUP + SWAP
         LOOP
         ;
-SEE
- :  7 [ 4 2 + 1 + , ] ;
 
-SEE
- : 10 [ 8 2 + , ] ;
+ :  7 LIT [ 4 2 + 1 + , ] ;
 
-SEE
- : 48 [ 16 16 + 16 + , ] ;
+ : 10 LIT [ 8 2 + , ] ;
 
-SEE
- : 58 [ 48 8 + 2 + , ] ;
+ : 48 LIT [ 32 16 + , ] ;  \ '0'
 
-SEE
+ : 58 LIT [ 48 10 + , ] ;  \ '9' + 1
+
  : PUTC
-        ffh AND 
-        48 OR DUP
-        58 > IF 7 + THEN
+        0fh AND 
+        48 OR DUP 58 < IF 7 + THEN
         EMIT
         ;
- SEE
- 52 DUP PUTC PUTC
+
+ 58 48 + PUTC CR
+
+ : PUTB
+        ffh AND .
+        DUP 
+        2/ 2/ 2/ 2/ 
+        PUTC 
+        PUTC
+        ;
+        
+ 58 48 + PUTB CR
+
+ : PUTH
+        %S
+        DUP 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        PUTB
+        DUP
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        PUTB
+        DUP
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        PUTB
+        PUTB
+        %S
+        ;
+
+ 58 48 + %S DUP DUP %S
+
+ PUTC PUTB PUTH CR
 
