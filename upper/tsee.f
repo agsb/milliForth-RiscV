@@ -1,12 +1,10 @@
 
-: SEE %S 
-        ['] EXIT HASH FIND IF 
+: SEE  
+        ['] EXIT . HASH FIND . CR IF 
         BEGIN
-        OVER
-        OVER
-        NAND
+        OVER . OVER . NAND . CR
         WHILE
-                DUP . @ . DROP
+                DUP . @ . CR DROP
                 CELL +
         REPEAT
         THEN

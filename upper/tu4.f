@@ -7,15 +7,16 @@
  
  VARIABLE PARSE_INDEX
  
+ 
  : RUNBF 0 PARSE_INDEX ! 
    BEGIN PARSE_INDEX @ C@ 
    DUP DUP DUP DUP DUP DUP DUP 
-   [CHAR] , = IF KEY TAPE_HEAD @ ! THEN 
+   [CHAR] < = IF TAPE_HEAD @ 4 - TAPE_HEAD ! THEN 
+   [CHAR] > = IF TAPE_HEAD @ 4 + TAPE_HEAD ! THEN 
    [CHAR] - = IF TAPE_HEAD @ @ 1 - TAPE_HEAD @ ! THEN 
    [CHAR] + = IF TAPE_HEAD @ @ 1 + TAPE_HEAD @ ! THEN 
-   [CHAR] < = IF TAPE_HEAD @ 2 - TAPE_HEAD ! THEN 
-   [CHAR] > = IF TAPE_HEAD @ 2 + TAPE_HEAD ! THEN 
    [CHAR] . = IF TAPE_HEAD @ @ EMIT THEN 
+   [CHAR] , = IF KEY TAPE_HEAD @ ! THEN 
    
    [CHAR] [ = TAPE_HEAD @ @ 0 = AND IF 1 LOOP_DEPTH ! 
    BEGIN PARSE_INDEX @ 1 + PARSE_INDEX ! PARSE_INDEX @ C@ DUP 
@@ -37,7 +38,7 @@
  
  : BF( [CHAR] ) PARSE RUNBF ; IMMEDIATE
  
- HERE 64 + TAPE_HEAD !
+ HERE 64 + 64 + TAPE_HEAD !
  
  BF( >++++++++[<+++++++++>-] <.>++++[<+++++++>-] <+.+++++++..+++.>>++++++[<+++++++>-] <++.------------.>++++++[<+++++++++>-] <+.<.+++.------.--------.>>>++++[<++++++++>-] <+. )
 

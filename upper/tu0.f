@@ -18,10 +18,13 @@
  : HEAP LATEST CELL + ;
  : >IN HEAP CELL + ;
  : STATE >IN CELL + ;
+ 
+ : \ 0 >IN @ ! ; \ end-of-line comments
 
- : \ 0 >IN @ ! ; \ we have to end-of-line comments
+ : HEAD STATE CELL + ;
+ : TAIL HEAD CELL + ;
 
- : _ANY STATE CELL + CELL + ; \ start scratch area with 8 cells
+ : _ANY HEAD CELL + ; \ start scratch area with 8 cells
 
  \ pointer relative offsets
 
@@ -71,8 +74,8 @@
  : 2* DUP + ;
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
  : 80H 1 2* 2* 2* 2* 2* 2* 2* ;
- : ISIMMEDIATE 80H 2** 2** 2** ;
- : IMMEDIATE LATEST @ CELL + DUP @ ISIMMEDIATE OR SWAP ! ;
+ : ISNEGATIVE 80H 2** 2** 2** ;
+ : IMMEDIATE LATEST @ CELL + DUP @ ISNEGATIVE OR SWAP ! ;
  
  : ] 1 STATE ! ;
  : [ 0 STATE ! ; IMMEDIATE
@@ -81,6 +84,7 @@
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE
  : ELSE ['] BRANCH , HERE 0 , SWAP DUP 
    HERE SWAP - SWAP ! ; IMMEDIATE
+
  : BEGIN HERE ; IMMEDIATE
  : AGAIN ['] BRANCH , HERE - , ; IMMEDIATE
  : UNTIL ['] ?BRANCH , HERE - , ; IMMEDIATE
@@ -122,7 +126,7 @@
  : SPACE BL EMIT ;
 
  : 0= 0# NOT ;
- : 0< ISIMMEDIATE AND 0# ;
+ : 0< ISNEGATIVE AND 0# ;
  : 0> DUP 
    0= IF DROP FALSE EXIT THEN 
    0< IF FALSE EXIT THEN
@@ -156,5 +160,4 @@
  ." HELLO WORLD " CR
  
  ." THAT'S ALL FOLKS !" CR
-
 
