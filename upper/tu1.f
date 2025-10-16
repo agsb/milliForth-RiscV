@@ -49,3 +49,12 @@
 
  : POSTPONE ' , ; IMMEDIATE 
 
+ : SEE  
+        HASH FIND IF DUP
+        BEGIN
+        OVER OVER @ = IF DROP DROP EXIT THEN
+        DUP . @ . DROP CR CELL +
+        AGAIN
+        THEN
+        ;
+
