@@ -29,7 +29,6 @@
  \ pointer relative offsets
 
  : RP@ RP @ CELL + ;
- 
  : SP@ SP @ CELL + ;
  
  : DUP SP@ @ ;

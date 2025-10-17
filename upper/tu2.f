@@ -1,17 +1,34 @@
+
+
+ : PIPE LIT [ 32 32 + 32 + 32 + 4 - , ] EMIT ;
+
+ : LINES SWAP 
+        . 
+        PIPE 
+        BEGIN  
+        DUP . @ . DROP PIPE 
+        CELL + OVER OVER
+        = IF DROP DROP EXIT THEN
+        AGAIN ;
  
- \ this file is still a stub 
+ : DUMPS SWAP
+        BEGIN
+        DUP . @ . CR DROP 
+        CELL + OVER OVER
+        = IF DROP DROP EXIT THEN
+        AGAIN ;
+ 
+ : %S SP@ . SP0 . CR LINES ; 
 
- : CREATE HERE : 
-   ['] LIT , HERE CELL + CELL + , ['] EXIT , 
-   0 STATE ! LATEST ! ;
+ : $S SP@ . SP0 . CR DUMPS ;
+ 
+ : %R RP@ RP0 LINES ;
 
- : DOES ;
+ : $R RP@ RP0 DUMPS ;
 
- : DOES> ;
+ 8 4 2 1 0 
 
- : <BUILDS CREATE 0 , ;
+ %S  $S
 
- : VARIABLE CREATE CELL ALLOT ;
 
- : ARRAY CREATE ALLOT ;
 

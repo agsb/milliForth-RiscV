@@ -51,8 +51,6 @@
 
 .equ COMPILE, 1
 
-.equ POSTPONE, -1
-
 # usefull
 
 .equ ONE, 1
