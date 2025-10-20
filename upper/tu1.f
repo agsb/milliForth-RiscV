@@ -3,16 +3,6 @@
 
  \ for stack debug
 
- : && SP@ . DROP RP@ . DROP LATEST @ . DROP HEAP @ . DROP ;
-
- : SP0 LIT [ SP@ , ] ;
-
- : RP0 LIT [ RP@ , ] ;
-
- : RP! RP ! ; \ carefull
-
- : SP! SP ! ; \ carefull
-
  \ for compilation 
 
  : :NAME HERE : 0 STATE ! ;

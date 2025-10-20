@@ -32,6 +32,10 @@
  
  : SP@ SP @ CELL + ;
  
+ : RP! RP ! ; \ carefull
+
+ : SP! SP ! ; \ carefull
+
  : DUP SP@ @ ;
  : OVER SP@ CELL + @ ;
  : SWAP OVER OVER SP@ CELL + CELL + CELL + ! SP@ CELL + ! ;
@@ -80,6 +84,8 @@
  
  : ] 1 STATE ! ;
  : [ 0 STATE ! ; IMMEDIATE
+ 
+ : ISNEGATIVE LIT [ ISNEGATIVE , ] ;
  
  : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE

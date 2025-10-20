@@ -20,7 +20,24 @@
 
 ## Done
 
-10/09/2025
+20/10/2025
+    
+    Need discover how define TIB0, SP0 and RP0, maked as CONSTANTS
+
+    <BUILDS CREATE DOES> VARIABLE CONSTANT etc, depends on
+        what happen within CREATE and DOES> 
+
+    Doing tests and reviews to include extended words into compiled
+        dictionary.
+
+    Done SEE 2/ :NAME :NONAME FIND HASH POSTPONE
+
+    The "locals" are reserved in return stack, but it is only 36 cells
+
+    FORTH 1994 recognizes return, parameter and control stacks, 
+        why not a locals stack ?
+
+10/10/2025
 
     The .text and .bss uses diferent memory spaces, 
         for use flash and for use sram, in MCUs

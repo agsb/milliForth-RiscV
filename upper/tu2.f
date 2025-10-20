@@ -1,34 +1,54 @@
 
 
+ \ for stack debug
+
+ : && SP@ . DROP RP@ . DROP LATEST @ . DROP HEAP @ . DROP ;
+
+ : SP0 LIT [ SP@ , ] ;
+
+ : RP0 LIT [ RP@ , ] ;
+
+ : RP! RP ! ; \ carefull
+
+ : SP! SP ! ; \ carefull
+
  : PIPE LIT [ 32 32 + 32 + 32 + 4 - , ] EMIT ;
 
  : LINES SWAP 
-        . 
+        %S
         PIPE 
         BEGIN  
-        DUP . @ . DROP PIPE 
-        CELL + OVER OVER
-        = IF DROP DROP EXIT THEN
+        DUP . @ . DROP 
+        CELL + OVER OVER < 
+        IF PIPE DROP DROP EXIT THEN
         AGAIN ;
  
  : DUMPS SWAP
         BEGIN
         DUP . @ . CR DROP 
-        CELL + OVER OVER
+        CELL + 
+        OVER OVER <
         = IF DROP DROP EXIT THEN
         AGAIN ;
  
- : %S SP@ . SP0 . CR LINES ; 
+ %S
 
- : $S SP@ . SP0 . CR DUMPS ;
+ : %%S SP@ . @ . SP0 . CR LINES ; 
+
+ %%S
+
+ %S
+
+ BYE
+
+
+\ : $S SP@ . SP0 . CR DUMPS ;
  
- : %R RP@ RP0 LINES ;
+\ : %R RP@ RP0 LINES ;
 
- : $R RP@ RP0 DUMPS ;
+\ : $R RP@ RP0 DUMPS ;
 
- 8 4 2 1 0 
-
- %S  $S
+\ %S  $S
 
 
 

@@ -120,6 +120,7 @@ _rpb:       # bottom
 rp0: .word 0x0
 
 # tib grows forward
+tib0:
 _tib:       
 .skip tibz
 
