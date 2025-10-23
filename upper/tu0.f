@@ -24,7 +24,7 @@
  : HEAD STATE CELL + ;
  : TAIL HEAD CELL + ;
 
- : _ANY HEAD CELL + ; \ start scratch area with 8 cells
+ : SCHS TAIL CELL + ; \ start scratch area with 8 cells
 
  \ pointer relative offsets
 
@@ -33,7 +33,6 @@
  : SP@ SP @ CELL + ;
  
  : RP! RP ! ; \ carefull
-
  : SP! SP ! ; \ carefull
 
  : DUP SP@ @ ;

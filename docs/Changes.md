@@ -20,12 +20,26 @@
 
 ## Done
 
+22/10/2025
+
+    The FORTH 1994 (ANS FORTH, DSPANS, ISO/IEC 15145:1997) states that
+        between CREATE and DOES> no word would mess with dictionary, 
+        vocabularies, or anything that changes HERE. 
+
+    The MilliForth have a Forth variable HEAD, to keep the HERE while 
+        compiling, and a forth variable TAIL, to keep the HERE (vide
+        how CREATE is done) for use of DOES>.
+
+    PS. 
+        HEAD is necessary because there is no SMUGDE/INVISIBLE flag.
+        TAIL is necessary because to have a place for DOES> sequence.
+
 20/10/2025
     
     Need discover how define TIB0, SP0 and RP0, maked as CONSTANTS
 
     <BUILDS CREATE DOES> VARIABLE CONSTANT etc, depends on
-        what happen within CREATE and DOES> 
+        what happen within CREATE and DOES> ? 
 
     Doing tests and reviews to include extended words into compiled
         dictionary.
