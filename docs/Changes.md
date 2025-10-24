@@ -16,9 +16,23 @@
 ## Todo
     
     __The "first hash bug", was just a debug error__ 
-            but no :(
+            but no :(: it is a real bug.
 
 ## Done
+
+24/10/2025
+
+    Adopt $80000000 as NaN (Not-a-Number) to represent errors.
+
+    Best choices for extensions: 
+        
+        ;CODE to native jump to an address 
+
+        2/ normal shift right 
+
+        ISNEGATIVE as number $80000000, also used as FLAG IMMEDIATE
+
+        BYE to end the Forth unconditionaly
 
 22/10/2025
 
@@ -27,12 +41,12 @@
         vocabularies, or anything that changes HERE. 
 
     The MilliForth have a Forth variable HEAD, to keep the HERE while 
-        compiling, and a forth variable TAIL, to keep the HERE (vide
+        compiling, and a Forth variable TAIL, to keep the HERE (vide
         how CREATE is done) for use of DOES>.
 
     PS. 
         HEAD is necessary because there is no SMUGDE/INVISIBLE flag.
-        TAIL is necessary because to have a place for DOES> sequence.
+        TAIL is necessary to have a for address of DOES> sequence.
 
 20/10/2025
     

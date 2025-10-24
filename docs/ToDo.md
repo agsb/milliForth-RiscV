@@ -5,16 +5,15 @@
     ," " to push a string in dictionary and type it
 
 
-    <builds create does> 
-    variable constant 
+    does> 
+    constant 
     defer 
-    postpone tick 
 
     = align done 
 
-    = postpone is done, as extra configuration flag. (temporary)
+    = <builds create variable are in the minimal vocabulary.
 
-    = create and variable, are in the minimal vocabulary.
+    = postpone tick are in the minimal vocabulary.
 
     DPANS94: 
         PAD shall be at least 84 bytes.
