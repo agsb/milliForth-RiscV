@@ -12,7 +12,7 @@
 
  SEE CREATE
 
- : DOES> . HERE . TAIL . @ . ! . ; IMMEDIATE
+ : DOES> HERE TAIL @ ! ; IMMEDIATE
 
  SEE DOES>
 
@@ -20,36 +20,31 @@
 
  : VARIABLE CREATE CELL ALLOT ;
 
+ SEE VARIABLE
+
  : ARRAY CREATE ALLOT ;
 
- 8 4 + . 
-
-%S
  VARIABLE ONE 
 
  SEE ONE 
 
- 16 ONE ! . ONE . @ .
-
- TAIL . @ .
-
-%S
+ TAIL . @ . DROP
 
  : CONSTANT CREATE , DOES> @ ;
 
- TAIL . @ .
-
  SEE CONSTANT
 
- 8 1 + CONSTANT TWO 
+ 8 1 + . 
+
+ CONSTANT TWO 
+
+ SEE TWO
 
 %S
 
 TAIL . @ .
 
 %S 
-
- SEE TWO
 
  . TWO .
  
