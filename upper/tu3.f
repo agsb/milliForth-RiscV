@@ -28,7 +28,7 @@
 
  : R@ R> DUP >R ;
 
- : DOES> R@ . TAIL . @ . ! ;
+ : DOES> . R@ . TAIL . @ . ! . ;
 
  SEE DOES>
 
@@ -39,6 +39,8 @@
  CONSTANT TWO 
 
  SEE TWO
+
+ : DEFER CREATE ['] ABORT , DOES> @ EXECUTE ;
 
  8 1 + . 
 
