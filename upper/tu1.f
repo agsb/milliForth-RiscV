@@ -36,66 +36,26 @@
         THEN
         ;
 
- \ https://stackoverflow.com/questions/78708194/
- \ logical-shift-right-without-dedicated-shift-instruction
+ \ from eforth, first EXIT is reserved for DOES> 
 
- : 2/   0 32 2 DO
-        OVER ISNEGATIVE AND IF 1 + THEN  
-        DUP + SWAP
-        DUP + SWAP
-        LOOP
-        OVER ISNEGATIVE AND IF 1 + THEN  
-        SWAP DROP
-        ;
+ : CREATE 
+   :NAME 
+   ['] LIT , 
+   HERE CELL + CELL + CELL + , 
+   HERE TAIL ! 
+   ['] EXIT , 
+   ['] EXIT , 
+   LATEST ! ;
 
- \ crude math
+ : <BUILDS CREATE 0 , ;
 
- : <  - 0< ;
+ : VARIABLE CREATE CELL ALLOT ;
 
- : > SWAP < ;
+ : ARRAY CREATE ALLOT ;
 
- : * DUP IF >R DUP R> 1 DO OVER + LOOP SWAP DROP THEN ;
+ : DOES> R> TAIL @ ! ;
 
- \ SHOW HEXADECIMAL
-
- : 7 LIT [ 4 2 + 1 + , ] ; \ to escape : thru @
-
- : 48 LIT [ 32 16 + , ] ;  \ to compare '0'
-
- : 57 LIT [ 48 10 + 1 - , ] ;  \ to compare '9' 
-
- : HEX_NIBB
-        0fh AND 48 OR DUP 
-        57 > IF 7 + THEN  
-        EMIT
-        ;
-
- : HEX_BYTE
-        ffh AND 
-        DUP
-        2/ 2/ 2/ 2/
-        HEX_NIBB
-        HEX_NIBB
-        ;
-        
- : HEX_WORD
-        DUP 
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        HEX_BYTE
-        DUP
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        HEX_BYTE
-        DUP
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        HEX_BYTE
-        HEX_BYTE
-        ;
-
- : .x HEX_WORD ;
-
- : ?x @ . ;
-
+ : CONSTANT CREATE , DOES> @ ;
+ 
+ : DEFER CREATE ['] ABORT , DOES> @ EXECUTE ;
 

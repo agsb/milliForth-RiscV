@@ -1,56 +1,65 @@
- 
- \ this file is still a stub 
 
- %S
 
- \ from eforth, first EXIT is reserved for DOES> 
- : CREATE :NAME 
-   ['] LIT , HERE CELL + CELL + CELL + , 
-   HERE TAIL ! 
-   ['] EXIT , ['] EXIT , 
-   LATEST ! ;
+ \ https://stackoverflow.com/questions/78708194/
+ \ logical-shift-right-without-dedicated-shift-instruction
 
- SEE CREATE
+ : 2/   0 32 2 DO
+        OVER ISNEGATIVE AND IF 1 + THEN  
+        DUP + SWAP
+        DUP + SWAP
+        LOOP
+        OVER ISNEGATIVE AND IF 1 + THEN  
+        SWAP DROP
+        ;
 
- : <BUILDS CREATE 0 , ;
+ \ crude math
 
- : VARIABLE CREATE CELL ALLOT ;
+ : <  - 0< ;
 
- SEE VARIABLE
+ : > SWAP < ;
 
- : ARRAY CREATE ALLOT ;
+ : * DUP IF >R DUP R> 1 DO OVER + LOOP SWAP DROP THEN ;
 
- VARIABLE ONE 
+ \ SHOW HEXADECIMAL
 
- SEE ONE 
+ : 7 LIT [ 4 2 + 1 + , ] ; \ to escape : thru @
 
- 16 1 + ONE ! . ONE . @ .
+ : 48 LIT [ 32 16 + , ] ;  \ to compare '0'
 
- : R@ R> DUP >R ;
+ : 57 LIT [ 48 10 + 1 - , ] ;  \ to compare '9' 
 
- : DOES> . R@ . TAIL . @ . ! . ;
+ : HEX_NIBB
+        0fh AND 48 OR DUP 
+        57 > IF 7 + THEN  
+        EMIT
+        ;
 
- SEE DOES>
+ : HEX_BYTE
+        ffh AND 
+        DUP
+        2/ 2/ 2/ 2/
+        HEX_NIBB
+        HEX_NIBB
+        ;
+        
+ : HEX_WORD
+        DUP 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        HEX_BYTE
+        DUP
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        HEX_BYTE
+        DUP
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        HEX_BYTE
+        HEX_BYTE
+        ;
 
- : CONSTANT CREATE , DOES> @ ;
- 
- SEE CONSTANT
+ : . HEX_WORD ;
 
- CONSTANT TWO 
+ : ? @ . ;
 
- SEE TWO
-
- : DEFER CREATE ['] ABORT , DOES> @ EXECUTE ;
-
- 8 1 + . 
-
-%S 
-
-. TWO .
-
-%S 
-
-TAIL . @ .
-
- %S
 

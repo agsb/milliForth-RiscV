@@ -1,5 +1,7 @@
  : VOID ;
 
+ : ABORT VOID ; 
+
  : -1 U@ 0# ;
  : 0 -1 -1 NAND ;
 
@@ -60,7 +62,10 @@
 
  : >R RP@ @ SWAP RP@ ! RP@ CELL - RP ! RP@ ! ;
  : R> RP@ @ RP@ CELL + RP ! RP@ @ SWAP RP@ ! ;
- 
+ : R@ R> DUP >R ;
+
+ : EXECUTE >R ;
+
  : BRANCH RP@ @ DUP @ + RP@ ! ;
  : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ;
  
