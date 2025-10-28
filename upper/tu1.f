@@ -57,5 +57,33 @@
 
  : CONSTANT CREATE , DOES> @ ;
  
+ : VALUE CREATE , DOES> @ ;
+
+ : TO HASH FIND DROP >DATA
+     STATE @ 
+     IF ' LIT , , ' ! ,  
+     ELSE !
+     THEN ; 
+
+ \ common standart 2012
+
+ : >BODY ;
+ 
+ : >DATA ;
+
  : DEFER CREATE ['] ABORT , DOES> @ EXECUTE ;
+
+ : DEFER@ >BODY @ ;
+
+ : DEFER! >BODY ! ;
+
+ : IS STATE @ 
+        IF POSTPONE ['] POSTPONE DEFER!
+        ELSE ' DEFER!
+        THEN ; IMMEDIATE
+
+ : ACTION-OF STATE @
+        IF POSTPONE ['] POSTPONE DEFER@
+        ELSE ' DEFER@
+        THEN ; IMMEDIATE
 
