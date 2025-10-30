@@ -30,7 +30,7 @@
 
         ABORT to reset stacks and interpreter
 
-        INNERCOUNTS to count words executed 
+        BEAT to count words executed in inner interpreter
 
 ## Done
 
