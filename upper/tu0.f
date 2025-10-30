@@ -106,14 +106,20 @@
  \ limit first DO ---
  : DO HERE ['] >R , ['] >R , ; IMMEDIATE
 
- : LOOP ['] R> , ['] R> , ['] LIT , 1 , ['] + , 
-   ['] 2DUP , ['] = , ['] ?BRANCH , 
-   HERE - , ['] 2DROP , ; IMMEDIATE
+ : LOOP ['] R> , ['] R> , 
+        ['] LIT , 1 , ['] + , 
+        ['] 2DUP , ['] = , ['] ?BRANCH , 
+        HERE - , 
+        ['] 2DROP , ; IMMEDIATE
 
- : I ['] R> , ['] R> , ['] DUP , ['] >R , ['] >R , ; IMMEDIATE
+ : I ['] R> , ['] R> , 
+        ['] DUP , ['] >R , 
+        ['] SWAP , ['] >R , ; IMMEDIATE
 
- : J ['] R> , ['] R> , ['] R> , 
+ : J ['] R> , ['] R> , 
+     ['] R> , ['] R> , 
      ['] DUP , ['] >R ,
+     ['] SWAP , ['] >R ,
      ['] SWAP , ['] >R ,
      ['] SWAP , ['] >R ,
      ; IMMEDIATE

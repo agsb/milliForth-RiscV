@@ -101,6 +101,9 @@ h_\label:
 
 # This is it
 
+_beat:
+.word 0x0000
+
 _user:
 # user parameter offsets
 .skip 8 * CELL
@@ -765,7 +768,14 @@ unnest: #; exit
 
 next:
 # wrd = (ipt) ; ipt += cell
-        
+
+# count beats
+.ifdef debug
+        lw idx, -4 (usr)
+        addi idx, idx, 1
+        sw idx, -4 (usr)
+.endif
+
         lw fst, 0 (ipt)
         
         addi ipt, ipt, CELL

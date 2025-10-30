@@ -39,7 +39,9 @@
 .equ  hash_NAN, 0x0B87D404
 .equ  hash_BYE, 0x0B874AFB 
 .equ  hash_ABORT, 0x0A1DFF4F 
-.equ  hash_DOCODE, 0x075D9A73 
+.equ  hash_DOCODE, 0x075D9A73
+
+.equ  hash_BEATS, 0x0C8269C4
 
 .equ  hash_RSHIFT, 0x416E6B97
 .equ  hash_LSHIFT, 0x2C5784C9
@@ -81,8 +83,16 @@ def_word "NAN", "nan", hash_NAN, h_sfr
         j push1
 
 #---------------------------------------------------------------------
+# ( -- ) push beats
+def_word "BEATS", "beats", hash_BEATS, h_nan
+        
+        lw fst, -4 (usr)
+
+        j push1
+
+#---------------------------------------------------------------------
 # ( -- ) execute a jump and link to a reference at IP
-def_word ";CODE", "docode", hash_DOCODE, h_nan
+def_word ";CODE", "docode", hash_DOCODE, h_beats
         
         jalr ra, 0 (ipt)
 
