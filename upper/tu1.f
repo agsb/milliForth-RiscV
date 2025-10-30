@@ -5,9 +5,9 @@
 
  \ for compilation 
 
- : :NAME HERE : 0 STATE ! ;
+ : :NAME HERE : 0 STATE ! ; \ make a header
 
- : :NONAME HERE 1 STATE ! ;
+ : :NONAME HERE 1 STATE ! ; \ make a body
 
  : LINK>HASH CELL + ;
 
@@ -47,6 +47,8 @@
    ['] EXIT , 
    LATEST ! ;
 
+ : >BODY CELL + @ ;
+
  : <BUILDS CREATE 0 , ;
 
  : VARIABLE CREATE CELL ALLOT ;
@@ -59,17 +61,14 @@
  
  : VALUE CREATE , DOES> @ ;
 
- : TO HASH FIND DROP >DATA
+ : TO 
+     ' >BODY
      STATE @ 
-     IF ' LIT , , ' ! ,  
-     ELSE !
+     IF ' LIT , , ' ! ,  ELSE !
      THEN ; 
 
  \ common standart 2012
-
- : >BODY ;
- 
- : >DATA ;
+ \ http://www.forth200x.org/deferred.fs
 
  : DEFER CREATE ['] ABORT , DOES> @ EXECUTE ;
 

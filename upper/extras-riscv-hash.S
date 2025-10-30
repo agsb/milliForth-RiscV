@@ -29,7 +29,9 @@
 #
 # djb2 hash cleared of bit 31
 #
+.equ hash_sfl, 0x0059685D
 .equ hash_sfr, 0x00596858
+
 .equ hash_dot, 0x0002B58B
 .equ hash_splist, 0x005965D3
 .equ hash_rplist, 0x005965D2
@@ -38,6 +40,10 @@
 .equ  hash_BYE, 0x0B874AFB 
 .equ  hash_ABORT, 0x0A1DFF4F 
 .equ  hash_DOCODE, 0x075D9A73 
+
+.equ  hash_RSHIFT, 0x416E6B97
+.equ  hash_LSHIFT, 0x2C5784C9
+
 .equ  hash_DUMP, 0x7C6B2FE9 
 .equ  hash_WORDS, 0x0B6953F8 
 .equ  hash_SEE, 0x0B881316 
@@ -47,8 +53,18 @@
 # extra primitives
 
 #---------------------------------------------------------------------
+# ( w -- w*2 ) #; shift left
+def_word "2*", "sfl", hash_sfl, into_extras
+
+        call pull2
+        
+        slli fst, fst, 1
+        
+        j keep1
+
+#---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
-def_word "2/", "sfr", hash_sfr, into_extras
+def_word "2/", "sfr", hash_sfr, h_sfl
 
         call pull2
         

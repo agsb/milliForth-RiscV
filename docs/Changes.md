@@ -18,31 +18,36 @@
     __The "first hash bug", was just a debug error__ 
             but no :(: it is a real bug.
 
-## Done
-
-24/10/2025
-
-    Adopt $80000000 as NaN (Not-a-Number) to represent errors.
-
     Best choices for extensions: 
         
         ;CODE to native jump to an address 
 
         2/ normal shift right 
 
-        ISNEGATIVE as number $80000000, also used as FLAG IMMEDIATE
+        ISNEGATIVE as number $80000000, NaN, FLAG IMMEDIATE
 
         BYE to end the Forth unconditionaly
+
+        ABORT to reset stacks and interpreter
+
+        INNERCOUNTS to count words executed 
+
+## Done
+
+24/10/2025
+
+    Adopt $80000000 as NaN (Not-a-Number) to represent errors.
 
 22/10/2025
 
     The FORTH 1994 (ANS FORTH, DSPANS, ISO/IEC 15145:1997) states that
         between CREATE and DOES> no word would mess with dictionary, 
-        vocabularies, or anything that changes HERE. 
+        vocabularies, or anything that changes HERE, 
+        but CONSTANT etc, does. 
 
     The MilliForth have a Forth variable HEAD, to keep the HERE while 
-        compiling, and a Forth variable TAIL, to keep the HERE (vide
-        how CREATE is done) for use of DOES>.
+        compiling, and a Forth variable TAIL, to keep the HERE for use
+        of DOES>. DOES> is not IMMEDIATE (vide how CREATE is done). 
 
     PS. 
         HEAD is necessary because there is no SMUGDE/INVISIBLE flag.
