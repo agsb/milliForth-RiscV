@@ -59,8 +59,14 @@
 
  : CONSTANT CREATE , DOES> @ ;
  
+ \ wise
+
+ SP@ , CONSTANT SP0
+ RP@ , CONSTANT RP0
+
  : VALUE CREATE , DOES> @ ;
 
+ \ use as: TO 
  : TO 
      ' >BODY
      STATE @ 

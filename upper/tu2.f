@@ -4,14 +4,6 @@
 
  : && SP@ . DROP RP@ . DROP LATEST @ . DROP HEAP @ . DROP ;
 
- : SP0 LIT [ SP@ , ] ;
-
- : RP0 LIT [ RP@ , ] ;
-
- : RP! RP ! ; \ carefull
-
- : SP! SP ! ; \ carefull
-
  : PIPE LIT [ 32 32 + 32 + 32 + 4 - , ] EMIT ;
 
  : LINES SWAP 
