@@ -763,7 +763,7 @@ next:
 # wrd = (ipt) ; ipt += cell
 
 # count beats
-.ifdef debug
+.ifdef beats
         lw idx, -4 (usr)
         addi idx, idx, 1
         sw idx, -4 (usr)

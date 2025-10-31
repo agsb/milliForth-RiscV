@@ -130,7 +130,9 @@ using a extra STATE and a flag for precedence.
 
 In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, 
 
-Postpone is : POSTPONE ' , ; \ classics 
+By the way, now, tick and comma are in compiled dictionary, then
+
+        Postpone is : POSTPONE ' , ; \ classics 
 
 ## Colon and Semis
 
@@ -168,15 +170,19 @@ Postpone is : POSTPONE ' , ; \ classics
     CONSTANT uses the data address to access a value;
     
     ARRAY uses the data address to access the nth byte;
+    
+    Note, DOES> is just one word and is no immediate.
 
 ## Dismiss hack
 
-When the compilation of a word break, the LATEST are keepd in order 
+When the compilation of a word breaks, the LATEST are keepd in order 
 but HERE was advanced with references of words compiled, that junk 
 stays lost in heap. 
 
-With the dismiss hack, the HERE returns to previous value before start 
-the last compilation.
+To clean just copy HEAD to HERE at error or missing.
+
+With this dismiss hack, the HERE returns to previous value before 
+start the last compilation.
 
 ## internals
 
@@ -211,7 +217,7 @@ only internals:
     unnest, next, nest, pick, jump, 
 
     ps. exit is unnest, nest is enter/docol,
-        next is not the NEXT of FOR loop    
+        next is not the NEXT of FOR loop !    
 
 with externals:
 
@@ -226,6 +232,7 @@ extras: (selectable)
 
     abort   restart the Forth
     bye     ends the Forth, return to system
+    beats   counts words executed by next
 
     .       show a copy of the cell at top of data stack, 
     .S      list cells in data stack
