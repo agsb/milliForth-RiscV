@@ -61,6 +61,8 @@
 
  .equ dismiss, YES
 
+ .equ beatme, YES
+
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
 #
@@ -157,16 +159,7 @@ main:
 # just for sake
 
 /*
-# todo, alloc and update memory size
-
-        fence
-
         call _init
-
-        la snd, h_here
-        
-        sw fst, 0 (snd)
-
 */
 
 #----------------------------------------------------------------------
@@ -354,7 +347,7 @@ miss:
 100:
 
 wipe:
-        # compiling ?
+        # compiling ? why not do it at any error ?
         lw fst, STAT (usr)
         beq fst, zero, 100f
         # wipe remains

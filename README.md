@@ -130,7 +130,7 @@ using a extra STATE and a flag for precedence.
 
 In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, 
 
-Postpone is : POSTPONE ' , ; classics 
+Postpone is : POSTPONE ' , ; \ classics 
 
 ## Colon and Semis
 
@@ -151,6 +151,23 @@ Postpone is : POSTPONE ' , ; classics
 
     if the compilation is interrupted, STATE and LATEST keeps 
         untouched, but some junk was placed and stays into dictionary.
+
+## CREATE and DOES>
+
+    (from eforth ideas)
+
+    CREATE place the data address in stack and compiles two EXIT, 
+        the address of the first is saved at Forth variable TAIL, 
+        the data address is the cell after second EXIT;
+
+    DOES> uses the address in TAIL to save the complile address of 
+        what follows DOES>;
+
+    VARIABLE uses the data address to access a cell;
+    
+    CONSTANT uses the data address to access a value;
+    
+    ARRAY uses the data address to access the nth byte;
 
 ## Dismiss hack
 

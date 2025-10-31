@@ -20,17 +20,19 @@
 
     Best choices for extensions: 
         
-        ;CODE to native jump to an address 
+        ;CODE to native jump to native code at an address 
 
         2/ normal shift right 
 
-        ISNEGATIVE as number $80000000, NaN, FLAG IMMEDIATE
+        NAN, number $80000000, flag negative, flag IMMEDIATE
 
         BYE to end the Forth unconditionaly
 
-        ABORT to reset stacks and interpreter
+        ABORT to reset stacks and outer interpreter
 
         BEAT to count words executed in inner interpreter
+
+        2* normal shift left
 
 ## Done
 
