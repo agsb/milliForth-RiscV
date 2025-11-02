@@ -55,6 +55,8 @@
 
  : ARRAY CREATE ALLOT DOES> + @ ;
 
+ : BUFFER CREATE ALLOT ;
+
  : DOES> R> TAIL @ ! ;
 
  : CONSTANT CREATE , DOES> @ ;
@@ -64,9 +66,26 @@
  SP@ , CONSTANT SP0
  RP@ , CONSTANT RP0
 
- : VALUE CREATE , DOES> @ ;
+ \ based on reference standart, without ?DO
+
+ 0 CONSTANT CASE IMMEDIATE
+ 
+ : OF 1 + >R
+    POSTPONE OVER POSTPONE =
+    POSTPONE IF POSTPONE DROP
+    R> ; IMMEDIATE
+
+ : ENDOF POSTPONE ELSE ; IMMEDIATE
+
+ : ENDCASE POSTPONE DROP
+    DUP 0 = IF DROP EXIT THEN
+    0 DO POSTPONE THEN LOOP
+    ; IMMEDIATE
 
  \ use as: TO 
+
+ : VALUE CREATE , DOES> @ ;
+
  : TO 
      ' >BODY
      STATE @ 
