@@ -21,7 +21,7 @@ Could add some bytes for extras words, as 2/ NAN ;CODE
 No human WORDS. It uses DJB2 hashes in headers, 
     instead of size+flags+name+pads. 
 
-Only use a IMMEDIATE flag, at MSBit (31) of hash, also NAN 
+Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN. 
 
 ## For Size
 
