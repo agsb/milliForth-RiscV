@@ -141,6 +141,7 @@
  : CR LIT [ 8 2 + , ] EMIT ;
  : NL LIT [ 8 4 + 1 + , ] EMIT ;
  : SPACE BL EMIT ;
+ : SPACES 0 DO SPACE LOOP ;
 
  : 0= 0# NOT ;
  : 0< ISNEGATIVE AND 0# ;
