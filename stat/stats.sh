@@ -9,7 +9,7 @@ grep -E ':.[1234567890abcdef]{8,8}' dmp | \
 grep -vi -E '\.word|ecall' > 32bits
 
 grep -E '_GLOBAL_' dmp > globals
-grep -vi -E 'lui|auipc|_GLOBAL_' dmp > lauis
+grep -vi -E 'lui|aui' dmp > lauis
 
 grep -E ' s0|,s0|s0,' dmp > s0
 grep -E ' s1|,s1|s1,' dmp > s1
