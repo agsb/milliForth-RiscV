@@ -16,7 +16,7 @@ This version with minimal code (.text) uses only 532 bytes,
     472 bytes of Forth engine and 60 bytes of linux system I/O, 
     not counting ELF headers. Used 48 bytes to load fixed address. 
 
-Could add some bytes for extras words, as 2/ NAN ;CODE
+Could add some bytes for extras words, 2/ NAN ;CODE
 
 No human WORDS. It uses DJB2 hashes in headers, 
     instead of size+flags+name+pads. 
@@ -61,6 +61,7 @@ How shink to a minimal compiled size ?
     Some esoteric bug makes the first word to have hash error.
 
     All words in lowercase, maybe later could change to uppercase.
+        
         ** now a uppercase version is done **
 
     The memory management is done by extend the dictionary 
@@ -113,7 +114,7 @@ contains the user variables for Forth
 
 ## Postpone Hack
 
-__while 'tick is not in the compiled dictionary__
+__while 'tick was not in the compiled dictionary__
 
 Forth standart have postone, instead of compile, and [compile].
 
@@ -153,6 +154,18 @@ By the way, now, tick and comma are in compiled dictionary, then
 
     if the compilation is interrupted, STATE and LATEST keeps 
         untouched, but some junk was placed and stays into dictionary.
+        Could clean that with more some code.
+
+## Dismiss hack
+
+When the compilation of a word breaks, the LATEST are keepd in order 
+but HERE was advanced with references of words compiled, that junk 
+stays lost in heap. 
+
+To clean just copy HEAD to HERE at error or missing.
+
+With this dismiss hack, the HERE returns to previous value before 
+start the last compilation.
 
 ## CREATE and DOES>
 
@@ -172,17 +185,6 @@ By the way, now, tick and comma are in compiled dictionary, then
     ARRAY uses the data address to access the nth byte;
     
     Note, DOES> is just one word and is no immediate.
-
-## Dismiss hack
-
-When the compilation of a word breaks, the LATEST are keepd in order 
-but HERE was advanced with references of words compiled, that junk 
-stays lost in heap. 
-
-To clean just copy HEAD to HERE at error or missing.
-
-With this dismiss hack, the HERE returns to previous value before 
-start the last compilation.
 
 ## internals
 
