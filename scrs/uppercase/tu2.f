@@ -1,46 +1,65 @@
 
 
- \ for stack debug
+ \ https://stackoverflow.com/questions/78708194/
+ \ logical-shift-right-without-dedicated-shift-instruction
 
- : && SP@ . DROP RP@ . DROP LATEST @ . DROP HEAP @ . DROP ;
+ : 2/   0 32 2 DO
+        OVER ISNEGATIVE AND IF 1 + THEN  
+        DUP + SWAP
+        DUP + SWAP
+        LOOP
+        OVER ISNEGATIVE AND IF 1 + THEN  
+        SWAP DROP
+        ;
 
- : PIPE LIT [ 32 32 + 32 + 32 + 4 - , ] EMIT ;
+ \ crude math
 
- : LINES SWAP 
-        %S
-        PIPE 
-        BEGIN  
-        DUP . @ . DROP 
-        CELL + OVER OVER < 
-        IF PIPE DROP DROP EXIT THEN
-        AGAIN ;
- 
- : DUMPS SWAP
-        BEGIN
-        DUP . @ . CR DROP 
-        CELL + 
-        OVER OVER <
-        = IF DROP DROP EXIT THEN
-        AGAIN ;
- 
- %S
+ : <  - 0< ;
 
- : %%S SP@ . @ . SP0 . CR LINES ; 
+ : > SWAP < ;
 
- %%S
+ : * DUP IF >R DUP R> 1 DO OVER + LOOP SWAP DROP THEN ;
 
- %S
+ \ SHOW HEXADECIMAL
 
- BYE
+ : 7 LIT [ 4 2 + 1 + , ] ; \ to escape : thru @
 
+ : 48 LIT [ 32 16 + , ] ;  \ to compare '0'
 
-\ : $S SP@ . SP0 . CR DUMPS ;
- 
-\ : %R RP@ RP0 LINES ;
+ : 57 LIT [ 48 10 + 1 - , ] ;  \ to compare '9' 
 
-\ : $R RP@ RP0 DUMPS ;
+ : HEX_NIBB
+        0fh AND 48 OR DUP 
+        57 > IF 7 + THEN  
+        EMIT
+        ;
 
-\ %S  $S
+ : HEX_BYTE
+        ffh AND 
+        DUP
+        2/ 2/ 2/ 2/
+        HEX_NIBB
+        HEX_NIBB
+        ;
+        
+ : HEX_WORD
+        DUP 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        HEX_BYTE
+        DUP
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        HEX_BYTE
+        DUP
+        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
+        HEX_BYTE
+        HEX_BYTE
+        ;
 
+ : . HEX_WORD ;
+
+ : ? @ . ;
 
 

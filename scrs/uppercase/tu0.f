@@ -1,120 +1,129 @@
- : VOID ;
+ : VOID  ; SEE 
 
- : ABORT VOID ; 
+ : ABORT VOID  ; SEE  
 
- : -1 U@ 0# ;
- : 0 -1 -1 NAND ;
+ : -1 U@ 0#  ; SEE 
+ : 0 -1 -1 NAND  ; SEE 
 
- : TRUE -1 ;
- : FALSE 0 ;
+ : TRUE -1  ; SEE 
+ : FALSE 0  ; SEE 
  
- : 1 -1 -1 + -1 NAND ;
- : 2 1 1 + ;
- : 3 2 1 + ;
- : 4 2 2 + ;
- : CELL 4 ;
+ : 1 -1 -1 + -1 NAND  ; SEE 
+ : 2 1 1 +  ; SEE 
+ : 3 2 1 +  ; SEE 
+ : 4 2 2 +  ; SEE 
+ : CELL 4  ; SEE 
  
- : SP U@ ;
- : RP SP CELL + ;
- : LATEST RP CELL + ;
- : HEAP LATEST CELL + ;
- : >IN HEAP CELL + ;
- : STATE >IN CELL + ;
+ : SP U@  ; SEE 
+ : RP SP CELL +  ; SEE 
+ : LATEST RP CELL +  ; SEE 
+ : HEAP LATEST CELL +  ; SEE 
+ : >IN HEAP CELL +  ; SEE 
+ : STATE >IN CELL +  ; SEE 
  
- : \ 0 >IN @ ! ; \ end-of-line comments
+ : \ 0 >IN @ !  ; SEE  \ end-of-line comments
 
- : HEAD STATE CELL + ;
- : TAIL HEAD CELL + ;
+ : HEAD STATE CELL +  ; SEE  \ used in compilation process preserve HERE
+ : TAIL HEAD CELL +  ; SEE   \ used in CREATE/DOES preserve common words 
 
- : SCHS TAIL CELL + ; \ start scratch area with 8 cells
+ : SCHS TAIL CELL +  ; SEE  \ start scratch area with 8 cells
 
  \ pointer relative offsets
 
- : RP@ RP @ CELL + ;
+ : RP@ RP @ CELL +  ; SEE 
  
- : SP@ SP @ CELL + ;
+ : SP@ SP @ CELL +  ; SEE 
  
- : RP! RP ! ; \ carefull
- : SP! SP ! ; \ carefull
+ : RP! RP !  ; SEE  \ carefull
+ : SP! SP !  ; SEE  \ carefull
 
- : DUP SP@ @ ;
- : OVER SP@ CELL + @ ;
- : SWAP OVER OVER SP@ CELL + CELL + CELL + ! SP@ CELL + ! ;
+ : DUP SP@ @  ; SEE 
+ : OVER SP@ CELL + @  ; SEE 
+ : SWAP OVER OVER SP@ CELL + CELL + CELL + ! SP@ CELL + !  ; SEE 
 
- : NOT DUP NAND ;
- : AND NAND NOT ;
- : OR NOT SWAP NOT AND NOT ;
- : NOR OR NOT ;
+ : NOT DUP NAND  ; SEE 
+ : AND NAND NOT  ; SEE 
+ : OR NOT SWAP NOT AND NOT  ; SEE 
+ : NOR OR NOT  ; SEE 
 
- : - NOT 1 + + ;
- : <> - 0# ;
- : = <> NOT ;
+ : - NOT 1 + +  ; SEE 
+ : <> - 0#  ; SEE 
+ : = <> NOT  ; SEE 
  
- : DROP DUP - + ;
- : NIP SWAP DROP ;
- : TUCK SWAP OVER ;
+ : DROP DUP - +  ; SEE 
+ : NIP SWAP DROP  ; SEE 
+ : TUCK SWAP OVER  ; SEE 
 
- : HERE HEAP @ ;
- : ALLOT HERE + HEAP ! ;
- : , HERE ! CELL ALLOT ;
+ : HERE HEAP @  ; SEE 
+ : ALLOT HERE + HEAP !  ; SEE 
+ : , HERE ! CELL ALLOT  ; SEE 
  
- : +! SWAP OVER @ + SWAP ! ;
+ : +! SWAP OVER @ + SWAP !  ; SEE 
 
- : >R RP@ @ SWAP RP@ ! RP@ CELL - RP ! RP@ ! ;
- : R> RP@ @ RP@ CELL + RP ! RP@ @ SWAP RP@ ! ;
- : R@ R> DUP >R ;
+ : >R RP@ @ SWAP RP@ ! RP@ CELL - RP ! RP@ !  ; SEE 
+ : R> RP@ @ RP@ CELL + RP ! RP@ @ SWAP RP@ !  ; SEE 
+ : R@ R> DUP >R  ; SEE 
 
- : EXECUTE >R ;
+ : EXECUTE >R  ; SEE 
 
- : BRANCH RP@ @ DUP @ + RP@ ! ;
- : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ;
+ : BRANCH RP@ @ DUP @ + RP@ !  ; SEE 
+ : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ !  ; SEE 
  
- : LIT RP@ @ DUP CELL + RP@ ! @ ;
- : ['] RP@ @ DUP CELL + RP@ ! @ ;
+ : LIT RP@ @ DUP CELL + RP@ ! @  ; SEE 
+ : ['] RP@ @ DUP CELL + RP@ ! @  ; SEE 
  
- : ROT >R SWAP R> SWAP ;
- : -ROT SWAP >R SWAP R> ;
+ : ROT >R SWAP R> SWAP  ; SEE 
+ : -ROT SWAP >R SWAP R>  ; SEE 
  
- : 2DUP OVER OVER ;
- : 2DROP DROP DROP ;
- : XOR 2DUP AND -ROT NOR NOR ;
- : XNOR XOR NOT ;
+ : 2DUP OVER OVER  ; SEE 
+ : 2DROP DROP DROP  ; SEE 
+ : XOR 2DUP AND -ROT NOR NOR  ; SEE 
+ : XNOR XOR NOT  ; SEE 
  
- : 2* DUP + ;
- : 2** 2* 2* 2* 2* 2* 2* 2* 2* ;
- : 80H 1 2* 2* 2* 2* 2* 2* 2* ;
- : ISNEGATIVE 80H 2** 2** 2** ;
- : IMMEDIATE LATEST @ CELL + DUP @ ISNEGATIVE OR SWAP ! ;
+ : 2* DUP +  ; SEE 
+ : 2** 2* 2* 2* 2* 2* 2* 2* 2*  ; SEE 
+ : 80H 1 2* 2* 2* 2* 2* 2* 2*  ; SEE 
+ : ISNEGATIVE 80H 2** 2** 2**  ; SEE 
+ : IMMEDIATE LATEST @ CELL + DUP @ ISNEGATIVE OR SWAP !  ; SEE 
  
- : ] 1 STATE ! ;
- : [ 0 STATE ! ; IMMEDIATE
+ : ] 1 STATE !  ; SEE 
+ : [ 0 STATE !  ; IMMEDIATE SEE
  
- : ISNEGATIVE LIT [ ISNEGATIVE , ] ;
+\ : SP0 LIT [ SP@ ]  ; SEE  
  
- : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE
- : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE
+\ SP0 .
+
+\ : RP0 LIT [ RP@ ]  ; SEE  
+
+\ RP0 .
+
+ : ISNEGATIVE LIT [ ISNEGATIVE , ]  ; SEE 
+ 
+ : IF ['] ?BRANCH , HERE 0 ,  ; IMMEDIATE SEE
+ : THEN DUP HERE SWAP - SWAP !  ; IMMEDIATE SEE
  : ELSE ['] BRANCH , HERE 0 , SWAP DUP 
-   HERE SWAP - SWAP ! ; IMMEDIATE
+   HERE SWAP - SWAP !  ; IMMEDIATE SEE
 
- : BEGIN HERE ; IMMEDIATE
- : AGAIN ['] BRANCH , HERE - , ; IMMEDIATE
- : UNTIL ['] ?BRANCH , HERE - , ; IMMEDIATE
- : WHILE ['] ?BRANCH , HERE 0 , ; IMMEDIATE
+ : BEGIN HERE  ; IMMEDIATE SEE
+ : AGAIN ['] BRANCH , HERE - ,  ; IMMEDIATE SEE
+ : UNTIL ['] ?BRANCH , HERE - ,  ; IMMEDIATE SEE
+ : WHILE ['] ?BRANCH , HERE 0 ,  ; IMMEDIATE SEE
  : REPEAT SWAP ['] BRANCH , HERE - , 
-   DUP HERE SWAP - SWAP ! ; IMMEDIATE
+   DUP HERE SWAP - SWAP !  ; IMMEDIATE SEE
  
- \ limit first DO ---
- : DO HERE ['] >R , ['] >R , ; IMMEDIATE
+ \ limit first DO --- LOOP
+
+ : DO HERE ['] >R , ['] >R ,  ; IMMEDIATE SEE
 
  : LOOP ['] R> , ['] R> , 
         ['] LIT , 1 , ['] + , 
         ['] 2DUP , ['] = , ['] ?BRANCH , 
         HERE - , 
-        ['] 2DROP , ; IMMEDIATE
+        ['] 2DROP ,  ; IMMEDIATE SEE
 
  : I ['] R> , ['] R> , 
         ['] DUP , ['] >R , 
-        ['] SWAP , ['] >R , ; IMMEDIATE
+        ['] SWAP , ['] >R ,  ; IMMEDIATE SEE
 
  : J ['] R> , ['] R> , 
      ['] R> , ['] R> , 
@@ -122,61 +131,62 @@
      ['] SWAP , ['] >R ,
      ['] SWAP , ['] >R ,
      ['] SWAP , ['] >R ,
-     ; IMMEDIATE
+      ; IMMEDIATE SEE
 
  : LEAVE ['] R> , ['] DROP ,
          ['] R> , ['] DROP ,
-         ['] EXIT , ; IMMEDIATE
+         ['] EXIT ,  ; IMMEDIATE SEE
 
- : ?DUP DUP IF DUP THEN ;
+ : ?DUP DUP IF DUP THEN  ; SEE 
 
- : CELL LIT [ 4 , ] ;
- : CELLS DUP IF 0 SWAP 0 DO CELL + LOOP THEN ;
+ : CELL LIT [ 4 , ]  ; SEE 
+ : CELLS DUP IF 0 SWAP 0 DO CELL + LOOP THEN  ; SEE 
 
- : 8 LIT [ 4 4 + , ] ;
- : 16 LIT [ 8 8 + , ] ;
- : 32 LIT [ 16 16 + , ] ;
+ : 8 LIT [ 4 4 + , ]  ; SEE 
+ : 16 LIT [ 8 8 + , ]  ; SEE 
+ : 32 LIT [ 16 16 + , ]  ; SEE 
  
- : BL LIT [ 16 16 + , ] ;
- : CR LIT [ 8 2 + , ] EMIT ;
- : NL LIT [ 8 4 + 1 + , ] EMIT ;
- : SPACE BL EMIT ;
- : SPACES 0 DO SPACE LOOP ;
+ : BL LIT [ 16 16 + , ]  ; SEE 
+ : CR LIT [ 8 2 + , ] EMIT  ; SEE 
+ : NL LIT [ 8 4 + 1 + , ] EMIT  ; SEE 
+ : SPACE BL EMIT  ; SEE 
+ : SPACES 0 DO SPACE LOOP  ; SEE 
 
- : 0= 0# NOT ;
- : 0< ISNEGATIVE AND 0# ;
+ : 0= 0# NOT  ; SEE 
+ : 0< ISNEGATIVE AND 0#  ; SEE 
  : 0> DUP 
    0= IF DROP FALSE EXIT THEN 
    0< IF FALSE EXIT THEN
-   TRUE ;
+   TRUE  ; SEE 
 
- : 0fh LIT [ 16 1 - , ] ;
- : ffh LIT [ 0fh 2* 2* 2* 2* 0fh OR , ] ;
+ : 0fh LIT [ 16 1 - , ]  ; SEE 
+ : ffh LIT [ 0fh 2* 2* 2* 2* 0fh OR , ]  ; SEE 
 
- : C@ @ ffh AND ;
- : C! DUP @ ffh NOT AND ROT ffh AND OR SWAP ! ;
- : C, HERE C! 1 ALLOT ;
+ : C@ @ ffh AND  ; SEE 
+ : C! DUP @ ffh NOT AND ROT ffh AND OR SWAP !  ; SEE 
+ : C, HERE C! 1 ALLOT  ; SEE 
 
- : ALIGN 3 + TRUE 3 - AND ; \ 32-bit align for strings
+ : ALIGN 3 + TRUE 3 - AND  ; SEE  \ 32-bit align for strings
  
- : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP ;
- : IN> >IN @ C@ >IN @ 1 + >IN ! ;
+ : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP  ; SEE 
+ : IN> >IN @ C@ >IN @ 1 + >IN !  ; SEE 
 
  : PARSE IN> DROP 
    >IN @ SWAP 0 
    BEGIN OVER IN> <> WHILE 1 + REPEAT 
-   SWAP BL = IF >IN @ 1 - >IN ! THEN ;
+   SWAP BL = IF >IN @ 1 - >IN ! THEN  ; SEE 
 
  : WORD IN> DROP 
    BEGIN DUP IN> <> UNTIL 
-   >IN @ 2 - >IN ! PARSE ;
- : [CHAR] ['] LIT , BL WORD DROP C@ , ; IMMEDIATE
+   >IN @ 2 - >IN ! PARSE  ; SEE 
+ : [CHAR] ['] LIT , BL WORD DROP C@ ,  ; IMMEDIATE SEE
  
- : ( [CHAR] ) PARSE DROP DROP ; IMMEDIATE
- : ." [CHAR] " PARSE TYPE ; IMMEDIATE
+ : ( [CHAR] ) PARSE DROP DROP  ; IMMEDIATE SEE
+ : ." [CHAR] " PARSE TYPE  ; IMMEDIATE SEE
+
+ \ TEST MINIMAL
 
  ." HELLO WORLD " CR
  
  ." THAT'S ALL FOLKS !" CR
-
 

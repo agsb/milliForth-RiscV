@@ -1,65 +1,49 @@
 
+ \ (stub)
 
- \ https://stackoverflow.com/questions/78708194/
- \ logical-shift-right-without-dedicated-shift-instruction
-
- : 2/   0 32 2 DO
-        OVER ISNEGATIVE AND IF 1 + THEN  
-        DUP + SWAP
-        DUP + SWAP
-        LOOP
-        OVER ISNEGATIVE AND IF 1 + THEN  
-        SWAP DROP
+ \ for stack debug
+ 
+ : SEE  
+        HASH FIND IF DUP
+        BEGIN
+        OVER OVER @ = IF DROP DROP EXIT THEN
+        DUP . @ . DROP CR CELL +
+        AGAIN
+        THEN
         ;
 
- \ crude math
+ : && SP@ . DROP RP@ . DROP LATEST @ . DROP HEAP @ . DROP ;
 
- : <  - 0< ;
+ : PIPE LIT [ 32 32 + 32 + 32 + 4 - , ] EMIT ;
 
- : > SWAP < ;
+ : LINES SWAP 
+        %S
+        PIPE 
+        BEGIN  
+        DUP . @ . DROP 
+        CELL + OVER OVER < 
+        IF PIPE DROP DROP EXIT THEN
+        AGAIN ;
+ 
+ : DUMPS SWAP
+        BEGIN
+        DUP . @ . CR DROP 
+        CELL + 
+        OVER OVER <
+        = IF DROP DROP EXIT THEN
+        AGAIN ;
+ 
+ : %%S SP@ . @ . SP0 . CR LINES ; 
 
- : * DUP IF >R DUP R> 1 DO OVER + LOOP SWAP DROP THEN ;
+ BYE
 
- \ SHOW HEXADECIMAL
+\ : $S SP@ . SP0 . CR DUMPS ;
+ 
+\ : %R RP@ RP0 LINES ;
 
- : 7 LIT [ 4 2 + 1 + , ] ; \ to escape : thru @
+\ : $R RP@ RP0 DUMPS ;
 
- : 48 LIT [ 32 16 + , ] ;  \ to compare '0'
+\ %S  $S
 
- : 57 LIT [ 48 10 + 1 - , ] ;  \ to compare '9' 
-
- : HEX_NIBB
-        0fh AND 48 OR DUP 
-        57 > IF 7 + THEN  
-        EMIT
-        ;
-
- : HEX_BYTE
-        ffh AND 
-        DUP
-        2/ 2/ 2/ 2/
-        HEX_NIBB
-        HEX_NIBB
-        ;
-        
- : HEX_WORD
-        DUP 
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        HEX_BYTE
-        DUP
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        HEX_BYTE
-        DUP
-        2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ 
-        HEX_BYTE
-        HEX_BYTE
-        ;
-
- : . HEX_WORD ;
-
- : ? @ . ;
 
 

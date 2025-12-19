@@ -48,6 +48,7 @@
 
 .equ  hash_DUMP, 0x7C6B2FE9 
 .equ  hash_WORDS, 0x0B6953F8 
+.equ  hash_WORDS, 0x0D9A5B98 
 .equ  hash_SEE, 0x0B881316 
 .equ  hash_CELL, 0x7C70B163 
 

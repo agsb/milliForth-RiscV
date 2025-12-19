@@ -27,15 +27,6 @@
 
  : POSTPONE ' , ; IMMEDIATE 
 
- : SEE  
-        HASH FIND IF DUP
-        BEGIN
-        OVER OVER @ = IF DROP DROP EXIT THEN
-        DUP . @ . DROP CR CELL +
-        AGAIN
-        THEN
-        ;
-
  \ from eforth, first EXIT is reserved for DOES> 
 
  : CREATE 
@@ -70,17 +61,17 @@
 
  0 CONSTANT CASE IMMEDIATE
  
+ : ENDCASE POSTPONE DROP
+    DUP 0 = IF DROP EXIT THEN
+    0 DO POSTPONE THEN LOOP
+    ; IMMEDIATE
+
  : OF 1 + >R
     POSTPONE OVER POSTPONE =
     POSTPONE IF POSTPONE DROP
     R> ; IMMEDIATE
 
  : ENDOF POSTPONE ELSE ; IMMEDIATE
-
- : ENDCASE POSTPONE DROP
-    DUP 0 = IF DROP EXIT THEN
-    0 DO POSTPONE THEN LOOP
-    ; IMMEDIATE
 
  \ use as: TO 
 
@@ -110,4 +101,5 @@
         IF POSTPONE ['] POSTPONE DEFER@
         ELSE ' DEFER@
         THEN ; IMMEDIATE
+
 

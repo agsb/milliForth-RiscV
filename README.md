@@ -4,11 +4,12 @@
 
 started at 23/07/2025, agsb@
 first version at 12/10/2025, @agsb
+minimal dictionary compiled words at 04/12/2025, @agsb
 
 vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) 
 and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
 
-This is an implementation of milliForth (sector-forth) concept for RISCV ISA.
+This is an implementation of MilliForth (sector-forth) concept for RISCV ISA.
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
@@ -16,7 +17,7 @@ This version with minimal code (.text) uses only 532 bytes,
     472 bytes of Forth engine and 60 bytes of linux system I/O, 
     not counting ELF headers. Used 48 bytes to load fixed address. 
 
-Could add some bytes for extras words, 2/ NAN ;CODE
+Could add some bytes for extras words as 2/ NAN ;CODE
 
 No human WORDS. It uses DJB2 hashes in headers, 
     instead of size+flags+name+pads. 
@@ -25,7 +26,7 @@ Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN.
 
 ## For Size
 
-How shink to a minimal compiled size ?
+How shink to a minimal compiled size in a Risc-V ?
 
     1. do not need align, the size of opcodes is always 2 or 4 bytes;
 
@@ -40,13 +41,13 @@ How shink to a minimal compiled size ?
     The sector-riscv.S is working, also the extra-milliforth.S,
     could test by:
 
-    **cat t0.f | sh doit.sh | tee t0.x**
+    **cat t0.f t1.f t2.f | sh doit.sh | tee output**
 
     t0.f is a minimal set of words, same as test0-riscv.f;
 
-    t1.f is a complemente with hash and more words; (_STUB_)
+    t1.f is a complemente with hash and more words; 
 
-    t4.f is a complement with BrainFu*ck interpreter; (_STUB_)
+    t4.f is a complement with BrainFu*ck interpreter; 
 
     Could test by:
 
@@ -54,7 +55,7 @@ How shink to a minimal compiled size ?
 
     cat t0.f t1.f | sh doit.sh | tee z2
 
-    t1.f tries about <builds create variable constant does> (_STUB_)
+    t1.f includes <builds create variable constant does> (_STUB_)
     
     PS. 
 
@@ -62,7 +63,7 @@ How shink to a minimal compiled size ?
 
     All words in lowercase, maybe later could change to uppercase.
         
-        ** now a uppercase version is done **
+    ** Now a uppercase version is done, use it **
 
     The memory management is done by extend the dictionary 
         into .bss, by reserve .skip bytes, defaults to 64k * 4
@@ -92,7 +93,7 @@ the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit
 or 
     [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
 
-The milliForth is a program called by 'elsewhere alien operational system', 
+The milliForth is a ELF program called by 'elsewhere alien operational system', 
 and use registers r0, ra, sp, s0, s1, a0-a7, t0-t1. 
 
 ## Coding
@@ -129,30 +130,32 @@ using a extra STATE and a flag for precedence.
 | during compilation | 1 | compile | execute | execute |
 | after IMMEDIATE | 2 | compile | compile | execute |
 
+Always compile is what POSTPONE does.
+
 In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, 
 
-By the way, now, tick and comma are in compiled dictionary, then
+By the way, tick and comma are in compiled dictionary.
 
-        Postpone is : POSTPONE ' , ; \ classics 
+The postpone is : POSTPONE ' , ; ( classics )
 
 ## Colon and Semis
 
-    The colon **:** makes a header by:
+The colon **:** makes a header by:
         1. copy HERE to HEAD
         2. copy LATEST to first cell;
         3. calculate the djb2 hash of the next word on TIB;
         4. copy hash to second cell;
         5. change STATE to compile (1);
 
-    In compile state, all non immediate words are compiled, 
+In compile state, all non immediate words are compiled, 
         and the immediate words are executed. 
     
-    The semis **;** ends the word by:
+The semis **;** ends the word by:
         1. place a 'EXIT into last cell
         2. copy HEAD to LATEST
         3. change STATE to execute (0);
 
-    if the compilation is interrupted, STATE and LATEST keeps 
+if the compilation is interrupted, STATE and LATEST keeps 
         untouched, but some junk was placed and stays into dictionary.
         Could clean that with more some code.
 
@@ -171,20 +174,20 @@ start the last compilation.
 
     (from eforth ideas)
 
-    CREATE place the data address in stack and compiles two EXIT, 
+CREATE place the data address in stack and compiles two EXIT, 
         the address of the first is saved at Forth variable TAIL, 
         the data address is the cell after second EXIT;
 
-    DOES> uses the address in TAIL to save the complile address of 
+DOES> uses the address in TAIL to save the complile address of 
         what follows DOES>;
 
-    VARIABLE uses the data address to access a cell;
+VARIABLE uses the data address to access a cell;
     
-    CONSTANT uses the data address to access a value;
+CONSTANT uses the data address to access a value;
     
-    ARRAY uses the data address to access the nth byte;
+ARRAY uses the data address to access the nth byte;
     
-    Note, DOES> is just one word and is no immediate.
+Note, DOES> is just one word and is no immediate.
 
 ## internals
 
@@ -194,10 +197,10 @@ This version uses DJB2 hash for dictionary entries, and includes:
 primitives:
 
     u@    return the address of user structure
-    0#    if top of data stack is not zero returns -1
+    0#    if top of data stack is not zero returns -1 (0xFFFFFFFF)
 
     +     adds two values at top of data stack
-    nand  logic not and the two values at top of data stack
+    nand  logic not-and the two values at top of data stack
     
     @     fetch a value of cell wich address at top of data stack
     !     store a value into a cell wich address at top of data stack
@@ -212,10 +215,9 @@ primitives:
         
 only internals: 
     
-    main, cold, warm, quit, djb2, 
+    main, cold, warm, quit, hash, djb2, 
     token, skip, scan, gets, 
     tick, find, compile, execute, comma,  
-
     unnest, next, nest, pick, jump, 
 
     ps. exit is unnest, nest is enter/docol,
@@ -224,7 +226,6 @@ only internals:
 with externals:
 
     _getc, _putc, _exit, _init, 
-    _sbrk, _fcntl (both still not used)
 
 extras: (selectable)
 
@@ -234,14 +235,14 @@ extras: (selectable)
 
     abort   restart the Forth
     bye     ends the Forth, return to system
-    beats   counts words executed by next
+    beat   counts words executed by next
 
     .       show a copy of the cell at top of data stack, 
     .S      list cells in data stack
     .R      list cells in return stack
     words   list all compiled words in dictionary order
     dump    list contents of dictionary in memory order
-    see     list compiled contents of last word
+    see     list compiled hash contents of last word 
     cell    sizeof a cell, 4 bytes, 32-bits
 
 A my_hello_world.FORTH alternate version with dictionary for use;
