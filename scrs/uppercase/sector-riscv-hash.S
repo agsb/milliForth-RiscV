@@ -56,6 +56,7 @@
 #include "defines.S"
 
 #---------------------------------------------------------------------
+# flags for compiler options
 
  .equ debug, YES
 
@@ -103,14 +104,17 @@ h_\label:
 
 # This is it
 
+_flag:
+.word 0x0
+
 _beat:
-.word 0x0000
+.word 0x0
 
 _user:
-# user parameter offsets
+# user parameter offsets, vide defines.S
 .skip 8 * CELL
 
-# reserved locals 
+# reserved locals, could be used as registers 
 _locals:
 .skip 8 * CELL
 
@@ -149,6 +153,7 @@ h_ends:
 
 #----------------------------------------------------------------------
 .globl _start
+
 #.p2align 4, 0x00
 
 _start:
@@ -764,9 +769,11 @@ next:
 
 # count beats
 .ifdef beats
-        lw idx, -4 (usr)
+        lw idx, BEAT (usr)
+
         addi idx, idx, 1
-        sw idx, -4 (usr)
+        
+        sw idx, BEAT (usr)
 .endif
 
         lw fst, 0 (ipt)

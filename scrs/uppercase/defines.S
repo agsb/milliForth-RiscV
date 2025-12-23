@@ -97,6 +97,10 @@
 
 #---------------------------------------------------------------------
 # user structure of internal Forth variables
+# the order must be preserved, same in source. 
+
+# counter of words
+.equ BEAT, -1 * CELL
 
 # data stack index
 .equ SPTR, 0 * CELL

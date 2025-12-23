@@ -87,7 +87,7 @@ def_word "NAN", "nan", hash_NAN, h_sfr
 # ( -- ) push beats
 def_word "BEATS", "beats", hash_BEATS, h_nan
         
-        lw fst, -4 (usr)
+        lw fst, BEAT (usr)
 
         j push1
 
