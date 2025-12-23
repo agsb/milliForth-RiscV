@@ -1,32 +1,32 @@
   
  \ use as: TO  
   
- : VALUE CREATE , DOES> @ ;  
+ : VALUE CREATE , DOES> @ ; SEE  
   
  : TO  
      ' >BODY  
      STATE @  
      IF ' LIT , , ' ! ,  ELSE !  
-     THEN ;  
+     THEN ; SEE  
   
  \ common standart 2012  
  \ http://www.forth200x.org/deferred.fs  
   
- : DEFER CREATE ['] ABORT , DOES> @ EXECUTE ;  
+ : DEFER CREATE ['] ABORT , DOES> @ EXECUTE ; SEE  
   
- : DEFER@ >BODY @ ;  
+ : DEFER@ >BODY @ ; SEE  
   
- : DEFER! >BODY ! ;  
+ : DEFER! >BODY ! ; SEE  
   
  : IS STATE @  
         IF POSTPONE ['] POSTPONE DEFER!  
         ELSE ' DEFER!  
-        THEN ; IMMEDIATE  
+        THEN ; IMMEDIATE SEE  
   
  : ACTION-OF STATE @  
         IF POSTPONE ['] POSTPONE DEFER@  
         ELSE ' DEFER@  
-        THEN ; IMMEDIATE  
+        THEN ; IMMEDIATE SEE  
   
  \ based on reference standart, without ?DO  
   
@@ -35,13 +35,13 @@
  : ENDCASE POSTPONE DROP  
         DUP 0 = IF DROP EXIT THEN  
         0 DO POSTPONE THEN LOOP  
-        ; IMMEDIATE  
+        ; IMMEDIATE SEE  
   
  : OF 1 + >R  
         POSTPONE OVER POSTPONE =  
         POSTPONE IF POSTPONE DROP  
-        R> ; IMMEDIATE  
+        R> ; IMMEDIATE SEE  
   
- : ENDOF POSTPONE ELSE ; IMMEDIATE  
+ : ENDOF POSTPONE ELSE ; IMMEDIATE SEE  
   
 

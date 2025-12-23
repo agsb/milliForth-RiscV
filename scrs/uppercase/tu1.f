@@ -25,7 +25,7 @@
  
  : ' HASH FIND IF CELL + CELL + THEN ; 
 
- : POSTPONE ' , ; IMMEDIATE 
+ : POSTPONE ' , ; IMMEDIATE  
 
  \ from eforth, first EXIT is reserved for DOES> 
 
@@ -51,55 +51,4 @@
  : CONSTANT CREATE , DOES> @ ;
  
  : ARRAY CREATE ALLOT DOES> + @ ;
-
- \ wise
-
- SP@ , CONSTANT SP0
- RP@ , CONSTANT RP0
-
- \ based on reference standart, without ?DO
-
- 0 CONSTANT CASE IMMEDIATE
- 
- : ENDCASE POSTPONE DROP
-    DUP 0 = IF DROP EXIT THEN
-    0 DO POSTPONE THEN LOOP
-    ; IMMEDIATE
-
- : OF 1 + >R
-    POSTPONE OVER POSTPONE =
-    POSTPONE IF POSTPONE DROP
-    R> ; IMMEDIATE
-
- : ENDOF POSTPONE ELSE ; IMMEDIATE
-
- \ use as: TO 
-
- : VALUE CREATE , DOES> @ ;
-
- : TO 
-     ' >BODY
-     STATE @ 
-     IF ' LIT , , ' ! ,  ELSE !
-     THEN ; 
-
- \ common standart 2012
- \ http://www.forth200x.org/deferred.fs
-
- : DEFER CREATE ['] ABORT , DOES> @ EXECUTE ;
-
- : DEFER@ >BODY @ ;
-
- : DEFER! >BODY ! ;
-
- : IS STATE @ 
-        IF POSTPONE ['] POSTPONE DEFER!
-        ELSE ' DEFER!
-        THEN ; IMMEDIATE
-
- : ACTION-OF STATE @
-        IF POSTPONE ['] POSTPONE DEFER@
-        ELSE ' DEFER@
-        THEN ; IMMEDIATE
-
 

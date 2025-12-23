@@ -3,7 +3,7 @@
 
  \ for stack debug
  
- : SEE  
+ : SEES  
         HASH FIND IF DUP
         BEGIN
         OVER OVER @ = IF DROP DROP EXIT THEN
@@ -35,7 +35,7 @@
  
  : %%S SP@ . @ . SP0 . CR LINES ; 
 
- BYE
+\ BYE
 
 \ : $S SP@ . SP0 . CR DUMPS ;
  
