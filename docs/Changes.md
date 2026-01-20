@@ -22,9 +22,11 @@
         
         ;CODE to native jump to native code at an address 
 
+        NAN, number $80000000, flag negative, flag IMMEDIATE
+
         2/ normal shift right 
 
-        NAN, number $80000000, flag negative, flag IMMEDIATE
+        2* normal shift left
 
         BYE to end the Forth unconditionaly
 
@@ -32,7 +34,10 @@
 
         BEAT to count words executed in inner interpreter
 
-        2* normal shift left
+20/01/2025
+
+    Change ." to only be compiled as in ANSI and TalyForth
+    WIP
 
 ## Done
 
