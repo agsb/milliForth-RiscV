@@ -87,7 +87,7 @@
 
 .equ picz, 64+4 
 
-# highlander, immediate flag, unique 
+# highlander, immediate flag, unique NaN 
 
 # -2147483648
 .equ FLAG_IMM, 0x80000000
@@ -96,11 +96,15 @@
 .equ MASK_IMM, 0x7FFFFFFF
 
 #---------------------------------------------------------------------
-# user structure of internal Forth variables
 # the order must be preserved, same in source. 
 
-# counter of words
+# forth flag, keep it above user structure
+.equ FLAG, -2 * CELL
+
+# counter of words, keep it above user structure
 .equ BEAT, -1 * CELL
+
+# user structure of internal Forth variables
 
 # data stack index
 .equ SPTR, 0 * CELL

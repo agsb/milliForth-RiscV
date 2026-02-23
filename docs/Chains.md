@@ -49,9 +49,12 @@ _this file is still a stub_
 for _shift right_ look for
 https://stackoverflow.com/questions/78708194/logical-shift-right-without-dedicated-shift-instruction
 
-### the extensions
+### the extensions (updated)
         
         2/      ( w -- w>>1 )   shift right one bit
+        2*      ( w -- w<<1 )   shift left one bit
+        nan     ( w -- $80 )    places -1 at top of stack
+        beat    ( -- beats )    counts beats of inner loop
         exec    ( a -- )        execute the address at top of stack
         bye     ( -- )          ends the Forth
 

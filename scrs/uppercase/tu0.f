@@ -125,13 +125,13 @@
         ['] DUP , ['] >R , 
         ['] SWAP , ['] >R ,  ; IMMEDIATE SEE
 
- : J ['] R> , ['] R> , 
-     ['] R> , ['] R> , 
-     ['] DUP , ['] >R ,
-     ['] SWAP , ['] >R ,
-     ['] SWAP , ['] >R ,
-     ['] SWAP , ['] >R ,
-      ; IMMEDIATE SEE
+ \ : J ['] R> , ['] R> , 
+ \    ['] R> , ['] R> , 
+ \    ['] DUP , ['] >R ,
+ \    ['] SWAP , ['] >R ,
+ \    ['] SWAP , ['] >R ,
+ \    ['] SWAP , ['] >R ,
+ \     ; IMMEDIATE SEE
 
  : LEAVE ['] R> , ['] DROP ,
          ['] R> , ['] DROP ,
