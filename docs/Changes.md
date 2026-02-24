@@ -41,6 +41,30 @@
 
 ## Done
 
+24/02/2026
+
+    size: $210 no extras, $87C with extras
+
+    Included the address of TIB as _user parameter, 
+    to allow input source changes, like SOURCE. 
+    It costs more 4 bytes.
+
+23/02/2026
+
+    Extended primitives, tos is top of stack:
+
+        2*      shift left one bit
+        2/      shift right one bit
+        NaN     place $80000000 on tos
+        exec    execute the word the tos
+        ;code   jump to address at tos
+        abort   clear stacks and tib,
+        bye     ends forth
+        beat    place beat count on tos
+
+    beat is a counter incremented up in each inner loop execution, 
+        selected at compilation
+
 24/10/2025
 
     Adopt $80000000 as NaN (Not-a-Number) to represent errors.
@@ -58,7 +82,7 @@
 
     PS. 
         HEAD is necessary because there is no SMUGDE/INVISIBLE flag.
-        TAIL is necessary to have a for address of DOES> sequence.
+        TAIL is necessary to have a address for DOES> sequence.
 
 20/10/2025
     

@@ -60,6 +60,8 @@
 
  .equ debug, YES
 
+ .equ linedit, YES
+
  .equ dismiss, YES
 
  .equ beatme, YES
@@ -102,7 +104,7 @@ h_\label:
 .section .bss
 .p2align 2, 0x0
 
-# This is it
+# This is it, crude alloc over user parameter stack
 
 _flag:
 .word 0x0
@@ -112,11 +114,11 @@ _beat:
 
 _user:
 # user parameter offsets, vide defines.S
-.skip 8 * CELL
+.skip PARAMS * CELL
 
 # reserved locals, could be used as registers 
 _locals:
-.skip 8 * CELL
+.skip LOCALS * CELL
 
 # data stack grows backward
 _spb:       # bottom 
@@ -193,6 +195,9 @@ reset:
 
         la fst, _tib
         sw fst, TOIN (usr)
+
+# allow access of tib
+        sw fst, SRCS (usr)
 
 #---------------------------------------------------------------------
 # xxx
@@ -400,7 +405,7 @@ token:
 # the _getc handle EOF
 gets:
   
-        la idx, _tib
+        lw idx, SRCS (usr)
         
         sw idx, TOIN (usr)
 
@@ -428,7 +433,7 @@ gets:
 
         # call _putc
 
-.ifdef debug
+.ifdef linedit
 
 # cast to 7-bit standart ascii only
 
@@ -442,11 +447,11 @@ gets:
         addi t0, zero, 24
         beq fst, t0, gets
 
-# allow \n
+# allow \n ^J
         addi t0, zero, 10
         beq fst, t0, 500f
 
-# allow \r 
+# allow \r ^M
         addi t0, zero, 13
         beq fst, t0, 500f
 
@@ -480,6 +485,7 @@ gets:
 # hsh returns the hash 
 # idx returns next space after
 #---------------------------------------------------------------------
+# magic numbers
 .equ DJB2, 5381
 .equ SFHT, 5
 #---------------------------------------------------------------------

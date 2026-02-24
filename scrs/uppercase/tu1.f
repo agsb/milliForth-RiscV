@@ -5,15 +5,15 @@
 
  \ for compilation 
 
- : :NAME HERE : 0 STATE ! ; \ make a header
+ : :NAME HERE : 0 STATE ! ;  \ make a header
 
- : :NONAME HERE 1 STATE ! ; \ make a body
+ : :NONAME HERE 1 STATE ! ;  \ make a body
 
- : LINK>HASH CELL + ;
+ : LINK>HASH CELL + ; 
 
- : LINK>BODY CELL + CELL + ;
+ : LINK>BODY CELL + CELL + ; 
 
- : HASH :NAME DUP HEAP ! CELL + @ ;
+ : HASH :NAME DUP HEAP ! CELL + @ ; 
 
  : FIND LATEST @ BEGIN
         OVER OVER CELL + @
@@ -21,11 +21,11 @@
         = IF SWAP DROP TRUE EXIT THEN
         @ DUP 
         0 = IF SWAP DROP FALSE EXIT THEN
-        AGAIN ;
+        AGAIN ; 
  
- : ' HASH FIND IF CELL + CELL + THEN ; 
+ : ' HASH FIND IF CELL + CELL + THEN ;  
 
- : POSTPONE ' , ; IMMEDIATE  
+ : POSTPONE ' , ;  IMMEDIATE  
 
  \ from eforth, first EXIT is reserved for DOES> 
 
@@ -36,19 +36,19 @@
    HERE TAIL ! 
    ['] EXIT , 
    ['] EXIT , 
-   LATEST ! ;
+   LATEST ! ; 
 
- : >BODY CELL + @ ;
+ : >BODY CELL + @ ; 
 
- : <BUILDS CREATE 0 , ;
+ : <BUILDS CREATE 0 , ; 
 
- : VARIABLE CREATE CELL ALLOT ;
+ : VARIABLE CREATE CELL ALLOT ; 
 
- : BUFFER CREATE ALLOT ;
+ : BUFFER CREATE ALLOT ; 
 
- : DOES> R> TAIL @ ! ;
+ : DOES> R> TAIL @ ! ; 
 
- : CONSTANT CREATE , DOES> @ ;
+ : CONSTANT CREATE , DOES> @ ; 
  
- : ARRAY CREATE ALLOT DOES> + @ ;
+ : ARRAY CREATE ALLOT DOES> + @ ; 
 

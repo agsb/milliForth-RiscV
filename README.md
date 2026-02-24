@@ -13,11 +13,12 @@ This is an implementation of MilliForth (sector-forth) concept for RISCV ISA.
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
-This version with minimal code (.text) uses only 532 bytes, 
-    472 bytes of Forth engine and 60 bytes of linux system I/O, 
+This version with minimal code (.text) uses only 528 bytes, 
+    468 bytes of Forth engine and 60 bytes of linux system I/O, 
     not counting ELF headers. Used 48 bytes to load fixed address. 
 
-Could add some bytes for extras words as 2/ NAN ;CODE
+
+Could add some bytes for extras words as 2/ 2* NAN ;CODE ABORT BYE
 
 No human WORDS. It uses DJB2 hashes in headers, 
     instead of size+flags+name+pads. 

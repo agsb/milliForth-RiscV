@@ -124,11 +124,21 @@
 # state flag
 .equ STAT, 5 * CELL
 
+# terminal (source) input buffer
+.equ SRCS, 6 * CELL
+
 # heap forward
-.equ HEAD, 6 * CELL
+.equ HEAD, 7 * CELL
 
 # heap backward
-.equ TAIL, 7 * CELL
+.equ TAIL, 8 * CELL
+
+#---------------------------------------------------------------------
+# reserve for above 
+
+.equ PARAMS, 12
+
+.equ LOCALS, 8
 
 #---------------------------------------------------------------------
 # primitives djb2 hash cleared of bit 31
