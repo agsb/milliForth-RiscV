@@ -36,8 +36,6 @@
 
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
-    Riscv does not have automatic hidden SP push/pull
-
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary will continue at end of .bss.
 
@@ -50,8 +48,9 @@
 # using pre-processor CPP (GNU GCC)
 # for alias register names 
 # beware about changes
-# a3, a0, a1, a2, a7 are used by ecalls in _putc and _getc
+# a0, a1, a2, a3, a7 are used by ecalls in _putc and _getc
 # a4, a5, a6 are generics
+#---------------------------------------------------------------------
 
 #include "defines.S"
 
@@ -61,6 +60,8 @@
  .equ debug, YES
 
  .equ linedit, YES
+
+ # .equ uppercase, YES
 
  .equ dismiss, YES
 
@@ -79,6 +80,7 @@ h_\label:
 .endm
 
 #---------------------------------------------------------------------
+# Riscv does not have automatic hidden SP push/pull
 # for deep, more than one, nested calls, use callee
 #
 .global pushra
@@ -94,29 +96,24 @@ h_\label:
 .endm
 
 #----------------------------------------------------------------------
+# Nothing here, void.
 .section .data
 .p2align 2, 0x0
 
 # There is no spoon.
 
 #----------------------------------------------------------------------
-# always in RAM :)
+# but always in RAM :)
 .section .bss
 .p2align 2, 0x0
 
 # This is it, crude alloc over user parameter stack
 
-_flag:
-.word 0x0
-
-_beat:
-.word 0x0
-
 _user:
 # user parameter offsets, vide defines.S
 .skip PARAMS * CELL
 
-# reserved locals, could be used as registers 
+# reserved locals, NOT recursive, vide defines.S
 _locals:
 .skip LOCALS * CELL
 
@@ -163,11 +160,8 @@ _start:
 #----------------------------------------------------------------------
 # do any system inits
 main:
-# just for sake
 
-/*
-        call _init
-*/
+# call _init
 
 #----------------------------------------------------------------------
 # do what need be only once
@@ -196,7 +190,7 @@ reset:
         la fst, _tib
         sw fst, TOIN (usr)
 
-# allow access of tib
+# allow access of tib, preserve it
         sw fst, TIBS (usr)
 
 #---------------------------------------------------------------------
@@ -344,10 +338,10 @@ immediate:
 
 miss:
 
-# wipe remains compiled
+# wipe remains of incomplete compiled
 
         putchar '\n'
-# wrd is BL
+# trd is BL
 100:
         lb fst, 0 (idx)
         call _putc 
@@ -423,7 +417,7 @@ gets:
         
         addi idx, idx, ONE
 
-# get next char, wipes a0, a1, a2, a7, returns a3
+# get next char, wipes a0, a1, a2, a7, returns a3 (fst)
 
 400:
 
@@ -439,9 +433,40 @@ gets:
 
         andi fst, fst, 127
 
-# allow no controls
-        addi t0, zero, ' '
-        bge fst, t0, 300b
+.ifdef uppercase
+        # 'a'
+        addi t0, zero, 97       
+        blt fst, t0, 800
+
+        # 'z'
+        addi t0, zero, 122      
+        blt t0, fst, 800
+
+        # clear the 6th bit
+        # '_'
+        andi fst, fst, 95     
+.endif
+
+800:
+# allow no-controls
+        # ' '
+        addi t0, zero, 31       
+        blt t0, fst, 300b
+
+# allow backspace ^8
+        addi t0, zero, 8
+        bne fst, t0, 900f
+        addi idx, idx, -1 * TWO
+        j 400b
+
+900:        
+# allow \r ^M carriage return
+        addi t0, zero, 13
+        beq fst, t0, 500f
+
+# allow \n ^J line feed
+        addi t0, zero, 10
+        beq fst, t0, 500f
 
 # allow cancel ^U
         addi t0, zero, 21
@@ -451,20 +476,12 @@ gets:
         addi t0, zero, 24
         beq fst, t0, gets
 
-# allow \n ^J
-        addi t0, zero, 10
-        beq fst, t0, 500f
-
-# allow \r ^M
-        addi t0, zero, 13
-        beq fst, t0, 500f
-
 # anything wipes
         j 400b
 
 .endif
 
-# \n ^J ends the line
+# \n ends the line
 
         bne fst, snd, 300b
 
@@ -863,6 +880,7 @@ tickpt:
 
 #---------------------------------------------------------------------
 # Beware, ends must be at last word in primitive ditionary !
+# it is used to know if a 'address' is primitive or not
 #---------------------------------------------------------------------
 
 ends:

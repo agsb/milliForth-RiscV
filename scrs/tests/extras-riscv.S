@@ -1,1 +1,0 @@
-extras-riscv-hash.S

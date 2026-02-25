@@ -46,7 +46,7 @@ How shink to a minimal compiled size in a Risc-V ?
 
     t0.f is a minimal set of words, same as test0-riscv.f;
 
-    t1.f is a complemente with hash and more words; 
+    t1.f is a complement with hash and more words; 
 
     t4.f is a complement with BrainFu*ck interpreter; 
 

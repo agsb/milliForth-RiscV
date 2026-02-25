@@ -24,11 +24,11 @@
 # generic
 #define snd a4
 
-# generic
-#define trd a6
-
 # index 
 #define idx a5
+
+# generic
+#define trd a6
 
 #---------------------------------------------------------------------
 # max size of dictionary 64k * 4 
@@ -98,12 +98,6 @@
 #---------------------------------------------------------------------
 # the order must be preserved, same in source. 
 
-# forth flag, keep it above user structure
-.equ FLAG, -2 * CELL
-
-# counter of words, keep it above user structure
-.equ BEAT, -1 * CELL
-
 # user structure of internal Forth variables
 
 # data stack index
@@ -127,11 +121,14 @@
 # state flag
 .equ STAT, 6 * CELL
 
+# counter of words executed by next
+.equ BEAT, 7 * CELL
+
 # heap forward
-.equ HEAD, 7 * CELL
+.equ HEAD, 8 * CELL
 
 # heap backward
-.equ TAIL, 8 * CELL
+.equ TAIL, 9 * CELL
 
 #---------------------------------------------------------------------
 # reserve for above 
@@ -150,6 +147,7 @@
 .equ hash_plus,  0x0002B58E 
 .equ hash_zeroq, 0x00596816 
 .equ hash_colon, 0x0002B59F 
+
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 
 #---------------------------------------------------------------------
@@ -169,3 +167,4 @@
 .equ hash_USERAT, 0x005973B0
 
 #---------------------------------------------------------------------
+

@@ -1,49 +1,41 @@
 
- \ (stub)
 
- \ for stack debug
+\ from forth200x.org
+
+\ exception word set, 
+
+\ SP@ returns the address of top of data stack
+\ SP! restors the address of top of data stack
+\ RP@ returns the address of top of return stack
+\ RP! restors the address of top of return stack
+
+0 VARIABLE HANDLER
+
+: CATCH
+        SP@ >R 
+        HANDLER @ >R
+        RP@ HANDLER !
+        EXECUTE
+        R> HANDLER !
+        R> DROP
+        0 ;
+
+: THROW
+        ?DUP IF
+                HANDLER @ RP!
+                R> HANDLER !
+                R> SWAP >R
+                SP! DROP R>
+        THEN ;
  
- : SEES  
-        HASH FIND IF DUP
-        BEGIN
-        OVER OVER @ = IF DROP DROP EXIT THEN
-        DUP . @ . DROP CR CELL +
-        AGAIN
-        THEN
-        ;
+ : ABORTS -1 THROW ;
+                
+\ facility word set
 
- : && SP@ . DROP RP@ . DROP LATEST @ . DROP HEAP @ . DROP ;
+: +FIELD CREATE OVER , + DOES> @ + ;
 
- : PIPE LIT [ 32 32 + 32 + 32 + 4 - , ] EMIT ;
+: BEGIN-STRUCTURE CREATE HERE 0 0 , DOES @ ;
 
- : LINES SWAP 
-        %S
-        PIPE 
-        BEGIN  
-        DUP . @ . DROP 
-        CELL + OVER OVER < 
-        IF PIPE DROP DROP EXIT THEN
-        AGAIN ;
- 
- : DUMPS SWAP
-        BEGIN
-        DUP . @ . CR DROP 
-        CELL + 
-        OVER OVER <
-        = IF DROP DROP EXIT THEN
-        AGAIN ;
- 
- : %%S SP@ . @ . SP0 . CR LINES ; 
-
-\ BYE
-
-\ : $S SP@ . SP0 . CR DUMPS ;
- 
-\ : %R RP@ RP0 LINES ;
-
-\ : $R RP@ RP0 DUMPS ;
-
-\ %S  $S
-
+: END-STRUCTURE SWAP ! ;
 
 

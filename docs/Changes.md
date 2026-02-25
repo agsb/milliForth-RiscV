@@ -20,7 +20,7 @@
 
     Best choices for extensions: 
         
-        ;CODE to native jump to native code at an address 
+        ;CODE todo native jump to native code at an address, inline
 
         NAN, number $80000000, flag negative, flag IMMEDIATE
 
@@ -34,19 +34,23 @@
 
         BEAT to count words executed in inner interpreter
 
-20/01/2025
+## WIP
 
     Change ." to only be compiled as in ANSI and TalyForth
-    WIP
 
 ## Done
+
+25/02/2026
+
+    Minor changes, reorder _user variables in code
+
+    Included SP0 and RP0 as compiled words in t0u.f
 
 24/02/2026
 
     size: $210 no extras, $87C with extras
 
     Included the address of TIB as _user parameter, 
-    to allow input source changes, like SOURCE. 
     It costs more 4 bytes.
 
 23/02/2026
