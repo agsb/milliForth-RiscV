@@ -19,13 +19,13 @@
  : LATEST RP CELL +  ;  
  : HEAP LATEST CELL +  ;  
  : >IN HEAP CELL +  ;  
- : STATE >IN CELL +  ;  
- : TIB STATE CELL +  ;  
+ : TIB >IN CELL +  ;  
+ : STATE TIB CELL +  ;  
  
  : \ 0 >IN @ !  ;   \ end-of-line comments
 
- : HEAD STATE CELL +  ;   \ used in compilation process preserve HERE
- : TAIL HEAD CELL +  ;    \ used in CREATE/DOES preserve common words 
+ : HEAD TIB  CELL +  ;   \ used in compilation process preserve HERE
+ : TAIL HEAD CELL +  ;   \ used in CREATE/DOES preserve common words 
 
  : SCHS TAIL CELL +  ;   \ start scratch area with 8 cells
 
@@ -88,43 +88,43 @@
  : IMMEDIATE LATEST @ CELL + DUP @ ISNEGATIVE OR SWAP !  ;  
  
  : ] 1 STATE !  ;  
- : [ 0 STATE !  ; IMMEDIATE SEE
+ : [ 0 STATE !  ; IMMEDIATE 
  
-\ : SP0 LIT [ SP@ ]  ;   
+ \ : SP0 LIT [ SP@ ]  ; SEE  
  
-\ SP0 .
+ \ SP0 .
 
-\ : RP0 LIT [ RP@ ]  ;   
+ \ : RP0 LIT [ RP@ ]  ; SEE
 
-\ RP0 .
+ \ RP0 .
 
  : ISNEGATIVE LIT [ ISNEGATIVE , ]  ;  
  
- : IF ['] ?BRANCH , HERE 0 ,  ; IMMEDIATE SEE
- : THEN DUP HERE SWAP - SWAP !  ; IMMEDIATE SEE
+ : IF ['] ?BRANCH , HERE 0 ,  ; IMMEDIATE 
+ : THEN DUP HERE SWAP - SWAP !  ; IMMEDIATE 
  : ELSE ['] BRANCH , HERE 0 , SWAP DUP 
-   HERE SWAP - SWAP !  ; IMMEDIATE SEE
+   HERE SWAP - SWAP !  ; IMMEDIATE 
 
- : BEGIN HERE  ; IMMEDIATE SEE
- : AGAIN ['] BRANCH , HERE - ,  ; IMMEDIATE SEE
- : UNTIL ['] ?BRANCH , HERE - ,  ; IMMEDIATE SEE
- : WHILE ['] ?BRANCH , HERE 0 ,  ; IMMEDIATE SEE
+ : BEGIN HERE  ; IMMEDIATE 
+ : AGAIN ['] BRANCH , HERE - ,  ; IMMEDIATE 
+ : UNTIL ['] ?BRANCH , HERE - ,  ; IMMEDIATE 
+ : WHILE ['] ?BRANCH , HERE 0 ,  ; IMMEDIATE 
  : REPEAT SWAP ['] BRANCH , HERE - , 
-   DUP HERE SWAP - SWAP !  ; IMMEDIATE SEE
+   DUP HERE SWAP - SWAP !  ; IMMEDIATE 
  
  \ limit first DO --- LOOP
 
- : DO HERE ['] >R , ['] >R ,  ; IMMEDIATE SEE
+ : DO HERE ['] >R , ['] >R ,  ; IMMEDIATE 
 
  : LOOP ['] R> , ['] R> , 
         ['] LIT , 1 , ['] + , 
         ['] 2DUP , ['] = , ['] ?BRANCH , 
         HERE - , 
-        ['] 2DROP ,  ; IMMEDIATE SEE
+        ['] 2DROP ,  ; IMMEDIATE 
 
  : I ['] R> , ['] R> , 
         ['] DUP , ['] >R , 
-        ['] SWAP , ['] >R ,  ; IMMEDIATE SEE
+        ['] SWAP , ['] >R ,  ; IMMEDIATE 
 
  \ : J ['] R> , ['] R> , 
  \    ['] R> , ['] R> , 
@@ -132,11 +132,11 @@
  \    ['] SWAP , ['] >R ,
  \    ['] SWAP , ['] >R ,
  \    ['] SWAP , ['] >R ,
- \     ; IMMEDIATE SEE
+ \     ; IMMEDIATE 
 
  : LEAVE ['] R> , ['] DROP ,
          ['] R> , ['] DROP ,
-         ['] EXIT ,  ; IMMEDIATE SEE
+         ['] EXIT ,  ; IMMEDIATE 
 
  : ?DUP DUP IF DUP THEN  ;  
 
@@ -180,10 +180,10 @@
  : WORD IN> DROP 
    BEGIN DUP IN> <> UNTIL 
    >IN @ 2 - >IN ! PARSE  ;  
- : [CHAR] ['] LIT , BL WORD DROP C@ ,  ; IMMEDIATE SEE
+ : [CHAR] ['] LIT , BL WORD DROP C@ ,  ; IMMEDIATE 
  
- : ( [CHAR] ) PARSE DROP DROP  ; IMMEDIATE SEE
- : ." [CHAR] " PARSE TYPE  ; IMMEDIATE SEE
+ : ( [CHAR] ) PARSE DROP DROP  ; IMMEDIATE 
+ : ." [CHAR] " PARSE TYPE  ; IMMEDIATE 
 
  \ TEST MINIMAL
 

@@ -197,7 +197,7 @@ reset:
         sw fst, TOIN (usr)
 
 # allow access of tib
-        sw fst, SRCS (usr)
+        sw fst, TIBS (usr)
 
 #---------------------------------------------------------------------
 # xxx
@@ -405,7 +405,7 @@ token:
 # the _getc handle EOF
 gets:
   
-        lw idx, SRCS (usr)
+        lw idx, TIBS (usr)
         
         sw idx, TOIN (usr)
 
@@ -443,7 +443,11 @@ gets:
         addi t0, zero, ' '
         bge fst, t0, 300b
 
-# allow cancel 
+# allow cancel ^U
+        addi t0, zero, 21
+        beq fst, t0, gets
+
+# allow cancel ^X 
         addi t0, zero, 24
         beq fst, t0, gets
 

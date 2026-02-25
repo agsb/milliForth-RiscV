@@ -121,11 +121,11 @@
 # toin next free byte in TIB
 .equ TOIN, 4 * CELL
 
-# state flag
-.equ STAT, 5 * CELL
-
 # terminal (source) input buffer
-.equ SRCS, 6 * CELL
+.equ TIBS, 5 * CELL
+
+# state flag
+.equ STAT, 6 * CELL
 
 # heap forward
 .equ HEAD, 7 * CELL
