@@ -61,7 +61,7 @@
 
  .equ linedit, YES
 
- # .equ uppercase, YES
+ .equ uppercase, YES
 
  .equ dismiss, YES
 
@@ -420,7 +420,6 @@ gets:
 # get next char, wipes a0, a1, a2, a7, returns a3 (fst)
 
 400:
-
         call _getc
 
 # echo it, if need
@@ -434,21 +433,22 @@ gets:
         andi fst, fst, 127
 
 .ifdef uppercase
+
         # 'a'
         addi t0, zero, 97       
-        blt fst, t0, 800
+        blt fst, t0, 800f
 
         # 'z'
         addi t0, zero, 122      
-        blt t0, fst, 800
-
-        # clear the 6th bit
-        # '_'
+        blt t0, fst, 800f
+        
+        # clear the 6th bit, '_'
         andi fst, fst, 95     
+        
 .endif
 
 800:
-# allow no-controls
+# allow no-controls characters
         # ' '
         addi t0, zero, 31       
         blt t0, fst, 300b
