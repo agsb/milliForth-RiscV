@@ -22,7 +22,7 @@
         AGAIN
         ;
 
-: CYPOC (from into many -- )
+: CYPOC ( from into many -- )
         >R 
         BEGIN
         OVER @

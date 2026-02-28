@@ -59,13 +59,19 @@
 
  .equ debug, YES
 
- .equ linedit, YES
-
- .equ uppercase, YES
-
  .equ dismiss, YES
 
  .equ beatme, YES
+
+ .equ linedit, YES
+
+ .equ onlyascii, YES
+
+ # default is mixed case
+
+ # .equ uppercase, YES
+ 
+ # .equ lowercase, YES
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
@@ -107,10 +113,10 @@ h_\label:
 .section .bss
 .p2align 2, 0x0
 
-# This is it, crude alloc over user parameter stack
+# This is it, crude 
 
-_user:
 # user parameter offsets, vide defines.S
+_user:
 .skip PARAMS * CELL
 
 # reserved locals, NOT recursive, vide defines.S
@@ -426,23 +432,37 @@ gets:
 
         # call _putc
 
-.ifdef linedit
-
 # cast to 7-bit standart ascii only
 
-        andi fst, fst, 127
+.ifdef onlyascii
 
+        andi fst, fst, 127
+.endif
+
+600:
+.ifdef lowercase
+
+        addi t0, zero, 'A'       
+        blt fst, t0, 700f
+
+        addi t0, zero, 'Z'      
+        blt t0, fst, 700f
+        
+        # set the 6th bit, 
+        ori fst, fst, 32     
+        
+.endif
+
+700:
 .ifdef uppercase
 
-        # 'a'
-        addi t0, zero, 97       
+        addi t0, zero, 'a'       
         blt fst, t0, 800f
 
-        # 'z'
-        addi t0, zero, 122      
+        addi t0, zero, 'z'      
         blt t0, fst, 800f
         
-        # clear the 6th bit, '_'
+        # clear the 6th bit, 
         andi fst, fst, 95     
         
 .endif
@@ -452,6 +472,8 @@ gets:
         # ' '
         addi t0, zero, 31       
         blt t0, fst, 300b
+
+.ifdef linedit
 
 # allow backspace ^8
         addi t0, zero, 8
