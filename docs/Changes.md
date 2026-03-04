@@ -13,6 +13,8 @@
     In FigForth, ;S is called semis and ; is called semicolon, 
         but in Milliforth, ;S is exit and ; is semis. 
 
+    Using eforth glossary as dictionary reference
+
 ## Todo
     
     __The "first hash bug", was just a debug error__ 
