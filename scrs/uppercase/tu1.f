@@ -19,8 +19,8 @@
     OVER OVER CELL + @
     ISNEGATIVE 1 - AND
     = IF SWAP DROP TRUE EXIT THEN
-    @ DUP 
-    0 = IF SWAP DROP FALSE EXIT THEN
+    @ DUP 0 
+    = IF SWAP DROP FALSE EXIT THEN
     AGAIN ; 
  
  : ' HASH FIND IF CELL + CELL + THEN ; 
@@ -29,14 +29,13 @@
 
  \ from eforth, first EXIT is reserved for DOES> 
 
- : CREATE 
-  :NAME 
-  ['] LIT , 
-  HERE CELL + CELL + CELL + , 
-  HERE TAIL ! 
-  ['] EXIT , 
-  ['] EXIT , 
-  LATEST ! ; 
+ : CREATE :NAME 
+        ['] LIT , 
+        HERE CELL + CELL + CELL + , 
+        HERE TAIL ! 
+        ['] EXIT , 
+        ['] EXIT , 
+        LATEST ! ; 
  
  : DOES> R> TAIL @ ! ; 
 
@@ -52,9 +51,9 @@
 
  : VALUE CREATE , DOES> @ ; 
  
- : TO ' CELL + @ 
-   STATE @ 
-   IF ' LIT , , ' ! , ELSE ! 
+ : TO ' CELL + @ STATE @ 
+   IF ' LIT , , ' ! , 
+   ELSE ! 
    THEN ; 
 
 

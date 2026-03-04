@@ -11,6 +11,9 @@ _this file is still a stub_
         s@   ( -- a )    return _state_ absolute address reference
         0#   ( 0 -- 0x0000 | w -- 0xFFFF ) if tos is diferent of zero 
 
+        key  ( c -- ) get a byte/character from terminal input device
+        emit ( -- c ) put a byte/character into terminal output device
+
         :    ( -- ) init a word definition  
         ;    ( -- ) ends a word definition
         exit ( -- ) hook for inner interpret
@@ -19,6 +22,7 @@ _this file is still a stub_
 
         state,  the state of Forth, compile or execute
         toin,   next free byte in terminal input buffer
+        tibs,   pointer address of terminal input buff 
         last,   latest word in dictionary
         here,   next free byte in heap dictionary (here)
         sptr,   actual top of data stack

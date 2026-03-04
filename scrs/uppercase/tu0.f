@@ -67,6 +67,7 @@
  : R@ R> DUP >R ; 
 
  : EXECUTE >R ; 
+ : COMPILE R> DUP @ , CELL+ >R ;
 
  : BRANCH RP@ @ DUP @ + RP@ ! ; 
  : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
