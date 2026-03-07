@@ -1,10 +1,5 @@
  
  \ this file is still a stub 
- 
- : FOR ['] >R , BEGIN ; IMMEDIATE
- : NEXT ['] R> , ['] LIT , [ 1 ] , ['] - , 
-   ['] DUP , ['] 0# , ['] ?BRANCH ,
-   HERE - , ['] DROP , ; IMMEDIATE
 
  : HOOK BEGIN >R ;
  : BACK R> AGAIN ;
