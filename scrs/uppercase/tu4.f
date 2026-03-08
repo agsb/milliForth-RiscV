@@ -11,23 +11,30 @@
         ['] 0 , ['] = , ['] ?BRANCH , HERE - ,
         ; IMMEDIATE 
 
+ \ clean stack
+
  : DROPS DROP DROP DROP ; 
 
- : CFFILL ( char into many -- )
+ \ FILL and COPY does forward, pointers at init
+ 
+ : CFILL ( char into many -- )
         FOR OVER OVER ! 1 + NEXT DROPS ;
 
- : CBFILL ( char into many -- )
-        FOR OVER OVER ! 1 - NEXT DROPS ;
-
- : CFCOPY ( from into many -- ) \ forward copy
+ : CCOPY ( from into many -- )
         FOR OVER @ OVER ! 1 + SWAP 1 + SWAP NEXT DROPS ;
 
- : CBCOPY ( from into many -- ) \ backward copy
+ \ FILL< and COPY< does backward, pointers at end 
+
+ : TOEND ( f t n -- f+n t+n n )
+        DUP DUP >R >R + SWAP R> + SWAP R> ; 
+        
+ : CFILL< ( char into many -- )
+        FOR OVER OVER ! 1 - NEXT DROPS ;
+
+ : CCOPY< ( from into many -- ) 
         FOR OVER @ OVER ! 1 - SWAP 1 - SWAP NEXT DROPS ;
 
  : COUNT ( c a -- a n )
-        0 >R BEGIN OVER OVER @ = 
-        IF R> 1 + >R 
-        ELSE SWAP DROP R> EXIT 
-        THEN AGAIN ;
+        SWAP OVER BEGIN OVER OVER @ = 
+        ;
 

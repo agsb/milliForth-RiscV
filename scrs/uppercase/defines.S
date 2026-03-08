@@ -124,16 +124,22 @@
 # counter of words executed by next
 .equ BEAT, 7 * CELL
 
+# counter of words executed by next
+.equ TICK, 8 * CELL
+
 # heap forward
-.equ HEAD, 8 * CELL
+.equ HEAD, 9 * CELL
 
 # heap backward
-.equ TAIL, 9 * CELL
+.equ TAIL, 10 * CELL
+
+# void 
+.equ VOID, 11 * CELL
 
 #---------------------------------------------------------------------
 # reserve for above 
 
-.equ PARAMS, 12
+.equ PARAMS, 12 
 
 .equ LOCALS, 8
 
@@ -148,6 +154,7 @@
 .equ hash_zeroq, 0x00596816 
 .equ hash_colon, 0x0002B59F 
 
+#---------------------------------------------------------------------
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 
 #---------------------------------------------------------------------

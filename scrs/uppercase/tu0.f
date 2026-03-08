@@ -1,5 +1,5 @@
  : VOID ; 
-
+  
  : ABORT VOID ;  
 
  : -1 U@ 0# ; 
@@ -22,13 +22,18 @@
  : TIB >IN CELL + ; 
  : STATE TIB CELL + ; 
  : BEATS STATE CELL + ; 
+ : TICKS BEATS CELL + ; 
  
+
  : \ 0 >IN @ ! ;  \ end-of-line comments
 
- : HEAD BEATS CELL + ;  \ used in compilation process preserve HERE
+ : HEAD TICKS CELL + ;  \ used in compilation process preserve HERE
  : TAIL HEAD CELL + ;  \ used in CREATE/DOES preserve common words 
 
  : VARS TAIL CELL + ;  \ start scratch area with 8 cells
+
+ \ counts inner and primitives 
+ : CLOCKS BEATS @ TICKS @ ;
 
  \ pointer relative offsets
 

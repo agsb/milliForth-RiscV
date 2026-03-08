@@ -63,6 +63,8 @@
 
  .equ beatme, YES
 
+ .equ tickme, YES
+
  .equ linedit, YES
 
  .equ onlyascii, YES
@@ -176,6 +178,22 @@ cold:
 
         la usr, _user
         
+.ifdef beatme
+
+        add idx, zero, zero
+        
+        sw idx, BEAT (usr)
+.endif
+
+
+.ifdef tickme
+
+        add idx, zero, zero
+        
+        sw idx, TICK (usr)
+.endif
+
+        
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
@@ -244,7 +262,7 @@ okey:
 .ifdef debug
 
         lw fst, STAT (usr)
-        bne fst, zero, tick
+        bne fst, zero, bend
 
         putchar '\n'
         putchar 'O'
@@ -255,7 +273,7 @@ okey:
 
 #---------------------------------------------------------------------
 # get a hash of the next token
-tick:
+bend:
         
         call token
 
@@ -326,13 +344,13 @@ compile:
         
         call docomma
 
-        j tick
+        j bend
 
 #---------------------------------------------------------------------         
 execute:
 immediate:
 
-        la ipt, tickpt
+        la ipt, bendpt
 
         j pick
 
@@ -817,7 +835,7 @@ next:
 # wrd = (ipt) ; ipt += cell
 
 # count beats
-.ifdef beats
+.ifdef beatme
         lw idx, BEAT (usr)
 
         addi idx, idx, 1
@@ -839,6 +857,15 @@ pick:
 jump: 
 # jump to primitive
         
+# count ticks
+.ifdef tickme
+        lw idx, TICK (usr)
+
+        addi idx, idx, 1
+        
+        sw idx, TICK (usr)
+.endif
+
         jalr ra, 0 (fst)
 
 nest:   #; enter
@@ -862,7 +889,7 @@ move:
 #---------------------------------------------------------------------
 # the outer loop, need for indirect
 
-tickpt:
+bendpt:
         
         .word okey
 
