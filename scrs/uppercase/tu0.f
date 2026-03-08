@@ -106,14 +106,14 @@
  : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE 
  : ELSE ['] BRANCH , HERE 0 , SWAP DUP 
-  HERE SWAP - SWAP ! ; IMMEDIATE 
+        HERE SWAP - SWAP ! ; IMMEDIATE 
 
  : BEGIN HERE ; IMMEDIATE 
  : AGAIN ['] BRANCH , HERE - , ; IMMEDIATE 
  : UNTIL ['] ?BRANCH , HERE - , ; IMMEDIATE 
  : WHILE ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
  : REPEAT SWAP ['] BRANCH , HERE - , 
-  DUP HERE SWAP - SWAP ! ; IMMEDIATE 
+        DUP HERE SWAP - SWAP ! ; IMMEDIATE 
  
  \ limit first DO --- LOOP
 
@@ -138,9 +138,13 @@
  : CELL LIT [ 4 , ] ; 
  : CELLS DUP IF 0 SWAP 0 DO CELL + LOOP THEN ; 
 
+ : 1 LIT [ 1 + , ] ;
+ : 2 LIT [ 2 + , ] ;
+ : 4 LIT [ 4 + , ] ;
  : 8 LIT [ 4 4 + , ] ; 
  : 16 LIT [ 8 8 + , ] ; 
  : 32 LIT [ 16 16 + , ] ; 
+ : 64 LIT [ 32 32 + , ] ; 
  
  : BL LIT [ 16 16 + , ] ; 
  : CR LIT [ 8 2 + , ] EMIT ; 

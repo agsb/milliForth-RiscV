@@ -5,6 +5,13 @@
  
  \ case set 
  
+
+HASH DUP FIND .
+
+HASH IF FIND .
+
+%S 
+
  0 CONSTANT CASE IMMEDIATE  
  
  : ENDOF POSTPONE ELSE ; IMMEDIATE 

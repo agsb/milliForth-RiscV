@@ -61,6 +61,10 @@
 
 # ascii
 
+.equ BS, 8     # \b
+
+.equ HT, 9     # \t
+
 .equ NL, 10    # \n
 
 .equ CR, 13    # \r
