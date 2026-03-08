@@ -34,17 +34,24 @@
 
         ABORT to reset stacks and outer interpreter
 
-        BEAT to count words executed in inner interpreter
-
 ## WIP
 
     Change ." to only be compiled as in ANSI and TalyForth
 
+    Include the eforth dictionary for expantion
+
 ## Done
+
+06/03/2026
+
+    Define two extras options by extention of _user structure:
+
+        BEATS, as a counter of inner loops executed
+        TICKS, as counter of primitives executed
 
 25/02/2026
 
-    Minor changes, reorder _user variables in code
+    Minor changes, re-order _user variables structure in code
 
     Included SP0 and RP0 as compiled words in t0u.f
 
