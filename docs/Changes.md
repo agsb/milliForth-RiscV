@@ -42,6 +42,16 @@
 
 ## Done
 
+09/03/2026
+
+    CASE and DEFER sets broken at POSTPONE ! 
+    definition : POSTPONE ' , ; IMMEDIATE
+    the ' and , are working nice and POSTPONE breaks.
+    Why ?
+
+    Take a workaround using ['] and , for non IF ELSE THEN and
+        explicity those ones.
+
 06/03/2026
 
     Define two extras options by extention of _user structure:
