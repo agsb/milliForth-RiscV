@@ -46,11 +46,11 @@
 
     CASE and DEFER sets broken at POSTPONE ! 
     definition : POSTPONE ' , ; IMMEDIATE
-    the ' and , are working nice and POSTPONE breaks.
+    ' and , are working nice but POSTPONE breaks.
     Why ?
 
-    Take a workaround using ['] and , for non IF ELSE THEN and
-        explicity those ones.
+    Take a workaround using ['] and , for non IMMEDIATE, 
+        and replace IF ELSE THEN with explicity ones.
 
 06/03/2026
 
