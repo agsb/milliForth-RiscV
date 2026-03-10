@@ -1,7 +1,7 @@
 #---------------------------------------------------------------------
 # for alias register names 
 # do not change
-# a0, a1, a2, a7 are used by ecalls
+# a0, a1, a2, a7 are used by system ecalls
 
 # forth struct pointer, constant 
 #define usr s0
@@ -61,23 +61,33 @@
 
 # ascii
 
-.equ BS, 8     # \b
+.equ BS, 8     # \b ^H
 
-.equ HT, 9     # \t
+.equ HT, 9     # \t ^I
 
-.equ NL, 10    # \n
+.equ LF, 10    # \n ^J
 
-.equ CR, 13    # \r
+.equ CR, 13    # \r ^M
 
-.equ BL, 32    # space
+.equ NAK, 21   #    ^U
 
-# data stack, 36 cells 
+.equ CAN, 24   #    ^X
 
-.equ spz, 36 * CELL
+.equ ESC, 27   #    ^[
 
-# return stack, 36 cells
+.equ BL, 32    # blank space
 
-.equ rpz, 36 * CELL
+# Moore uses 22 deep stacks
+
+.equ stacks, 36
+
+# data stack,  
+
+.equ spz, stacks * CELL
+
+# return stack,  
+
+.equ rpz, stacks * CELL
 
 # Terminal input buffer 80 bytes, (but 72 is enough), moves forwards
 

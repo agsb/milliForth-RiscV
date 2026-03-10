@@ -151,7 +151,6 @@ h_ends:
 
 #---------------------------------------------------------------------
 # xxx
-
 .ifdef debug
 
 #include "puthex.S"
@@ -166,9 +165,10 @@ h_ends:
 _start:
 
 #----------------------------------------------------------------------
-# do any system inits
+# go ! go ! go !
 main:
 
+# do any system inits
 # call _init
 
 #----------------------------------------------------------------------
@@ -178,6 +178,7 @@ cold:
 
         la usr, _user
         
+# xxx 
 .ifdef beatme
 
         add idx, zero, zero
@@ -185,7 +186,7 @@ cold:
         sw idx, BEAT (usr)
 .endif
 
-
+# xxx 
 .ifdef tickme
 
         add idx, zero, zero
@@ -202,7 +203,7 @@ warm:
         la fst, h_here
         sw fst, HERE (usr)
 
-# link list of headers, aka dictionary
+# link last primitive as list of headers, aka dictionary
 
         la fst, h_last
         sw fst, LAST (usr)
@@ -251,6 +252,7 @@ quit:
         la fst, rp0 
         sw fst, RPTR (usr)
 
+#---------------------------------------------------------------------
 # stat is 'interpret' == \0
         
         sw zero, STAT (usr)
@@ -262,7 +264,7 @@ okey:
 .ifdef debug
 
         lw fst, STAT (usr)
-        bne fst, zero, bend
+        bne fst, zero, fold
 
         putchar '\n'
         putchar 'O'
@@ -273,7 +275,7 @@ okey:
 
 #---------------------------------------------------------------------
 # get a hash of the next token
-bend:
+fold:
         
         call token
 
@@ -286,7 +288,7 @@ find:
         lw lnk, LAST (usr)
 
 100:
-# verify end of dictionary, missed, take care to abort
+# verify end of dictionary, missed take care to abort
         
         beq lnk, zero, miss    
 
@@ -316,7 +318,7 @@ find:
         
         bne hsh, wrd, 100b
 
-# fst points to, start of code or list of references, aka xt
+# points to start of code or list of references, aka xt
 
         addi fst, fst, CELL
 
@@ -339,18 +341,18 @@ eval:
         bne snd, zero, immediate      
 
 #---------------------------------------------------------------------         
-# compiling ? if state != 0
+# compiling ? 
 compile:
         
         call docomma
 
-        j bend
+        j fold
 
 #---------------------------------------------------------------------         
 execute:
 immediate:
 
-        la ipt, bendpt
+        la ipt, foldptr
 
         j pick
 
@@ -399,9 +401,8 @@ token:
 
         addi trd, zero, BL
 
-100:
-
 # last position on tib
+100:
         lw idx, TOIN (usr)
 
 # skip spaces // wrd
@@ -429,7 +430,7 @@ gets:
 
 # end-of-line is \n, ^J
         
-        addi snd, zero, NL
+        addi snd, zero, LF
 
 # ever start with a space, trd is BL
         
@@ -452,12 +453,14 @@ gets:
 
 # cast to 7-bit standart ascii only
 
+# xxx
 .ifdef onlyascii
 
         andi fst, fst, 127
 .endif
 
 600:
+# xxx
 .ifdef lowercase
 
         addi t0, zero, 'A'       
@@ -472,6 +475,7 @@ gets:
 .endif
 
 700:
+# xxx
 .ifdef uppercase
 
         addi t0, zero, 'a'       
@@ -486,34 +490,35 @@ gets:
 .endif
 
 800:
-# allow no-controls characters
+# allow non control characters
         # ' '
-        addi t0, zero, 31       
+        addi t0, zero, BL       
         blt t0, fst, 300b
 
+# xxx
 .ifdef linedit
 
-# allow backspace ^8
-        addi t0, zero, 8
+# allow backspace 
+        addi t0, zero, BS
         bne fst, t0, 900f
         addi idx, idx, -1 * TWO
         j 400b
 
 900:        
 # allow \r ^M carriage return
-        addi t0, zero, 13
+        addi t0, zero, CR
         beq fst, t0, 500f
 
 # allow \n ^J line feed
-        addi t0, zero, 10
+        addi t0, zero, LF
         beq fst, t0, 500f
 
 # allow cancel ^U
-        addi t0, zero, 21
+        addi t0, zero, NAK
         beq fst, t0, gets
 
 # allow cancel ^X 
-        addi t0, zero, 24
+        addi t0, zero, CAN
         beq fst, t0, gets
 
 # anything wipes
@@ -552,12 +557,14 @@ gets:
 #---------------------------------------------------------------------
 hash:
 
+# xxx
 .ifdef dismiss
-
+# keep a pointer to word
         mv wrd, idx
 
 .endif 
 
+# continue until BL
 djb2:
         # easy 5381
    
@@ -584,7 +591,7 @@ djb2:
 #---------------------------------------------------------------------
 200:    
 
-# mask forth flag 
+# mask out high bit, forth immediate flag 
 mask:
 
         lui fst, %hi(MASK_IMM)
@@ -597,6 +604,7 @@ mask:
 
         sw idx, TOIN (usr)
 
+# xxx
 .ifdef dismiss
 
         mv idx, wrd
@@ -634,7 +642,7 @@ name:
         j next
 */
 
-### version 1.5.0
+### version 1.5.4
 #---------------------------------------------------------------------
 pull2:
         
@@ -729,7 +737,7 @@ istrue:
 
 #---------------------------------------------------------------------
 # beware variables order
-# ( -- sptr) return an reference
+# ( -- _user ) return an reference to _user structure
 def_word "U@", "userat", hash_USERAT, h_zeroq
         
         mv fst, usr 
@@ -834,6 +842,7 @@ unnest: #; exit
 next:
 # wrd = (ipt) ; ipt += cell
 
+# xxx
 # count beats
 .ifdef beatme
         lw idx, BEAT (usr)
@@ -857,6 +866,7 @@ pick:
 jump: 
 # jump to primitive
         
+# xxx
 # count ticks
 .ifdef tickme
         lw idx, TICK (usr)
@@ -866,6 +876,7 @@ jump:
         sw idx, TICK (usr)
 .endif
 
+        # really do the jump and link 
         jalr ra, 0 (fst)
 
 nest:   #; enter
@@ -889,7 +900,7 @@ move:
 #---------------------------------------------------------------------
 # the outer loop, need for indirect
 
-bendpt:
+foldptr:
         
         .word okey
 
