@@ -492,7 +492,7 @@ gets:
 800:
 # allow non control characters
         # ' '
-        addi t0, zero, BL       
+        addi t0, zero, BL - 1       
         blt t0, fst, 300b
 
 # xxx
