@@ -13,15 +13,15 @@ This is an implementation of MilliForth (sector-forth) concept for RISCV ISA.
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
-This version with minimal code (.text) uses only 528 bytes, 
-    468 bytes of Forth engine and 60 bytes of linux system I/O, 
+This version with minimal code (.text) uses only 532 bytes, 
+    472 bytes for Forth engine and 60 bytes for linux system I/O, 
     not counting ELF headers. Used 48 bytes to load fixed address. 
 
+Includes more 4 bytes to allow change the TIB pointer.
 
-Could add some bytes for extras words as 2/ 2* NAN ;CODE ABORT BYE
+Could add some bytes for extra primitive words as 2/ 2* NAN ;CODE ABORT BYE
 
-No human WORDS. It uses DJB2 hashes in headers, 
-    instead of size+flags+name+pads. 
+No human WORDS. It uses DJB2 hashes in headers instead of size+flags+name+pads. 
 
 Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN. 
 
@@ -118,7 +118,7 @@ contains the user variables for Forth
 
 __while 'tick was not in the compiled dictionary__
 
-Forth standart have postone, instead of compile, and [compile].
+Forth standart (now) have postone, instead of compile, and [compile].
 
 Charles Moore, in 1974 [^8] make use of precedence of word and STATE, 
 to control between "always execute" STATE (0), 
@@ -137,7 +137,7 @@ In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1,
 
 By the way, tick and comma are in compiled dictionary.
 
-The postpone is : POSTPONE ' , ; ( classics )
+The postpone is : POSTPONE ' , ; IMMEDIATE ( classics )
 
 ## Colon and Semis
 
@@ -156,9 +156,9 @@ The semis **;** ends the word by:
         2. copy HEAD to LATEST
         3. change STATE to execute (0);
 
-if the compilation is interrupted, STATE and LATEST keeps 
-        untouched, but some junk was placed and stays into dictionary.
-        Could clean that with more some code.
+if the compilation is interrupted, STATE and LATEST keeps untouched, 
+        but HERE changes and some junk was placed and stays into dictionary.
+        Could clean that with more some code, to copy HEAD to HERE
 
 ## Dismiss hack
 
@@ -188,7 +188,7 @@ CONSTANT uses the data address to access a value;
     
 ARRAY uses the data address to access the nth byte;
     
-Note, DOES> is just one word and is no immediate.
+Note by that way, DOES> is just one word and is not immediate.
 
 ## internals
 
@@ -231,13 +231,13 @@ with externals:
 extras: (selectable)
 
     2/      shift right one bit
+    2*      shift left one bit
     NAN     places 0x80000000 at top of stack
     ;CODE   execute native code at instruction pointer (IP)
 
     abort   restart the Forth
     bye     ends the Forth, return to system
-    beat   counts words executed by next
-
+    
     .       show a copy of the cell at top of data stack, 
     .S      list cells in data stack
     .R      list cells in return stack
