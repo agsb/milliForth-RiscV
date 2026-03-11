@@ -30,19 +30,20 @@
  : HEAD TICKS CELL + ;  \ used in compilation process preserve HERE
  : TAIL HEAD CELL + ;  \ used in CREATE/DOES preserve common words 
 
- : VARS TAIL CELL + ;  \ start scratch area with 8 cells
+ : VOID TAIL CELL + ;  \ scratch cell
+ : VARS VOID CELL + ;  \ start scratch area with 8 cells
 
  \ counts inner and primitives 
  : CLOCKS BEATS @ TICKS @ ;
 
  \ pointer relative offsets
 
+ : SP@ SP @ CELL + ; 
  : RP@ RP @ CELL + ; 
  
- : SP@ SP @ CELL + ; 
- 
- : RP! RP ! ;  \ carefull
- : SP! SP ! ;  \ carefull
+ \ refresh stacks
+ : SP! SP ! ;  
+ : RP! RP ! ; 
 
  : DUP SP@ @ ; 
  : OVER SP@ CELL + @ ; 
@@ -105,17 +106,18 @@
  
  : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE 
- : ELSE ['] BRANCH , HERE 0 , SWAP DUP 
-        HERE SWAP - SWAP ! ; IMMEDIATE 
+ : ELSE ['] BRANCH , HERE 0 , SWAP 
+        DUP HERE SWAP - SWAP ! ; IMMEDIATE 
 
  : BEGIN HERE ; IMMEDIATE 
  : AGAIN ['] BRANCH , HERE - , ; IMMEDIATE 
  : UNTIL ['] ?BRANCH , HERE - , ; IMMEDIATE 
+
  : WHILE ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
  : REPEAT SWAP ['] BRANCH , HERE - , 
         DUP HERE SWAP - SWAP ! ; IMMEDIATE 
  
- \ limit first DO --- LOOP
+ \ ( limit first -- ) 
 
  : DO HERE ['] >R , ['] >R , ; IMMEDIATE 
 

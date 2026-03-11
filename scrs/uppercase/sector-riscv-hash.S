@@ -69,11 +69,15 @@
 
  .equ onlyascii, YES
 
+ /*
+
  # default is mixed case
 
  # .equ uppercase, YES
  
  # .equ lowercase, YES
+
+*/
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
