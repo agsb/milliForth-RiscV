@@ -1,4 +1,6 @@
 
+ \ math from eforth
+
  : * ( x y -- z )
         dup ( Check not zero)
         if over 0< over 0< xor >r ( Calculate sign of result)
