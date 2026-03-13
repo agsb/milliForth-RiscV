@@ -29,31 +29,40 @@
 #
 # djb2 hash cleared of bit 31
 #
-
-.equ hash_NAN, 0x0B87D404
-.equ hash_DOCODE, 0x075D9A73
-.equ hash_ABORT, 0x0A1DFF4F 
-.equ hash_BYE, 0x0B874AFB 
+.equ  hash_NAN, 0x0B87D404
+.equ  hash_BYE, 0x0B874AFB 
+.equ  hash_ABORT, 0x0A1DFF4F 
+.equ  hash_DOCODE, 0x075D9A73
 
 .equ hash_sfl, 0x0059685D
 .equ hash_sfr, 0x00596858
+
+.equ hash_mult, 0x005972C2
+.equ hash_umult, 0x0B87EB77
+
+.equ /MOD, 0x7C4D1C6C
+.equ FM/MOD, 0x14CB69A7
+.equ SM/MOD, 0x49BE2C12
 
 .equ hash_dot, 0x0002B58B
 .equ hash_splist, 0x005965D3
 .equ hash_rplist, 0x005965D2
 
-.equ hash_DUMP, 0x7C6B2FE9 
-.equ hash_WORDS, 0x0B6953F8 
-.equ hash_WORDS, 0x0D9A5B98 
-.equ hash_SEE, 0x0B881316 
-.equ hash_CELL, 0x7C70B163 
+.equ  hash_RSHIFT, 0x416E6B97
+.equ  hash_LSHIFT, 0x2C5784C9
+
+.equ  hash_DUMP, 0x7C6B2FE9 
+.equ  hash_WORDS, 0x0B6953F8 
+.equ  hash_WORDS, 0x0D9A5B98 
+.equ  hash_SEE, 0x0B881316 
+.equ  hash_CELL, 0x7C70B163 
 
 #---------------------------------------------------------------------
 # extra primitives
 
 #---------------------------------------------------------------------
 # ( -- ) push 0x80000000
-def_word "NAN", "nan", hash_NAN, into_extras
+def_word "NAN", "nan", hash_NAN, h_sfr
         
         lui fst, %hi(0x80000000)
 
@@ -68,23 +77,20 @@ def_word ";CODE", "docode", hash_DOCODE, h_nan
         j next
 
 #---------------------------------------------------------------------
+# ( -- ) ae exit
+def_word "BYE", "byes", hash_BYE, h_docode
+        
+        j _exit
+
+#---------------------------------------------------------------------
 # ( -- ) ae abort
-def_word "ABORT", "aborts", hash_ABORT, h_docode
+def_word "ABORT", "aborts", hash_ABORT, h_byes
         
         j abort
 
 #---------------------------------------------------------------------
-# ( -- ) exit forth
-def_word "BYE", "byes", hash_BYE, h_aborts
-        
-        j _exit
-
-
-#---------------------------------------------------------------------
-
-#---------------------------------------------------------------------
-# ( w -- w*2 ) #; shift left
-def_word "2*", "sfl", hash_sfl, h_byes
+# ( w -- w*2 ) shift left
+def_word "2*", "sfl", hash_sfl, into_extras
 
         call pull2
         
@@ -93,8 +99,18 @@ def_word "2*", "sfl", hash_sfl, h_byes
         j keep1
 
 #---------------------------------------------------------------------
-# ( w -- w/2 ) #; shift right
+# ( w -- w/2 ) shift right
 def_word "2/", "sfr", hash_sfr, h_sfl
+
+        call pull2
+        
+        srli fst, fst, 1
+        
+        j keep1
+
+#---------------------------------------------------------------------
+# ( w1 w2 -- w1 * w2 ) 
+def_word "M*", "mult", hash_mult, h_sfr
 
         call pull2
         
@@ -107,7 +123,7 @@ def_word "2/", "sfr", hash_sfr, h_sfl
 
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
-def_word "%S", "splist", hash_splist, h_sfr
+def_word "%S", "splist", hash_splist, h_aborts
 
         call stackS
 
@@ -577,6 +593,5 @@ puthexy:
         pullra
 
         ret
-
 
 

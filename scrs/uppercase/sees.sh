@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# insert (-s) or remove (-u) the SEE word following ;
+
 case $1 in
 
 '-s')

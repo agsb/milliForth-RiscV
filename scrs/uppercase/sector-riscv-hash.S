@@ -37,7 +37,7 @@
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
     This version relies on the .data, .text, .rodata, .bss sections 
-    being in this order, the dictionary will continue at end of .bss.
+    being in this order, the dictionary continues at .bss.
 
     THIS VERSION USES ONLY HASH HEADERS.
 
@@ -53,31 +53,6 @@
 #---------------------------------------------------------------------
 
 #include "defines.S"
-
-#---------------------------------------------------------------------
-# flags for compiler options
-
- .equ debug, YES
-
- .equ dismiss, YES
-
- .equ beatme, YES
-
- .equ tickme, YES
-
- .equ linedit, YES
-
- .equ onlyascii, YES
-
- /*
-
- # default is mixed case
-
- # .equ uppercase, YES
- 
- # .equ lowercase, YES
-
-*/
 
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
@@ -292,9 +267,9 @@ find:
         lw lnk, LAST (usr)
 
 100:
-# verify end of dictionary, missed take care to abort
+# verify end of dictionary, do miss 
         
-        beq lnk, zero, miss    
+        beq lnk, zero, miss
 
 # linked list
         
@@ -384,6 +359,7 @@ wipe:
         # compiling ? why not do it at any error ?
         lw fst, STAT (usr)
         beq fst, zero, 100f
+
         # wipe remains
         lw fst, HEAD (usr)
         sw fst, HERE (usr)
@@ -461,17 +437,18 @@ gets:
 .ifdef onlyascii
 
         andi fst, fst, 127
+
 .endif
 
 600:
 # xxx
 .ifdef lowercase
 
-        addi t0, zero, 'A'       
-        blt fst, t0, 700f
+        addi a7, zero, 'A'       
+        blt fst, a7, 700f
 
-        addi t0, zero, 'Z'      
-        blt t0, fst, 700f
+        addi a7, zero, 'Z'      
+        blt a7, fst, 700f
         
         # set the 6th bit, 
         ori fst, fst, 32     
@@ -482,11 +459,11 @@ gets:
 # xxx
 .ifdef uppercase
 
-        addi t0, zero, 'a'       
-        blt fst, t0, 800f
+        addi a7, zero, 'a'       
+        blt fst, a7, 800f
 
-        addi t0, zero, 'z'      
-        blt t0, fst, 800f
+        addi a7, zero, 'z'      
+        blt a7, fst, 800f
         
         # clear the 6th bit, 
         andi fst, fst, 95     
@@ -496,34 +473,30 @@ gets:
 800:
 # allow non control characters
         # ' '
-        addi t0, zero, BL - 1       
-        blt t0, fst, 300b
+        addi ops, zero, BL - 1       
+        blt ops, fst, 300b
 
 # xxx
 .ifdef linedit
 
 # allow backspace 
-        addi t0, zero, BS
-        bne fst, t0, 900f
+        addi a7, zero, BS
+        bne fst, a7, 900f
         addi idx, idx, -1 * TWO
         j 400b
 
 900:        
 # allow \r ^M carriage return
-        addi t0, zero, CR
-        beq fst, t0, 500f
+        addi a7, zero, CR
+        beq fst, a7, 500f
 
 # allow \n ^J line feed
-        addi t0, zero, LF
-        beq fst, t0, 500f
-
-# allow cancel ^U
-        addi t0, zero, NAK
-        beq fst, t0, gets
+        addi a7, zero, LF
+        beq fst, a7, 500f
 
 # allow cancel ^X 
-        addi t0, zero, CAN
-        beq fst, t0, gets
+        addi a7, zero, CAN
+        beq fst, a7, gets
 
 # anything wipes
         j 400b
@@ -531,8 +504,7 @@ gets:
 .endif
 
 # \n ends the line
-
-        bne fst, snd, 300b
+        bne snd, fst, 300b
 
 # at end-of-line
 500:
@@ -595,7 +567,7 @@ djb2:
 #---------------------------------------------------------------------
 200:    
 
-# mask out high bit, forth immediate flag 
+# clear high bit, NaN, forth immediate flag 
 mask:
 
         lui fst, %hi(MASK_IMM)

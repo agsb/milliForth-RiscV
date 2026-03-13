@@ -30,8 +30,11 @@
 # generic
 #define trd a6
 
+# generic
+#define ops a7
+
 #---------------------------------------------------------------------
-# max size of dictionary 64k * 4 
+# max size of dictionary 64k CELLS  
 # depends on host machine
 
 .equ RAM_LIMIT, 0x40000
@@ -61,6 +64,12 @@
 
 # ascii
 
+.equ XON, 17   #  ^Q
+.equ XOFF, 19  #  ^S
+
+.equ ACK, 6    #  ^F
+.equ NAK, 21   #  ^U
+
 .equ BS, 8     # \b ^H
 
 .equ HT, 9     # \t ^I
@@ -68,8 +77,6 @@
 .equ LF, 10    # \n ^J
 
 .equ CR, 13    # \r ^M
-
-.equ NAK, 21   #    ^U
 
 .equ CAN, 24   #    ^X
 
@@ -188,4 +195,27 @@
 .equ hash_USERAT, 0x005973B0
 
 #---------------------------------------------------------------------
+# flags for compiler options
+
+ .equ debug, YES
+
+ .equ dismiss, YES
+
+ .equ beatme, YES
+
+ .equ tickme, YES
+
+ .equ linedit, YES
+
+ .equ onlyascii, YES
+
+/*
+ 
+ # default is mixed case
+
+ # .equ uppercase, YES
+ 
+ # .equ lowercase, YES
+
+*/
 

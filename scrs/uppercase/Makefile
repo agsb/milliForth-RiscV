@@ -73,15 +73,17 @@ $(MY): $(SOURCES:.S=.o)
 
 	od --endian=little -A x -t x1 -v $@.sec > $@.hex
 
+	$(PASS)strip $(MY).elf -o $(MY).elfs
+
 all: 
 	
 	$(MY)
 
 clean:
 	
-	$(RM) $(MY).out $(MY).map $(MY).lst \
-	      $(MY).elf $(MY).dmp $(MY).bin \
-	      $(MY).hex $(MY).sec \
+	$(RM) $(MY).out $(MY).map $(MY).lst  \
+	      $(MY).elf $(MY).dmp $(MY).bin  \
+	      $(MY).hex $(MY).sec $(MY).elfs \
 	      err out
 
 qemu: 
