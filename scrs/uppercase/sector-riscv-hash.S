@@ -156,7 +156,7 @@ cold:
 # load user pointer address
 
         la usr, _user
-        
+
 # xxx 
 .ifdef beatme
 

@@ -1,0 +1,875 @@
+   102ea:	00000000:	.word	0x00000000
+   103d8:	000101ce:	.word	0x000101ce
+   102f6:	000102ea:	.word	0x000102ea
+   10304:	000102f6:	.word	0x000102f6
+   10314:	00010304:	.word	0x00010304
+   10322:	00010314:	.word	0x00010314
+   10334:	00010322:	.word	0x00010322
+   10342:	00010334:	.word	0x00010334
+   10352:	00010342:	.word	0x00010342
+   10366:	00010352:	.word	0x00010352
+   10382:	00010366:	.word	0x00010366
+   1039c:	00010382:	.word	0x00010382
+   1041c:	0001039c:	.word	0x0001039c
+   1042a:	0001041c:	.word	0x0001041c
+   10438:	0001042a:	.word	0x0001042a
+   10442:	00010438:	.word	0x00010438
+   1044c:	00010442:	.word	0x00010442
+   1045a:	0001044c:	.word	0x0001044c
+   10468:	0001045a:	.word	0x0001045a
+   10474:	00010468:	.word	0x00010468
+   10480:	00010474:	.word	0x00010474
+   1048e:	00010480:	.word	0x00010480
+   1049a:	0001048e:	.word	0x0001048e
+   104a6:	0001049a:	.word	0x0001049a
+   104be:	000104a6:	.word	0x000104a6
+   10308:	0002b584:	.word	0x0002b584
+   104aa:	0002b58b:	.word	0x0002b58b
+   10338:	0002b58e:	.word	0x0002b58e
+   1036a:	0002b59f:	.word	0x0002b59f
+   10318:	0002b5e5:	.word	0x0002b5e5
+   10478:	005965d2:	.word	0x005965d2
+   1046c:	005965d3:	.word	0x005965d3
+   10346:	00596816:	.word	0x00596816
+   1045e:	00596858:	.word	0x00596858
+   10450:	0059685d:	.word	0x0059685d
+   10356:	005973b0:	.word	0x005973b0
+   1042e:	075d9a73:	.word	0x075d9a73
+   1043c:	0a1dff4f:	.word	0x0a1dff4f
+   10446:	0b874afb:	.word	0x0b874afb
+   10420:	0b87d404:	.word	0x0b87d404
+   102ee:	0b87f112:	.word	0x0b87f112
+   1049e:	0b881316:	.word	0x0b881316
+   10492:	0d9a5b98:	.word	0x0d9a5b98
+   10484:	7c6b2fe9:	.word	0x7c6b2fe9
+   104c2:	7c70b163:	.word	0x7c70b163
+   102fa:	7c7c87d0:	.word	0x7c7c87d0
+   103a0:	7c7cc745:	.word	0x7c7cc745
+   10326:	7c8254c0:	.word	0x7c8254c0
+   10386:	8002b59e:	.word	0x8002b59e
+   108e2:	00000633:	add	a2,zero,zero
+   10916:	000006b3:	add	a3,zero,zero
+   10166:	000007b3:	add	a5,zero,zero
+   1016c:	000007b3:	add	a5,zero,zero
+   102aa:	50550513:	addi	a0,a0,1285 # 1505 <DJB2>
+   102c6:	fff68693:	addi	a3,a3,-1 # 7fffffff <MASK_IMM>
+   108fc:	fd068693:	addi	a3,a3,-48 # 7fffffd0 <hash_NAND+0x37dab10>
+   1026e:	07f6f693:	andi	a3,a3,127
+   10146:	00fa7a13:	andi	s4,s4,15
+   1096c:	00fa7a13:	andi	s4,s4,15
+   103ea:	00002597:	auipc	a1,0x2
+   10404:	00002597:	auipc	a1,0x2
+   10172:	00002697:	auipc	a3,0x2
+   1017c:	00002697:	auipc	a3,0x2
+   10186:	00002697:	auipc	a3,0x2
+   101b6:	00002697:	auipc	a3,0x2
+   101c0:	00002697:	auipc	a3,0x2
+   10392:	00002697:	auipc	a3,0x2
+   103b6:	00002797:	auipc	a5,0x2
+   10596:	00002817:	auipc	a6,0x2
+   105bc:	00002817:	auipc	a6,0x2
+   1015e:	00002417:	auipc	s0,0x2
+   1021c:	00002497:	auipc	s1,0x2
+   10506:	00002b97:	auipc	s7,0x2
+   10234:	01068463:	beq	a3,a6,1023c <wipe>
+   102b2:	01068863:	beq	a3,a6,102c2 <mask>
+   108ec:	01068763:	beq	a3,a6,108fa <number+0x1e>
+   10290:	fd1687e3:	beq	a3,a7,1025e <gets>
+   10284:	01168b63:	beq	a3,a7,1029a <gets+0x3c>
+   1028a:	01168863:	beq	a3,a7,1029a <gets+0x3c>
+   10600:	01078e63:	beq	a5,a6,1061c <stackp+0x54>
+   10684:	fa0e8ee3:	beqz	t4,10640 <dumps+0xa>
+   103be:	00f6d763:	bge	a3,a5,103cc <nest>
+   1090e:	00e6c363:	blt	a3,a4,10914 <digit+0x18>
+   10908:	00d74763:	blt	a4,a3,10916 <digit+0x1a>
+   10618:	ff07c6e3:	blt	a5,a6,10604 <stackp+0x3c>
+   10688:	ff07c3e3:	blt	a5,a6,1066e <dumps+0x38>
+   1051a:	fd77cce3:	blt	a5,s7,104f2 <returns>
+   10274:	fed8c9e3:	blt	a7,a3,10266 <gets+0x8>
+   1014e:	015a4363:	blt	s4,s5,10154 <puthex+0x5c>
+   10974:	015a4363:	blt	s4,s5,1097a <puthexy+0x5e>
+   10900:	0006cb63:	bltz	a3,10916 <digit+0x1a>
+   10516:	fc07cee3:	bltz	a5,104f2 <returns>
+   1020c:	fec517e3:	bne	a0,a2,101fa <find+0x2>
+   1027a:	01169463:	bne	a3,a7,10282 <gets+0x24>
+   10296:	fcd718e3:	bne	a4,a3,10266 <gets+0x8>
+   10256:	05071763:	bne	a4,a6,102a4 <hash>
+   1056a:	fd079ae3:	bne	a5,a6,1053e <wordt+0x4>
+   103e2:	00000073:	ecall
+   103f8:	00000073:	ecall
+   10416:	00000073:	ecall
+   106cc:	a2dff0ef:	jal	100f8 <puthex>
+   106f2:	a07ff0ef:	jal	100f8 <puthex>
+   10718:	9e1ff0ef:	jal	100f8 <puthex>
+   1073e:	9bbff0ef:	jal	100f8 <puthex>
+   10764:	995ff0ef:	jal	100f8 <puthex>
+   1078a:	96fff0ef:	jal	100f8 <puthex>
+   107b0:	949ff0ef:	jal	100f8 <puthex>
+   107f4:	905ff0ef:	jal	100f8 <puthex>
+   1081c:	8ddff0ef:	jal	100f8 <puthex>
+   10844:	8b5ff0ef:	jal	100f8 <puthex>
+   1086c:	88dff0ef:	jal	100f8 <puthex>
+   1089e:	85bff0ef:	jal	100f8 <puthex>
+   108d0:	829ff0ef:	jal	100f8 <puthex>
+   1092a:	ad9ff0ef:	jal	10402 <_putc>
+   1097c:	a87ff0ef:	jal	10402 <_putc>
+   103c8:	000680e7:	jalr	a3
+   10432:	000480e7:	jalr	s1
+   103fc:	00058683:	lb	a3,0(a1)
+   1022e:	00078683:	lb	a3,0(a5)
+   102ae:	00078683:	lb	a3,0(a5)
+   10250:	00078703:	lb	a4,0(a5)
+   108e6:	00800593:	li	a1,8
+   10102:	02000693:	li	a3,32
+   104b4:	02000693:	li	a3,32
+   1061e:	02000693:	li	a3,32
+   10666:	02000693:	li	a3,32
+   106a8:	02000693:	li	a3,32
+   106bc:	02000693:	li	a3,32
+   106e2:	02000693:	li	a3,32
+   10708:	02000693:	li	a3,32
+   1072e:	02000693:	li	a3,32
+   10754:	02000693:	li	a3,32
+   1077a:	02000693:	li	a3,32
+   107a0:	02000693:	li	a3,32
+   107ce:	02000693:	li	a3,32
+   107e2:	02000693:	li	a3,32
+   1080a:	02000693:	li	a3,32
+   10832:	02000693:	li	a3,32
+   1085a:	02000693:	li	a3,32
+   1088c:	02000693:	li	a3,32
+   108be:	02000693:	li	a3,32
+   10926:	02000693:	li	a3,32
+   106b2:	03000693:	li	a3,48
+   106d8:	03100693:	li	a3,49
+   106fe:	03200693:	li	a3,50
+   10724:	03300693:	li	a3,51
+   1074a:	03400693:	li	a3,52
+   10770:	03500693:	li	a3,53
+   10796:	03600693:	li	a3,54
+   1065c:	03a00693:	li	a3,58
+   105ce:	03d00693:	li	a3,61
+   1019c:	03f00693:	li	a3,63
+   101a6:	03f00693:	li	a3,63
+   10850:	04400693:	li	a3,68
+   10828:	04800693:	li	a3,72
+   101e6:	04b00693:	li	a3,75
+   10800:	04c00693:	li	a3,76
+   101dc:	04f00693:	li	a3,79
+   10882:	05000693:	li	a3,80
+   108b4:	05000693:	li	a3,80
+   105b2:	05200693:	li	a3,82
+   1069e:	05200693:	li	a3,82
+   108aa:	05200693:	li	a3,82
+   1058c:	05300693:	li	a3,83
+   107d8:	05300693:	li	a3,83
+   10878:	05300693:	li	a3,83
+   107c4:	05500693:	li	a3,85
+   105f8:	05b00693:	li	a3,91
+   10628:	05d00693:	li	a3,93
+   10904:	05a00713:	li	a4,90
+   1024a:	02000813:	li	a6,32
+   103f4:	03f00893:	li	a7,63
+   1040e:	04000893:	li	a7,64
+   103de:	05d00893:	li	a7,93
+   100fe:	03a00a93:	li	s5,58
+   10922:	03a00a93:	li	s5,58
+   102a6:	00001537:	lui	a0,0x1
+   102c2:	800006b7:	lui	a3,0x80000
+   10424:	800006b7:	lui	a3,0x80000
+   10204:	80000737:	lui	a4,0x80000
+   103ee:	c0a5a583:	lw	a1,-1014(a1) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x28>
+   10408:	bf05a583:	lw	a1,-1040(a1) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x28>
+   10176:	e6e6a683:	lw	a3,-402(a3) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x14>
+   10180:	e686a683:	lw	a3,-408(a3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x18>
+   1018a:	e566a683:	lw	a3,-426(a3) # 11fdc <_GLOBAL_OFFSET_TABLE_+0x10>
+   101ba:	e1e6a683:	lw	a3,-482(a3) # 11fd4 <_GLOBAL_OFFSET_TABLE_+0x8>
+   101c4:	e186a683:	lw	a3,-488(a3) # 11fd8 <_GLOBAL_OFFSET_TABLE_+0xc>
+   10396:	c5a6a683:	lw	a3,-934(a3) # 11fec <_GLOBAL_OFFSET_TABLE_+0x20>
+   103ba:	c3a7a783:	lw	a5,-966(a5) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x24>
+   10524:	00082783:	lw	a5,0(a6)
+   1059a:	a3e82803:	lw	a6,-1474(a6) # 11fd4 <_GLOBAL_OFFSET_TABLE_+0x8>
+   105c0:	a1c82803:	lw	a6,-1508(a6) # 11fd8 <_GLOBAL_OFFSET_TABLE_+0xc>
+   10502:	00c42803:	lw	a6,12(s0)
+   10532:	00c42803:	lw	a6,12(s0)
+   10162:	e7242403:	lw	s0,-398(s0) # 11fd0 <_GLOBAL_OFFSET_TABLE_+0x4>
+   10220:	dcc4a483:	lw	s1,-564(s1) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0x1c>
+   1050a:	adabab83:	lw	s7,-1318(s7) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x14>
+   1032e:	fff6c693:	not	a3,a3
+   1014a:	030a6a13:	ori	s4,s4,48
+   10970:	030a6a13:	ori	s4,s4,48
+   10412:	00d58023:	sb	a3,0(a1)
+   10266:	00d78023:	sb	a3,0(a5)
+   1029a:	01078023:	sb	a6,0(a5)
+   1029e:	000780a3:	sb	zero,1(a5)
+   1011a:	00095993:	srli	s3,s2,0x0
+   10940:	00095993:	srli	s3,s2,0x0
+   1010e:	01095993:	srli	s3,s2,0x10
+   10934:	01095993:	srli	s3,s2,0x10
+   10108:	01895993:	srli	s3,s2,0x18
+   1092e:	01895993:	srli	s3,s2,0x18
+   10114:	00895993:	srli	s3,s2,0x8
+   1093a:	00895993:	srli	s3,s2,0x8
+   10136:	0009da13:	srli	s4,s3,0x0
+   1095c:	0009da13:	srli	s4,s3,0x0
+   10130:	0049da13:	srli	s4,s3,0x4
+   10956:	0049da13:	srli	s4,s3,0x4
+   101ca:	00042c23:	sw	zero,24(s0)
+   1038e:	00042c23:	sw	zero,24(s0)
+   1012c:	0ff9f993:	zext.b	s3,s3
+   10952:	0ff9f993:	zext.b	s3,s3
+   102ba:	953a:      	add	a0,a0,a4
+   1033e:	96ba:      	add	a3,a3,a4
+   108f6:	15fd:      	addi	a1,a1,-1
+   10200:	0691:      	addi	a3,a3,4
+   10210:	0691:      	addi	a3,a3,4
+   10912:	069d:      	addi	a3,a3,7
+   1027e:	17f9:      	addi	a5,a5,-2
+   1035e:	17f1:      	addi	a5,a5,-4
+   103ce:	17f1:      	addi	a5,a5,-4
+   10238:	0785:      	addi	a5,a5,1
+   1025a:	0785:      	addi	a5,a5,1
+   1026a:	0785:      	addi	a5,a5,1
+   102be:	0785:      	addi	a5,a5,1
+   103ae:	0785:      	addi	a5,a5,1
+   103c4:	0785:      	addi	a5,a5,1
+   102da:	0791:      	addi	a5,a5,4
+   102e4:	0791:      	addi	a5,a5,4
+   10310:	0791:      	addi	a5,a5,4
+   103a8:	0791:      	addi	a5,a5,4
+   10568:	0791:      	addi	a5,a5,4
+   10616:	0791:      	addi	a5,a5,4
+   10680:	0791:      	addi	a5,a5,4
+   103b4:	0491:      	addi	s1,s1,4
+   10152:	0a1d:      	addi	s4,s4,7
+   10978:	0a1d:      	addi	s4,s4,7
+   104ca:	1101:      	addi	sp,sp,-32
+   100f8:	1171:      	addi	sp,sp,-4
+   10128:	1171:      	addi	sp,sp,-4
+   10142:	1171:      	addi	sp,sp,-4
+   10246:	1171:      	addi	sp,sp,-4
+   104fa:	1171:      	addi	sp,sp,-4
+   1052a:	1171:      	addi	sp,sp,-4
+   1053a:	1171:      	addi	sp,sp,-4
+   10546:	1171:      	addi	sp,sp,-4
+   10558:	1171:      	addi	sp,sp,-4
+   1057c:	1171:      	addi	sp,sp,-4
+   105a2:	1171:      	addi	sp,sp,-4
+   105c8:	1171:      	addi	sp,sp,-4
+   105d6:	1171:      	addi	sp,sp,-4
+   105e6:	1171:      	addi	sp,sp,-4
+   10606:	1171:      	addi	sp,sp,-4
+   10636:	1171:      	addi	sp,sp,-4
+   1064a:	1171:      	addi	sp,sp,-4
+   10670:	1171:      	addi	sp,sp,-4
+   1068e:	1171:      	addi	sp,sp,-4
+   106c4:	1171:      	addi	sp,sp,-4
+   106ea:	1171:      	addi	sp,sp,-4
+   10710:	1171:      	addi	sp,sp,-4
+   10736:	1171:      	addi	sp,sp,-4
+   1075c:	1171:      	addi	sp,sp,-4
+   10782:	1171:      	addi	sp,sp,-4
+   107a8:	1171:      	addi	sp,sp,-4
+   107ec:	1171:      	addi	sp,sp,-4
+   10814:	1171:      	addi	sp,sp,-4
+   1083c:	1171:      	addi	sp,sp,-4
+   10864:	1171:      	addi	sp,sp,-4
+   10896:	1171:      	addi	sp,sp,-4
+   108c8:	1171:      	addi	sp,sp,-4
+   108dc:	1171:      	addi	sp,sp,-4
+   1091c:	1171:      	addi	sp,sp,-4
+   1094e:	1171:      	addi	sp,sp,-4
+   10968:	1171:      	addi	sp,sp,-4
+   104ee:	6105:      	addi	sp,sp,32
+   10124:	0111:      	addi	sp,sp,4
+   1013e:	0111:      	addi	sp,sp,4
+   1015a:	0111:      	addi	sp,sp,4
+   102d2:	0111:      	addi	sp,sp,4
+   104f6:	0111:      	addi	sp,sp,4
+   10554:	0111:      	addi	sp,sp,4
+   10566:	0111:      	addi	sp,sp,4
+   10578:	0111:      	addi	sp,sp,4
+   105e4:	0111:      	addi	sp,sp,4
+   105f4:	0111:      	addi	sp,sp,4
+   10614:	0111:      	addi	sp,sp,4
+   10632:	0111:      	addi	sp,sp,4
+   10658:	0111:      	addi	sp,sp,4
+   1067e:	0111:      	addi	sp,sp,4
+   106d4:	0111:      	addi	sp,sp,4
+   106fa:	0111:      	addi	sp,sp,4
+   10720:	0111:      	addi	sp,sp,4
+   10746:	0111:      	addi	sp,sp,4
+   1076c:	0111:      	addi	sp,sp,4
+   10792:	0111:      	addi	sp,sp,4
+   107b8:	0111:      	addi	sp,sp,4
+   107fc:	0111:      	addi	sp,sp,4
+   10824:	0111:      	addi	sp,sp,4
+   1084c:	0111:      	addi	sp,sp,4
+   10874:	0111:      	addi	sp,sp,4
+   108a6:	0111:      	addi	sp,sp,4
+   108d8:	0111:      	addi	sp,sp,4
+   1094a:	0111:      	addi	sp,sp,4
+   10964:	0111:      	addi	sp,sp,4
+   10982:	0111:      	addi	sp,sp,4
+   10682:	1efd:      	addi	t4,t4,-1
+   102ca:	8d75:      	and	a0,a0,a3
+   1032c:	8ef9:      	and	a3,a3,a4
+   10208:	8f71:      	and	a4,a4,a2
+   10400:	dd71:      	beqz	a0,103dc <_exit>
+   101fa:	c595:      	beqz	a1,10226 <miss>
+   10214:	c601:      	beqz	a2,1021c <execute>
+   1023e:	c299:      	beqz	a3,10244 <wipe+0x8>
+   1034c:	c2a5:      	beqz	a3,103ac <next>
+   10254:	c709:      	beqz	a4,1025e <gets>
+   108f8:	f9ed:      	bnez	a1,108ea <number+0xe>
+   101d0:	e29d:      	bnez	a3,101f6 <fold>
+   10216:	e319:      	bnez	a4,1021c <execute>
+   10244:	b7b9:      	j	10192 <error>
+   10440:	bb9d:      	j	101b6 <abort>
+   1021a:	bff1:      	j	101f6 <fold>
+   1023a:	bfd5:      	j	1022e <miss+0x8>
+   102a2:	b775:      	j	1024e <token+0x8>
+   1025c:	bfd5:      	j	10250 <token+0xa>
+   10280:	b7f5:      	j	1026c <gets+0xe>
+   10294:	bfe1:      	j	1026c <gets+0xe>
+   102c0:	b7fd:      	j	102ae <djb2+0x8>
+   1048c:	b551:      	j	10310 <drop1>
+   102f4:	a0a5:      	j	1035c <push1>
+   10428:	bf15:      	j	1035c <push1>
+   104c8:	bd51:      	j	1035c <push1>
+   10320:	a83d:      	j	1035e <back1>
+   10350:	a039:      	j	1035e <back1>
+   10332:	a03d:      	j	10360 <keep1>
+   10340:	a005:      	j	10360 <keep1>
+   10458:	b721:      	j	10360 <keep1>
+   10466:	bded:      	j	10360 <keep1>
+   10302:	a085:      	j	10362 <save1>
+   10312:	a881:      	j	10362 <save1>
+   1039a:	b7d5:      	j	1037e <comma>
+   10364:	a0a1:      	j	103ac <next>
+   10380:	a035:      	j	103ac <next>
+   103d6:	bfd9:      	j	103ac <next>
+   10436:	bf9d:      	j	103ac <next>
+   10472:	bf2d:      	j	103ac <next>
+   1047e:	b73d:      	j	103ac <next>
+   10498:	bf11:      	j	103ac <next>
+   104a4:	b721:      	j	103ac <next>
+   104bc:	bdc5:      	j	103ac <next>
+   10224:	aa49:      	j	103b6 <pick>
+   1044a:	bf49:      	j	103dc <_exit>
+   10538:	bf6d:      	j	104f2 <returns>
+   105a0:	bf89:      	j	104f2 <returns>
+   105c6:	b735:      	j	104f2 <returns>
+   1068c:	b59d:      	j	104f2 <returns>
+   108da:	b921:      	j	104f2 <returns>
+   108fa:	bee5:      	j	104f2 <returns>
+   10528:	b7fd:      	j	10516 <wordf+0x1c>
+   1054e:	366d:      	jal	100f8 <puthex>
+   10560:	3e61:      	jal	100f8 <puthex>
+   105de:	3e29:      	jal	100f8 <puthex>
+   105ee:	3629:      	jal	100f8 <puthex>
+   1060e:	34ed:      	jal	100f8 <puthex>
+   10652:	345d:      	jal	100f8 <puthex>
+   10678:	3441:      	jal	100f8 <puthex>
+   1010c:	2831:      	jal	10128 <puthex+0x30>
+   10112:	2819:      	jal	10128 <puthex+0x30>
+   10118:	2801:      	jal	10128 <puthex+0x30>
+   1011e:	2029:      	jal	10128 <puthex+0x30>
+   10134:	2039:      	jal	10142 <puthex+0x4a>
+   1013a:	2021:      	jal	10142 <puthex+0x4a>
+   101f6:	2881:      	jal	10246 <token>
+   1037a:	35f1:      	jal	10246 <token>
+   10218:	287d:      	jal	102d6 <docomma>
+   10378:	3fb9:      	jal	102d6 <docomma>
+   1037e:	3fa1:      	jal	102d6 <docomma>
+   102fe:	37cd:      	jal	102e0 <pull2>
+   1030c:	3fd1:      	jal	102e0 <pull2>
+   1031c:	37d1:      	jal	102e0 <pull2>
+   1032a:	3f5d:      	jal	102e0 <pull2>
+   1033c:	3755:      	jal	102e0 <pull2>
+   1034a:	3f59:      	jal	102e0 <pull2>
+   10454:	3571:      	jal	102e0 <pull2>
+   10462:	3dbd:      	jal	102e0 <pull2>
+   10488:	3da1:      	jal	102e0 <pull2>
+   104ae:	3d0d:      	jal	102e0 <pull2>
+   1026c:	2ab5:      	jal	103e8 <_getc>
+   102f2:	28dd:      	jal	103e8 <_getc>
+   10106:	2cf5:      	jal	10402 <_putc>
+   10156:	2475:      	jal	10402 <_putc>
+   10196:	24b5:      	jal	10402 <_putc>
+   101a0:	248d:      	jal	10402 <_putc>
+   101aa:	2ca1:      	jal	10402 <_putc>
+   101b2:	2c81:      	jal	10402 <_putc>
+   101d6:	2435:      	jal	10402 <_putc>
+   101e0:	240d:      	jal	10402 <_putc>
+   101ea:	2c21:      	jal	10402 <_putc>
+   101f2:	2c01:      	jal	10402 <_putc>
+   1022a:	2ae1:      	jal	10402 <_putc>
+   10232:	2ac1:      	jal	10402 <_putc>
+   10300:	2209:      	jal	10402 <_putc>
+   104b8:	37a9:      	jal	10402 <_putc>
+   10512:	3dc5:      	jal	10402 <_putc>
+   10542:	35c1:      	jal	10402 <_putc>
+   10572:	3d41:      	jal	10402 <_putc>
+   10586:	3db5:      	jal	10402 <_putc>
+   10590:	3d8d:      	jal	10402 <_putc>
+   105ac:	3d99:      	jal	10402 <_putc>
+   105b6:	35b1:      	jal	10402 <_putc>
+   105d2:	3d05:      	jal	10402 <_putc>
+   105fc:	3519:      	jal	10402 <_putc>
+   10622:	33c5:      	jal	10402 <_putc>
+   1062c:	3bd9:      	jal	10402 <_putc>
+   10646:	3b75:      	jal	10402 <_putc>
+   10660:	334d:      	jal	10402 <_putc>
+   1066a:	3b61:      	jal	10402 <_putc>
+   10698:	33ad:      	jal	10402 <_putc>
+   106a2:	3385:      	jal	10402 <_putc>
+   106ac:	3b99:      	jal	10402 <_putc>
+   106b6:	33b1:      	jal	10402 <_putc>
+   106c0:	3389:      	jal	10402 <_putc>
+   106dc:	331d:      	jal	10402 <_putc>
+   106e6:	3b31:      	jal	10402 <_putc>
+   10702:	3301:      	jal	10402 <_putc>
+   1070c:	39dd:      	jal	10402 <_putc>
+   10728:	39e9:      	jal	10402 <_putc>
+   10732:	39c1:      	jal	10402 <_putc>
+   1074e:	3955:      	jal	10402 <_putc>
+   10758:	316d:      	jal	10402 <_putc>
+   10774:	3179:      	jal	10402 <_putc>
+   1077e:	3151:      	jal	10402 <_putc>
+   1079a:	31a5:      	jal	10402 <_putc>
+   107a4:	39b9:      	jal	10402 <_putc>
+   107be:	3191:      	jal	10402 <_putc>
+   107c8:	392d:      	jal	10402 <_putc>
+   107d2:	3905:      	jal	10402 <_putc>
+   107dc:	311d:      	jal	10402 <_putc>
+   107e6:	3931:      	jal	10402 <_putc>
+   10804:	3efd:      	jal	10402 <_putc>
+   1080e:	3ed5:      	jal	10402 <_putc>
+   1082c:	3ed9:      	jal	10402 <_putc>
+   10836:	36f1:      	jal	10402 <_putc>
+   10854:	367d:      	jal	10402 <_putc>
+   1085e:	3655:      	jal	10402 <_putc>
+   1087c:	3659:      	jal	10402 <_putc>
+   10886:	3eb5:      	jal	10402 <_putc>
+   10890:	3e8d:      	jal	10402 <_putc>
+   108ae:	3e91:      	jal	10402 <_putc>
+   108b8:	36a9:      	jal	10402 <_putc>
+   108c2:	3681:      	jal	10402 <_putc>
+   104fe:	37f1:      	jal	104ca <saves>
+   1052e:	3f71:      	jal	104ca <saves>
+   1054a:	3741:      	jal	104ca <saves>
+   1055c:	37bd:      	jal	104ca <saves>
+   10580:	37a9:      	jal	104ca <saves>
+   105a6:	3715:      	jal	104ca <saves>
+   105da:	3dc5:      	jal	104ca <saves>
+   105ea:	35c5:      	jal	104ca <saves>
+   1060a:	35c1:      	jal	104ca <saves>
+   1063a:	3d41:      	jal	104ca <saves>
+   1064e:	3db5:      	jal	104ca <saves>
+   10674:	3d99:      	jal	104ca <saves>
+   10692:	3d25:      	jal	104ca <saves>
+   106c8:	3509:      	jal	104ca <saves>
+   106ee:	3bf1:      	jal	104ca <saves>
+   10714:	3b5d:      	jal	104ca <saves>
+   1073a:	3b41:      	jal	104ca <saves>
+   10760:	33ad:      	jal	104ca <saves>
+   10786:	3391:      	jal	104ca <saves>
+   107ac:	3b39:      	jal	104ca <saves>
+   107f0:	39e9:      	jal	104ca <saves>
+   10818:	394d:      	jal	104ca <saves>
+   10840:	3169:      	jal	104ca <saves>
+   10868:	318d:      	jal	104ca <saves>
+   1089a:	3905:      	jal	104ca <saves>
+   108cc:	3efd:      	jal	104ca <saves>
+   108e0:	36ed:      	jal	104ca <saves>
+   104f2:	37f5:      	jal	104de <loads>
+   10550:	3779:      	jal	104de <loads>
+   10562:	3fb5:      	jal	104de <loads>
+   105e0:	3dfd:      	jal	104de <loads>
+   105f0:	35fd:      	jal	104de <loads>
+   10610:	35f9:      	jal	104de <loads>
+   10654:	3569:      	jal	104de <loads>
+   1067a:	3595:      	jal	104de <loads>
+   106d0:	3539:      	jal	104de <loads>
+   106f6:	33e5:      	jal	104de <loads>
+   1071c:	33c9:      	jal	104de <loads>
+   10742:	3b71:      	jal	104de <loads>
+   10768:	3b9d:      	jal	104de <loads>
+   1078e:	3b81:      	jal	104de <loads>
+   107b4:	332d:      	jal	104de <loads>
+   107f8:	31dd:      	jal	104de <loads>
+   10820:	397d:      	jal	104de <loads>
+   10848:	3959:      	jal	104de <loads>
+   10870:	31bd:      	jal	104de <loads>
+   108a2:	3935:      	jal	104de <loads>
+   108d4:	3129:      	jal	104de <loads>
+   10496:	2095:      	jal	104fa <wordf>
+   104a2:	2061:      	jal	1052a <wordu>
+   10520:	2829:      	jal	1053a <wordt>
+   10536:	2011:      	jal	1053a <wordt>
+   10470:	2231:      	jal	1057c <stackS>
+   1047c:	221d:      	jal	105a2 <stackR>
+   1059e:	202d:      	jal	105c8 <stackp>
+   105c4:	2011:      	jal	105c8 <stackp>
+   1048a:	2275:      	jal	10636 <dumps>
+   108f0:	2031:      	jal	108fc <digit>
+   104b0:	21b5:      	jal	1091c <puthexy>
+   10932:	2831:      	jal	1094e <puthexy+0x32>
+   10938:	2819:      	jal	1094e <puthexy+0x32>
+   1093e:	2801:      	jal	1094e <puthexy+0x32>
+   10944:	2029:      	jal	1094e <puthexy+0x32>
+   1095a:	2039:      	jal	10968 <puthexy+0x4c>
+   10960:	2021:      	jal	10968 <puthexy+0x4c>
+   103dc:	4501:      	li	a0,0
+   103e8:	4501:      	li	a0,0
+   10402:	4505:      	li	a0,1
+   103f2:	4605:      	li	a2,1
+   1040c:	4605:      	li	a2,1
+   1034e:	56fd:      	li	a3,-1
+   10372:	4685:      	li	a3,1
+   10194:	46a9:      	li	a3,10
+   101b0:	46a9:      	li	a3,10
+   101d4:	46a9:      	li	a3,10
+   101f0:	46a9:      	li	a3,10
+   10228:	46a9:      	li	a3,10
+   10510:	46a9:      	li	a3,10
+   10540:	46a9:      	li	a3,10
+   10570:	46a9:      	li	a3,10
+   10584:	46a9:      	li	a3,10
+   105aa:	46a9:      	li	a3,10
+   10644:	46a9:      	li	a3,10
+   10696:	46a9:      	li	a3,10
+   107bc:	46a9:      	li	a3,10
+   104c6:	4691:      	li	a3,4
+   10262:	4729:      	li	a4,10
+   1090c:	4729:      	li	a4,10
+   10288:	48a9:      	li	a7,10
+   10282:	48b5:      	li	a7,13
+   1028e:	48e1:      	li	a7,24
+   10272:	48fd:      	li	a7,31
+   10278:	48a1:      	li	a7,8
+   10640:	4ea1:      	li	t4,8
+   104de:	4502:      	lw	a0,0(sp)
+   101fe:	428c:      	lw	a1,0(a3)
+   104e0:	4592:      	lw	a1,4(sp)
+   101f8:	440c:      	lw	a1,8(s0)
+   10202:	4290:      	lw	a2,0(a3)
+   10212:	4c10:      	lw	a2,24(s0)
+   104e2:	4622:      	lw	a2,8(sp)
+   1031e:	4294:      	lw	a3,0(a3)
+   102e2:	4394:      	lw	a3,0(a5)
+   108ea:	4394:      	lw	a3,0(a5)
+   10894:	4014:      	lw	a3,0(s0)
+   103b2:	4094:      	lw	a3,0(s1)
+   1036e:	4454:      	lw	a3,12(s0)
+   1083a:	4454:      	lw	a3,12(s0)
+   104e4:	46b2:      	lw	a3,12(sp)
+   101ce:	4c14:      	lw	a3,24(s0)
+   1023c:	4c14:      	lw	a3,24(s0)
+   107ea:	4c14:      	lw	a3,24(s0)
+   10240:	5054:      	lw	a3,36(s0)
+   1038a:	5054:      	lw	a3,36(s0)
+   10862:	5054:      	lw	a3,36(s0)
+   108c6:	4054:      	lw	a3,4(s0)
+   10376:	4414:      	lw	a3,8(s0)
+   10812:	4414:      	lw	a3,8(s0)
+   102e6:	4398:      	lw	a4,0(a5)
+   10556:	4398:      	lw	a4,0(a5)
+   10604:	4398:      	lw	a4,0(a5)
+   1066e:	4398:      	lw	a4,0(a5)
+   104e6:	4742:      	lw	a4,16(sp)
+   102e0:	401c:      	lw	a5,0(s0)
+   1035c:	401c:      	lw	a5,0(s0)
+   10594:	401c:      	lw	a5,0(s0)
+   102d6:	445c:      	lw	a5,12(s0)
+   1024e:	481c:      	lw	a5,16(s0)
+   1025e:	485c:      	lw	a5,20(s0)
+   104e8:	47d2:      	lw	a5,20(sp)
+   103ac:	4c5c:      	lw	a5,28(s0)
+   103c2:	501c:      	lw	a5,32(s0)
+   103a4:	405c:      	lw	a5,4(s0)
+   103cc:	405c:      	lw	a5,4(s0)
+   105ba:	405c:      	lw	a5,4(s0)
+   10500:	441c:      	lw	a5,8(s0)
+   10530:	441c:      	lw	a5,8(s0)
+   104ea:	4862:      	lw	a6,24(sp)
+   104ec:	48f2:      	lw	a7,28(sp)
+   10122:	4082:      	lw	ra,0(sp)
+   1013c:	4082:      	lw	ra,0(sp)
+   10158:	4082:      	lw	ra,0(sp)
+   102d0:	4082:      	lw	ra,0(sp)
+   104f4:	4082:      	lw	ra,0(sp)
+   10552:	4082:      	lw	ra,0(sp)
+   10564:	4082:      	lw	ra,0(sp)
+   10576:	4082:      	lw	ra,0(sp)
+   105e2:	4082:      	lw	ra,0(sp)
+   105f2:	4082:      	lw	ra,0(sp)
+   10612:	4082:      	lw	ra,0(sp)
+   10630:	4082:      	lw	ra,0(sp)
+   10656:	4082:      	lw	ra,0(sp)
+   1067c:	4082:      	lw	ra,0(sp)
+   106d2:	4082:      	lw	ra,0(sp)
+   106f8:	4082:      	lw	ra,0(sp)
+   1071e:	4082:      	lw	ra,0(sp)
+   10744:	4082:      	lw	ra,0(sp)
+   1076a:	4082:      	lw	ra,0(sp)
+   10790:	4082:      	lw	ra,0(sp)
+   107b6:	4082:      	lw	ra,0(sp)
+   107fa:	4082:      	lw	ra,0(sp)
+   10822:	4082:      	lw	ra,0(sp)
+   1084a:	4082:      	lw	ra,0(sp)
+   10872:	4082:      	lw	ra,0(sp)
+   108a4:	4082:      	lw	ra,0(sp)
+   108d6:	4082:      	lw	ra,0(sp)
+   10948:	4082:      	lw	ra,0(sp)
+   10962:	4082:      	lw	ra,0(sp)
+   10980:	4082:      	lw	ra,0(sp)
+   103a6:	4384:      	lw	s1,0(a5)
+   102a4:	863e:      	mv	a2,a5
+   1037c:	86aa:      	mv	a3,a0
+   101fc:	86ae:      	mv	a3,a1
+   107f2:	86b6:      	mv	a3,a3
+   1081a:	86b6:      	mv	a3,a3
+   10842:	86b6:      	mv	a3,a3
+   1086a:	86b6:      	mv	a3,a3
+   1089c:	86b6:      	mv	a3,a3
+   108ce:	86b6:      	mv	a3,a3
+   1055e:	86ba:      	mv	a3,a4
+   1060c:	86ba:      	mv	a3,a4
+   10676:	86ba:      	mv	a3,a4
+   1054c:	86be:      	mv	a3,a5
+   105dc:	86be:      	mv	a3,a5
+   10650:	86be:      	mv	a3,a5
+   10264:	86c2:      	mv	a3,a6
+   105ec:	86c2:      	mv	a3,a6
+   1035a:	86a2:      	mv	a3,s0
+   10120:	86ca:      	mv	a3,s2
+   10946:	86ca:      	mv	a3,s2
+   10154:	86d2:      	mv	a3,s4
+   1097a:	86d2:      	mv	a3,s4
+   10198:	8696:      	mv	a3,t0
+   101a2:	8696:      	mv	a3,t0
+   101ac:	8696:      	mv	a3,t0
+   101b4:	8696:      	mv	a3,t0
+   101d8:	8696:      	mv	a3,t0
+   101e2:	8696:      	mv	a3,t0
+   101ec:	8696:      	mv	a3,t0
+   101f4:	8696:      	mv	a3,t0
+   1022c:	8696:      	mv	a3,t0
+   104ba:	8696:      	mv	a3,t0
+   10514:	8696:      	mv	a3,t0
+   10544:	8696:      	mv	a3,t0
+   10574:	8696:      	mv	a3,t0
+   10588:	8696:      	mv	a3,t0
+   10592:	8696:      	mv	a3,t0
+   105ae:	8696:      	mv	a3,t0
+   105b8:	8696:      	mv	a3,t0
+   105d4:	8696:      	mv	a3,t0
+   105fe:	8696:      	mv	a3,t0
+   10624:	8696:      	mv	a3,t0
+   1062e:	8696:      	mv	a3,t0
+   10648:	8696:      	mv	a3,t0
+   10662:	8696:      	mv	a3,t0
+   1066c:	8696:      	mv	a3,t0
+   1069a:	8696:      	mv	a3,t0
+   106a4:	8696:      	mv	a3,t0
+   106ae:	8696:      	mv	a3,t0
+   106b8:	8696:      	mv	a3,t0
+   106c2:	8696:      	mv	a3,t0
+   106ca:	8696:      	mv	a3,t0
+   106de:	8696:      	mv	a3,t0
+   106e8:	8696:      	mv	a3,t0
+   10704:	8696:      	mv	a3,t0
+   1070e:	8696:      	mv	a3,t0
+   1072a:	8696:      	mv	a3,t0
+   10734:	8696:      	mv	a3,t0
+   10750:	8696:      	mv	a3,t0
+   1075a:	8696:      	mv	a3,t0
+   10776:	8696:      	mv	a3,t0
+   10780:	8696:      	mv	a3,t0
+   1079c:	8696:      	mv	a3,t0
+   107a6:	8696:      	mv	a3,t0
+   107c0:	8696:      	mv	a3,t0
+   107ca:	8696:      	mv	a3,t0
+   107d4:	8696:      	mv	a3,t0
+   107de:	8696:      	mv	a3,t0
+   107e8:	8696:      	mv	a3,t0
+   10806:	8696:      	mv	a3,t0
+   10810:	8696:      	mv	a3,t0
+   1082e:	8696:      	mv	a3,t0
+   10838:	8696:      	mv	a3,t0
+   10856:	8696:      	mv	a3,t0
+   10860:	8696:      	mv	a3,t0
+   1087e:	8696:      	mv	a3,t0
+   10888:	8696:      	mv	a3,t0
+   10892:	8696:      	mv	a3,t0
+   108b0:	8696:      	mv	a3,t0
+   108ba:	8696:      	mv	a3,t0
+   108c4:	8696:      	mv	a3,t0
+   106f0:	869a:      	mv	a3,t1
+   10716:	869e:      	mv	a3,t2
+   1073c:	86f2:      	mv	a3,t3
+   10762:	86f6:      	mv	a3,t4
+   10788:	86fa:      	mv	a3,t5
+   107ae:	86fe:      	mv	a3,t6
+   102b6:	872a:      	mv	a4,a0
+   102ce:	87b2:      	mv	a5,a2
+   1063c:	87b6:      	mv	a5,a3
+   1063e:	883a:      	mv	a6,a4
+   10522:	8862:      	mv	a6,s8
+   103d4:	84b6:      	mv	s1,a3
+   100fc:	8936:      	mv	s2,a3
+   10920:	8936:      	mv	s2,a3
+   1051e:	8c3e:      	mv	s8,a5
+   10192:	82b6:      	mv	t0,a3
+   1019a:	82b6:      	mv	t0,a3
+   101a4:	82b6:      	mv	t0,a3
+   101ae:	82b6:      	mv	t0,a3
+   101d2:	82b6:      	mv	t0,a3
+   101da:	82b6:      	mv	t0,a3
+   101e4:	82b6:      	mv	t0,a3
+   101ee:	82b6:      	mv	t0,a3
+   10226:	82b6:      	mv	t0,a3
+   104b2:	82b6:      	mv	t0,a3
+   1050e:	82b6:      	mv	t0,a3
+   1053e:	82b6:      	mv	t0,a3
+   1056e:	82b6:      	mv	t0,a3
+   10582:	82b6:      	mv	t0,a3
+   1058a:	82b6:      	mv	t0,a3
+   105a8:	82b6:      	mv	t0,a3
+   105b0:	82b6:      	mv	t0,a3
+   105cc:	82b6:      	mv	t0,a3
+   105f6:	82b6:      	mv	t0,a3
+   1061c:	82b6:      	mv	t0,a3
+   10626:	82b6:      	mv	t0,a3
+   10642:	82b6:      	mv	t0,a3
+   1065a:	82b6:      	mv	t0,a3
+   10664:	82b6:      	mv	t0,a3
+   10694:	82b6:      	mv	t0,a3
+   1069c:	82b6:      	mv	t0,a3
+   106a6:	82b6:      	mv	t0,a3
+   106b0:	82b6:      	mv	t0,a3
+   106ba:	82b6:      	mv	t0,a3
+   106d6:	82b6:      	mv	t0,a3
+   106e0:	82b6:      	mv	t0,a3
+   106fc:	82b6:      	mv	t0,a3
+   10706:	82b6:      	mv	t0,a3
+   10722:	82b6:      	mv	t0,a3
+   1072c:	82b6:      	mv	t0,a3
+   10748:	82b6:      	mv	t0,a3
+   10752:	82b6:      	mv	t0,a3
+   1076e:	82b6:      	mv	t0,a3
+   10778:	82b6:      	mv	t0,a3
+   10794:	82b6:      	mv	t0,a3
+   1079e:	82b6:      	mv	t0,a3
+   107ba:	82b6:      	mv	t0,a3
+   107c2:	82b6:      	mv	t0,a3
+   107cc:	82b6:      	mv	t0,a3
+   107d6:	82b6:      	mv	t0,a3
+   107e0:	82b6:      	mv	t0,a3
+   107fe:	82b6:      	mv	t0,a3
+   10808:	82b6:      	mv	t0,a3
+   10826:	82b6:      	mv	t0,a3
+   10830:	82b6:      	mv	t0,a3
+   1084e:	82b6:      	mv	t0,a3
+   10858:	82b6:      	mv	t0,a3
+   10876:	82b6:      	mv	t0,a3
+   10880:	82b6:      	mv	t0,a3
+   1088a:	82b6:      	mv	t0,a3
+   108a8:	82b6:      	mv	t0,a3
+   108b2:	82b6:      	mv	t0,a3
+   108bc:	82b6:      	mv	t0,a3
+   108f4:	8e55:      	or	a2,a2,a3
+   10126:	8082:      	ret
+   10140:	8082:      	ret
+   1015c:	8082:      	ret
+   102d4:	8082:      	ret
+   102de:	8082:      	ret
+   102e8:	8082:      	ret
+   103e6:	8082:      	ret
+   1041a:	8082:      	ret
+   104dc:	8082:      	ret
+   104f0:	8082:      	ret
+   104f8:	8082:      	ret
+   1057a:	8082:      	ret
+   10634:	8082:      	ret
+   10914:	8082:      	ret
+   1091a:	8082:      	ret
+   1094c:	8082:      	ret
+   10966:	8082:      	ret
+   10984:	8082:      	ret
+   102b8:	0516:      	slli	a0,a0,0x5
+   108f2:	0612:      	slli	a2,a2,0x4
+   10456:	0686:      	slli	a3,a3,0x1
+   10464:	8285:      	srli	a3,a3,0x1
+   104cc:	c02a:      	sw	a0,0(sp)
+   104ce:	c22e:      	sw	a1,4(sp)
+   104d0:	c432:      	sw	a2,8(sp)
+   102d8:	c394:      	sw	a3,0(a5)
+   10360:	c394:      	sw	a3,0(a5)
+   101be:	c014:      	sw	a3,0(s0)
+   1017a:	c454:      	sw	a3,12(s0)
+   10242:	c454:      	sw	a3,12(s0)
+   104d2:	c636:      	sw	a3,12(sp)
+   1018e:	c814:      	sw	a3,16(s0)
+   10190:	c854:      	sw	a3,20(s0)
+   10374:	cc14:      	sw	a3,24(s0)
+   10370:	d054:      	sw	a3,36(s0)
+   101c8:	c054:      	sw	a3,4(s0)
+   10184:	c414:      	sw	a3,8(s0)
+   1038c:	c414:      	sw	a3,8(s0)
+   1030e:	c298:      	sw	a4,0(a3)
+   104d4:	c83a:      	sw	a4,16(sp)
+   10362:	c01c:      	sw	a5,0(s0)
+   102dc:	c45c:      	sw	a5,12(s0)
+   10260:	c81c:      	sw	a5,16(s0)
+   102cc:	c81c:      	sw	a5,16(s0)
+   104d6:	ca3e:      	sw	a5,20(sp)
+   1016a:	cc5c:      	sw	a5,28(s0)
+   103b0:	cc5c:      	sw	a5,28(s0)
+   10170:	d01c:      	sw	a5,32(s0)
+   103c6:	d01c:      	sw	a5,32(s0)
+   103aa:	c05c:      	sw	a5,4(s0)
+   103d2:	c05c:      	sw	a5,4(s0)
+   104d8:	cc42:      	sw	a6,24(sp)
+   104da:	ce46:      	sw	a7,28(sp)
+   100fa:	c006:      	sw	ra,0(sp)
+   1012a:	c006:      	sw	ra,0(sp)
+   10144:	c006:      	sw	ra,0(sp)
+   10248:	c006:      	sw	ra,0(sp)
+   104fc:	c006:      	sw	ra,0(sp)
+   1052c:	c006:      	sw	ra,0(sp)
+   1053c:	c006:      	sw	ra,0(sp)
+   10548:	c006:      	sw	ra,0(sp)
+   1055a:	c006:      	sw	ra,0(sp)
+   1057e:	c006:      	sw	ra,0(sp)
+   105a4:	c006:      	sw	ra,0(sp)
+   105ca:	c006:      	sw	ra,0(sp)
+   105d8:	c006:      	sw	ra,0(sp)
+   105e8:	c006:      	sw	ra,0(sp)
+   10608:	c006:      	sw	ra,0(sp)
+   10638:	c006:      	sw	ra,0(sp)
+   1064c:	c006:      	sw	ra,0(sp)
+   10672:	c006:      	sw	ra,0(sp)
+   10690:	c006:      	sw	ra,0(sp)
+   106c6:	c006:      	sw	ra,0(sp)
+   106ec:	c006:      	sw	ra,0(sp)
+   10712:	c006:      	sw	ra,0(sp)
+   10738:	c006:      	sw	ra,0(sp)
+   1075e:	c006:      	sw	ra,0(sp)
+   10784:	c006:      	sw	ra,0(sp)
+   107aa:	c006:      	sw	ra,0(sp)
+   107ee:	c006:      	sw	ra,0(sp)
+   10816:	c006:      	sw	ra,0(sp)
+   1083e:	c006:      	sw	ra,0(sp)
+   10866:	c006:      	sw	ra,0(sp)
+   10898:	c006:      	sw	ra,0(sp)
+   108ca:	c006:      	sw	ra,0(sp)
+   108de:	c006:      	sw	ra,0(sp)
+   1091e:	c006:      	sw	ra,0(sp)
+   10950:	c006:      	sw	ra,0(sp)
+   1096a:	c006:      	sw	ra,0(sp)
+   103d0:	c384:      	sw	s1,0(a5)
+   102bc:	8d35:      	xor	a0,a0,a3
+   1020a:	8e39:      	xor	a2,a2,a4

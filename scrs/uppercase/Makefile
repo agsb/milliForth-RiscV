@@ -73,8 +73,6 @@ $(MY): $(SOURCES:.S=.o)
 
 	od --endian=little -A x -t x1 -v $@.sec > $@.hex
 
-	$(PASS)strip $(MY).elf -o $(MY).elfs
-
 all: 
 	
 	$(MY)
