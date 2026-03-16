@@ -197,10 +197,14 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
+ .equ debug, YES
+ 
+ .equ extras, YES
+ 
+ .equ maths, YES
+
 /*
  
- .equ debug, YES
-
  .equ dismiss, YES
 
  .equ beatme, YES

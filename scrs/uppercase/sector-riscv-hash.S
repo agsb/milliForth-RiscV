@@ -897,29 +897,31 @@ foldptr:
 # any other primitives after exit
 #---------------------------------------------------------------------
 
+.set last_next, h_exit
+
+#----------------------------------------------------------------------
+.ifdef extras
+
+#include "extras-riscv-hash.S"
+
+.endif
+
+#----------------------------------------------------------------------
+.ifdef maths
+
+#include "maths-riscv-hash.S"
+
+.endif
+
+#----------------------------------------------------------------------
 .ifdef debug
 
-.equ EXTRAS, YES
-
-#----------------------------------------------------------------------
-.ifdef EXTRAS
-
-.set into_extras, h_exit
-
-#include "extras-riscv.S"
-
-.set h_last, from_extras
-
-.endif
+#include "debug-riscv-hash.S"
 
 .endif
 
 #----------------------------------------------------------------------
-.ifndef EXTRAS
-
-.set h_last, h_exit
-
-.endif
+.set h_last, last_next
 
 #---------------------------------------------------------------------
 # Beware, ends must be at last word in primitive ditionary !

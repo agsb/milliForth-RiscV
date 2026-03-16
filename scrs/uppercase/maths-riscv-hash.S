@@ -30,58 +30,46 @@
 # djb2 hash cleared of bit 31
 #
 
-.equ hash_NAN, 0x0B87D404
-.equ hash_DOCODE, 0x075D9A73
-.equ hash_ABORT, 0x0A1DFF4F 
-.equ hash_BYE, 0x0B874AFB 
-
-.equ hash_sfl, 0x0059685D
-.equ hash_sfr, 0x00596858
-
-.equ hash_dot, 0x0002B58B
-.equ hash_splist, 0x005965D3
-.equ hash_rplist, 0x005965D2
-
-.equ hash_DUMP, 0x7C6B2FE9 
-.equ hash_WORDS, 0x0B6953F8 
-.equ hash_WORDS, 0x0D9A5B98 
-.equ hash_SEE, 0x0B881316 
-.equ hash_CELL, 0x7C70B163 
+.equ hash_MUL, 0x0002B58F  
+.equ hash_DIV, 0x0002B58A  
+.equ hash_MSTAR, 0x005972C2  
+.equ hash_UMSTAR, 0x0B87EB77  
+.equ hash_BYMOD, 0x7C4D1C6C  
+.equ hash_FMBYMOD, 0x14CB69A7  
+.equ hash_SMBYMOD, 0x49BE2C12  
+.equ hash_SFR, 0x00596858  
+.equ hash_SFL, 0x0059685D  
 
 #---------------------------------------------------------------------
-# extra primitives
+# math primitives
+
+.equ init_math, last_next
 
 #---------------------------------------------------------------------
-# ( -- ) push 0x80000000
-def_word "NAN", "nan", hash_NAN, into_extras
+# ( w1 w2 -- w3 w4 ) multiply
+def_word "*", "mul", hash_MUL, init_math
         
-        lui fst, %hi(0x80000000)
+        call pull2
+        mul trd, fst, snd
+        mulh snd, fst, snd
+        add fst, trd, zero
 
-        j push1
+push2:
+        sw snd, 0 (idx)
+	j back1
 
 #---------------------------------------------------------------------
-# ( -- ) execute a jump and link to a reference at IP
-def_word ";CODE", "docode", hash_DOCODE, h_nan
+# ( w1 w2 -- w3 w4 ) divide
+def_word "/", "div", hash_DIV, h_mul
         
-        jalr ra, 0 (ipt)
+        call pull2
+	beqz snd, by_zero
+        div trd, fst, snd
+        rem snd, fst, snd
+        add fst, trd, zero
+	j push2
 
-        j next
-
-#---------------------------------------------------------------------
-# ( -- ) ae abort
-def_word "ABORT", "aborts", hash_ABORT, h_docode
-        
-        j abort
-
-#---------------------------------------------------------------------
-# ( -- ) exit forth
-def_word "BYE", "byes", hash_BYE, h_aborts
-        
-        j _exit
-
-
-#---------------------------------------------------------------------
-
+/*
 #---------------------------------------------------------------------
 # ( w -- w*2 ) #; shift left
 def_word "2*", "sfl", hash_sfl, h_byes
@@ -102,4 +90,8 @@ def_word "2/", "sfr", hash_sfr, h_sfl
         
         j keep1
 
+*/
+
 #---------------------------------------------------------------------
+.set last_next, h_sfl
+
