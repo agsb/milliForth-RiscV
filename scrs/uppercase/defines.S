@@ -197,6 +197,8 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
+/*
+ 
  .equ debug, YES
 
  .equ dismiss, YES
@@ -209,8 +211,6 @@
 
  .equ onlyascii, YES
 
-/*
- 
  # default is mixed case
 
  # .equ uppercase, YES

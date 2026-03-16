@@ -22,11 +22,13 @@ PASS = ${BASE}${NAME}
 GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs -static -Oz \
-	   -march=rv32ic -mabi=ilp32 \
-
-#-fPIE -Wl,-pie \
-# -fPIC -Wl,--no-relax
+		-march=rv32gc -mabi=ilp32 \
+	   	
+# -march=rv32g  -mabi=ilp32 \
 # -Wl,-Ttext,0
+# -Wl,-z,relro -Wl,-z,now
+# -fPIE -Wl,-pie \
+# -fPIC -Wl,--no-relax
 # -march=rv64ic -mabi=lp64 -static -Os \
 # -march=rv32ic -mabi=ilp32 -static -Os \
 

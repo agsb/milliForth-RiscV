@@ -150,13 +150,6 @@ main:
 # do any system inits
 # call _init
 
-/*
-.option push
-.option norelax
-       	la gp, __global_pointer$
-.option pop
-*/
-
 #----------------------------------------------------------------------
 # do what need be only once
 cold:
