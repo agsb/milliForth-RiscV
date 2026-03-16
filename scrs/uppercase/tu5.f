@@ -29,9 +29,13 @@
 
  : ,"   
         STATE @ IF ( compile, copy from tibs into heap until " )
-           [CHAR] " PARSE TYPE,     
+          \ count n bytes until "
+          \ copy n bytes to heap
+          \ align >IN and HERE with 0
+          \ update >IN and HERE
         ELSE ( executing, copy from word into output )
-        
+          \ R> BEGIN DUP C@ DUP IF EMIT ?????? THEN 1 + (byte at byte)
+          \ align R
         THEN
         \ TIBS !
         ;
