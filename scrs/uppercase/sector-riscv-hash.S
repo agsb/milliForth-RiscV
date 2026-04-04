@@ -45,11 +45,7 @@
 */
 
 #---------------------------------------------------------------------
-# using pre-processor CPP (GNU GCC)
-# for alias register names 
-# beware about changes
-# a0, a1, a2, a3, a7 are used by ecalls in _putc and _getc
-# a4, a5, a6 are generics
+# using pre-processor CPP (GNU GCC) for alias names 
 #---------------------------------------------------------------------
 
 #include "defines.S"

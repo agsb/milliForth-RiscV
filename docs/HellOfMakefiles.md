@@ -1,6 +1,6 @@
 # Hell of Makefiles
 
-In Linus, I use the GCC gnu toolchain, for Intel x*86*, ARMs and RiscVs.
+In Linux, I use the GCC gnu toolchain, for Intel x*86*, ARMs and RiscVs.
 there are a defined namespace for each chain, so:
 
 For linux systems, x86-64-linux-gnu, riscv64-linux-gnu, arm-linux-gnueabi 
