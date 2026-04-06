@@ -1,4 +1,3 @@
-
 /*
 #---------------------------------------------------------------------
  
@@ -40,7 +39,9 @@
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary continues at .bss.
 
-    THIS VERSION USES ONLY HASH HEADERS.
+        THIS VERSION USES ONLY HASH HEADERS.
+
+        THIS VERSION USES ONLY TOKENS. <NO TIB, NO LINES, NO COMMENTS>
 
 #----------------------------------------------------------------------
 */
@@ -373,154 +374,49 @@ wipe:
 .endif
 
 #---------------------------------------------------------------------
-# in place every token, no rewinds
-# the counter is placed at space before word
-# returns a c-str
-# \0 as eol, goto getline
+# crude token
+# load a valid sequence of ascii from stream, 
+# wipes all controls (\t, \n, \r, ... ), 
+# any word must be between spaces,
+# with limit lenght of 32 bytes, 
+#
 token:
-
         pushra
 
 # load word separator, BL is space
 
         addi trd, zero, BL
 
-# last position on tib
-100:
+# first position on tib
+
         lw idx, TOIN (usr)
 
-# skip spaces // wrd
-200:
-
-        lb snd, 0 (idx)
-        
-        beq snd, zero, gets
-
-        bne snd, trd, hash
-
-        addi idx, idx, ONE
-
-        j 200b
-        
-#---------------------------------------------------------------------
-# absolute crude getline, 
-# no overflow, no line edit, no clues
-# the _getc handle EOF
-gets:
-  
-        lw idx, TIBS (usr)
-        
-        sw idx, TOIN (usr)
-
-# end-of-line is \n, ^J
-        
-        addi snd, zero, LF
-
-# ever start with a space, trd is BL
-        
-        mv fst, trd
-
-# loop and fill the TIB until \n
-300:
-        sb fst, 0 (idx)
-        
-        addi idx, idx, ONE
-
-# get next char, wipes a0, a1, a2, a7, returns a3 (fst)
-
-400:
+# skip spaces
+100:
         call _getc
+        blt fst, trd, 100b
+        beq fst, trd, 100b
 
-# echo it, if need
-
-        # call _putc
-
-# cast to 7-bit standart ascii only
-
+# save character
+200:
 # xxx
-.ifdef onlyascii
-
-        andi fst, fst, 127
-
+.ifdef asciis
+        call pass
 .endif
-
-600:
-# xxx
-.ifdef lowercase
-
-        addi a7, zero, 'A'       
-        blt fst, a7, 700f
-
-        addi a7, zero, 'Z'      
-        blt a7, fst, 700f
+        sb fst, 0 (idx)
+        addi idx, idx, ONE
         
-        # set the 6th bit, 
-        ori fst, fst, 32     
-        
-.endif
+# scan spaces
+300:
+        call _getc
+        blt fst, trd, 300b
+        bne fst, trd, 200b
 
-700:
-# xxx
-.ifdef uppercase
+# ends 
+        sb fst, 0 (idx)
 
-        addi a7, zero, 'a'       
-        blt fst, a7, 800f
-
-        addi a7, zero, 'z'      
-        blt a7, fst, 800f
-        
-        # clear the 6th bit, 
-        andi fst, fst, 95     
-        
-.endif
-
-800:
-# allow non control characters
-        # ' '
-        addi ops, zero, BL - 1       
-        blt ops, fst, 300b
-
-# xxx
-.ifdef linedit
-
-# allow backspace 
-        addi a7, zero, BS
-        bne fst, a7, 900f
-        addi idx, idx, -1 * TWO
-        j 400b
-
-900:        
-# allow \r ^M carriage return
-        addi a7, zero, CR
-        beq fst, a7, 500f
-
-# allow \n ^J line feed
-        addi a7, zero, LF
-        beq fst, a7, 500f
-
-# allow cancel ^X 
-        addi a7, zero, CAN
-        beq fst, a7, gets
-
-# anything wipes
-        j 400b
-
-.endif
-
-# \n ends the line
-        bne snd, fst, 300b
-
-# at end-of-line
-500:
-
-# replace \n with space 
-        sb trd, 0 (idx)
-
-# mark eol with \0
-        sb zero, 1 (idx)
-
-# back to token
-        j 100b
+        # sb zero , 0 (idx)
+400:
 
 #----------------------------------------------------------------------
 # djb2 hash function
@@ -537,12 +433,7 @@ gets:
 #---------------------------------------------------------------------
 hash:
 
-# xxx
-.ifdef dismiss
-# keep a pointer to word
-        mv wrd, idx
-
-.endif 
+        lw idx, TOIN (usr)
 
 # continue until BL
 djb2:
@@ -554,7 +445,7 @@ djb2:
 100:
         lb fst, 0 (idx)
         
-        beq fst, trd, 200f
+        beq fst, zero, 200f
 
         mv snd, hsh
 
@@ -574,26 +465,56 @@ djb2:
 # clear high bit, NaN, forth immediate flag 
 mask:
 
-        lui fst, %hi(MASK_IMM)
+        slli hsh, hsh, ONE
+        srli hsh, hsh, ONE
 
-        add fst, fst, %lo(MASK_IMM)
-        
-        and hsh, hsh, fst
-
-# save toin
-
-        sw idx, TOIN (usr)
-
-# xxx
-.ifdef dismiss
-
-        mv idx, wrd
-
-.endif 
         pullra
 
         ret
         
+#---------------------------------------------------------------------
+pass:
+
+# xxx
+100:
+.ifdef onlyascii
+
+        andi fst, fst, 127
+
+.endif
+
+# xxx
+200:
+.ifdef lowercase
+
+        addi a7, zero, 'A'       
+        blt fst, a7, 300f
+
+        addi a7, zero, 'Z'      
+        blt a7, fst, 300f
+        
+        # set the 6th bit, 
+        ori fst, fst, 32     
+        
+.endif
+
+# xxx
+300:
+.ifdef uppercase
+
+        addi a7, zero, 'a'       
+        blt fst, a7, 400f
+
+        addi a7, zero, 'z'      
+        blt a7, fst, 400f
+        
+        # clear the 6th bit, 
+        andi fst, fst, 95     
+        
+.endif
+
+        ret
+
 #---------------------------------------------------------------------
 docomma:
 
@@ -931,5 +852,4 @@ ends:
 
 #---------------------------------------------------------------------
 .end
-
 
