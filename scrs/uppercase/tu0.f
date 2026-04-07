@@ -16,27 +16,24 @@
  
  : SP U@ ; 
  : RP SP CELL + ; 
+ 
  : LATEST RP CELL + ; 
  : HEAP LATEST CELL + ; 
- : >IN HEAP CELL + ; 
+ : STATE HEAP CELL + ; 
+
+ : >IN STATE CELL + ; 
  : TIB >IN CELL + ; 
- : STATE TIB CELL + ; 
- : BEATS STATE CELL + ; 
- : TICKS BEATS CELL + ; 
+
+ : BEATS TIB CELL + ; 
+ : TICKS BEATS CELL + ;  
  
+ : HEAD TICKS CELL + ;   
+ : TAIL HEAD CELL + ;  
 
- : \ 0 >IN @ ! ;  \ end-of-line comments
+ : VOID TAIL CELL + ; 
+ : VARS VOID CELL + ; 
 
- : HEAD TICKS CELL + ;  \ used in compilation process preserve HERE
- : TAIL HEAD CELL + ;  \ used in CREATE/DOES preserve common words 
-
- : VOID TAIL CELL + ;  \ scratch cell
- : VARS VOID CELL + ;  \ start scratch area with 8 cells
-
- \ counts inner and primitives 
  : CLOCKS BEATS @ TICKS @ ;
-
- \ pointer relative offsets
 
  : SP@ SP @ CELL + ; 
  : RP@ RP @ CELL + ; 
@@ -46,21 +43,27 @@
  : RP! RP ! ; 
 
  : DUP SP@ @ ; 
+ : NOT DUP NAND ; 
+ : AND NAND NOT ; 
+ : - NOT 1 + + ; 
+
+ : BRANCH RP@ @ DUP @ + RP@ ! ; 
+ : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
+ 
  : OVER SP@ CELL + @ ; 
  : SWAP OVER OVER SP@ CELL + CELL + CELL + ! SP@ CELL + ! ; 
 
- : NOT DUP NAND ; 
- : AND NAND NOT ; 
  : OR NOT SWAP NOT AND NOT ; 
  : NOR OR NOT ; 
 
- : - NOT 1 + + ; 
  : <> - 0# ; 
  : = <> NOT ; 
  
  : DROP DUP - + ; 
  : NIP SWAP DROP ; 
  : TUCK SWAP OVER ; 
+
+ : \ 0 >IN @ ! ;  \ end-of-line comments
 
  : HERE HEAP @ ; 
  : ALLOT HERE + HEAP ! ; 
@@ -75,9 +78,6 @@
  : EXECUTE >R ; 
  : COMPILE R> DUP @ , CELL + >R ;
 
- : BRANCH RP@ @ DUP @ + RP@ ! ; 
- : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
- 
  : LIT RP@ @ DUP CELL + RP@ ! @ ; 
  : ['] RP@ @ DUP CELL + RP@ ! @ ; 
  
@@ -157,9 +157,9 @@
  : 0= 0# NOT ; 
  : 0< ISNEGATIVE AND 0# ; 
  : 0> DUP 
-  0= IF DROP FALSE EXIT THEN 
-  0< IF FALSE EXIT THEN
-  TRUE ; 
+        0= IF DROP FALSE EXIT THEN 
+        0< IF FALSE EXIT THEN
+        TRUE ; 
 
  : 0fh LIT [ 16 1 - , ] ; 
  : ffh LIT [ 0fh 2* 2* 2* 2* 0fh OR , ] ; 
@@ -168,22 +168,31 @@
  : C! DUP @ ffh NOT AND ROT ffh AND OR SWAP ! ; 
  : C, HERE C! 1 ALLOT ; 
 
- : ALIGN 3 + TRUE 3 - AND ;  \ 32-bit align for strings
+ : ALIGN 3 + TRUE 3 - AND ; 
  
  : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP ; 
+
+ : ENDS BEGIN KEY OVER - 0# NAND UNTIL DROP ; 
+
+ : \ 8 2 + ENDS ; 
+
+ : ( 32 8 + 1 + ENDS ; 
+
  : IN> >IN @ C@ >IN @ 1 + >IN ! ; 
 
  : PARSE IN> DROP 
-  >IN @ SWAP 0 
-  BEGIN OVER IN> <> WHILE 1 + REPEAT 
-  SWAP BL = IF >IN @ 1 - >IN ! THEN ; 
+        >IN @ SWAP 0 
+        BEGIN OVER IN> <> WHILE 1 + REPEAT 
+        SWAP BL = IF >IN @ 1 - >IN ! THEN ; 
 
  : WORD IN> DROP 
-  BEGIN DUP IN> <> UNTIL 
-  >IN @ 2 - >IN ! PARSE ; 
+        BEGIN DUP IN> <> UNTIL 
+        >IN @ 2 - >IN ! PARSE ; 
+
  : [CHAR] ['] LIT , BL WORD DROP C@ , ; IMMEDIATE 
  
  : ( [CHAR] ) PARSE DROP DROP ; IMMEDIATE 
+
  : ." [CHAR] " PARSE TYPE ; IMMEDIATE 
 
  \ TEST MINIMAL

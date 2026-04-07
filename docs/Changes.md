@@ -40,6 +40,11 @@
 
     Include the eforth dictionary for expantion
 
+    WHat about, do not use line paradigm ? Just ascii tokens between
+    spaces without controls. Easch token is a word. 
+    But what about comments, and parses, and ....
+
+
 ## Done
 
 09/03/2026

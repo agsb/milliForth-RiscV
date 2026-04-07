@@ -167,7 +167,7 @@ wordf:
         
         lw a5, LAST (usr)
         
-        lw a6, HERE (usr)
+        lw a6, HEAP (usr)
         
         la s7, h_here
 
@@ -199,7 +199,7 @@ wordu:
 
         lw a5, LAST (usr)
 
-        lw a6, HERE (usr)
+        lw a6, HEAP (usr)
 
         call wordt
 
@@ -389,7 +389,7 @@ shows:
        
        putchar 'H'
         putchar ' '
-        lw fst, HERE (usr)
+        lw fst, HEAP (usr)
         mhex fst
        
        putchar 'D'

@@ -96,16 +96,16 @@
 .equ LAST, 2 * CELL
 
 # next free cell in heap dictionary, aka dpt
-.equ HERE, 3 * CELL
-
-# toin next free byte in TIB
-.equ TOIN, 4 * CELL
-
-# terminal (source) input buffer
-.equ TIBS, 5 * CELL
+.equ HEAP, 3 * CELL
 
 # state flag
-.equ STAT, 6 * CELL
+.equ STAT, 4 * CELL
+
+# toin next free byte in TIB
+.equ TOIN, 5 * CELL
+
+# terminal (source) input buffer
+.equ TIBS, 6 * CELL
 
 # counter of words executed by next
 .equ BEAT, 7 * CELL
@@ -163,7 +163,6 @@
 # flags for compiler options
 
 
-/*
  .equ debug, YES
  
  .equ extras, YES
@@ -180,6 +179,7 @@
 
  .equ onlyascii, YES
 
+/*
  # default is mixed case
 
  # .equ uppercase, YES

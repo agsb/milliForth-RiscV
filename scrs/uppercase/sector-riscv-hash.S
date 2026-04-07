@@ -184,7 +184,7 @@ warm:
 # next heap free cell
         
         la fst, h_here
-        sw fst, HERE (usr)
+        sw fst, HEAP (usr)
 
 # link last primitive as list of headers, aka dictionary
 
@@ -366,7 +366,7 @@ wipe:
 
         # wipe remains
         lw fst, HEAD (usr)
-        sw fst, HERE (usr)
+        sw fst, HEAP (usr)
 100:
         j error
 
@@ -597,13 +597,13 @@ mask:
 #---------------------------------------------------------------------
 docomma:
 
-        lw idx, HERE (usr)
+        lw idx, HEAP (usr)
       
         sw fst, 0 (idx)
       
         addi idx, idx, CELL
       
-        sw idx, HERE (usr)
+        sw idx, HEAP (usr)
 
         ret
 
@@ -741,7 +741,7 @@ save1:
 def_word ":", "colon", hash_colon, h_userat
 # save here, panic if semis not follow elsewhere
         
-        lw fst, HERE (usr)
+        lw fst, HEAP (usr)
         
         sw fst, HEAD (usr)
 
