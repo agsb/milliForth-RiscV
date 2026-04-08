@@ -20,6 +20,12 @@
 */
 
 #---------------------------------------------------------------------
+#       
+#       extras primitives
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
 #
 # djb2 hash cleared of bit 31
 #
@@ -33,7 +39,6 @@
 .equ hash_sfr, 0x00596858
 
 #---------------------------------------------------------------------
-# extra primitives
 
 .equ init_extras, last_next
 
@@ -49,7 +54,7 @@ by_erro:
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump and link to a reference at IP
-def_word ";CODE", "docode", hash_DOCODE, h_nan
+def_word ";CODE", "docode", hash_DOCODE, it_nan
         
         jalr ra, 0 (ipt)
 
@@ -57,19 +62,19 @@ def_word ";CODE", "docode", hash_DOCODE, h_nan
 
 #---------------------------------------------------------------------
 # ( -- ) ae abort
-def_word "ABORT", "aborts", hash_ABORT, h_docode
+def_word "ABORT", "aborts", hash_ABORT, it_docode
         
         j abort
 
 #---------------------------------------------------------------------
 # ( -- ) exit forth
-def_word "BYE", "byes", hash_BYE, h_aborts
+def_word "BYE", "byes", hash_BYE, it_aborts
         
         j _exit
 
 #---------------------------------------------------------------------
 # ( w -- w*2 ) #; shift left
-def_word "2*", "sfl", hash_sfl, h_byes
+def_word "2*", "sfl", hash_sfl, it_byes
 
         call pull2
         
@@ -79,7 +84,7 @@ def_word "2*", "sfl", hash_sfl, h_byes
 
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
-def_word "2/", "sfr", hash_sfr, h_sfl
+def_word "2/", "sfr", hash_sfr, it_sfl
 
         call pull2
         
@@ -88,6 +93,8 @@ def_word "2/", "sfr", hash_sfr, h_sfl
         j keep1
 
 #---------------------------------------------------------------------
-.set last_next, h_sfl
 
+.set last_next, it_sfl
+
+#---------------------------------------------------------------------
 

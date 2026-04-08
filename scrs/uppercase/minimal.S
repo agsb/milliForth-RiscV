@@ -19,16 +19,6 @@
 #----------------------------------------------------------------------
 */
 
-/*
- Copyright (c) 2025, Alvaro Gomes Sobral Barcellos
- 
- All rights reserved.
- 
- see the disclaimer file in this repository.
-
-*/
-
-
 #---------------------------------------------------------------------
 #
 # Note: system ecalls do not use ra 

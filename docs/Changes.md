@@ -50,6 +50,8 @@
     
     No lines, no Terminal Input Buffer, only hashes
 
+    Review of contents of files, regrouped.
+
 07/04/2026
 
     What about, do not use line paradigm ? 

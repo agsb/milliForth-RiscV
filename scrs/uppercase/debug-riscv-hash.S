@@ -19,11 +19,11 @@
 #----------------------------------------------------------------------
 */
 
-/*
-
-        extra words and routines for milliforth-riscv
-
-*/
+#----------------------------------------------------------------------
+#
+#       debug primitives 
+#
+#----------------------------------------------------------------------
 
 #---------------------------------------------------------------------
 #
@@ -41,9 +41,9 @@
 .equ hash_CELL, 0x7C70B163 
 
 #---------------------------------------------------------------------
-# debug primitives
 
 .equ init_debug, last_next
+
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
 def_word "%S", "splist", hash_splist, init_debug
@@ -54,7 +54,7 @@ def_word "%S", "splist", hash_splist, init_debug
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
-def_word "%R", "rplist", hash_rplist, h_splist
+def_word "%R", "rplist", hash_rplist, it_splist
 
         call stackR
         
@@ -62,7 +62,7 @@ def_word "%R", "rplist", hash_rplist, h_splist
 
 #----------------------------------------------------------------------
 # ( a b -- a b ) dumps memory between a and b
-def_word "DUMP", "dump", hash_DUMP, h_rplist
+def_word "DUMP", "dump", hash_DUMP, it_rplist
 
         call pull2
         
@@ -72,7 +72,7 @@ def_word "DUMP", "dump", hash_DUMP, h_rplist
 
 #----------------------------------------------------------------------
 # ( -- ) list all words in compiled dictionary, 
-def_word "WORDS", "words", hash_WORDS, h_dump
+def_word "WORDS", "words", hash_WORDS, it_dump
 
         call wordf
 
@@ -80,7 +80,7 @@ def_word "WORDS", "words", hash_WORDS, h_dump
 
 #----------------------------------------------------------------------
 # ( -- ) list last word in dictionary, 
-def_word "SEE", "sees", hash_SEE, h_words
+def_word "SEE", "sees", hash_SEE, it_words
 
         call wordu
 
@@ -88,7 +88,7 @@ def_word "SEE", "sees", hash_SEE, h_words
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal
-def_word ".", "dot", hash_dot, h_sees
+def_word ".", "dot", hash_dot, it_sees
 
         call pull2
 
@@ -100,7 +100,7 @@ def_word ".", "dot", hash_dot, h_sees
 
 #---------------------------------------------------------------------
 # ( -- w ) size of a cell 
-def_word "CELL", "cell", hash_CELL, h_dot
+def_word "CELL", "cell", hash_CELL, it_dot
 
         addi fst, zero, 4
 
@@ -108,7 +108,7 @@ def_word "CELL", "cell", hash_CELL, h_dot
 
 #---------------------------------------------------------------------
 
-.set last_next, h_cell
+.set last_next, it_cell
 
 #---------------------------------------------------------------------
 #
@@ -169,7 +169,9 @@ wordf:
         
         lw a6, HEAP (usr)
         
-        la s7, h_here
+# init of compiled dictionary
+
+        la s7, h_here 
 
         putchar '\n'
 
