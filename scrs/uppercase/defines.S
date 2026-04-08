@@ -75,8 +75,8 @@
 # state flag
 .equ STAT, 4 * CELL
 
-# base value
-.equ BASE, 5 * CELL
+# void value
+.equ VOID, 5 * CELL
 
 #---------------------------------------------------------------------
 # reserved 
@@ -110,12 +110,12 @@
 
  .equ asciis, YES
 
- .equ onlyascii, YES
+ .equ asciionly, YES
 
 /*
- # .equ uppercase, YES
+ # .equ upperonly, YES
  
- # .equ lowercase, YES
+ # .equ loweronly, YES
 
 */
 

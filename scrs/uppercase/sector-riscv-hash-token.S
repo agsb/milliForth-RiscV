@@ -232,6 +232,8 @@ okey:
 # get a hash of the next token
 loop:
         
+# returns a hash in idx
+
         call token
 
 #---------------------------------------------------------------------         
@@ -423,7 +425,7 @@ pass:
 
 # xxx
 100:
-.ifdef onlyascii
+.ifdef asciionly
 
         andi fst, fst, 127
 
@@ -431,7 +433,7 @@ pass:
 
 # xxx
 200:
-.ifdef lowercase
+.ifdef loweronly
 
         addi a7, zero, 'A'       
         blt fst, a7, 300f
@@ -446,7 +448,7 @@ pass:
 
 # xxx
 300:
-.ifdef uppercase
+.ifdef upperonly
 
         addi a7, zero, 'a'       
         blt fst, a7, 400f
@@ -519,7 +521,7 @@ name:
         j next
 */
 
-### version 1.5.4
+### version 1.5.6
 #---------------------------------------------------------------------
 pull2:
         

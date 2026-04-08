@@ -1,48 +1,41 @@
    100f8:	00002417          	auipc	s0,0x2
-   100fc:	ed842403          	lw	s0,-296(s0) # 11fd0 <_GLOBAL_OFFSET_TABLE_+0x4>
+   100fc:	edc42403          	lw	s0,-292(s0) # 11fd4 <_GLOBAL_OFFSET_TABLE_+0x4>
    10100:	00002697          	auipc	a3,0x2
-   10104:	ee06a683          	lw	a3,-288(a3) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x14>
+   10104:	ee06a683          	lw	a3,-288(a3) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x10>
    1010a:	00002697          	auipc	a3,0x2
-   1010e:	eda6a683          	lw	a3,-294(a3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x18>
+   1010e:	eda6a683          	lw	a3,-294(a3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x14>
    10114:	00002697          	auipc	a3,0x2
-   10118:	ec86a683          	lw	a3,-312(a3) # 11fdc <_GLOBAL_OFFSET_TABLE_+0x10>
-   10120:	00002697          	auipc	a3,0x2
-   10124:	eb46a683          	lw	a3,-332(a3) # 11fd4 <_GLOBAL_OFFSET_TABLE_+0x8>
-   1012a:	00002697          	auipc	a3,0x2
-   1012e:	eae6a683          	lw	a3,-338(a3) # 11fd8 <_GLOBAL_OFFSET_TABLE_+0xc>
-   10134:	00042c23          	sw	zero,24(s0)
-   10146:	80000737          	lui	a4,0x80000
-   1014e:	fec517e3          	bne	a0,a2,1013c <find+0x2>
-   1015e:	00002497          	auipc	s1,0x2
-   10162:	e8a4a483          	lw	s1,-374(s1) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0x1c>
-   1016c:	02000813          	li	a6,32
-   10172:	00078703          	lb	a4,0(a5)
-   10178:	03071663          	bne	a4,a6,101a4 <djb2>
-   10188:	00d78023          	sb	a3,0(a5)
-   10192:	fed8cbe3          	blt	a7,a3,10188 <gets+0x8>
-   10196:	fed719e3          	bne	a4,a3,10188 <gets+0x8>
-   1019a:	01078023          	sb	a6,0(a5)
-   1019e:	000780a3          	sb	zero,1(a5)
-   101a4:	00001537          	lui	a0,0x1
-   101a8:	50550513          	addi	a0,a0,1285 # 1505 <DJB2>
-   101ac:	00078683          	lb	a3,0(a5)
-   101b0:	01068863          	beq	a3,a6,101c0 <mask>
-   101c0:	800006b7          	lui	a3,0x80000
-   101c4:	fff68693          	addi	a3,a3,-1 # 7fffffff <MASK_IMM>
-   1022a:	fff6c693          	not	a3,a3
-   1028a:	00042c23          	sw	zero,24(s0)
-   1028e:	00002697          	auipc	a3,0x2
-   10292:	d5e6a683          	lw	a3,-674(a3) # 11fec <_GLOBAL_OFFSET_TABLE_+0x20>
-   102ac:	00002797          	auipc	a5,0x2
-   102b0:	d447a783          	lw	a5,-700(a5) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x24>
-   102b4:	00f6d463          	bge	a3,a5,102bc <nest>
-   102b8:	000680e7          	jalr	a3
-   102ce:	05d00893          	li	a7,93
-   102da:	00002597          	auipc	a1,0x2
-   102de:	d1a5a583          	lw	a1,-742(a1) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x28>
-   102e4:	03f00893          	li	a7,63
-   102ec:	00058683          	lb	a3,0(a1)
-   102f4:	00002597          	auipc	a1,0x2
-   102f8:	d005a583          	lw	a1,-768(a1) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x28>
-   102fe:	04000893          	li	a7,64
-   10302:	00d58023          	sb	a3,0(a1)
+   10118:	ec46a683          	lw	a3,-316(a3) # 11fd8 <_GLOBAL_OFFSET_TABLE_+0x8>
+   1011e:	00002697          	auipc	a3,0x2
+   10122:	ebe6a683          	lw	a3,-322(a3) # 11fdc <_GLOBAL_OFFSET_TABLE_+0xc>
+   10128:	00042823          	sw	zero,16(s0)
+   1013a:	80000737          	lui	a4,0x80000
+   10142:	fec797e3          	bne	a5,a2,10130 <find+0x2>
+   10152:	00002497          	auipc	s1,0x2
+   10156:	e964a483          	lw	s1,-362(s1) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0x18>
+   10162:	000017b7          	lui	a5,0x1
+   10166:	50578793          	addi	a5,a5,1285 # 1505 <DJB2>
+   1016a:	02000813          	li	a6,32
+   10170:	ff06cfe3          	blt	a3,a6,1016e <token+0x10>
+   10174:	ff068de3          	beq	a3,a6,1016e <token+0x10>
+   10182:	ff06cfe3          	blt	a3,a6,10180 <token+0x22>
+   10186:	ff0699e3          	bne	a3,a6,10178 <token+0x1a>
+   101ee:	fff6c693          	not	a3,a3
+   10230:	fed42c23          	sw	a3,-8(s0)
+   1024c:	ff842683          	lw	a3,-8(s0)
+   10252:	00042823          	sw	zero,16(s0)
+   10256:	00002697          	auipc	a3,0x2
+   1025a:	d966a683          	lw	a3,-618(a3) # 11fec <_GLOBAL_OFFSET_TABLE_+0x1c>
+   10274:	00002797          	auipc	a5,0x2
+   10278:	d7c7a783          	lw	a5,-644(a5) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x20>
+   1027c:	00f6d463          	bge	a3,a5,10284 <nest>
+   10280:	000680e7          	jalr	a3
+   10296:	05d00893          	li	a7,93
+   102a2:	00002597          	auipc	a1,0x2
+   102a6:	d525a583          	lw	a1,-686(a1) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x24>
+   102ac:	03f00893          	li	a7,63
+   102b4:	00058683          	lb	a3,0(a1)
+   102be:	00002597          	auipc	a1,0x2
+   102c2:	d365a583          	lw	a1,-714(a1) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x24>
+   102c8:	04000893          	li	a7,64
+   102cc:	00d58023          	sb	a3,0(a1)
