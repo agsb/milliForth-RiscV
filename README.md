@@ -13,19 +13,17 @@ This is an implementation of MilliForth (sector-forth) concept for RISCV ISA.
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
-This version with minimal code (.text) uses only 510 bytes, 
-    444 bytes for Forth engine and 66 bytes for linux system I/O, 
-    not counting ELF headers. Used 58 bytes to load fixed address. 
+This version with minimal code (.text) uses only 478 bytes, 
+    412 bytes for Forth engine and 66 bytes for linux system I/O, 
+    not counting ELF headers. Used 48 bytes to load fixed address. 
 
 Could add some bytes for extra primitive words as 2/ 2* NAN ;CODE ABORT BYE
 
-No human WORDS. It uses DJB2 hashe in headers, instead of size+flags+name+pads. 
+No human WORDS. It uses DJB2 hash in headers. 
 
-No Terminal Input Buffer, just a token parser buffer, no lines and no controls.
+No Terminal Input Buffer, just an token-to-hash ascii parser.
 
 Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN. 
-
-Includes 2 words for >IN and TIB for user at user struct.
 
 ## For Size
 
@@ -64,15 +62,11 @@ How shink to a minimal compiled size in a Risc-V ?
 
     Some esoteric bug makes the first word to have hash error.
 
-    All words in lowercase, maybe later could change to uppercase.
-        
-    ** Now a uppercase version is done, use it **
-
     The memory management is done by extend the dictionary 
         into .bss, by reserve .skip bytes, defaults to 64k * 4
         no linux calls for memory allocation. (Anyone ?)
 
-    The source could be compiled with dismiss hack and
+    The source could be compiled with 'missed' hack and
         more complementary native code word.
 
 ## Compiler Options
@@ -114,7 +108,7 @@ It uses less than 1k byte, without extras and user dictionary.
 The milliForth must use memory pointers for data stack and return stack, 
 because does fetch and store from a special 'user structure', which 
 contains the user variables for Forth 
-(state, toin, last, here, sptr, dptr, head, tail).
+( state, last, heap, sptr, dptr ).
 
 ## Postpone Hack
 
@@ -146,7 +140,7 @@ The postpone is : POSTPONE ' , ; IMMEDIATE ( classics )
 The colon **:** makes a header by:
         1. copy HERE to HEAD
         2. copy LATEST to first cell;
-        3. calculate the djb2 hash of the next word on TIB;
+        3. calculate the djb2 hash of the next token;
         4. copy hash to second cell;
         5. change STATE to compile (1);
 
@@ -158,11 +152,12 @@ The semis **;** ends the word by:
         2. copy HEAD to LATEST
         3. change STATE to execute (0);
 
-if the compilation is interrupted, STATE and LATEST keeps untouched, 
-        but HERE changes and some junk was placed and stays into dictionary.
-        Could clean that with more some code, to copy HEAD to HERE
+if the compilation is interrupted, 
+    STATE and LATEST keeps untouched, 
+    but HERE changes and some junk was placed and stays into dictionary.
+    Could clean that with more some code, to copy HEAD to HERE
 
-## Dismiss hack
+## Missed Hack
 
 When the compilation of a word breaks, the LATEST are keepd in order 
 but HERE was advanced with references of words compiled, that junk 
@@ -170,7 +165,7 @@ stays lost in heap.
 
 To clean just copy HEAD to HERE at error or missing.
 
-With this dismiss hack, the HERE returns to previous value before 
+With this missed hack, the HERE returns to previous value before 
 start the last compilation.
 
 ## CREATE and DOES>
@@ -218,9 +213,9 @@ primitives:
         
 only internals: 
     
-    main, cold, warm, quit, hash, djb2, 
-    token, skip, scan, gets, 
-    tick, find, compile, execute, comma,  
+    main, cold, warm, abort, quit,   
+    token, skip, scan, hash, 
+    find, compile, execute, comma,  
     unnest, next, nest, pick, jump, 
 
     ps. exit is unnest, nest is enter/docol,

@@ -27,49 +27,19 @@
 
 .equ CELL, 4
 
-# ascii
-
-.equ XON, 17   #  ^Q
-
-.equ XOFF, 19  #  ^S
-
-.equ ACK, 6    #  ^F
-
-.equ NAK, 21   #  ^U
-
-.equ BS, 8     # \b ^H
-
-.equ HT, 9     # \t ^I
-
-.equ LF, 10    # \n ^J
-
-.equ VT, 11    # \v ^K
-
-.equ FF, 12    # \r ^L
-
-.equ CR, 13    # \r ^M
-
-.equ CAN, 24   #    ^X
-
-.equ ESC, 27   #    ^[
-
 .equ BL, 32    # blank space
 
 # Moore uses 22 deep stacks
 
-.equ stacks, 36
+.equ stacks, 24 
 
-# data stack,  
+# data stack
 
 .equ spz, stacks * CELL
 
-# return stack,  
+# return stack  
 
 .equ rpz, stacks * CELL
-
-# Token Input Buffer 36 bytes
-
-.equ tibz, 36
 
 # highlander, immediate flag, unique NaN 
 
@@ -126,7 +96,6 @@
 # flags for compiler options
 
 /*
-
  .equ debug, YES
  
  .equ extras, YES
@@ -143,6 +112,7 @@
 
  .equ onlyascii, YES
 
+/*
  # .equ uppercase, YES
  
  # .equ lowercase, YES

@@ -118,11 +118,6 @@ _rpb:       # bottom
 .skip rpz
 rp0: .word 0x0
 
-# token input buffer grows forward
-tib0:
-_tib:       
-.skip tibz
-
 # start of user dictionary 
 h_here: 
 .skip RAM_LIMIT - ( h_here - _user )
@@ -199,13 +194,6 @@ warm:
         sw fst, LAST (usr)
 
 #---------------------------------------------------------------------
-# reset TIB
-reset:
-
-        la fst, tib0
-        sw fst, TIBS (usr)
-
-#---------------------------------------------------------------------
 abort:
 # reset data stack
         
@@ -231,7 +219,7 @@ okey:
 .ifdef debug
 
         lw fst, STAT (usr)
-        bne fst, zero, fold
+        bne fst, zero, loop
 
         putchar '\n'
         putchar 'O'
@@ -242,7 +230,7 @@ okey:
 
 #---------------------------------------------------------------------
 # get a hash of the next token
-fold:
+loop:
         
         call token
 
@@ -283,14 +271,14 @@ find:
 
 # compare
         
-        bne hsh, wrd, 100b
+        bne idx, wrd, 100b
 
 # points to start of code or list of references, aka xt
 
         addi fst, fst, CELL
 
 #---------------------------------------------------------------------         
-# hsh have the hash of the word
+# idx have the hash of the word
 # snd have the flags
 # fst have the address after header
 
@@ -313,13 +301,13 @@ compile:
         
         call docomma
 
-        j fold
+        j loop
 
 #---------------------------------------------------------------------         
 execute:
 immediate:
 
-        la ipt, foldptr
+        la ipt, loopptr
 
         j pick
 
@@ -366,7 +354,7 @@ wipe:
 # crude token
 # load a valid sequence of ascii from stream, 
 # wipes all controls (\t, \n, \r, ... ), 
-# any word must be between spaces,
+# any token must be between spaces
 #----------------------------------------------------------------------
 # djb2 hash function
 # classic djb2 hash algorithm, with XOR, adapted from cdb_hash
@@ -375,14 +363,14 @@ wipe:
 .equ DJB2, 5381
 .equ SFHT, 5
 #---------------------------------------------------------------------
-#
+# return the hash of token in idx
 token:
         pushra
 
 # prepare for hash
 
-        lui hsh, %hi(DJB2)
-        addi hsh, hsh, %lo(DJB2)
+        lui idx, %hi(DJB2)
+        addi idx, idx, %lo(DJB2)
 
 # load word separator, BL is space
 
@@ -391,10 +379,11 @@ token:
 # skip spaces
 100:
         call _getc
+
         blt fst, trd, 100b
         beq fst, trd, 100b
 
-# save character
+# hash character
 200:
 # xxx
 .ifdef asciis
@@ -402,27 +391,28 @@ token:
 .endif
 
 # djb2 hash function
-
-        mv snd, hsh
-
-        slli hsh, hsh, SFHT
         
-        add hsh, hsh, snd
+        mv snd, idx
+
+        slli idx, idx, SFHT
         
-        xor hsh, hsh, fst
+        add idx, idx, snd
+        
+        xor idx, idx, fst
         
 # scan spaces
 300:
         call _getc
+
         blt fst, trd, 300b
         bne fst, trd, 200b
 
-# clear high bit, NaN, forth immediate flag 
+# clear hash high bit, NaN, used as Forth immediate flag 
 mask:
 
-        slli hsh, hsh, ONE
+        slli idx, idx, ONE
 
-        srli hsh, hsh, ONE
+        srli idx, idx, ONE
 
         pullra
 
@@ -501,6 +491,7 @@ docomma:
 .equ hash_plus,  0x0002B58E 
 .equ hash_zeroq, 0x00596816 
 .equ hash_colon, 0x0002B59F 
+
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 
 #---------------------------------------------------------------------
@@ -673,7 +664,7 @@ create:
         
 # copy hash into (here)
 
-        mv fst, hsh
+        mv fst, idx
 
 comma:
 
@@ -791,7 +782,7 @@ move:
 #---------------------------------------------------------------------
 # the outer loop, need for indirect
 
-foldptr:
+loopptr:
         
         .word okey
 

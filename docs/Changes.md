@@ -46,17 +46,17 @@
 
 ## Done
 
+09/04/2026
+    
+    No lines, no Terminal Input Buffer, only hashes
+
 07/04/2026
 
     What about, do not use line paradigm ? 
     Just a stream of ascii tokens between
     spaces without controls. Each token is a word. 
-    No more TIB, no more lines, just a token parser. 
+    No more lines, just a token parser. 
     (Inspired from LaForth and Rockwell 6510)
-
-    Shrinks Forth code in 510 bytes.
-
-    Preparing for ." C" S" stuff
 
 09/03/2026
 
