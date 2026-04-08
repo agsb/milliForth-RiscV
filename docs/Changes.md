@@ -8,7 +8,7 @@
     
     Notes:
 
-    Still using lowercase for words. NOW in uppercase also.
+    Could use any case, mixed, lowercase or uppercase.
 
     In FigForth, ;S is called semis and ; is called semicolon, 
         but in Milliforth, ;S is exit and ; is semis. 
@@ -22,7 +22,7 @@
 
     Best choices for extensions: 
         
-        ;CODE todo native jump to native code at an address, inline
+        ;CODE for native jump to native code at an address, inline
 
         NAN, number $80000000, flag negative, flag IMMEDIATE
 
@@ -34,23 +34,27 @@
 
         ABORT to reset stacks and outer interpreter
 
-## WIP
+## DJB hash
 
-    Change ." to only be compiled as in ANSI and TalyForth
+    All hashs are 31 bits, high bit reserved for flag
+
+## WIP
 
     Include the eforth dictionary for expantion
 
-    WHat about, do not use line paradigm ? Just ascii tokens between
-    spaces without controls. Easch token is a word. 
-    But what about comments, and parses, and ....
-
+    Change ." to only be compiled as in ANSI and TalyForth
 
 ## Done
 
 07/04/2026
 
+    What about, do not use line paradigm ? 
+    Just a stream of ascii tokens between
+    spaces without controls. Each token is a word. 
     No more TIB, no more lines, just a token parser. 
-    ( From LaForth and Rockwell 6510, ideas.)
+    (Inspired from LaForth and Rockwell 6510)
+
+    Shrinks Forth code in 510 bytes.
 
     Preparing for ." C" S" stuff
 
