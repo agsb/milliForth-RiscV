@@ -38,7 +38,6 @@
  : SP@ SP @ CELL + ; 
  : RP@ RP @ CELL + ; 
  
- \ refresh stacks
  : SP! SP ! ;  
  : RP! RP ! ; 
 
@@ -62,8 +61,6 @@
  : DROP DUP - + ; 
  : NIP SWAP DROP ; 
  : TUCK SWAP OVER ; 
-
- : \ 0 >IN @ ! ;  \ end-of-line comments
 
  : HERE HEAP @ ; 
  : ALLOT HERE + HEAP ! ; 
@@ -117,8 +114,6 @@
  : REPEAT SWAP ['] BRANCH , HERE - , 
         DUP HERE SWAP - SWAP ! ; IMMEDIATE 
  
- \ ( limit first -- ) 
-
  : DO HERE ['] >R , ['] >R , ; IMMEDIATE 
 
  : LOOP ['] R> , ['] R> , 
@@ -172,32 +167,22 @@
  
  : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP ; 
 
- : ENDS BEGIN KEY OVER - 0# NAND UNTIL DROP ; 
+ : SKIP BEGIN KEY OVER - 0# UNTIL DROP ; 
 
- : \ 8 2 + ENDS ; 
+ : SCAN BEGIN KEY OVER - 0# NOT UNTIL DROP ; 
 
- : ( 32 8 + 1 + ENDS ; 
+ : \ 8 2 + SCAN ; IMMEDIATE 
 
- : IN> >IN @ C@ >IN @ 1 + >IN ! ; 
+ : ( 32 8 + 1 + SCAN ; IMMEDIATE
 
- : PARSE IN> DROP 
-        >IN @ SWAP 0 
-        BEGIN OVER IN> <> WHILE 1 + REPEAT 
-        SWAP BL = IF >IN @ 1 - >IN ! THEN ; 
+ : ." 32 2 + BEGIN KEY OVER OVER - WHILE EMIT REPEAT DROP ;
 
- : WORD IN> DROP 
-        BEGIN DUP IN> <> UNTIL 
-        >IN @ 2 - >IN ! PARSE ; 
-
- : [CHAR] ['] LIT , BL WORD DROP C@ , ; IMMEDIATE 
+ : xxxCOPY BEGIN KEY OVER - 0# NOT UNTIL DROP ; 
  
- : ( [CHAR] ) PARSE DROP DROP ; IMMEDIATE 
+ : xxxTYPEZ BEGIN DUP 1 + SWAP C@ DUP IF EMIT THEN NOT UNTIL DROP ; 
 
- : ." [CHAR] " PARSE TYPE ; IMMEDIATE 
+ : xxxCOUNT 0 BEGIN OVER DUP C@ UNTIL DROP ;  
 
- \ TEST MINIMAL
+ ." That's all folks ! "
 
- ." HELLO WORLD " CR
- 
- ." THAT'S ALL FOLKS !" CR
 

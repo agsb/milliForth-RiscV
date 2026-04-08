@@ -4,14 +4,11 @@
 
 \ exception word set, 
 
-\ SP@ returns the address of top of data stack
-\ SP! restors the address of top of data stack
-\ RP@ returns the address of top of return stack
-\ RP! restors the address of top of return stack
+ VARIABLE HANDLER
+ 
+ 0 HANDLER !
 
-0 VARIABLE HANDLER
-
-: CATCH
+ : CATCH
         SP@ >R 
         HANDLER @ >R
         RP@ HANDLER !
@@ -20,7 +17,7 @@
         R> DROP
         0 ;
 
-: THROW
+ : THROW
         ?DUP IF
                 HANDLER @ RP!
                 R> HANDLER !
@@ -28,14 +25,13 @@
                 SP! DROP R>
         THEN ;
  
- : ABORTS -1 THROW ;
+ : ABORT -1 THROW ;
                 
-\ facility word set
+ \ facility word set
 
-: +FIELD CREATE OVER , + DOES> @ + ;
+ : +FIELD CREATE OVER , + DOES> @ + ;
 
-: BEGIN-STRUCTURE CREATE HERE 0 0 , DOES> @ ;
+ : BEGIN-STRUCTURE CREATE HERE 0 0 , DOES> @ ;
 
-: END-STRUCTURE SWAP ! ;
-
+ : END-STRUCTURE SWAP ! ;
 

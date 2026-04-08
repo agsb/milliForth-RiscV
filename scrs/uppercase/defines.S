@@ -162,6 +162,7 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
+/*
 
  .equ debug, YES
  
@@ -175,12 +176,9 @@
 
  .equ tickme, YES
 
- .equ linedit, YES
+ .equ asciis, YES
 
  .equ onlyascii, YES
-
-/*
- # default is mixed case
 
  # .equ uppercase, YES
  

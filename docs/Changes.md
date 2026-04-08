@@ -47,6 +47,13 @@
 
 ## Done
 
+07/04/2026
+
+    No more TIB, no more lines, just a token parser. 
+    ( From LaForth and Rockwell 6510, ideas.)
+
+    Preparing for ." C" S" stuff
+
 09/03/2026
 
     CASE and DEFER sets broken at POSTPONE ! 

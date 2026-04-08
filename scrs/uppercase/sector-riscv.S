@@ -1,1 +1,1 @@
-sector-riscv-hash.S
+sector-riscv-hash-token.S

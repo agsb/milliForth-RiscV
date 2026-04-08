@@ -1,19 +1,22 @@
+ 
  \
  \ revision for correct ."
  \
 
- : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP ;
+ 80 ARRAY TIBS 
+
+ VARIABLE >IN
 
  : IN> >IN @ C@ >IN @ 1 + >IN ! ;
 
  : PARSE IN> DROP
-  >IN @ SWAP 0
-  BEGIN OVER IN> <> WHILE 1 + REPEAT
-  SWAP BL = IF >IN @ 1 - >IN ! THEN ;
+        >IN @ SWAP 0
+        BEGIN OVER IN> <> WHILE 1 + REPEAT
+        SWAP BL = IF >IN @ 1 - >IN ! THEN ;
 
  : WORD IN> DROP
-  BEGIN DUP IN> <> UNTIL
-  >IN @ 2 - >IN ! PARSE ;
+        BEGIN DUP IN> <> UNTIL
+        >IN @ 2 - >IN ! PARSE ;
 
  : [CHAR] ['] LIT , BL WORD DROP C@ , ; IMMEDIATE
 

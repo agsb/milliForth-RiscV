@@ -41,7 +41,7 @@
 
         THIS VERSION USES ONLY HASH HEADERS.
 
-        THIS VERSION USES ONLY TOKENS. <NO TIB, NO LINES>
+        THIS VERSION USES ONLY TOKENS. <NO TIB, NO LINES, NO COMMENTS>
 
 #----------------------------------------------------------------------
 */
@@ -185,7 +185,7 @@ warm:
 # next heap free cell
         
         la fst, h_here
-        sw fst, HEAP (usr)
+        sw fst, HERE (usr)
 
 # link last primitive as list of headers, aka dictionary
 
@@ -198,6 +198,9 @@ reset:
 
         la fst, _tib
         sw fst, TOIN (usr)
+
+# allow access of tib, preserve it
+        sw fst, TIBS (usr)
 
 #---------------------------------------------------------------------
 # xxx
@@ -317,12 +320,12 @@ eval:
 
         beq wrd, zero, execute
 
-# immediate ? if flaged
+# immediate ? 
 
         bne snd, zero, immediate      
 
 #---------------------------------------------------------------------         
-# compiling ? else
+# compiling ? 
 compile:
         
         call docomma
@@ -364,7 +367,7 @@ wipe:
 
         # wipe remains
         lw fst, HEAD (usr)
-        sw fst, HEAP (usr)
+        sw fst, HERE (usr)
 100:
         j error
 
@@ -392,7 +395,6 @@ token:
 100:
         call _getc
         blt fst, trd, 100b
-
         beq fst, trd, 100b
 
 # save character
@@ -408,12 +410,13 @@ token:
 300:
         call _getc
         blt fst, trd, 300b
-
         bne fst, trd, 200b
 
-# add space terminator
-
+# ends 
         sb fst, 0 (idx)
+
+        # sb zero , 0 (idx)
+400:
 
 #----------------------------------------------------------------------
 # djb2 hash function
@@ -442,7 +445,7 @@ djb2:
 100:
         lb fst, 0 (idx)
         
-        beq fst, trd, 200f
+        beq fst, zero, 200f
 
         mv snd, hsh
 
@@ -463,7 +466,6 @@ djb2:
 mask:
 
         slli hsh, hsh, ONE
-
         srli hsh, hsh, ONE
 
         pullra
@@ -516,13 +518,13 @@ pass:
 #---------------------------------------------------------------------
 docomma:
 
-        lw idx, HEAP (usr)
+        lw idx, HERE (usr)
       
         sw fst, 0 (idx)
       
         addi idx, idx, CELL
       
-        sw idx, HEAP (usr)
+        sw idx, HERE (usr)
 
         ret
 
@@ -660,7 +662,7 @@ save1:
 def_word ":", "colon", hash_colon, h_userat
 # save here, panic if semis not follow elsewhere
         
-        lw fst, HEAP (usr)
+        lw fst, HERE (usr)
         
         sw fst, HEAD (usr)
 
@@ -742,7 +744,7 @@ next:
 # wrd = (ipt) ; ipt += cell
 
 # xxx
-# count beats as next executions
+# count beats
 .ifdef beatme
         lw idx, BEAT (usr)
 
@@ -766,7 +768,7 @@ jump:
 # jump to primitive
         
 # xxx
-# count ticks as primitive executions
+# count ticks
 .ifdef tickme
         lw idx, TICK (usr)
 

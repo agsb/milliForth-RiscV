@@ -1,7 +1,5 @@
 
- \ FOR NEXT counts down ends at zero
- \ leaves the counter with 0 at TOS 
- \ and not mess stack
+ \ FOR NEXT counts down and ends at zero
 
  : FOR ( n -- )
         ['] HERE >R , ; IMMEDIATE 
@@ -34,7 +32,7 @@
  : CCOPY< ( from into many -- ) 
         FOR OVER @ OVER ! 1 - SWAP 1 - SWAP NEXT DROPS ;
 
- : COUNT ( c a -- a n )
+ : XXXCOUNT ( c a -- a n )
         SWAP OVER BEGIN OVER OVER @ = 
         ;
 
