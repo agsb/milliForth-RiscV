@@ -20,8 +20,9 @@
  : LATEST RP CELL + ; 
  : HEAP LATEST CELL + ; 
  : STATE HEAP CELL + ; 
+ : BASE STATE CELL + ; 
 
- : >IN STATE CELL + ; 
+ : >IN BASE CELL + ; 
  : TIB >IN CELL + ; 
 
  : BEATS TIB CELL + ; 
@@ -30,8 +31,7 @@
  : HEAD TICKS CELL + ;   
  : TAIL HEAD CELL + ;  
 
- : VOID TAIL CELL + ; 
- : VARS VOID CELL + ; 
+ : VARS TAIL CELL + ; 
 
  : CLOCKS BEATS @ TICKS @ ;
 
@@ -177,9 +177,25 @@
 
  : ." 32 2 + BEGIN KEY OVER OVER - WHILE EMIT REPEAT DROP ;
 
+ : COPY ( c a -- a+n+1 ) \ better less than 255 characters
+        >R
+        BEGIN
+                KEY OVER OVER - 
+        WHILE
+                R> DUP 1 + >R C!
+        REPEAT
+        DROP R> ;
+
+ : SNAP
+        HERE DUP 32 2 + COPY
+        OVER OVER - 
+        SWAP C!
+        SWAP DROP
+        SWAP !
+        ;
+
  : SEEN HERE DUP 0 , 32 2 + 
-        BEGIN KEY OVER OVER - WHILE , REPEAT 
-        HERE OVER - ! ;
+        BEGIN KEY OVER OVER - WHILE , REPEAT HERE OVER - ! ;
 
  : xxxC" STATE @ IF 
         ELSE
@@ -195,6 +211,8 @@
 
  : xxxCOUNT 0 BEGIN OVER DUP C@ UNTIL DROP ;  
 
+ \ comments
+ ( more comments )
  ." That's all folks ! "
 
 

@@ -52,6 +52,8 @@
 
 #include "defines.S"
 
+#include "registers.S" 
+
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
 #
@@ -92,15 +94,19 @@ h_\label:
 .section .bss
 .p2align 2, 0x0
 
-# This is it, crude 
+# for easy all variables are accessed by offset of _user
+
+# internals, crude 
+
+_head:
+.word 0x0
+
+_tibs:
+.word 0x0
 
 # user parameter offsets, vide defines.S
 _user:
 .skip PARAMS * CELL
-
-# reserved locals, NOT recursive, vide defines.S
-_locals:
-.skip LOCALS * CELL
 
 # data stack grows backward
 _spb:       # bottom 
@@ -112,7 +118,7 @@ _rpb:       # bottom
 .skip rpz
 rp0: .word 0x0
 
-# tib grows forward
+# token input buffer grows forward
 tib0:
 _tib:       
 .skip tibz
@@ -196,28 +202,8 @@ warm:
 # reset TIB
 reset:
 
-        la fst, _tib
-        sw fst, TOIN (usr)
-
-#---------------------------------------------------------------------
-# xxx
-.ifndef dismiss
-
-miss:
-
-.endif
-
-error:
-
-# xxx 
-.ifdef debug
-
-        putchar '\n'
-        putchar '?'
-        putchar '?'
-        putchar '\n'
-
-.endif
+        la fst, tib0
+        sw fst, TIBS (usr)
 
 #---------------------------------------------------------------------
 abort:
@@ -340,59 +326,72 @@ immediate:
 #---------------------------------------------------------------------
 # unexpected end of dictionary
 
-# xxx
-.ifdef dismiss
-
 miss:
 
-# wipe remains of incomplete compiled
+# xxx 
+.ifdef debug
 
         putchar '\n'
-# trd is BL
+
+        lw idx, TIBS (usr)
 100:
         lb fst, 0 (idx)
-        call _putc 
-        beq fst, trd, 100f
         addi idx, idx, ONE
-        j 100b
-100:
+        call _putc 
+        bne fst, zero, 100b
 
-wipe:
-        # compiling ? why not do it at any error ?
-        lw fst, STAT (usr)
-        beq fst, zero, 100f
+        putchar ' '
+        putchar '?'
+        putchar '?'
 
-        # wipe remains
-        lw fst, HEAD (usr)
-        sw fst, HEAP (usr)
-100:
-        j error
+        putchar '\n'
 
 .endif
+
+# xxx
+.ifdef missed
+
+wipe:
+        # compiling ? 
+        lw fst, HEAD (usr)
+        beq fst, zero, 100f
+        # wipe remains
+        sw fst, HEAP (usr)
+100:
+.endif
+
+        j abort
 
 #---------------------------------------------------------------------
 # crude token
 # load a valid sequence of ascii from stream, 
 # wipes all controls (\t, \n, \r, ... ), 
 # any word must be between spaces,
-# with limit lenght of 32 bytes, 
+#----------------------------------------------------------------------
+# djb2 hash function
+# classic djb2 hash algorithm, with XOR, adapted from cdb_hash
+#---------------------------------------------------------------------
+# magic numbers
+.equ DJB2, 5381
+.equ SFHT, 5
+#---------------------------------------------------------------------
 #
 token:
         pushra
+
+# prepare for hash
+
+        lui hsh, %hi(DJB2)
+        addi hsh, hsh, %lo(DJB2)
 
 # load word separator, BL is space
 
         addi trd, zero, BL
 
-# first position on tib
-
-        lw idx, TOIN (usr)
-
 # skip spaces
 100:
         call _getc
         blt fst, trd, 100b
-
         beq fst, trd, 100b
 
 # save character
@@ -401,48 +400,8 @@ token:
 .ifdef asciis
         call pass
 .endif
-        sb fst, 0 (idx)
-        addi idx, idx, ONE
-        
-# scan spaces
-300:
-        call _getc
-        blt fst, trd, 300b
 
-        bne fst, trd, 200b
-
-# add space terminator
-
-        sb fst, 0 (idx)
-
-#----------------------------------------------------------------------
 # djb2 hash function
-# classic djb2 hash algorithm, with XOR, adapted from cdb_hash
-# idx pointer to str
-# wrd holds the end of word  
-# uses fst, snd, wrd
-# hsh returns the hash 
-# idx returns next space after
-#---------------------------------------------------------------------
-# magic numbers
-.equ DJB2, 5381
-.equ SFHT, 5
-#---------------------------------------------------------------------
-hash:
-
-        lw idx, TOIN (usr)
-
-# continue until BL
-djb2:
-        # easy 5381
-   
-        lui hsh, %hi(DJB2)
-        addi hsh, hsh, %lo(DJB2)
-
-100:
-        lb fst, 0 (idx)
-        
-        beq fst, trd, 200f
 
         mv snd, hsh
 
@@ -452,12 +411,11 @@ djb2:
         
         xor hsh, hsh, fst
         
-        addi idx, idx, ONE
-        
-        j 100b
-
-#---------------------------------------------------------------------
-200:    
+# scan spaces
+300:
+        call _getc
+        blt fst, trd, 300b
+        bne fst, trd, 200b
 
 # clear high bit, NaN, forth immediate flag 
 mask:
@@ -531,6 +489,35 @@ docomma:
 # the primitives 
 # 
 #---------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------
+# primitives djb2 hash cleared of bit 31
+#
+#---------------------------------------------------------------------
+# symbols ! @ + 0# : ;
+.equ hash_store, 0x0002B584 
+.equ hash_fetch, 0x0002B5E5 
+.equ hash_plus,  0x0002B58E 
+.equ hash_zeroq, 0x00596816 
+.equ hash_colon, 0x0002B59F 
+.equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
+
+#---------------------------------------------------------------------
+# lowercase key emit exit nand u@
+.equ hash_key,   0x0B876D32 
+.equ hash_emit,  0x7C6B87D0 
+.equ hash_exit,  0x7C6BBE85 
+.equ hash_nand,  0x7C727500 
+.equ hash_userat, 0x00596F90
+
+#---------------------------------------------------------------------
+# uppercase KEY EMIT EXIT NAND U@
+.equ hash_KEY,   0x0B87F112
+.equ hash_EMIT,  0x7C7C87D0
+.equ hash_EXIT,  0x7C7CC745
+.equ hash_NAND,  0x7C8254C0
+.equ hash_USERAT, 0x005973B0
 
 /*
 h_name:
@@ -702,6 +689,11 @@ def_word ";", "semis", hash_semis, h_colon
         lw fst, HEAD (usr)
         
         sw fst, LAST (usr)
+
+.ifdef missed
+
+        sw zero, HEAD (usr)
+.endif
 
 # stat is 'interpret' == 0
         

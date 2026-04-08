@@ -30,9 +30,11 @@
 # ascii
 
 .equ XON, 17   #  ^Q
+
 .equ XOFF, 19  #  ^S
 
 .equ ACK, 6    #  ^F
+
 .equ NAK, 21   #  ^U
 
 .equ BS, 8     # \b ^H
@@ -40,6 +42,10 @@
 .equ HT, 9     # \t ^I
 
 .equ LF, 10    # \n ^J
+
+.equ VT, 11    # \v ^K
+
+.equ FF, 12    # \r ^L
 
 .equ CR, 13    # \r ^M
 
@@ -61,17 +67,9 @@
 
 .equ rpz, stacks * CELL
 
-# Terminal input buffer 80 bytes, (but 72 is enough), moves forwards
+# Token Input Buffer 36 bytes
 
-.equ tibz, 80
-
-# PAD for temporary formating etc
-
-.equ padz, 84
-
-# PIC for numeric formating etc, (2*32)+4
-
-.equ picz, 64+4 
+.equ tibz, 36
 
 # highlander, immediate flag, unique NaN 
 
@@ -83,6 +81,12 @@
 
 #---------------------------------------------------------------------
 # the order must be preserved, same in source. 
+
+# internal variables offset
+.equ HEAD, -2 * CELL
+
+# token input buffer
+.equ TIBS, -1 * CELL
 
 # user structure of internal Forth variables
 
@@ -101,63 +105,22 @@
 # state flag
 .equ STAT, 4 * CELL
 
-# toin next free byte in TIB
-.equ TOIN, 5 * CELL
+# base value
+.equ BASE, 5 * CELL
 
-# terminal (source) input buffer
-.equ TIBS, 6 * CELL
+#---------------------------------------------------------------------
+# reserved 
 
 # counter of words executed by next
-.equ BEAT, 7 * CELL
+.equ BEAT, 6 * CELL
 
-# counter of words executed by next
-.equ TICK, 8 * CELL
-
-# heap forward
-.equ HEAD, 9 * CELL
-
-# heap backward
-.equ TAIL, 10 * CELL
-
-# void 
-.equ VOID, 11 * CELL
+# counter of primitives executed 
+.equ TICK, 7 * CELL
 
 #---------------------------------------------------------------------
-# reserve for above 
+# reserve sizes for above 
 
-.equ PARAMS, 12 
-
-.equ LOCALS, 8
-
-#---------------------------------------------------------------------
-# primitives djb2 hash cleared of bit 31
-#
-#---------------------------------------------------------------------
-# symbols ! @ + 0# : ;
-.equ hash_store, 0x0002B584 
-.equ hash_fetch, 0x0002B5E5 
-.equ hash_plus,  0x0002B58E 
-.equ hash_zeroq, 0x00596816 
-.equ hash_colon, 0x0002B59F 
-
-#---------------------------------------------------------------------
-.equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
-
-#---------------------------------------------------------------------
-# lowercase
-.equ hash_key,   0x0B876D32 
-.equ hash_emit,  0x7C6B87D0 
-.equ hash_exit,  0x7C6BBE85 
-.equ hash_nand,  0x7C727500 
-.equ hash_userat, 0x00596F90
-
-#---------------------------------------------------------------------
-# uppercase
-.equ hash_KEY,   0x0B87F112
-.equ hash_EMIT,  0x7C7C87D0
-.equ hash_EXIT,  0x7C7CC745
-.equ hash_NAND,  0x7C8254C0
-.equ hash_USERAT, 0x005973B0
+.equ PARAMS, 8 
 
 #---------------------------------------------------------------------
 # flags for compiler options
@@ -170,7 +133,7 @@
  
  .equ maths, YES
  
- .equ dismiss, YES
+ .equ missed, YES
 
  .equ beatme, YES
 
@@ -186,10 +149,3 @@
 
 */
 
-#---------------------------------------------------------------------
-# 
-
-#include "registers.S"
-
-#
-#---------------------------------------------------------------------

@@ -23,7 +23,6 @@ out/
 *.ram
 *.rom
 *.out
-*.bhx
 *.asm
 *.lst
 *.out

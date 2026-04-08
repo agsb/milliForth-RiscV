@@ -29,15 +29,17 @@
 
  \ from eforth, first EXIT is reserved for DOES> 
 
+ : BODY 0 , ; \ crude pointer for CREATE DOES>
+
  : CREATE :NAME 
         ['] LIT , 
         HERE CELL + CELL + CELL + , 
-        HERE TAIL ! 
+        HERE BODY ! 
         ['] EXIT , 
         ['] EXIT , 
         LATEST ! ; 
  
- : DOES> R> TAIL @ ! ; 
+ : DOES> R> BODY @ ! ; 
 
  : <BUILDS CREATE 0 , ; 
 
