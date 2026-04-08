@@ -177,6 +177,18 @@
 
  : ." 32 2 + BEGIN KEY OVER OVER - WHILE EMIT REPEAT DROP ;
 
+ : SEEN HERE DUP 0 , 32 2 + 
+        BEGIN KEY OVER OVER - WHILE , REPEAT 
+        HERE OVER - ! ;
+
+ : xxxC" STATE @ IF 
+        ELSE
+        THEN ; 
+
+ : xxxS" STATE @ IF 
+        ELSE
+        THEN ; 
+
  : xxxCOPY BEGIN KEY OVER - 0# NOT UNTIL DROP ; 
  
  : xxxTYPEZ BEGIN DUP 1 + SWAP C@ DUP IF EMIT THEN NOT UNTIL DROP ; 
