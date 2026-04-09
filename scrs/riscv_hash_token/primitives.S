@@ -142,8 +142,72 @@ move:
         j next
 
 #---------------------------------------------------------------------
+# ( -- ), ; aka figforth colon 
+def_word ":", "colon", hash_colon, it_exit
+# save here, panic if semis not follow elsewhere
+        
+        lw fst, HEAP (usr)
+        
+        sw fst, HEAD (usr)
+
+# stat is 'compile' == 1
+        
+        addi fst, zero, ONE
+        
+        sw fst, STAT (usr)
+
+# make a header
+
+create:
+
+# copy last into (here)
+        
+        lw fst, LAST (usr)
+        
+        call docomma
+
+# get a hash of the next token
+        
+        call token
+        
+# copy hash into (here)
+
+        mv fst, idx
+
+comma:
+
+        call docomma
+
+        j next 
+
+#---------------------------------------------------------------------
+# ( -- ) ; aka figforth semicolon
+def_word ";", "semis", hash_semis, it_colon 
+# update last, panic if colon not lead elsewhere 
+        
+        lw fst, HEAD (usr)
+        
+        sw fst, LAST (usr)
+
+.ifdef missed
+
+        sw zero, HEAD (usr)
+.endif
+
+# stat is 'interpret' == 0
+        
+        sw zero, STAT (usr)
+
+finish:
+# compound words must ends with exit
+        
+        la fst, is_exit
+
+        j comma
+
+#---------------------------------------------------------------------
 # ( -- c ) 
-def_word "KEY", "key", hash_KEY, it_exit 
+def_word "KEY", "key", hash_KEY, it_semis 
 
         call _getc
 
@@ -255,71 +319,7 @@ pull2:
         ret
 
 #---------------------------------------------------------------------
-# ( -- ), ; aka figforth colon 
-def_word ":", "colon", hash_colon, it_userat
-# save here, panic if semis not follow elsewhere
-        
-        lw fst, HEAP (usr)
-        
-        sw fst, HEAD (usr)
 
-# stat is 'compile' == 1
-        
-        addi fst, zero, ONE
-        
-        sw fst, STAT (usr)
-
-# make a header
-
-create:
-
-# copy last into (here)
-        
-        lw fst, LAST (usr)
-        
-        call docomma
-
-# get a hash of the next token
-        
-        call token
-        
-# copy hash into (here)
-
-        mv fst, idx
-
-comma:
-
-        call docomma
-
-        j next 
-
-#---------------------------------------------------------------------
-# ( -- ) ; aka figforth semicolon
-def_word ";", "semis", hash_semis, it_colon 
-# update last, panic if colon not lead elsewhere 
-        
-        lw fst, HEAD (usr)
-        
-        sw fst, LAST (usr)
-
-.ifdef missed
-
-        sw zero, HEAD (usr)
-.endif
-
-# stat is 'interpret' == 0
-        
-        sw zero, STAT (usr)
-
-finish:
-# compound words must ends with exit
-        
-        la fst, is_exit
-
-        j comma
-
-#---------------------------------------------------------------------
-
-.equ last_next, it_semis
+.equ last_next, it_userat
 
 
