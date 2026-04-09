@@ -1,0 +1,1 @@
+ Use: cat tuN.f ... tuM.f | sh doit.sh 

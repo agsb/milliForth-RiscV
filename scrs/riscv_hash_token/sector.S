@@ -332,14 +332,6 @@ miss:
 
         putchar '\n'
 
-        lw idx, TIBS (usr)
-100:
-        lb fst, 0 (idx)
-        addi idx, idx, ONE
-        call _putc 
-        bne fst, zero, 100b
-
-        putchar ' '
         putchar '?'
         putchar '?'
 
@@ -502,26 +494,26 @@ loopptr:
 # primitives 
 #---------------------------------------------------------------------
 
-#include "primitives-riscv-hash.S"
+#include "primitives.S"
 
 #----------------------------------------------------------------------
 .ifdef extras
 
-#include "extras-riscv-hash.S"
+#include "extras.S"
 
 .endif
 
 #----------------------------------------------------------------------
 .ifdef maths
 
-#include "maths-riscv-hash.S"
+#include "maths.S"
 
 .endif
 
 #----------------------------------------------------------------------
 .ifdef debug
 
-#include "debug-riscv-hash.S"
+#include "debug.S"
 
 .endif
 

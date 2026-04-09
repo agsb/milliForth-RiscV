@@ -1,1 +1,0 @@
-sector-riscv-hash.S
