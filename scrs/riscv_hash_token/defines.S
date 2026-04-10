@@ -50,17 +50,7 @@
 
 .equ BL, 32    # blank space
 
-# Moore uses 22 deep stacks
-
-.equ stacks, 24 
-
-# data stack
-
-.equ spz, stacks * CELL
-
-# return stack  
-
-.equ rpz, stacks * CELL
+.equ QU, 34    # double quote
 
 # highlander, immediate flag, unique NaN 
 
@@ -70,12 +60,29 @@
 # +2147483647
 .equ MASK_IMM, 0x7FFFFFFF
 
+# Moore uses 22 deep stacks
+
+.equ stacks, 24 
+
+# data stack
+
+.equ sp_size, stacks * CELL
+
+# return stack  
+
+.equ rp_size, stacks * CELL
+
+# user parameter stack: sp rp last heap state 
+# internal: head beat tick 
+
+.equ params, 8
+
+# user stack
+
+.equ user_size, params * CELL
+
 #---------------------------------------------------------------------
 # the order must be preserved, same in source. 
-
-# internal variables offset
-
-.equ HEAD, -1 * CELL
 
 # user structure of internal Forth variables
 
@@ -94,11 +101,11 @@
 # state flag
 .equ STAT, 4 * CELL
 
-# void value
-.equ VOID, 5 * CELL
-
 #---------------------------------------------------------------------
 # reserved 
+
+# last heap while compiling
+.equ HEAD, 5 * CELL
 
 # counter of words executed by next
 .equ BEAT, 6 * CELL
@@ -107,16 +114,9 @@
 .equ TICK, 7 * CELL
 
 #---------------------------------------------------------------------
-# reserve sizes for above 
-
-.equ PARAMS, 8 
-
-#---------------------------------------------------------------------
 # flags for compiler options
 
  .equ debug, YES
-
- .equ cores, YES
 
 /*
 

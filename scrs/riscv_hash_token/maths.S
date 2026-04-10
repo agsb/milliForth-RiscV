@@ -30,11 +30,13 @@
 # djb2 hash cleared of bit 31
 #
 
+.equ hash_BYMOD, 0x7C4D1C6C  
+.equ hash_BYMUL, 0x7C4FB089
+
 .equ hash_MUL, 0x0002B58F  
 .equ hash_DIV, 0x0002B58A  
 .equ hash_MSTAR, 0x005972C2  
 .equ hash_UMSTAR, 0x0B87EB77  
-.equ hash_BYMOD, 0x7C4D1C6C  
 .equ hash_FMBYMOD, 0x14CB69A7  
 .equ hash_SMBYMOD, 0x49BE2C12  
 
@@ -44,21 +46,21 @@
 .equ init_math, last_next
 
 #---------------------------------------------------------------------
-# ( w1 w2 -- w3 w4 ) multiply
-def_word "*", "mul", hash_MUL, init_math
+# ( w1 w2 -- w3 w4 ) double multiply,  
+def_word "*MOD", "bymul", hash_BYMUL, init_math
         
         call pull2
-        mul trd, fst, snd
-        mulh snd, fst, snd
+        mulh trd, fst, snd
+        mul snd, fst, snd
 
 push2:
-        add fst, trd, zero
         sw snd, 0 (idx)
+        add fst, trd, zero
 	j back1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 w4 ) divide
-def_word "/", "div", hash_DIV, it_mul
+def_word "/MOD", "bymod", hash_BYMOD, it_mul
         
         call pull2
 	beqz snd, by_zero

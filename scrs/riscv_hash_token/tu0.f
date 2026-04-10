@@ -20,9 +20,9 @@
  : LATEST RP CELL + ; 
  : HEAP LATEST CELL + ; 
  : STATE HEAP CELL + ; 
- : VOID  STATE CELL + ; 
 
- : BEATS VOID CELL + ; 
+ : HEAD  STATE CELL + ; 
+ : BEATS HEAD CELL + ; 
  : TICKS BEATS CELL + ;  
  
  : CLOCKS BEATS @ TICKS @ ;

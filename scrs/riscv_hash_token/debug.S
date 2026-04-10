@@ -92,7 +92,6 @@ def_word "..", "tdot", hash_tdot, it_sees
 
         call pull2
 
-        # call puthexy
         call to2hex
 
         putchar ' '
@@ -516,6 +515,7 @@ puthexy:
 # code a 32-bit word in ASCII hexadecimal
 #
 to2hex:
+puthex:
 
         pushra
 

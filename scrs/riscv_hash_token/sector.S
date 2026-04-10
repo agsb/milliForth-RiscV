@@ -67,34 +67,20 @@ is_\label:
 .endm
 
 #---------------------------------------------------------------------
-# need adjust walign
-# ((n + 3) & ~3)
-.global walign
-.macro walign rg
-        addi \rg, \rg, 3
-        andi \rg, \rg, ~3
-.endm
-
-#---------------------------------------------------------------------
-# Riscv does not have automatic hidden SP push/pull
-# for deep, more than one, nested calls, use callee
+# Riscv does not have automatic, and hidden, SP push/pull
+# for deep, more than one, nested calls, 
+# use pushra and pullra
 #
 
-#define pushra pushsp ra
-
-#define pullra pullsp ra
-
-.global pushsp
-
-.macro pushsp rg
+.global pushra
+.macro pushra
         addi sp, sp, -4   
-        sw \rg, 0(sp)    
+        sw ra, 0(sp)    
 .endm
 
-.global pullsp
-
-.macro pullsp rg
-        lw \rg, 0(sp)    
+.global pullra
+.macro pullra
+        lw ra, 0(sp)    
         addi sp, sp, +4   
 .endm
 
@@ -110,28 +96,20 @@ is_\label:
 .section .bss
 .p2align 2, 0x0
 
-# for easy all variables are accessed by offset of _user
+# all forth variables by offset of _user
 
-# internals, crude 
-
-_head:
-.word 0x0
-
-_tibs:
-.word 0x0
-
-# user parameter offsets, vide defines.S
+# user stack of parameter, for offsets vide defines.S
 _user:
-.skip PARAMS * CELL
+.skip user_size
 
 # data stack grows backward
 _spb:       # bottom 
-.skip spz
+.skip sp_size
 sp0: .word 0x0
 
 # return stack grows backward
 _rpb:       # bottom
-.skip rpz
+.skip rp_size
 rp0: .word 0x0
 
 # start of user dictionary 
@@ -165,13 +143,6 @@ main:
 # do any system inits
 # call _init
 
-/*
-.option push
-.option norelax
-       	la gp, __global_pointer$
-.option pop
-*/
-
 #----------------------------------------------------------------------
 # do what need be only once
 cold:
@@ -195,7 +166,6 @@ cold:
         sw idx, TICK (usr)
 .endif
 
-        
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
@@ -229,7 +199,8 @@ quit:
         sw zero, STAT (usr)
 
 #---------------------------------------------------------------------
-okey:
+# 
+loop:
 
 # xxx
 .ifdef debug
@@ -244,42 +215,39 @@ okey:
 
 .endif
 
-#---------------------------------------------------------------------
-# get a hash of the next token
-loop:
-        
-# returns a hash in idx
-
-        call token
-
 #---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
 #
 find:
-# get the latest link
+
+        # get a hash of the next token
+        
+        call token
+
+        # get the latest link
         
         lw lnk, LAST (usr)
 
 100:
-# verify end of dictionary, do miss 
+        # verify end of dictionary, do miss 
         
         beq lnk, zero, miss
 
-# linked list
+        # linked list
         
         mv fst, lnk
 
-# copy next link 
+        # copy next link 
         
         lw lnk, 0 (fst)
 
-# copy the hash
+        # copy the hash
         
         addi fst, fst, CELL
 
         lw wrd, 0 (fst)
 
-# mask the FLAG, hold it in snd
+        # mask the FLAG, hold it in snd
 
         lui snd, %hi(FLAG_IMM)
 
@@ -287,11 +255,11 @@ find:
 
         xor wrd, wrd, snd
 
-# compare
+        # compare
         
         bne idx, wrd, 100b
 
-# points to start of code or list of references, aka xt
+        # points to start of code or list of references, aka xt
 
         addi fst, fst, CELL
 
@@ -301,29 +269,27 @@ find:
 # fst have the address after header
 
 eval:
-# what to do ?
+        # what to do ?
 
         lw wrd, STAT (usr)
         
-# executing ? if state == 0
+        # executing ? if state == 0
 
         beq wrd, zero, execute
 
-# immediate ? if flaged
+        # immediate ? if flaged
 
         bne snd, zero, immediate      
 
-#---------------------------------------------------------------------         
-# compiling ? else
+        # compiling ? else
 compile:
         
         call docomma
 
         j loop
 
-#---------------------------------------------------------------------         
-execute:
 immediate:
+execute:
 
         la ipt, loopptr
 
@@ -355,6 +321,7 @@ wipe:
         beq fst, zero, 100f
         # wipe remains
         sw fst, HEAP (usr)
+        sw zero, HEAD (usr)
 100:
 .endif
 
@@ -377,30 +344,30 @@ wipe:
 token:
         pushra
 
-# prepare for hash
+        # prepare for hash
 
         lui idx, %hi(DJB2)
         addi idx, idx, %lo(DJB2)
 
-# load word separator, BL is space
+        # load word separator, BL is space
 
         addi trd, zero, BL
 
-# skip spaces
+        # skip spaces
 100:
         call _getc
 
         blt fst, trd, 100b
         beq fst, trd, 100b
 
-# hash character
+        # hash character
 200:
 # xxx
 .ifdef asciis
         call pass
 .endif
 
-# djb2 hash function
+        # djb2 hash function
         
         mv snd, idx
 
@@ -410,14 +377,14 @@ token:
         
         xor idx, idx, fst
         
-# scan spaces
+        # scan spaces
 300:
         call _getc
 
         blt fst, trd, 300b
         bne fst, trd, 200b
 
-# clear hash high bit, NaN, used as Forth immediate flag 
+        # clear hash high bit 
 mask:
 
         slli idx, idx, ONE
@@ -489,7 +456,8 @@ docomma:
 
 loopptr:
         
-        .word okey
+        .word loop
+
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
