@@ -46,6 +46,12 @@
 
 ## Done
 
+10/04/2026
+
+    Grouping a subset of core words.
+
+    Maths for mul with two words and div with quontient and reminder.
+
 09/04/2026
     
     No lines, no Terminal Input Buffer, only hashes
