@@ -34,10 +34,6 @@
 
 .equ TRUE, -1
 
-# for general use  
-
-.equ NAN, 0x80000000
-
 # states
 
 .equ EXECUTE, 0
@@ -118,12 +114,18 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
- .equ extras, YES
+ .equ debug, YES
+
+ .equ cores, YES
+
+/*
+
+ .equ cores, YES
+ 
+ .equ maths, YES
  
  .equ debug, YES
 
- .equ maths, YES
- 
  .equ missed, YES
 
  .equ beatme, YES

@@ -92,7 +92,8 @@ def_word "..", "tdot", hash_tdot, it_sees
 
         call pull2
 
-        call puthexy
+        # call puthexy
+        call to2hex
 
         putchar ' '
 
@@ -100,7 +101,7 @@ def_word "..", "tdot", hash_tdot, it_sees
 
 #---------------------------------------------------------------------
 
-.set last_next, it_cell
+.set last_next, it_tdot
 
 #---------------------------------------------------------------------
 #
@@ -511,6 +512,41 @@ puthexy:
 
         ret
 
+#---------------------------------------------------------------------
+# code a 32-bit word in ASCII hexadecimal
+#
+to2hex:
+
+        pushra
+
+        add  snd, zero, fst
+        
+        addi trd, zero, 58
+
+        addi t0, zero, 32
+
+        # rolls 
+100:
+        beq t0, zero, 300f
+
+        addi t0, t0, -4
+
+        srl  fst, snd, t0
+
+        andi fst, fst, 15
+        ori  fst, fst, 48
+        blt  fst, trd, 200f
+        addi fst, fst, 7
+200:
+        call _putc
+        
+        j 100b
+
+300:
+
+        pullra
+
+        ret
 
 #---------------------------------------------------------------------
 

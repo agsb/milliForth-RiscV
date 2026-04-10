@@ -148,6 +148,7 @@ def_word "NOT", "not", hash_NOT, it_sfr
 
         call look0
 
+        # xori fst, fst, -1
         not fst, fst
 
         j keep0
@@ -158,6 +159,7 @@ def_word "NEG", "neg", hash_NEG, it_not
 
         call look0
 
+        # sub fst, zero, fst
         neg fst, fst
 
         j keep0
@@ -182,7 +184,7 @@ def_word "OVER", "over", hash_OVER, it_drop
 
         call look0
 
-        lw fst, 4 (idx)
+        lw fst, CELL (idx)
 
         j push1
 
@@ -192,11 +194,11 @@ def_word "SWAP", "swap", hash_SWAP, it_over
 
         call look0
 
-        lw snd, 4 (idx)
+        lw snd, CELL (idx)
 
         sw snd, 0 (idx)
 
-        sw fst, 4 (idx)
+        sw fst, CELL (idx)
 
         j next
 
@@ -206,15 +208,15 @@ def_word "ROT", "rot", hash_ROT, it_swap
 
         call look0
 
-        lw snd, 4 (idx)
+        lw snd, CELL (idx)
         
-        lw trd, 8 (idx)
+        lw trd, 2 * CELL (idx)
 
         sw trd, 0 (idx)
 
-        sw fst, 4 (idx)
+        sw fst, CELL (idx)
 
-        sw snd, 8 (idx)
+        sw snd, 2 * CELL (idx)
 
         j next
 
@@ -224,15 +226,15 @@ def_word "-ROT", "nrot", hash_NROT, it_rot
 
         call look0
 
-        lw snd, 4 (idx)
+        lw snd, CELL (idx)
         
-        lw trd, 8 (idx)
+        lw trd, 2 * CELL (idx)
 
         sw snd, 0 (idx)
 
-        sw trd, 4 (idx)
+        sw trd, CELL (idx)
 
-        sw fst, 8 (idx)
+        sw fst, 2 * CELL (idx)
 
         j next
 
@@ -320,9 +322,19 @@ def_word "R>", "rto", hash_RTO, it_rat
 
         lw idx, RPTR (usr)
 
-        lw fst, 0 (idx)
+        # load value
+
+        lw fst, CELL (idx)
+
+        # load return
+
+        lw snd, 0 (idx)
 
         addi idx, idx, +1 * CELL
+
+        # save return 
+
+        sw snd, 0 (idx) 
 
         sw idx, RPTR (usr)
 
@@ -336,9 +348,19 @@ def_word ">R", "tor", hash_TOR, it_rto
 
         lw idx, RPTR (usr)
 
+        # load return
+
+        lw snd, 0 (idx) 
+
+        # save value
+
+        sw fst, 0 (idx) 
+
         addi idx, idx, -1 * CELL
 
-        sw fst, 0 (idx)
+        # save return
+
+        sw snd, 0 (idx)
 
         sw idx, RPTR (usr)
 
@@ -405,6 +427,7 @@ def_word "0BRANCH", "branchz", hash_ZBRANCH, it_branch
 
         beq fst, zero, branch
 
+rdrop1:
         lw idx, RPTR (usr)
 
         addi idx, idx, +1 * CELL
@@ -417,6 +440,7 @@ def_word "0BRANCH", "branchz", hash_ZBRANCH, it_branch
 # ( -- w ) #; @
 def_word "LIT", "lit", hash_LIT, it_branchz
 
+rpull1:
         lw idx, RPTR (usr)
 
         lw fst, 0 (idx)
@@ -429,9 +453,9 @@ def_word "LIT", "lit", hash_LIT, it_branchz
 
 #---------------------------------------------------------------------
 # ( -- TRUE ) #; push 0xFFFFFFFF 
-def_word "TRUE", "true", hash_TRUE, it_xor
+def_word "TRUE", "true", hash_TRUE, it_lit
         
-        addi fst, zero, TRUE
+        addi fst, zero, TRUE 
 
         j push1
 
@@ -439,7 +463,7 @@ def_word "TRUE", "true", hash_TRUE, it_xor
 # ( -- FALSE ) #; push 0x00000000
 def_word "FALSE", "false", hash_FALSE, it_true
 
-        addi fst, zero, FALSE
+        addi fst, zero, FALSE 
 
         j push1
 
@@ -447,7 +471,7 @@ def_word "FALSE", "false", hash_FALSE, it_true
 # ( -- 1 ) #; push 0x00000001
 def_word "1", "one", hash_ONE, it_false
 
-        addi fst, zero, FALSE
+        addi fst, zero, ONE
 
         j push1
 
@@ -455,7 +479,7 @@ def_word "1", "one", hash_ONE, it_false
 # ( -- 2 ) #; push 0x00000002
 def_word "2", "two", hash_TWO, it_one
 
-        addi fst, zero, FALSE
+        addi fst, zero, TWO
 
         j push1
 
@@ -473,7 +497,7 @@ def_word "NAN", "nan", hash_NAN, it_cell
 by_zero:
 by_erro:
         
-        lui fst, %hi(0x80000000)
+        lui fst, 0x80000
         
         j push1
 
@@ -522,49 +546,30 @@ tohex:
         
         addi trd, zero, 58
 
+        addi t0, zero, 32
+
         # rolls 
-
-        srli fst, snd, 28
-        call 100f
-        
-        srli fst, snd, 24
-        call 100f
-        
-        srli fst, snd, 20
-        call 100f
-        
-        srli fst, snd, 16
-        call 100f
-        
-        srli fst, snd, 12
-        call 100f
-        
-        srli fst, snd, 8
-        call 100f
-        
-        srli fst, snd, 4
-        call 100f
-
-        srli fst, snd, 0
-        call 100f
-
-        pullra
-
-        ret
-
 100:
-        pushra
+        beq t0, zero, 300f
+
+        addi t0, t0, -4
+
+        srl  fst, snd, t0
 
         andi fst, fst, 15
         ori  fst, fst, 48
         blt  fst, trd, 200f
         addi fst, fst, 7
 200:
-        # fst is a3 !
-
         call _putc
         
+        j 100b
+
+300:
+
         pullra
 
         ret
+
+#---------------------------------------------------------------------
 

@@ -504,7 +504,7 @@ loopptr:
 #include "primitives.S"
 
 #----------------------------------------------------------------------
-.ifdef extras
+.ifdef cores
 
 #include "cores.S"
 
@@ -513,7 +513,7 @@ loopptr:
 #----------------------------------------------------------------------
 .ifdef maths
 
-# #include "maths.S"
+#include "maths.S"
 
 .endif
 
