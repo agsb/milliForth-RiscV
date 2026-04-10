@@ -30,7 +30,6 @@
 # djb2 hash cleared of bit 31
 #
 
-
 #---------------------------------------------------------------------
 
 .equ init_cores, last_next
@@ -38,34 +37,64 @@
 #---------------------------------------------------------------------
 # djb2 hash cleared of bit 31
 
-.equ hash_PER, 0x0002B580 
 .equ hash_SUB, 0x0002B588 
+
+.equ hash_PER, 0x0002B580 
 .equ hash_DIV, 0x0002B58A 
-.equ hash_MUL, 0x0002B58F 
+.equ hash_MUL, 0x0002B58F
+
 .equ hash_EQU, 0x0002B598 
 .equ hash_LESS, 0x0002B599 
+
 .equ hash_CTO, 0x00597287 
 .equ hash_CAT, 0x005972E6 
+
 .equ hash_RAT, 0x00597497 
 .equ hash_TOR, 0x005968A9 
 .equ hash_RTO, 0x005974E9 
+
 .equ hash_AND, 0x0B87B72E 
 .equ hash_OR, 0x00597378 
 .equ hash_XOR, 0x0B883040 
 .equ hash_NOT, 0x0B87D3D0 
 .equ hash_NEG, 0x0B87D489 
+
 .equ hash_DUP, 0x0B87BC84 
 .equ hash_DROP, 0x7C7F5C2C 
 .equ hash_OVER, 0x7C84398B 
 .equ hash_SWAP, 0x7C8A3910 
 .equ hash_ROT, 0x0B8807CC 
 .equ hash_NROT, 0x7C4E8CA1 
+
 .equ hash_RPAT, 0x0B880527 
 .equ hash_RPTO, 0x0B880546 
+
 .equ hash_SPTO, 0x0B881187 
 .equ hash_SPAT, 0x0B8811E6 
+
 .equ hash_BRANCH, 0x1E6C4191 
 .equ hash_ZBRANCH, 0x7D28616B
+
+.equ hash_DOT, 0x0002B58B
+
+.equ hash_LIT, 0x0B87DB14 
+.equ hash_ALIGN, 0x0C531CC8 
+
+.equ hash_TRUE, 0x7C879BF3
+.equ hash_FALSE, 0x0C3C6778
+
+
+.equ hash_NAN, 0x0B87D404
+.equ hash_ONE, 0x00002B594
+.equ hash_TWO, 0x00002B597
+.equ hash_CELL, 0x07C81B0A3
+
+.equ hash_DOCODE, 0x075D9A73
+.equ hash_ABORT, 0x0A1DFF4F
+.equ hash_BYE, 0x0B874AFB
+
+.equ hash_sfl, 0x0059685D
+.equ hash_sfr, 0x00596858
 
 #define TOS 0(idx)
 #define NOS 4(idx)
@@ -81,20 +110,21 @@ keep0:
         sw fst, 0 (idx)
         j next
 
-/*
 #---------------------------------------------------------------------
-# ( -- ) push 0x80000000
-def_word "NAN", "nan", hash_NAN, init_extras
-by_zero:
-by_erro:
-        
-        lui fst, %hi(0x80000000)
+# ( w1 -- w2 ) #; align to cell, word is 4 bytes
+def_word "ALIGN", "align", hash_ALIGN, init_cores
 
-        j push1
+        call look0
+
+        addi fst, fst, 3
+
+        andi fst, fst, ~3
+
+        j keep0
 
 #---------------------------------------------------------------------
 # ( w -- w*2 ) #; shift left
-def_word "2*", "sfl", hash_sfl, it_nan
+def_word "2*", "sfl", hash_sfl, it_align
 
         call look0
         
@@ -111,11 +141,10 @@ def_word "2/", "sfr", hash_sfr, it_sfl
         srli fst, fst, 1
         
         j keep0
-*/
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; NOT w
-def_word "NOT", "not", hash_NOT, init_cores
+def_word "NOT", "not", hash_NOT, it_sfr
 
         call look0
 
@@ -208,8 +237,18 @@ def_word "-ROT", "nrot", hash_NROT, it_rot
         j next
 
 #---------------------------------------------------------------------
+# ( w1 w2 -- w3 ) #; w1 - w2
+def_word "-", "sub", hash_SUB, it_nrot
+
+        call pull2
+
+        sub fst, fst, snd
+
+        j keep1
+
+#---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 AND w2
-def_word "AND", "and", hash_AND, it_nrot
+def_word "AND", "and", hash_AND, it_sub
 
         call pull2
 
@@ -239,18 +278,18 @@ def_word "XOR", "xor", hash_XOR, it_or
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 = w2 
-def_word "=", "equ", hash_EQU, it_xor
+def_word "=", "equ", hash_EQU, it_false
 
         call pull2
 
-        bne fst, snd, iffalse
+        bne fst, snd, isfalse
 
-iftrue:
+istrue:
         addi fst, zero, TRUE
 
         j keep0
 
-iffalse:
+isfalse:
         addi fst, zero, FALSE
 
         j keep0
@@ -263,7 +302,7 @@ def_word "<", "less", hash_LESS, it_equ
 
         blt fst, snd, istrue
 
-        j iffalse
+        j isfalse
 
 #---------------------------------------------------------------------
 # ( -- w ) #; @
@@ -346,7 +385,6 @@ def_word "SP!", "spto", hash_SPTO, it_spat
 def_word "BRANCH", "branch", hash_BRANCH, it_spto
 
 branch:
-        
         lw idx, RPTR (usr)
 
         lw fst, 0 (idx)
@@ -376,8 +414,157 @@ def_word "0BRANCH", "branchz", hash_ZBRANCH, it_branch
         j next
 
 #---------------------------------------------------------------------
+# ( -- w ) #; @
+def_word "LIT", "lit", hash_LIT, it_branchz
 
-.set last_next, it_branchz
+        lw idx, RPTR (usr)
+
+        lw fst, 0 (idx)
+
+        addi idx, idx, +1 * CELL
+
+        sw idx, RPTR (usr)
+
+        j push1
 
 #---------------------------------------------------------------------
+# ( -- TRUE ) #; push 0xFFFFFFFF 
+def_word "TRUE", "true", hash_TRUE, it_xor
+        
+        addi fst, zero, TRUE
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- FALSE ) #; push 0x00000000
+def_word "FALSE", "false", hash_FALSE, it_true
+
+        addi fst, zero, FALSE
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- 1 ) #; push 0x00000001
+def_word "1", "one", hash_ONE, it_false
+
+        addi fst, zero, FALSE
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- 2 ) #; push 0x00000002
+def_word "2", "two", hash_TWO, it_one
+
+        addi fst, zero, FALSE
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- 4 ) #; push 0x00000004
+def_word "CELL", "cell", hash_CELL, it_two
+
+        addi fst, zero, CELL
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- ) push 0x80000000
+def_word "NAN", "nan", hash_NAN, it_cell
+by_zero:
+by_erro:
+        
+        lui fst, %hi(0x80000000)
+        
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- ) execute a jump and link to a reference at IP
+def_word ";CODE", "docode", hash_DOCODE, it_nan
+
+        jalr ra, 0 (ipt)
+
+        j next
+
+#---------------------------------------------------------------------
+# ( -- ) ae abort
+def_word "ABORT", "aborts", hash_ABORT, it_docode
+
+        j abort
+
+#---------------------------------------------------------------------
+# ( -- ) exit forth
+def_word "BYE", "byes", hash_BYE, it_aborts
+
+        j _exit
+
+#---------------------------------------------------------------------
+# ( w -- ) #; @
+def_word ".", "dot", hash_DOT, it_byes
+
+        call pull2
+
+        call tohex
+
+        j next
+        
+#---------------------------------------------------------------------
+
+.set last_next, it_dot
+
+#---------------------------------------------------------------------
+# code a 32-bit word in ASCII hexadecimal
+#
+tohex:
+
+        pushra
+
+        add  snd, zero, fst
+        
+        addi trd, zero, 58
+
+        # rolls 
+
+        srli fst, snd, 28
+        call 100f
+        
+        srli fst, snd, 24
+        call 100f
+        
+        srli fst, snd, 20
+        call 100f
+        
+        srli fst, snd, 16
+        call 100f
+        
+        srli fst, snd, 12
+        call 100f
+        
+        srli fst, snd, 8
+        call 100f
+        
+        srli fst, snd, 4
+        call 100f
+
+        srli fst, snd, 0
+        call 100f
+
+        pullra
+
+        ret
+
+100:
+        pushra
+
+        andi fst, fst, 15
+        ori  fst, fst, 48
+        blt  fst, trd, 200f
+        addi fst, fst, 7
+200:
+        # fst is a3 !
+
+        call _putc
+        
+        pullra
+
+        ret
 

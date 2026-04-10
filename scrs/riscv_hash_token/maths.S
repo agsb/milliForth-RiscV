@@ -37,8 +37,6 @@
 .equ hash_BYMOD, 0x7C4D1C6C  
 .equ hash_FMBYMOD, 0x14CB69A7  
 .equ hash_SMBYMOD, 0x49BE2C12  
-.equ hash_SFR, 0x00596858  
-.equ hash_SFL, 0x0059685D  
 
 #---------------------------------------------------------------------
 # math primitives
@@ -52,9 +50,9 @@ def_word "*", "mul", hash_MUL, init_math
         call pull2
         mul trd, fst, snd
         mulh snd, fst, snd
-        add fst, trd, zero
 
 push2:
+        add fst, trd, zero
         sw snd, 0 (idx)
 	j back1
 
@@ -66,35 +64,11 @@ def_word "/", "div", hash_DIV, it_mul
 	beqz snd, by_zero
         div trd, fst, snd
         rem snd, fst, snd
-        add fst, trd, zero
 	j push2
 
-/*
-#---------------------------------------------------------------------
-# ( w -- w*2 ) #; shift left
-def_word "2*", "sfl", hash_sfl, it_div
-
-        call pull2
-        
-        slli fst, fst, 1
-        
-        j keep1
-
-#---------------------------------------------------------------------
-# ( w -- w/2 ) #; shift right
-def_word "2/", "sfr", hash_sfr, it_sfl
-
-        call pull2
-        
-        srli fst, fst, 1
-        
-        j keep1
-
-*/
-
 #---------------------------------------------------------------------
 
-.set last_next, it_sfl
+.set last_next, it_rem
 
 #---------------------------------------------------------------------
 

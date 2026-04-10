@@ -79,15 +79,22 @@ is_\label:
 # Riscv does not have automatic hidden SP push/pull
 # for deep, more than one, nested calls, use callee
 #
-.global pushra
-.macro pushra
+
+#define pushra pushsp ra
+
+#define pullra pullsp ra
+
+.global pushsp
+
+.macro pushsp rg
         addi sp, sp, -4   
-        sw ra, 0(sp)    
+        sw \rg, 0(sp)    
 .endm
 
-.global pullra
-.macro pullra
-        lw ra, 0(sp)    
+.global pullsp
+
+.macro pullsp rg
+        lw \rg, 0(sp)    
         addi sp, sp, +4   
 .endm
 
@@ -499,8 +506,6 @@ loopptr:
 #----------------------------------------------------------------------
 .ifdef extras
 
-#include "extras.S"
-
 #include "cores.S"
 
 .endif
@@ -508,7 +513,7 @@ loopptr:
 #----------------------------------------------------------------------
 .ifdef maths
 
-#include "maths.S"
+# #include "maths.S"
 
 .endif
 

@@ -274,12 +274,8 @@ def_word "0#", "zeroq", hash_zeroq, it_plus
 
         call pull2
         
-isfalse:
-
         beq fst, zero, next
 
-istrue:
-        
         addi fst, zero, TRUE
         
         j back1

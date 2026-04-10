@@ -30,7 +30,7 @@
 # djb2 hash cleared of bit 31
 #
 
-.equ hash_dot, 0x0002B58B
+.equ hash_tdot, 0x005966C5
 .equ hash_splist, 0x005965D3
 .equ hash_rplist, 0x005965D2
 
@@ -88,7 +88,7 @@ def_word "SEE", "sees", hash_SEE, it_words
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal
-def_word ".", "dot", hash_dot, it_sees
+def_word "..", "tdot", hash_tdot, it_sees
 
         call pull2
 
@@ -97,14 +97,6 @@ def_word ".", "dot", hash_dot, it_sees
         putchar ' '
 
         j next
-
-#---------------------------------------------------------------------
-# ( -- w ) size of a cell 
-def_word "CELL", "cell", hash_CELL, it_dot
-
-        addi fst, zero, 4
-
-        j push1
 
 #---------------------------------------------------------------------
 
