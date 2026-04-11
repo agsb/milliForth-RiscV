@@ -19,30 +19,31 @@
 #----------------------------------------------------------------------
 */
 
-#----------------------------------------------------------------------
-#
-#       debug primitives 
-#
-#----------------------------------------------------------------------
+/*
+
+        extra words and routines for milliforth-riscv
+
+*/
 
 #---------------------------------------------------------------------
 #
 # djb2 hash cleared of bit 31
 #
 
-.equ hash_tdot, 0x005966C5
+.equ hash_dot, 0x0002B58B
 .equ hash_splist, 0x005965D3
 .equ hash_rplist, 0x005965D2
 
 .equ hash_DUMP, 0x7C6B2FE9 
+.equ hash_WORDS, 0x0B6953F8 
 .equ hash_WORDS, 0x0D9A5B98 
 .equ hash_SEE, 0x0B881316 
-.equ hash_SHOW, 0x7C8AB346
+.equ hash_CELL, 0x7C70B163 
 
 #---------------------------------------------------------------------
+# debug primitives
 
 .equ init_debug, last_next
-
 #---------------------------------------------------------------------
 # ( -- ) ae list of data stack
 def_word "%S", "splist", hash_splist, init_debug
@@ -53,7 +54,7 @@ def_word "%S", "splist", hash_splist, init_debug
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
-def_word "%R", "rplist", hash_rplist, it_splist
+def_word "%R", "rplist", hash_rplist, h_splist
 
         call stackR
         
@@ -61,7 +62,7 @@ def_word "%R", "rplist", hash_rplist, it_splist
 
 #----------------------------------------------------------------------
 # ( a b -- a b ) dumps memory between a and b
-def_word "DUMP", "dump", hash_DUMP, it_rplist
+def_word "DUMP", "dump", hash_DUMP, h_rplist
 
         call pull2
         
@@ -71,7 +72,7 @@ def_word "DUMP", "dump", hash_DUMP, it_rplist
 
 #----------------------------------------------------------------------
 # ( -- ) list all words in compiled dictionary, 
-def_word "WORDS", "words", hash_WORDS, it_dump
+def_word "WORDS", "words", hash_WORDS, h_dump
 
         call wordf
 
@@ -79,7 +80,7 @@ def_word "WORDS", "words", hash_WORDS, it_dump
 
 #----------------------------------------------------------------------
 # ( -- ) list last word in dictionary, 
-def_word "SEE", "sees", hash_SEE, it_words
+def_word "SEE", "sees", hash_SEE, h_words
 
         call wordu
 
@@ -87,31 +88,27 @@ def_word "SEE", "sees", hash_SEE, it_words
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal
-def_word "SHOW", "show", hash_SHOW, it_sees
-
-        call shows
-        
-        call stackS
-        
-        call stackR
-        
-        j next
-
-#----------------------------------------------------------------------
-# ( u -- u ) print tos in hexadecimal
-def_word "..", "tdot", hash_tdot, it_show
+def_word ".", "dot", hash_dot, h_sees
 
         call pull2
 
-        call to2hex
+        call puthexy
 
         putchar ' '
 
         j next
 
 #---------------------------------------------------------------------
+# ( -- w ) size of a cell 
+def_word "CELL", "cell", hash_CELL, h_dot
 
-.set last_next, it_tdot
+        addi fst, zero, 4
+
+        j push1
+
+#---------------------------------------------------------------------
+
+.set last_next, h_cell
 
 #---------------------------------------------------------------------
 #
@@ -160,7 +157,7 @@ returns:
         ret
 
 #----------------------------------------------------------------------
-# shows all compiled words at dictionary
+# shows all words at dictionary
 wordf:
         pushra 
 
@@ -170,15 +167,9 @@ wordf:
         
         lw a5, LAST (usr)
         
-        la a6, h_here
-
-        blt a5, a6, returns
-
-        lw a6, HEAP (usr)
+        lw a6, HERE (usr)
         
-# init of compiled dictionary
-
-        la s7, h_here 
+        la s7, h_here
 
         putchar '\n'
 
@@ -200,7 +191,7 @@ wordf:
         j 100b
 
 #----------------------------------------------------------------------
-# shows one compiled word at dictionary
+# shows one word at dictionary
 wordu:
         pushra 
 
@@ -208,11 +199,7 @@ wordu:
 
         lw a5, LAST (usr)
 
-        la a6, h_here
-
-        blt a5, a6, returns
-
-        lw a6, HEAP (usr)
+        lw a6, HERE (usr)
 
         call wordt
 
@@ -231,14 +218,10 @@ wordt:
         
         mhex a5
         
-        putchar ' '
-
         lw a4, 0 (a5)
         
         mhex a4
        
-        putchar ' '
-
         addi a5, a5, CELL
 
         bne a5, a6, 100b
@@ -292,13 +275,9 @@ stackp:
 
         mhex a5
 
-        putchar ':'
-
         mhex a6
 
         putchar '['
-
-        putchar ' '
 
         beq a5, a6, 200f
 
@@ -307,16 +286,13 @@ stackp:
         
         mhex a4
         
-        putchar ' '
-
         addi a5, a5, CELL
         
         blt a5, a6, 100b
 
 200:
-        putchar ']'
-
         putchar ' '
+        putchar ']'
 
         pullra 
 
@@ -367,6 +343,34 @@ shows:
 
         call saves
 
+# registers
+
+       putchar '\n'
+        putchar 'R'
+        putchar ' '
+        
+       putchar '0'
+        putchar ' '
+        mhex t0
+       putchar '1'
+        putchar ' '
+        mhex t1
+       putchar '2'
+        putchar ' '
+        mhex t2
+       putchar '3'
+        putchar ' '
+        mhex t3
+       putchar '4'
+        putchar ' '
+        mhex t4
+       putchar '5'
+        putchar ' '
+        mhex t5
+       putchar '6'
+        putchar ' '
+        mhex t6
+        
 # user parameters
 
         putchar '\n'
@@ -377,39 +381,33 @@ shows:
         putchar ' '
         lw fst, STAT (usr)
         mhex fst
-        putchar ' '
        
        putchar 'L'
         putchar ' '
         lw fst, LAST (usr)
         mhex fst
-        putchar ' '
        
        putchar 'H'
         putchar ' '
-        lw fst, HEAP (usr)
+        lw fst, HERE (usr)
         mhex fst
-        putchar ' '
        
        putchar 'D'
         putchar ' '
         lw fst, HEAD (usr)
         mhex fst
-        putchar ' '
        
        putchar 'S'
         putchar 'P'
         putchar ' '
         lw fst, SPTR (usr)
         mhex fst
-        putchar ' '
 
        putchar 'R'
         putchar 'P'
         putchar ' '
         lw fst, RPTR (usr)
         mhex fst
-        putchar ' '
        
         j returns
 
@@ -519,42 +517,6 @@ puthexy:
 
         ret
 
-#---------------------------------------------------------------------
-# code a 32-bit word in ASCII hexadecimal
-#
-.global tohex
-to2hex:
-puthex:
-        pushra
-
-        add  snd, zero, fst
-        
-        addi trd, zero, 58
-
-        addi t0, zero, 32
-
-        # rolls 
-100:
-        beq t0, zero, 300f
-
-        addi t0, t0, -4
-
-        srl  fst, snd, t0
-
-        andi fst, fst, 15
-        ori  fst, fst, 48
-        blt  fst, trd, 200f
-        addi fst, fst, 7
-200:
-        call _putc
-        
-        j 100b
-
-300:
-
-        pullra
-
-        ret
 
 #---------------------------------------------------------------------
 

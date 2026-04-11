@@ -1,4 +1,36 @@
 
+#---------------------------------------------------------------------
+.globl putchar
+.macro putchar value
+       add t0, zero, a3
+       li a3, \value
+       call _putc
+       add a3, zero, t0
+.endm
+
+#---------------------------------------------------------------------
+.globl mhit
+.macro mhit it
+        putchar '\n'
+        putchar \it
+        putchar ' '
+.endm
+
+#---------------------------------------------------------------------
+.globl mhex
+.macro mhex rg
+        pushra
+        call saves
+        add a3, zero, \rg
+        call puthex
+        call loads
+        pullra 
+.endm
+
+#---------------------------------------------------------------------
+# code a 32-bit word in ASCII hexadecimal
+#
+.global puthex
 puthex:
 
         pushra

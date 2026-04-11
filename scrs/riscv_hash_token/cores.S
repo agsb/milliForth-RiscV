@@ -83,7 +83,6 @@
 .equ hash_TRUE, 0x7C879BF3
 .equ hash_FALSE, 0x0C3C6778
 
-
 .equ hash_NAN, 0x0B87D404
 .equ hash_ONE, 0x00002B594
 .equ hash_TWO, 0x00002B597
@@ -144,7 +143,7 @@ def_word "2/", "sfr", hash_sfr, it_sfl
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; NOT w
-def_word "NOT", "not", hash_NOT, it_sfr
+def_word "NOT", "nots", hash_NOT, it_sfr
 
         call look0
 
@@ -155,7 +154,7 @@ def_word "NOT", "not", hash_NOT, it_sfr
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; NEG w
-def_word "NEG", "neg", hash_NEG, it_not
+def_word "NEG", "negs", hash_NEG, it_nots
 
         call look0
 
@@ -166,7 +165,7 @@ def_word "NEG", "neg", hash_NEG, it_not
 
 #---------------------------------------------------------------------
 # ( w -- w w ) #; duplicate tos
-def_word "DUP", "dups", hash_DUP, it_neg
+def_word "DUP", "dups", hash_DUP, it_negs
 
         call look0
 
@@ -310,6 +309,7 @@ def_word "<", "less", hash_LESS, it_equ
 # ( -- w ) #; @
 def_word "R@", "rat", hash_RAT, it_less
 
+rlook0:
         lw idx, RPTR (usr)
 
         lw fst, 0 (idx)
@@ -320,6 +320,7 @@ def_word "R@", "rat", hash_RAT, it_less
 # ( -- w ; w -- ) #; @
 def_word "R>", "rto", hash_RTO, it_rat
 
+rpull1:
         lw idx, RPTR (usr)
 
         # load value
@@ -440,7 +441,6 @@ rdrop1:
 # ( -- w ) #; @
 def_word "LIT", "lit", hash_LIT, it_branchz
 
-rpull1:
         lw idx, RPTR (usr)
 
         lw fst, 0 (idx)
@@ -538,6 +538,7 @@ def_word ".", "dot", hash_DOT, it_byes
 #---------------------------------------------------------------------
 # code a 32-bit word in ASCII hexadecimal
 #
+.global tohex
 tohex:
 
         pushra

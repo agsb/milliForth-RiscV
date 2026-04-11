@@ -32,18 +32,16 @@
  
     read notes in this repository.
  
-    Stacks moves backwards, decrease then push, pull then increase.
+    Stacks moves backwards, decrease and push, pull and increase.
 
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary continues at .bss.
 
-        THIS VERSION USES ONLY HASH HEADERS. NO NAMES, NO SIZES
+        THIS VERSION USES ONLY HASH HEADERS.
 
-        THIS VERSION USES STREAMS. NO TIB, NO LINES, NO CONTROLS
-
-        ONLY ASCII TOKENS IN MIXED CASE AND BETWEEN SPACES
+        THIS VERSION USES ONLY TOKENS. <NO TIB, NO LINES>
 
 #----------------------------------------------------------------------
 */
@@ -96,12 +94,6 @@ is_\label:
 # but always in RAM :)
 .section .bss
 .p2align 2, 0x0
-
-# void at top of bss, used in _getc _putc 
-# address MUST have lower 12 bits zeros
-void: 
-        .word 0x0
-        .word 0x0
 
 # all forth variables by offset of _user
 
@@ -174,18 +166,19 @@ cold:
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
-# last link list of primitives, aka dictionary
-
-        la fst, h_last
-        sw fst, LAST (usr)
-
 # next heap free cell
         
         la fst, h_here
         sw fst, HEAP (usr)
 
+# last link list of primitives, aka dictionary
+
+        la fst, h_last
+        sw fst, LAST (usr)
+
 #---------------------------------------------------------------------
 # unexpected end of dictionary
+
 miss:
 
 # xxx 
@@ -254,7 +247,7 @@ loop:
 #
 find:
 
-        # get a hash of the next token in idx
+        # get a hash of the next token 
         
         call token
 
@@ -291,7 +284,7 @@ find:
 
         # compare trd eq  hash
         
-        bne idx, wrd, 100b
+        bne trd, wrd, 100b
 
         # points to code or list, aka xt
 
@@ -322,8 +315,8 @@ compile:
 
         j loop
 
-execute:
 immediate:
+execute:
 
         la ipt, loopptr
 
@@ -343,25 +336,24 @@ immediate:
 .equ SFHT, 5
 #---------------------------------------------------------------------
 # return the hash of token 
-# do not change the registers !
 token:
         pushra
 
         # prepare for hash
 
-        lui idx, %hi(DJB2)
-        addi idx, idx, %lo(DJB2)
+        lui trd, %hi(DJB2)
+        addi trd, trd, %lo(DJB2)
 
         # load word separator, BL is space
 
-        addi trd, zero, BL
+        addi idx, zero, BL
 
         # skip spaces
 100:
         call _getc
 
-        blt fst, trd, 100b
-        beq fst, trd, 100b
+        blt fst, idx, 100b
+        beq fst, idx, 100b
 
         # hash character
 200:
@@ -372,27 +364,27 @@ token:
 
         # djb2 hash function
         
-        mv snd, idx
+        mv snd, trd
 
-        slli idx, idx, SFHT
+        slli trd, trd, SFHT
         
-        add idx, idx, snd
+        add trd, trd, snd
         
-        xor idx, idx, fst
+        xor trd, trd, fst
         
         # scan spaces
 300:
         call _getc
 
-        blt fst, trd, 300b
-        bne fst, trd, 200b
+        blt fst, idx, 300b
+        bne fst, idx, 200b
 
         # clear hash high bit 
 mask:
 
-        slli idx, idx, ONE
+        slli trd, trd, ONE
 
-        srli idx, idx, ONE
+        srli trd, trd, ONE
 
         pullra
 

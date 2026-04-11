@@ -62,7 +62,7 @@
 
 # Moore uses 22 deep stacks
 
-.equ stacks, 36 
+.equ stacks, 24 
 
 # data stack
 
@@ -119,10 +119,10 @@
 
  .equ debug, YES
 
+/*
+
  .equ cores, YES
  
- /*
-
  .equ maths, YES
 
  .equ missed, YES
@@ -135,6 +135,7 @@
 
  .equ asciionly, YES
 
+/*
  # .equ upperonly, YES
  
  # .equ loweronly, YES

@@ -32,18 +32,16 @@
  
     read notes in this repository.
  
-    Stacks moves backwards, decrease then push, pull then increase.
+    Stacks moves backwards, decrease and push, pull and increase.
 
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary continues at .bss.
 
-        THIS VERSION USES ONLY HASH HEADERS. NO NAMES, NO SIZES
+        THIS VERSION USES ONLY HASH HEADERS.
 
-        THIS VERSION USES STREAMS. NO TIB, NO LINES, NO CONTROLS
-
-        ONLY ASCII TOKENS IN MIXED CASE AND BETWEEN SPACES
+        THIS VERSION USES ONLY TOKENS. <NO TIB, NO LINES>
 
 #----------------------------------------------------------------------
 */
@@ -69,10 +67,18 @@ is_\label:
 .endm
 
 #---------------------------------------------------------------------
-# Riscv does not have automatic, and hidden, SP push/pull
-# for nested calls, use pushra and pullra
-#
+# need adjust walign
+# ((n + 3) & ~3)
+.global walign
+.macro walign rg
+        addi \rg, \rg, 3
+        andi \rg, \rg, ~3
+.endm
 
+#---------------------------------------------------------------------
+# Riscv does not have automatic hidden SP push/pull
+# for deep, more than one, nested calls, use callee
+#
 .global pushra
 .macro pushra
         addi sp, sp, -4   
@@ -97,28 +103,28 @@ is_\label:
 .section .bss
 .p2align 2, 0x0
 
-# void at top of bss, used in _getc _putc 
-# address MUST have lower 12 bits zeros
-void: 
-        .word 0x0
-        .word 0x0
+# for easy all variables are accessed by offset of _user
 
-# all forth variables by offset of _user
+# internals, crude 
 
-# user stack of parameter, for offsets vide defines.S
+_head:
+.word 0x0
+
+_tibs:
+.word 0x0
+
+# user parameter offsets, vide defines.S
 _user:
-.skip user_size
+.skip PARAMS * CELL
 
 # data stack grows backward
-# bottom 
-_spb:       
-.skip sp_size
+_spb:       # bottom 
+.skip spz
 sp0: .word 0x0
 
 # return stack grows backward
-# bottom
-_rpb:       
-.skip rp_size
+_rpb:       # bottom
+.skip rpz
 rp0: .word 0x0
 
 # start of user dictionary 
@@ -152,6 +158,13 @@ main:
 # do any system inits
 # call _init
 
+/*
+.option push
+.option norelax
+       	la gp, __global_pointer$
+.option pop
+*/
+
 #----------------------------------------------------------------------
 # do what need be only once
 cold:
@@ -162,56 +175,32 @@ cold:
 # xxx 
 .ifdef beatme
 
-        sw zero, BEAT (usr)
+        add idx, zero, zero
+        
+        sw idx, BEAT (usr)
 .endif
 
 # xxx 
 .ifdef tickme
 
-        sw zero, TICK (usr)
+        add idx, zero, zero
+        
+        sw idx, TICK (usr)
 .endif
 
+        
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
-# last link list of primitives, aka dictionary
-
-        la fst, h_last
-        sw fst, LAST (usr)
-
 # next heap free cell
         
         la fst, h_here
         sw fst, HEAP (usr)
 
-#---------------------------------------------------------------------
-# unexpected end of dictionary
-miss:
+# link last primitive as list of headers, aka dictionary
 
-# xxx 
-.ifdef debug
-
-        putchar '\n'
-
-        putchar '?'
-        putchar '?'
-
-        putchar '\n'
-
-.endif
-
-# xxx
-.ifdef missed
-
-wipe:
-        # compiling ? 
-        lw fst, HEAD (usr)
-        beq fst, zero, 100f
-        # wipe remains
-        sw fst, HEAP (usr)
-        sw zero, HEAD (usr)
-100:
-.endif
+        la fst, h_last
+        sw fst, LAST (usr)
 
 #---------------------------------------------------------------------
 abort:
@@ -233,8 +222,7 @@ quit:
         sw zero, STAT (usr)
 
 #---------------------------------------------------------------------
-# 
-loop:
+okey:
 
 # xxx
 .ifdef debug
@@ -249,39 +237,42 @@ loop:
 
 .endif
 
+#---------------------------------------------------------------------
+# get a hash of the next token
+loop:
+        
+# returns a hash in idx
+
+        call token
+
 #---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
 #
 find:
-
-        # get a hash of the next token in idx
-        
-        call token
-
-        # get the latest link
+# get the latest link
         
         lw lnk, LAST (usr)
 
 100:
-        # verify end of dictionary, do miss 
+# verify end of dictionary, do miss 
         
         beq lnk, zero, miss
 
-        # linked list
+# linked list
         
         mv fst, lnk
 
-        # copy next link 
+# copy next link 
         
         lw lnk, 0 (fst)
 
-        # copy the hash
+# copy the hash
         
         addi fst, fst, CELL
 
         lw wrd, 0 (fst)
 
-        # mask the FLAG, hold it in snd
+# mask the FLAG, hold it in snd
 
         lui snd, %hi(FLAG_IMM)
 
@@ -289,11 +280,11 @@ find:
 
         xor wrd, wrd, snd
 
-        # compare trd eq  hash
+# compare
         
         bne idx, wrd, 100b
 
-        # points to code or list, aka xt
+# points to start of code or list of references, aka xt
 
         addi fst, fst, CELL
 
@@ -303,31 +294,72 @@ find:
 # fst have the address after header
 
 eval:
-        # what to do ?
+# what to do ?
 
         lw wrd, STAT (usr)
         
-        # executing ? if state == 0
+# executing ? if state == 0
 
         beq wrd, zero, execute
 
-        # immediate ? if flaged
+# immediate ? if flaged
 
         bne snd, zero, immediate      
 
-        # compiling ? else
+#---------------------------------------------------------------------         
+# compiling ? else
 compile:
         
         call docomma
 
         j loop
 
+#---------------------------------------------------------------------         
 execute:
 immediate:
 
         la ipt, loopptr
 
         j pick
+
+#---------------------------------------------------------------------
+# unexpected end of dictionary
+
+miss:
+
+# xxx 
+.ifdef debug
+
+        putchar '\n'
+
+        lw idx, TIBS (usr)
+100:
+        lb fst, 0 (idx)
+        addi idx, idx, ONE
+        call _putc 
+        bne fst, zero, 100b
+
+        putchar ' '
+        putchar '?'
+        putchar '?'
+
+        putchar '\n'
+
+.endif
+
+# xxx
+.ifdef missed
+
+wipe:
+        # compiling ? 
+        lw fst, HEAD (usr)
+        beq fst, zero, 100f
+        # wipe remains
+        sw fst, HEAP (usr)
+100:
+.endif
+
+        j abort
 
 #---------------------------------------------------------------------
 # crude token
@@ -342,35 +374,34 @@ immediate:
 .equ DJB2, 5381
 .equ SFHT, 5
 #---------------------------------------------------------------------
-# return the hash of token 
-# do not change the registers !
+# return the hash of token in idx
 token:
         pushra
 
-        # prepare for hash
+# prepare for hash
 
         lui idx, %hi(DJB2)
         addi idx, idx, %lo(DJB2)
 
-        # load word separator, BL is space
+# load word separator, BL is space
 
         addi trd, zero, BL
 
-        # skip spaces
+# skip spaces
 100:
         call _getc
 
         blt fst, trd, 100b
         beq fst, trd, 100b
 
-        # hash character
+# hash character
 200:
 # xxx
 .ifdef asciis
         call pass
 .endif
 
-        # djb2 hash function
+# djb2 hash function
         
         mv snd, idx
 
@@ -380,14 +411,14 @@ token:
         
         xor idx, idx, fst
         
-        # scan spaces
+# scan spaces
 300:
         call _getc
 
         blt fst, trd, 300b
         bne fst, trd, 200b
 
-        # clear hash high bit 
+# clear hash high bit, NaN, used as Forth immediate flag 
 mask:
 
         slli idx, idx, ONE
@@ -459,40 +490,38 @@ docomma:
 
 loopptr:
         
-        .word loop
+        .word okey
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
-#---------------------------------------------------------------------
+#
 
 #include "minimal.S"
 
 #---------------------------------------------------------------------
-# forth primitives 
+# primitives 
 #---------------------------------------------------------------------
 
-.set last_next, 0x0
-
-#include "primitives.S"
+#include "primitives-riscv-hash.S"
 
 #----------------------------------------------------------------------
-.ifdef cores
+.ifdef extras
 
-#include "cores.S"
+#include "extras-riscv-hash.S"
 
 .endif
 
 #----------------------------------------------------------------------
 .ifdef maths
 
-#include "maths.S"
+#include "maths-riscv-hash.S"
 
 .endif
 
 #----------------------------------------------------------------------
 .ifdef debug
 
-#include "debug.S"
+#include "debug-riscv-hash.S"
 
 .endif
 
@@ -500,11 +529,13 @@ loopptr:
 .set h_last, last_next
 
 #---------------------------------------------------------------------
-# Beware, ends must be at last word behind native ditionary !
+# Beware, ends must be at last word in primitive ditionary !
 # it is used to know if a 'address' is primitive or not
 #---------------------------------------------------------------------
 
 ends:
+
+# .word 0xDEADBEEF
 
 #---------------------------------------------------------------------
 .end

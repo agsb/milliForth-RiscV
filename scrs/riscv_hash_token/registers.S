@@ -23,9 +23,24 @@
 # using pre-processor CPP (GNU GCC)
 # for alias register names 
 # beware about changes
-# a0, a1, a2, a3, a7 are used by ecalls in _putc and _getc
-# a4, a5, a6 are generics
+# a0,a1,a2,a3,a7 used by ecalls in _putc, _getc, _fcntl, etc
+# a4,a5,a6 are generics ecall safe
 #---------------------------------------------------------------------
+/*
+
+        Compressed code for Riscv, enabled (--march rv32gc):
+
+        401c                    lw      a5,0(s0)
+        0791                    addi    a5,a5,4
+        c01c                    sw      a5,0(s0)
+
+        00042803                lw      a6,0(s0)
+        00478813                addi    a6,a5,4
+        01042023                sw      a6,0(s0)
+
+	Use with s0,s1,a0,a1,a2,a3,a4,a5.
+
+*/
 
 # forth struct pointer, constant 
 #define usr s0

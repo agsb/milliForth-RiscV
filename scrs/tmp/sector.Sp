@@ -14,7 +14,7 @@
   GNU General Public License for more details.
  
   You should have received a copy of the GNU General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
+  along with this program. If not, see <http: //www.gnu.org/licenses/>.
 
 #----------------------------------------------------------------------
 */
@@ -26,24 +26,22 @@
  
     original for the RISCV, by Alvaro G. S. Barcellos, 2025
  
-    https://github.com/agsb 
+    https: //github.com/agsb 
 
     see the disclaimer file in this repository.
  
     read notes in this repository.
  
-    Stacks moves backwards, decrease then push, pull then increase.
+    Stacks moves backwards, decrease and push, pull and increase.
 
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary continues at .bss.
 
-        THIS VERSION USES ONLY HASH HEADERS. NO NAMES, NO SIZES
+        THIS VERSION USES ONLY HASH HEADERS.
 
-        THIS VERSION USES STREAMS. NO TIB, NO LINES, NO CONTROLS
-
-        ONLY ASCII TOKENS IN MIXED CASE AND BETWEEN SPACES
+        THIS VERSION USES ONLY TOKENS. <NO TIB, NO LINES>
 
 #----------------------------------------------------------------------
 */
@@ -62,15 +60,16 @@
 .global def_word
 
 .macro def_word name, label, hash, last
-it_\label:
+it_\label: 
         .word \last
         .word \hash
-is_\label:
+is_\label: 
 .endm
 
 #---------------------------------------------------------------------
 # Riscv does not have automatic, and hidden, SP push/pull
-# for nested calls, use pushra and pullra
+# for deep, more than one, nested calls, 
+# use pushra and pullra
 #
 
 .global pushra
@@ -93,38 +92,32 @@ is_\label:
 # There is no spoon.
 
 #----------------------------------------------------------------------
-# but always in RAM :)
+# but always in RAM : )
 .section .bss
 .p2align 2, 0x0
-
-# void at top of bss, used in _getc _putc 
-# address MUST have lower 12 bits zeros
-void: 
-        .word 0x0
-        .word 0x0
 
 # all forth variables by offset of _user
 
 # user stack of parameter, for offsets vide defines.S
-_user:
+_user: 
 .skip user_size
 
 # data stack grows backward
 # bottom 
-_spb:       
+_spb:     
 .skip sp_size
 sp0: .word 0x0
 
 # return stack grows backward
 # bottom
-_rpb:       
+_rpb:     
 .skip rp_size
 rp0: .word 0x0
 
 # start of user dictionary 
 h_here: 
 .skip RAM_LIMIT - ( h_here - _user )
-h_ends:
+h_ends: 
 
 #----------------------------------------------------------------------
 .text 
@@ -143,18 +136,18 @@ h_ends:
 
 #.p2align 4, 0x00
 
-_start:
+_start: 
 
 #----------------------------------------------------------------------
 # go ! go ! go !
-main:
+main: 
 
 # do any system inits
 # call _init
 
 #----------------------------------------------------------------------
 # do what need be only once
-cold:
+cold: 
 # load user pointer address
 
         la usr, _user
@@ -162,31 +155,36 @@ cold:
 # xxx 
 .ifdef beatme
 
-        sw zero, BEAT (usr)
+        add idx, zero, zero
+        
+        sw idx, BEAT (usr)
 .endif
 
 # xxx 
 .ifdef tickme
 
-        sw zero, TICK (usr)
+        add idx, zero, zero
+        
+        sw idx, TICK (usr)
 .endif
 
 #----------------------------------------------------------------------
 # wipe the dictionary
-warm:
-# last link list of primitives, aka dictionary
-
-        la fst, h_last
-        sw fst, LAST (usr)
-
+warm: 
 # next heap free cell
         
         la fst, h_here
         sw fst, HEAP (usr)
 
+# link last primitive as list of headers, aka dictionary
+
+        la fst, h_last
+        sw fst, LAST (usr)
+
 #---------------------------------------------------------------------
 # unexpected end of dictionary
-miss:
+
+miss: 
 
 # xxx 
 .ifdef debug
@@ -203,25 +201,25 @@ miss:
 # xxx
 .ifdef missed
 
-wipe:
+wipe: 
         # compiling ? 
         lw fst, HEAD (usr)
         beq fst, zero, 100f
         # wipe remains
         sw fst, HEAP (usr)
         sw zero, HEAD (usr)
-100:
+100: 
 .endif
 
 #---------------------------------------------------------------------
-abort:
+abort: 
 # reset data stack
         
         la fst, sp0 
         sw fst, SPTR (usr)
 
 #---------------------------------------------------------------------
-quit:
+quit: 
 # reset return stack
         
         la fst, rp0 
@@ -234,7 +232,7 @@ quit:
 
 #---------------------------------------------------------------------
 # 
-loop:
+loop: 
 
 # xxx
 .ifdef debug
@@ -252,9 +250,9 @@ loop:
 #---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
 #
-find:
+find: 
 
-        # get a hash of the next token in idx
+        # get a hash of the next token
         
         call token
 
@@ -262,7 +260,7 @@ find:
         
         lw lnk, LAST (usr)
 
-100:
+100: 
         # verify end of dictionary, do miss 
         
         beq lnk, zero, miss
@@ -289,11 +287,11 @@ find:
 
         xor wrd, wrd, snd
 
-        # compare trd eq  hash
+        # compare
         
         bne idx, wrd, 100b
 
-        # points to code or list, aka xt
+        # points to start of code or list of references, aka xt
 
         addi fst, fst, CELL
 
@@ -302,7 +300,7 @@ find:
 # snd have the flags
 # fst have the address after header
 
-eval:
+eval: 
         # what to do ?
 
         lw wrd, STAT (usr)
@@ -316,14 +314,14 @@ eval:
         bne snd, zero, immediate      
 
         # compiling ? else
-compile:
+compile: 
         
         call docomma
 
         j loop
 
-execute:
-immediate:
+immediate: 
+execute: 
 
         la ipt, loopptr
 
@@ -342,9 +340,8 @@ immediate:
 .equ DJB2, 5381
 .equ SFHT, 5
 #---------------------------------------------------------------------
-# return the hash of token 
-# do not change the registers !
-token:
+# return the hash of token in idx
+token: 
         pushra
 
         # prepare for hash
@@ -357,14 +354,14 @@ token:
         addi trd, zero, BL
 
         # skip spaces
-100:
+100: 
         call _getc
 
         blt fst, trd, 100b
         beq fst, trd, 100b
 
         # hash character
-200:
+200: 
 # xxx
 .ifdef asciis
         call pass
@@ -381,14 +378,14 @@ token:
         xor idx, idx, fst
         
         # scan spaces
-300:
+300: 
         call _getc
 
         blt fst, trd, 300b
         bne fst, trd, 200b
 
         # clear hash high bit 
-mask:
+mask: 
 
         slli idx, idx, ONE
 
@@ -399,10 +396,10 @@ mask:
         ret
         
 #---------------------------------------------------------------------
-pass:
+pass: 
 
 # xxx
-100:
+100: 
 .ifdef asciionly
 
         andi fst, fst, 127
@@ -410,7 +407,7 @@ pass:
 .endif
 
 # xxx
-200:
+200: 
 .ifdef loweronly
 
         addi a7, zero, 'A'       
@@ -425,7 +422,7 @@ pass:
 .endif
 
 # xxx
-300:
+300: 
 .ifdef upperonly
 
         addi a7, zero, 'a'       
@@ -442,7 +439,7 @@ pass:
         ret
 
 #---------------------------------------------------------------------
-docomma:
+docomma: 
 
         lw idx, HEAP (usr)
       
@@ -457,21 +454,20 @@ docomma:
 #---------------------------------------------------------------------
 # the outer loop, need for indirect
 
-loopptr:
+loopptr: 
         
         .word loop
 
+
 #----------------------------------------------------------------------
 # system dependences, linux ecall
-#---------------------------------------------------------------------
+#
 
 #include "minimal.S"
 
 #---------------------------------------------------------------------
-# forth primitives 
+# primitives 
 #---------------------------------------------------------------------
-
-.set last_next, 0x0
 
 #include "primitives.S"
 
@@ -500,11 +496,13 @@ loopptr:
 .set h_last, last_next
 
 #---------------------------------------------------------------------
-# Beware, ends must be at last word behind native ditionary !
+# Beware, ends must be at last word in primitive ditionary !
 # it is used to know if a 'address' is primitive or not
 #---------------------------------------------------------------------
 
-ends:
+ends: 
+
+# .word 0xDEADBEEF
 
 #---------------------------------------------------------------------
 .end

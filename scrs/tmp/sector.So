@@ -32,18 +32,16 @@
  
     read notes in this repository.
  
-    Stacks moves backwards, decrease then push, pull then increase.
+    Stacks moves backwards, decrease and push, pull and increase.
 
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
     This version relies on the .data, .text, .rodata, .bss sections 
     being in this order, the dictionary continues at .bss.
 
-        THIS VERSION USES ONLY HASH HEADERS. NO NAMES, NO SIZES
+        THIS VERSION USES ONLY HASH HEADERS.
 
-        THIS VERSION USES STREAMS. NO TIB, NO LINES, NO CONTROLS
-
-        ONLY ASCII TOKENS IN MIXED CASE AND BETWEEN SPACES
+        THIS VERSION USES ONLY TOKENS. <NO TIB, NO LINES>
 
 #----------------------------------------------------------------------
 */
@@ -70,7 +68,8 @@ is_\label:
 
 #---------------------------------------------------------------------
 # Riscv does not have automatic, and hidden, SP push/pull
-# for nested calls, use pushra and pullra
+# for deep, more than one, nested calls, 
+# use pushra and pullra
 #
 
 .global pushra
@@ -97,12 +96,6 @@ is_\label:
 .section .bss
 .p2align 2, 0x0
 
-# void at top of bss, used in _getc _putc 
-# address MUST have lower 12 bits zeros
-void: 
-        .word 0x0
-        .word 0x0
-
 # all forth variables by offset of _user
 
 # user stack of parameter, for offsets vide defines.S
@@ -110,14 +103,12 @@ _user:
 .skip user_size
 
 # data stack grows backward
-# bottom 
-_spb:       
+_spb:       # bottom 
 .skip sp_size
 sp0: .word 0x0
 
 # return stack grows backward
-# bottom
-_rpb:       
+_rpb:       # bottom
 .skip rp_size
 rp0: .word 0x0
 
@@ -162,56 +153,31 @@ cold:
 # xxx 
 .ifdef beatme
 
-        sw zero, BEAT (usr)
+        add idx, zero, zero
+        
+        sw idx, BEAT (usr)
 .endif
 
 # xxx 
 .ifdef tickme
 
-        sw zero, TICK (usr)
+        add idx, zero, zero
+        
+        sw idx, TICK (usr)
 .endif
 
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
-# last link list of primitives, aka dictionary
-
-        la fst, h_last
-        sw fst, LAST (usr)
-
 # next heap free cell
         
         la fst, h_here
         sw fst, HEAP (usr)
 
-#---------------------------------------------------------------------
-# unexpected end of dictionary
-miss:
+# link last primitive as list of headers, aka dictionary
 
-# xxx 
-.ifdef debug
-
-        putchar '\n'
-
-        putchar '?'
-        putchar '?'
-
-        putchar '\n'
-
-.endif
-
-# xxx
-.ifdef missed
-
-wipe:
-        # compiling ? 
-        lw fst, HEAD (usr)
-        beq fst, zero, 100f
-        # wipe remains
-        sw fst, HEAP (usr)
-        sw zero, HEAD (usr)
-100:
-.endif
+        la fst, h_last
+        sw fst, LAST (usr)
 
 #---------------------------------------------------------------------
 abort:
@@ -254,7 +220,7 @@ loop:
 #
 find:
 
-        # get a hash of the next token in idx
+        # get a hash of the next token
         
         call token
 
@@ -289,11 +255,11 @@ find:
 
         xor wrd, wrd, snd
 
-        # compare trd eq  hash
+        # compare
         
         bne idx, wrd, 100b
 
-        # points to code or list, aka xt
+        # points to start of code or list of references, aka xt
 
         addi fst, fst, CELL
 
@@ -322,12 +288,44 @@ compile:
 
         j loop
 
-execute:
 immediate:
+execute:
 
         la ipt, loopptr
 
         j pick
+
+#---------------------------------------------------------------------
+# unexpected end of dictionary
+
+miss:
+
+# xxx 
+.ifdef debug
+
+        putchar '\n'
+
+        putchar '?'
+        putchar '?'
+
+        putchar '\n'
+
+.endif
+
+# xxx
+.ifdef missed
+
+wipe:
+        # compiling ? 
+        lw fst, HEAD (usr)
+        beq fst, zero, 100f
+        # wipe remains
+        sw fst, HEAP (usr)
+        sw zero, HEAD (usr)
+100:
+.endif
+
+        j abort
 
 #---------------------------------------------------------------------
 # crude token
@@ -342,8 +340,7 @@ immediate:
 .equ DJB2, 5381
 .equ SFHT, 5
 #---------------------------------------------------------------------
-# return the hash of token 
-# do not change the registers !
+# return the hash of token in idx
 token:
         pushra
 
@@ -461,17 +458,16 @@ loopptr:
         
         .word loop
 
+
 #----------------------------------------------------------------------
 # system dependences, linux ecall
-#---------------------------------------------------------------------
+#
 
 #include "minimal.S"
 
 #---------------------------------------------------------------------
-# forth primitives 
+# primitives 
 #---------------------------------------------------------------------
-
-.set last_next, 0x0
 
 #include "primitives.S"
 
@@ -500,11 +496,13 @@ loopptr:
 .set h_last, last_next
 
 #---------------------------------------------------------------------
-# Beware, ends must be at last word behind native ditionary !
+# Beware, ends must be at last word in primitive ditionary !
 # it is used to know if a 'address' is primitive or not
 #---------------------------------------------------------------------
 
 ends:
+
+# .word 0xDEADBEEF
 
 #---------------------------------------------------------------------
 .end

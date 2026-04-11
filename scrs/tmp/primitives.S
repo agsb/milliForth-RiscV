@@ -67,7 +67,7 @@
 #
 # "why there is no 'docol at start of words ?"
 #
-# ipt must stay reserved outside exit ? why ?
+# ipt must stay reserved outside exit !
 #
 # ( -- ) ; aka figforth semis
 #
@@ -103,9 +103,9 @@ next:
 pick:
 # compare address, if is a primitive then jumps, MITC 
         
-        la idx, ends
+        la snd, ends
         
-        bge fst, idx, nest
+        bge fst, snd, nest
 
 jump: 
 # jump to primitive
@@ -120,7 +120,7 @@ jump:
         sw idx, TICK (usr)
 .endif
 
-        # really jump and link 
+        # really do the jump and link 
         jalr ra, 0 (fst)
 
 nest:   #; enter
@@ -169,7 +169,7 @@ create:
 # get a hash of the next token
         
         call token
-
+        
 # copy hash into (here)
 
         mv fst, idx
@@ -188,6 +188,11 @@ def_word ";", "semis", hash_semis, it_colon
         lw fst, HEAD (usr)
         
         sw fst, LAST (usr)
+
+.ifdef missed
+
+        sw zero, HEAD (usr)
+.endif
 
 # stat is 'interpret' == 0
         
@@ -313,5 +318,4 @@ pull2:
 
 .equ last_next, it_userat
 
-#---------------------------------------------------------------------
 

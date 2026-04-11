@@ -19,6 +19,16 @@
 #----------------------------------------------------------------------
 */
 
+/*
+ Copyright (c) 2025, Alvaro Gomes Sobral Barcellos
+ 
+ All rights reserved.
+ 
+ see the disclaimer file in this repository.
+
+*/
+
+
 #---------------------------------------------------------------------
 #
 # Note: system ecalls do not use ra 
@@ -43,7 +53,7 @@
 #---------------------------------------------------------------------
 .section .bss
 _char:
-        .word   0x0
+.word   0x0
 
 #---------------------------------------------------------------------
 .section .text
@@ -62,8 +72,7 @@ _init:
 # linux ecall for getc
 _getc:
         addi a0, zero, _STDIN
-        #lui  a1, %hi(void)
-        la a1, _char
+        la   a1, _char
         addi a2, zero, _ONE
         addi a7, zero, _GETC
         ecall
@@ -72,16 +81,13 @@ _getc:
         #EOF?
         beq a0, zero, _exit
 
-.ifdef debug
-        j _putc
-.endif
-        ret
+        # uncomment for no echo
+        # ret
 
 # linux ecall for putc
 _putc:
         addi a0, zero, _STDOUT
-        #lui  a1, %hi(void)
-        la a1, _char
+        la   a1, _char
         addi a2, zero, _ONE
         addi a7, zero, _PUTC
         sb a3, 0 (a1)

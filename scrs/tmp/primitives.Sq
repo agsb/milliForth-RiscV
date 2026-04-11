@@ -103,9 +103,9 @@ next:
 pick:
 # compare address, if is a primitive then jumps, MITC 
         
-        la idx, ends
+        la snd, ends
         
-        bge fst, idx, nest
+        bge fst, snd, nest
 
 jump: 
 # jump to primitive
@@ -120,7 +120,7 @@ jump:
         sw idx, TICK (usr)
 .endif
 
-        # really jump and link 
+        # really do the jump and link 
         jalr ra, 0 (fst)
 
 nest:   #; enter
@@ -172,7 +172,7 @@ create:
 
 # copy hash into (here)
 
-        mv fst, idx
+        mv fst, trd
 
 comma:
 

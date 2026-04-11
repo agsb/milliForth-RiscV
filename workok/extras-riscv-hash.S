@@ -21,56 +21,73 @@
 
 #---------------------------------------------------------------------
 #
-#       math primitives
-#
-#---------------------------------------------------------------------
-
-#---------------------------------------------------------------------
-#
 # djb2 hash cleared of bit 31
 #
 
-.equ hash_BYMOD, 0x7C4D1C6C  
-.equ hash_BYMUL, 0x7C4FB089
+.equ hash_NAN, 0x0B87D404
+.equ hash_DOCODE, 0x075D9A73
+.equ hash_ABORT, 0x0A1DFF4F 
+.equ hash_BYE, 0x0B874AFB 
 
-.equ hash_MUL, 0x0002B58F  
-.equ hash_DIV, 0x0002B58A  
-.equ hash_MSTAR, 0x005972C2  
-.equ hash_UMSTAR, 0x0B87EB77  
-.equ hash_FMBYMOD, 0x14CB69A7  
-.equ hash_SMBYMOD, 0x49BE2C12  
+.equ hash_sfl, 0x0059685D
+.equ hash_sfr, 0x00596858
 
 #---------------------------------------------------------------------
-# math primitives
+# extra primitives
 
-.equ init_math, last_next
+.equ init_extras, last_next
 
 #---------------------------------------------------------------------
-# ( w1 w2 -- w3 w4 ) double multiply,  
-def_word "*MOD", "bymul", hash_BYMUL, init_math
+# ( -- ) push 0x80000000
+def_word "NAN", "nan", hash_NAN, init_extras
+by_zero:
+by_erro:
         
-        call pull2
-        mulh trd, fst, snd
-        mul snd, fst, snd
+        lui fst, %hi(0x80000000)
 
-push2:
-        sw snd, 0 (idx)
-        add fst, trd, zero
-	j back1
+        j push1
 
 #---------------------------------------------------------------------
-# ( w1 w2 -- w3 w4 ) divide
-def_word "/MOD", "bymod", hash_BYMOD, it_bymul
+# ( -- ) execute a jump and link to a reference at IP
+def_word ";CODE", "docode", hash_DOCODE, h_nan
         
+        jalr ra, 0 (ipt)
+
+        j next
+
+#---------------------------------------------------------------------
+# ( -- ) ae abort
+def_word "ABORT", "aborts", hash_ABORT, h_docode
+        
+        j abort
+
+#---------------------------------------------------------------------
+# ( -- ) exit forth
+def_word "BYE", "byes", hash_BYE, h_aborts
+        
+        j _exit
+
+#---------------------------------------------------------------------
+# ( w -- w*2 ) #; shift left
+def_word "2*", "sfl", hash_sfl, h_byes
+
         call pull2
-	beqz snd, by_zero
-        div trd, fst, snd
-        rem snd, fst, snd
-	j push2
+        
+        slli fst, fst, 1
+        
+        j keep1
 
 #---------------------------------------------------------------------
+# ( w -- w/2 ) #; shift right
+def_word "2/", "sfr", hash_sfr, h_sfl
 
-.set last_next, it_bymod
+        call pull2
+        
+        srli fst, fst, 1
+        
+        j keep1
 
 #---------------------------------------------------------------------
+.set last_next, h_sfl
+
 
