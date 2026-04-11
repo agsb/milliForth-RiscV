@@ -36,7 +36,7 @@
 
     Made for a little endian RiscV, cell size of 4 bytes, 32-bit
 
-    This version relies on the .data, .text, .rodata, .bss sections 
+    This version relies on the .text, .rodata, .data, .bss sections 
     being in this order, the dictionary continues at .bss.
 
         THIS VERSION USES ONLY HASH HEADERS. NO NAMES, NO SIZES
@@ -89,6 +89,8 @@ is_\label:
 # Nothing here, void.
 .section .data
 .p2align 2, 0x0
+
+.word 0xDEADBEEF
 
 # There is no spoon.
 

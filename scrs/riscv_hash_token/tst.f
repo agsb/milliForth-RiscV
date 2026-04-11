@@ -5,12 +5,9 @@
 
  SEE
 
- BYE 
-
  KEY ..
 
  EMIT .. 
-
 
  U@ SHOW
 
@@ -19,6 +16,8 @@
  U@ 0# 
 
  U@ 0# NAND 
+
+ SHOW 
 
  : -1 U@ 0# ;
 
