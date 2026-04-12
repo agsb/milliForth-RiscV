@@ -5,13 +5,19 @@
 
  SEE
 
- KEY ..
+ KEY K ..
+
+ KEY I ..
+ 
+ KEY L ..
+ 
+ KEY L ..
 
  EMIT .. 
 
  U@ SHOW
 
- U@ .. @ .. U@ .. ! ..
+ U@ .. @ .. U@ .. ! .. 
 
  U@ 0# 
 
@@ -19,7 +25,9 @@
 
  SHOW 
 
- : -1 U@ 0# ;
+ -1 
+
+ :  -1  U@  0#  ;
 
  : 0 -1 -1 NAND ;
 

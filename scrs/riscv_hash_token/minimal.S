@@ -61,15 +61,15 @@ _init:
 
 # linux ecall for getc
 _getc:
-        addi a0, zero, _STDIN
-        #lui  a1, %hi(void)
+        li a7, _GETC
+        li a0, _STDIN
         la a1, _char
-        addi a2, zero, _ONE
-        addi a7, zero, _GETC
+        la a2, _ONE
         ecall
         lb a3, 0 (a1)
         
         #EOF?
+
         beq a0, zero, _exit
 
 .ifdef debug
@@ -79,11 +79,10 @@ _getc:
 
 # linux ecall for putc
 _putc:
-        addi a0, zero, _STDOUT
-        #lui  a1, %hi(void)
+        li a7, _PUTC
+        li a0, _STDOUT
         la a1, _char
-        addi a2, zero, _ONE
-        addi a7, zero, _PUTC
+        la a2, _ONE
         sb a3, 0 (a1)
 
 _rets:
@@ -93,24 +92,63 @@ _rets:
 /*
 #---------------------------------------------------------------------
 _sbrk:
-        add a0, zero, zero
-        addi a7, zero, _SBRK
+        li a7, _SBRK
+        li a0, 0x0
         j _rets
 
         # this is where here is
         mov a3, a0
 
         # add memory 
+        li a7, _SBRK
         add a0, a0, a2
-        addi a7, zero, _SBRK
+
         j _rets
 
 #---------------------------------------------------------------------
 _fcntl: # fd, cdm, arg
-        add a0, zero, a3
-        add a1, zero, a4
-        add a2, zero, a5
-        addi a7, zero, _FNCT
+        li a7, _FNCT
+        li a0, a3
+        li a1, a4
+        li a2, a5
         j _rets
         
+*/
+
+/*
+
+.section .data
+tty_name: .asciz "/dev/tty"
+
+.section .text
+.globl _start
+
+_start:
+    # 1. Open /dev/tty
+    li a7, 56           # sys_openat
+    li a0, -100         # AT_FDCWD (ignore dirfd)
+    la a1, tty_name     # Filename
+    li a2, 0            # O_RDONLY
+    ecall
+    mv s0, a0           # Save new FD
+
+    # 2. dup2(new_fd, 0)
+    li a7, 24           # sys_dup2
+    mv a0, s0           # oldfd: new FD from openat
+    li a1, 0            # newfd: 0 (stdin)
+    ecall
+
+    # 3. Close the temporary FD
+    li a7, 57           # sys_close
+    mv a0, s0
+    ecall
+
+    # Now stdin is restored to /dev/tty
+    # ... program code ...
+
+    # Exit
+    li a7, 93
+    li a0, 0
+    ecall
+
 */

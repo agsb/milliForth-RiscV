@@ -396,6 +396,11 @@ mask:
 
         srli idx, idx, ONE
 
+        putchar '('
+        mv fst, idx 
+        mhex fst
+        putchar ')'
+
         pullra
 
         ret

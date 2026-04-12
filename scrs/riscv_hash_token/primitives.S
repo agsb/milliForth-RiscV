@@ -63,17 +63,19 @@
 #
 # this is the Forth heart beat.
 #
-# nest aka enter or docol, unnest aka exit or semis;
+#       nest aka enter or docol, 
+# 
+#       unnest aka exit or semis
 #
-# "why there is no 'docol at start of words ?"
+#       ipt must stay preserved outside, ever.
 #
-# ipt must stay reserved outside exit ? why ?
+#       "why there is no 'docol at start of words ?"
 #
+#---------------------------------------------------------------------
 # ( -- ) ; aka figforth semis
-#
 def_word "EXIT", "exit", hash_EXIT, init_primitives
-unnest: #; exit
-# return pull, ipt = (rpt), rpt += cell 
+unnest: 
+# return pull 
         
         lw idx, RPTR (usr)
         
@@ -84,7 +86,6 @@ unnest: #; exit
         sw idx, RPTR (usr)
 
 next:
-# wrd = (ipt) ; ipt += cell
 
 # xxx
 # count beats as next executions
@@ -123,8 +124,8 @@ jump:
         # really jump and link 
         jalr ra, 0 (fst)
 
-nest:   #; enter
-# return push, rp -= cell, (rpt) = ipt
+nest:   
+# return push
         
         lw idx, RPTR (usr)
         
