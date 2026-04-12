@@ -42,7 +42,7 @@
 
 */
 
-# forth struct pointer, constant 
+# forth user struct pointer, constant 
 #define usr s0
 
 # forth instruction pointer, preserved

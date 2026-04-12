@@ -236,13 +236,13 @@ quit:
 
 #---------------------------------------------------------------------
 # 
-loop:
+knot:
 
 # xxx
 .ifdef debug
 
         lw fst, STAT (usr)
-        bne fst, zero, loop
+        bne fst, zero, find
 
         putchar '\n'
         putchar 'O'
@@ -322,12 +322,12 @@ compile:
         
         call docomma
 
-        j loop
+        j knot
 
 execute:
 immediate:
 
-        la ipt, loopptr
+        la ipt, knotptr
 
         j pick
 
@@ -396,11 +396,6 @@ mask:
 
         srli idx, idx, ONE
 
-        putchar '('
-        mv fst, idx 
-        mhex fst
-        putchar ')'
-
         pullra
 
         ret
@@ -464,9 +459,9 @@ docomma:
 #---------------------------------------------------------------------
 # the outer loop, need for indirect
 
-loopptr:
+knotptr:
         
-        .word loop
+        .word knot
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
