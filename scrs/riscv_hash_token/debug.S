@@ -542,9 +542,13 @@ puthex:
         srl  fst, snd, t0
 
         andi fst, fst, 15
+
         ori  fst, fst, 48
+        
         blt  fst, trd, 200f
+        
         addi fst, fst, 7
+
 200:
         call _putc
         

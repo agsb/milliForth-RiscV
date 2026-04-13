@@ -48,6 +48,8 @@
 
 12/04/2026
 
+    How enter numbers ? Score which are need and make words. 
+    : 1234 LIT [ 1024 128 + 64 + 32 + 4 + 2 + ] ;
 
 10/04/2026
 

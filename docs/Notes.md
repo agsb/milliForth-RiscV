@@ -22,16 +22,7 @@
     Uses cell with 32-bits;
  
     All user structure, data (36 cells) and return (36 cells) stacks, 
-    TIB (80 bytes) and locals (8 cells) are in sequence; 
 
-    PAD (84 bytes) and PIC (68 bytes) must be allocated if need;
- 
-    TIB, PAD, PIC grows forward, stacks grows backwards;
- 
-    No overflow or underflow stack checks;
- 
-    No numbers only words (yet);
- 
     Only IMMEDIATE flag used as $8000, no hide, no compile, no extras;
  
     As ANSI Forth 1983: FALSE is 0 and TRUE is -1 ;
@@ -41,8 +32,22 @@
 
     The header order is LINK, HASH and code or references.
  
-    Added a pack of 8 cells for scratch workspace, generic use.
+    No overflow or underflow stack checks;
+ 
+    No numbers only words (yet);
 
+ ## NO MORE
+
+    Those are no more used.
+
+        Added a pack of 8 cells for scratch workspace, generic use.
+
+        TIB (80 bytes) and locals (8 cells) are in sequence; 
+
+        PAD (84 bytes) and PIC (68 bytes) must be allocated if need;
+ 
+        TIB, PAD, PIC grows forward, stacks grows backwards;
+ 
 ## Remarks
  
     This code uses Minimal Indirect Thread Code, aka MITC;
@@ -234,7 +239,7 @@ RiscV CPUs are memory mapped, eg. the RP2350 includes 520KiB of SRAM
 in ten banks, first eigth banks (0-7) have bits 3:2 striped address 
 access, the last two banks (8-9) are not striped.
 
-The gcc linker ld, have memory map for .data, .text, .bss, .rodata 
+The gcc linker ld, have memory map for .text, .rodata, .data, .bss
 sections and a default segment memory. 
     
 Where are the .heap and .stack ? Forth needs those @!@
