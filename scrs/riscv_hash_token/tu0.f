@@ -73,11 +73,19 @@
  : ROT >R SWAP R> SWAP ; 
  : -ROT SWAP >R SWAP R> ; 
  
- : 2DUP OVER OVER ; 
- : 2DROP DROP DROP ; 
- : XOR 2DUP AND -ROT NOR NOR ; 
+ : XOR OVER OVER AND -ROT NOR NOR ; 
  : XNOR XOR NOT ; 
  
+ : 2DUP OVER OVER ; 
+ : 2DROP DROP DROP ; 
+ : 2SWAP ROT >R ROT R> ;
+
+ : 2@ DUP CELL + @ SWAP @ ;
+ : 2! SWAP OVER ! CELL + ! ;
+ : 2>R SWAP >R >R ;
+ : 2R> R> R> SWAP ;
+ : 2R@ R> R> 2DUP >R >R SWAP ;
+
  : 2* DUP + ; 
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ; 
  : 80H 1 2* 2* 2* 2* 2* 2* 2* ; 

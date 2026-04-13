@@ -41,7 +41,7 @@
 .equ _MMAP,     192
 
 #---------------------------------------------------------------------
-.section .bss
+.section .data
 _char:
         .word   0x0
 
@@ -50,8 +50,8 @@ _char:
 
 # load system call for exit
 _exit:
-        addi a0, zero, _ZERO
         addi a7, zero, _EXIT
+        addi a0, zero, _ZERO
         ecall
 
 # load system call for init
@@ -125,22 +125,25 @@ tty_name: .asciz "/dev/tty"
 
 _start:
     # 1. Open /dev/tty
-    li a7, 56           # sys_openat
+    # sys_openat
+    li a7, 56           
     li a0, -100         # AT_FDCWD (ignore dirfd)
     la a1, tty_name     # Filename
     li a2, 0            # O_RDONLY
     ecall
-    mv s0, a0           # Save new FD
+    mv a3, a0           # Save new FD
 
     # 2. dup2(new_fd, 0)
-    li a7, 24           # sys_dup2
-    mv a0, s0           # oldfd: new FD from openat
+    # sys_dup2
+    li a7, 24           
+    mv a0, a3           # oldfd: new FD from openat
     li a1, 0            # newfd: 0 (stdin)
     ecall
 
     # 3. Close the temporary FD
-    li a7, 57           # sys_close
-    mv a0, s0
+    # sys_close
+    li a7, 57           
+    mv a0, a3
     ecall
 
     # Now stdin is restored to /dev/tty

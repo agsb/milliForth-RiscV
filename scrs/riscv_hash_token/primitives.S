@@ -63,13 +63,13 @@
 #
 # this is the Forth heart beat.
 #
-#       nest aka enter or docol, 
+# nest aka enter or docol, 
 # 
-#       unnest aka exit or semis
+# unnest aka exit or semis
 #
-#       ipt must stay preserved outside, ever.
+# ipt must stay preserved outside, ever.
 #
-#       "why there is no 'docol at start of words ?"
+# "why there is no 'docol at start of words ?"
 #
 #---------------------------------------------------------------------
 # ( -- ) ; aka figforth semis

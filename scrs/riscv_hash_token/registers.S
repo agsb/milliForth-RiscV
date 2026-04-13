@@ -38,7 +38,7 @@
         00478813                addi    a6,a5,4
         01042023                sw      a6,0(s0)
 
-	Use with s0,s1,a0,a1,a2,a3,a4,a5.
+	Use only with s0,s1,a0,a1,a2,a3,a4,a5.
 
 */
 
@@ -65,6 +65,8 @@
 
 # index 
 #define idx a5
+
+# not for compressed code
 
 # generic
 #define trd a6

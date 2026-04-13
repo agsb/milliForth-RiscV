@@ -74,3 +74,16 @@ def_word "/MOD", "bymod", hash_BYMOD, it_bymul
 
 #---------------------------------------------------------------------
 
+
+# to review 
+
+
+# ( n1 n2 n3 -- n4 ) #; n1 n2 * n3 / 
+# n1 n2 * gives a double cell then divide by n3 give a single cell
+#def_word "*/", "starslash", hash_starslash, it_dot
+
+# ( n1 n2 n3 -- n4 n5 ) #; n1 n2 * n3 / 
+# n1 n2 * gives a double cell then divide by n3 give a 
+# reminder n4 and quontient n5
+#def_word "*/MOD", "starslashmod", hash_starslashmod, it_dot
+

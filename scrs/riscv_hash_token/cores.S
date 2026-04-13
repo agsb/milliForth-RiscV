@@ -31,10 +31,6 @@
 #
 
 #---------------------------------------------------------------------
-
-.equ init_cores, last_next
-
-#---------------------------------------------------------------------
 # djb2 hash cleared of bit 31
 
 .equ hash_SUB, 0x0002B588 
@@ -95,9 +91,14 @@
 .equ hash_sfl, 0x0059685D
 .equ hash_sfr, 0x00596858
 
+#define ROS 0(idx)
 #define TOS 0(idx)
 #define NOS 4(idx)
 #define QOS 8(idx)
+
+#---------------------------------------------------------------------
+
+.equ init_cores, last_next
 
 #---------------------------------------------------------------------
 look0:
@@ -243,7 +244,7 @@ def_word "-", "sub", hash_SUB, it_nrot
 
         call pull2
 
-        sub fst, fst, snd
+        sub fst, snd, fst
 
         j keep1
 
@@ -301,7 +302,7 @@ def_word "<", "less", hash_LESS, it_equ
 
         call pull2
 
-        blt fst, snd, istrue
+        blt snd, fst, istrue
 
         j isfalse
 
@@ -317,7 +318,7 @@ rlook0:
         j push1
 
 #---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @
+# ( -- w ; w -- ) #; the value is at second cell
 def_word "R>", "rto", hash_RTO, it_rat
 
 rpull1:
@@ -404,7 +405,7 @@ def_word "SP!", "spto", hash_SPTO, it_spat
         j next
 
 #---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @
+# ( -- ; -- ) #; @
 def_word "BRANCH", "branch", hash_BRANCH, it_spto
 
 branch:
@@ -421,7 +422,7 @@ branch:
         j next
 
 #---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @
+# ( -- ; -- ) #; @
 def_word "0BRANCH", "branchz", hash_ZBRANCH, it_branch
         
         call pull2
@@ -532,8 +533,22 @@ def_word ".", "dot", hash_DOT, it_byes
         j next
         
 #---------------------------------------------------------------------
+# ( w -- ) #; @
+def_word "+!", "plusto", hash_PLUSTO, it_dot
 
-.set last_next, it_dot
+        call pull2
+
+        lw idx, 0 (fst)
+
+        add snd, snd, idx
+
+        sw snd, 0 (fst)
+
+        j drop1
+        
+#---------------------------------------------------------------------
+
+.set last_next, it_plusto
 
 #---------------------------------------------------------------------
 # code a 32-bit word in ASCII hexadecimal
@@ -573,4 +588,25 @@ tohex:
         ret
 
 #---------------------------------------------------------------------
+
+/*
+
+#---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @
+def_word "RP0", "rptop", hash_RPTOP, it_rpto
+
+        la fst, rp0
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @
+def_word "SP0", "sptop", hash_SPTOP, it_rptop
+
+        la fst, rp0
+
+        j push1
+
+*/
+
 
