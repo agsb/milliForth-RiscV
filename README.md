@@ -9,14 +9,13 @@ minimal dictionary compiled words at 04/12/2025, @agsb
 vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) 
 and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
 
-This is an implementation of MilliForth (sector-forth) concept for RISCV ISA.
+This is an implementation of MilliForth (sector-forth) concept for RISCV ISA, using Minimal Thread Code.
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
 This version with minimal code (.text) uses only 474 bytes, 
     408 bytes for Forth engine and 66 bytes for linux system I/O, 
     not counting ELF headers. Used 48 bytes to load fixed address. 
-
 
 No human WORDS. It uses DJB2 hash in headers. 
 
@@ -45,13 +44,13 @@ How shink to a minimal compiled size in a Risc-V ?
     The sector-riscv.S is working, also the extra-milliforth.S,
     could test by:
 
-    **cat t0.f t1.f t2.f | sh doit.sh | tee output**
+    **cat t0.f t1.f t2.f - | sh doit.sh | tee output**
 
     t0.f is a minimal set of words, same as test0-riscv.f;
 
     t1.f is a complement with hash and more words; 
 
-    t4.f is a complement with BrainFu*ck interpreter; 
+    the hiphen refers to terminal (/dev/tty)
 
     Could test by:
 
