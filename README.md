@@ -63,6 +63,9 @@ How shink to a minimal compiled size in a Risc-V ?
     
     PS. 
 
+    Add a hyphen at end of cat files list to allow terminal I/O
+            cat t0.f t1.f t2.f - > sh doit.sh 
+            
     Some esoteric bug makes the first word to have hash error.
 
     The memory management is done by extend the dictionary 
