@@ -116,13 +116,9 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
- /*
-
  .equ debug, YES
 
- .equ cores, YES
- 
- .equ maths, YES
+ /*
 
  .equ missed, YES
 

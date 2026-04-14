@@ -23,14 +23,20 @@ BEGIN {
 # loop 
 #
 {
+  
+  print "0 " $0
+
 	
   gsub(/\r/,"", $0)
-  gsub(/\t+/,"", $0)
+  gsub(/\s+/," ", $0)
   gsub(/^[ ]+/,"", $0)
   gsub(/[ ]+$/,"", $0)
   gsub(/[ ]+/," ", $0)
 
-  if ( $1 == colon && $(NF) == semis ) {
+  if ( $1 != colon || $(NF) != semis ) {
+        print "? " $0
+        next
+        }
 
   word = $2 
 
@@ -41,10 +47,10 @@ BEGIN {
   for (n = 3; n < NF; n++) {
     
     words[word,n - 3] = $(n);
+
+    print " " word " " n - 3 " " words[word,n-3]
   
     }
-
-  }
 
 } 
 
