@@ -116,9 +116,9 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
- .equ debug, YES
-
  /*
+
+ .equ debug, YES
 
  .equ cores, YES
  
@@ -129,7 +129,7 @@
  .equ beatme, YES
 
  .equ tickme, YES
-
+ 
  .equ asciis, YES
 
  .equ asciionly, YES

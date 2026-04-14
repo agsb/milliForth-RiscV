@@ -319,7 +319,7 @@ eval:
         # compiling ? else
 compile:
         
-        call docomma
+        call comma
 
         j knot
 
@@ -443,7 +443,7 @@ pass:
         ret
 
 #---------------------------------------------------------------------
-docomma:
+comma:
 
         lw idx, HEAP (usr)
       
@@ -608,7 +608,7 @@ create:
         
         lw fst, LAST (usr)
         
-        call docomma
+        call comma
 
 # get a hash of the next token
         
@@ -618,9 +618,9 @@ create:
 
         mv fst, idx
 
-comma:
+docomma:
 
-        call docomma
+        call comma
 
         j next 
 
@@ -642,7 +642,7 @@ finish:
         
         la fst, is_exit
 
-        j comma
+        j docomma
 
 #---------------------------------------------------------------------
 # ( -- c ) 
@@ -775,10 +775,6 @@ look0:
 
 .equ hash_SUB, 0x0002B588 
 
-.equ hash_PER, 0x0002B580 
-.equ hash_DIV, 0x0002B58A 
-.equ hash_MUL, 0x0002B58F
-
 .equ hash_EQU, 0x0002B598 
 .equ hash_LESS, 0x0002B599 
 
@@ -802,18 +798,11 @@ look0:
 .equ hash_ROT, 0x0B8807CC 
 .equ hash_NROT, 0x7C4E8CA1 
 
-.equ hash_RPAT, 0x0B880527 
-.equ hash_RPTO, 0x0B880546 
-
-.equ hash_SPTO, 0x0B881187 
-.equ hash_SPAT, 0x0B8811E6 
-
 .equ hash_LIT, 0x0B87DB14 
 .equ hash_BRANCH, 0x1E6C4191 
 .equ hash_ZBRANCH, 0x7D28616B
 
 .equ hash_DOT, 0x0002B58B
-
 .equ hash_ALIGN, 0x0C531CC8 
 
 .equ hash_TRUE, 0x7C879BF3
@@ -831,10 +820,20 @@ look0:
 .equ hash_sfl, 0x0059685D
 .equ hash_sfr, 0x00596858
 
+.equ hash_cfetch, 0x005972E6
+.equ hash_cstore, 0x00597287
 .equ hash_plusto, 0x0059676F
+
 .equ hash_STAT, 0x0DD1F032
 .equ hash_LAST, 0x2ADAAFBE
 .equ hash_HEAP, 0x00597251
+
+# for catch and trow
+.equ hash_DEEP, 0x7C7F0AF1 
+.equ hash_RPAT, 0x0B880527 
+.equ hash_SPAT, 0x0B8811E6 
+.equ hash_RPTO, 0x0B880546 
+.equ hash_SPTO, 0x0B881187 
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; align to cell, word is 4 bytes
@@ -847,6 +846,7 @@ def_word "ALIGN", "align", hash_ALIGN, init_cores
         andi fst, fst, ~3
 
         j keep0
+
 
 #---------------------------------------------------------------------
 # ( w -- w*2 ) #; shift left
@@ -965,8 +965,30 @@ def_word "-ROT", "nrot", hash_NROT, it_rot
         j next
 
 #---------------------------------------------------------------------
+# ( a -- w ), w = [a], one byte
+def_word "C@", "cfetch", hash_cfetch, it_nrot
+        
+        call look0
+        
+        lb fst, 0 (fst)
+        
+        j keep0
+
+#---------------------------------------------------------------------
+# ( a w -- ),  [a] = w, one byte
+def_word "C!", "cstore", hash_cstore, it_cfetch
+        
+        call pull2
+
+        sb snd, 0 (fst)
+
+        addi idx, idx, CELL
+
+        j drop1
+
+#---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 - w2
-def_word "-", "sub", hash_SUB, it_nrot
+def_word "-", "sub", hash_SUB, it_cstore
 
         call pull2
 
@@ -1274,17 +1296,7 @@ def_word "BYE", "byes", hash_BYE, it_aborts
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word ".", "dot", hash_DOT, it_byes
-
-        call pull2
-
-        call tohex
-
-        j next
-        
-#---------------------------------------------------------------------
-# ( w -- ) #; @
-def_word "+!", "plusto", hash_plusto, it_dot
+def_word "+!", "plusto", hash_plusto, it_byes
 
         call pull2
 
@@ -1297,9 +1309,31 @@ def_word "+!", "plusto", hash_plusto, it_dot
         j drop1
         
 #---------------------------------------------------------------------
+# ( -- w ) #; @
+def_word "DEEP", "deep", hash_DEEP, it_plusto
 
-.set last_next, it_plusto
+        lw idx, SPTR (usr)
 
+        la snd, sp0
+
+        add snd, zero, snd
+
+        add fst, idx, snd
+
+        srli fst, fst, TWO
+
+        j push1
+        
+#---------------------------------------------------------------------
+# ( w -- ) #; @
+def_word ".", "dot", hash_DOT, it_deep
+
+        call pull2
+
+        call tohex
+
+        j next
+        
 #---------------------------------------------------------------------
 # code a 32-bit word in ASCII hexadecimal
 #
@@ -1339,6 +1373,10 @@ tohex:
 
 #---------------------------------------------------------------------
 
+.set last_next, it_dot
+
+#---------------------------------------------------------------------
+
 .equ init_math, last_next
 
 #---------------------------------------------------------------------
@@ -1347,10 +1385,12 @@ tohex:
 #
 
 .equ hash_BYMOD, 0x7C4D1C6C  
-.equ hash_BYMUL, 0x7C4FB089
+.equ hash_BYMUL, 0x005972C2
 
-.equ hash_MUL, 0x0002B58F  
-.equ hash_DIV, 0x0002B58A  
+.equ hash_PER, 0x0002B580 
+.equ hash_DIV, 0x0002B58A 
+.equ hash_MUL, 0x0002B58F
+
 .equ hash_MSTAR, 0x005972C2  
 .equ hash_UMSTAR, 0x0B87EB77  
 .equ hash_FMBYMOD, 0x14CB69A7  
@@ -1358,7 +1398,7 @@ tohex:
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 w4 ) double multiply,  
-def_word "*MOD", "bymul", hash_BYMUL, init_math
+def_word "M*", "bymul", hash_BYMUL, init_math
         
         call pull2
         mulh trd, fst, snd

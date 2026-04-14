@@ -9,13 +9,14 @@ minimal dictionary compiled words at 04/12/2025, @agsb
 vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) 
 and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
 
-This is an implementation of MilliForth (sector-forth) concept for RISCV ISA, using Minimal Thread Code.
+This is an implementation of MilliForth (sector-forth) concept for RISCV ISA, 
+using [Minimal Thread Code](https://github.com/agsb/agsb.github.io/blob/main/The_words_in_MTC_Forth.v4.pdf).
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
-This version with minimal code (.text) uses only 474 bytes, 
-    408 bytes for Forth engine and 66 bytes for linux system I/O, 
-    not counting ELF headers. Used 48 bytes to load fixed address. 
+This version with minimal code (.text) uses only 462 bytes, 
+    396 bytes for Forth engine and 66 bytes for linux system I/O, 
+    not counting ELF headers. Used some bytes to load fixed address. 
 
 No human WORDS. It uses DJB2 hash in headers. 
 

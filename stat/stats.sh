@@ -5,27 +5,26 @@
 
 cp $1 dmp
 
-grep -E ':.[1234567890abcdef]{8,8}' dmp | \
-grep -vi -E '\.word|ecall' > 32bits
+grep -E '[0123456789abcdef]{4,8}:' dmp | \
+grep -vi -E '\.word' > lins
 
-grep -E '_GLOBAL_' dmp > globals
-grep -vi -E 'lui|aui' dmp > lauis
+grep -E ':.[1234567890abcdef]{4,4} ' dmp | \
+grep -vi -E '\.word' > 16opc
 
-grep -E ' s0|,s0|s0,' dmp > s0
-grep -E ' s1|,s1|s1,' dmp > s1
+grep -E ':.[1234567890abcdef]{8,8} ' dmp | \
+grep -vi -E '\.word' > 32opc
 
-grep -E ' a0|,a0|a0,' dmp > a0
-grep -E ' a1|,a1|a1,' dmp > a1
-grep -E ' a2|,a2|a2,' dmp > a2
-grep -E ' a3|,a3|a3,' dmp > a3
-grep -E ' a4|,a4|a4,' dmp > a4
-grep -E ' a5|,a5|a5,' dmp > a5
-grep -E ' a6|,a6|a6,' dmp > a6
-grep -E ' a7|,a7|a7,' dmp > a7
 
-grep -E ' t0|,t0|t0,' dmp > t0
-grep -E ' t1|,t1|t1,' dmp > t1
-grep -E ' t2|,t2|t2,' dmp > t2
-grep -E ' t3|,t3|t3,' dmp > t3
-grep -E ' t4|,t4|t4,' dmp > t4
-grep -E ' t5|,t5|t5,' dmp > t5
+grep -E ' it_' dmp > hooks
+
+grep -E '_GLOBAL_|auipc' dmp > globals
+
+grep -E 'lui|aui' dmp > lauis
+
+for r in s0 s1 a0 a1 a2 a3 a4 a5 a6 a7 t0 t1 t2 t3 ;
+do
+        grep -E "\s$r|,$r|$r,($r)" dmp | \
+        grep -v ":\s*$r" > ${r}.ss
+done
+
+

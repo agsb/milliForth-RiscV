@@ -12,11 +12,11 @@ system dependences:
 
 outer loop:
 
-    abort quit loop find token hash docomma miss
+    miss abort quit loop find token hash comma
 
 inner loop:
 
-    unnest next pick jump next move
+    unnest next pick jump nest move
 
 core:
 
@@ -24,7 +24,7 @@ core:
 
     NAND AND OR XOR NOT NEG
 
-    = < . LIT ALIGN
+    0# = < . LIT ALIGN
 
     R@ >R R> 
 
@@ -36,11 +36,13 @@ core:
 
     : ; ;CODE EXIT
 
-    ABORT BYE 
+    ABORT BYE DEEP
 
     STATE LATEST DP @SP @RP
 
     NAN 1 2 CELL
+
+    */MOD M*
 
 ## Extras
 
@@ -50,16 +52,18 @@ core:
     
     TICKS   counts jump executions
     
-    DEEPS   counts how deep stack goes
+    ** DEEPS   counts how deep stack goes
 
 ## Model
 
     No names, no lines. Just hashes and streams.
 
+    No numbers. Make your own.
+
 ## Use
 
     cat t0.f t1.f - | sh doit.sh
 
-    Note: the hifen states for /dev/tty
+    Note: hifen states for /dev/tty
 
 

@@ -1,4 +1,3 @@
-00011fd0 l     O .got	00000000 _GLOBAL_OFFSET_TABLE_
    100f8:	00002417          	auipc	s0,0x2
    100fc:	edc42403          	lw	s0,-292(s0) # 11fd4 <_GLOBAL_OFFSET_TABLE_+0x4>
    10100:	00002697          	auipc	a3,0x2
@@ -9,13 +8,35 @@
    10118:	ec46a683          	lw	a3,-316(a3) # 11fd8 <_GLOBAL_OFFSET_TABLE_+0x8>
    1011e:	00002697          	auipc	a3,0x2
    10122:	ebe6a683          	lw	a3,-322(a3) # 11fdc <_GLOBAL_OFFSET_TABLE_+0xc>
+   10128:	00042823          	sw	zero,16(s0)
+   1013a:	80000737          	lui	a4,0x80000
+   10142:	fec797e3          	bne	a5,a2,10130 <find+0x4>
    10152:	00002497          	auipc	s1,0x2
    10156:	e964a483          	lw	s1,-362(s1) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0x18>
+   10160:	000017b7          	lui	a5,0x1
+   10164:	50578793          	addi	a5,a5,1285 # 1505 <DJB2>
+   10168:	02000813          	li	a6,32
+   1016e:	ff06cfe3          	blt	a3,a6,1016c <token+0x10>
+   10172:	ff068de3          	beq	a3,a6,1016c <token+0x10>
+   10180:	ff06cfe3          	blt	a3,a6,1017e <token+0x22>
+   10184:	ff0699e3          	bne	a3,a6,10176 <token+0x1a>
+   101a2:	05d00893          	li	a7,93
+   101a8:	00000073          	ecall
+   101ae:	03f00893          	li	a7,63
    101b4:	00002597          	auipc	a1,0x2
    101b8:	e385a583          	lw	a1,-456(a1) # 11fec <_GLOBAL_OFFSET_TABLE_+0x1c>
+   101be:	00000073          	ecall
+   101c2:	00058683          	lb	a3,0(a1)
+   101ca:	04000893          	li	a7,64
    101d0:	00002597          	auipc	a1,0x2
    101d4:	e1c5a583          	lw	a1,-484(a1) # 11fec <_GLOBAL_OFFSET_TABLE_+0x1c>
+   101da:	00d58023          	sb	a3,0(a1)
+   101de:	00000073          	ecall
    101f8:	00002797          	auipc	a5,0x2
    101fc:	dfc7a783          	lw	a5,-516(a5) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x24>
+   10200:	00f6d463          	bge	a3,a5,10208 <nest>
+   10204:	000680e7          	jalr	a3
+   1023c:	00042823          	sw	zero,16(s0)
    10240:	00002697          	auipc	a3,0x2
    10244:	db06a683          	lw	a3,-592(a3) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x20>
+   1028e:	fff6c693          	not	a3,a3

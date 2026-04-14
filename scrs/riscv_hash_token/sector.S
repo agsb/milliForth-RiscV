@@ -99,29 +99,28 @@ is_\label:
 .section .bss
 .p2align 2, 0x0
 
-# void at top of bss, used in _getc _putc 
-# address MUST have lower 12 bits zeros
+# void at top of bss 
 void: 
         .word 0x0
-        .word 0x0
 
-# all forth variables by offset of _user
+# all forth variables and stacks by offset of _user
+# beware change offsets
 
 # user stack of parameter, for offsets vide defines.S
 _user:
 .skip user_size
 
-# data stack grows backward
-# bottom 
-_spb:       
+# data stack grows backward, bottom 
 .skip sp_size
-sp0: .word 0x0
+sp0: 
 
-# return stack grows backward
-# bottom
-_rpb:       
+# return stack grows backward, bottom
 .skip rp_size
-rp0: .word 0x0
+rp0: 
+
+# end of stacks
+mark:
+        .word 0x0
 
 # start of user dictionary 
 h_here: 
@@ -176,15 +175,16 @@ cold:
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
+# next heap free cell
+        
+        # la fst, h_here
+        addi fst, usr, user_size + sp_size + rp_size + CELL
+        sw fst, HEAP (usr)
+
 # last link list of primitives, aka dictionary
 
         la fst, h_last
         sw fst, LAST (usr)
-
-# next heap free cell
-        
-        la fst, h_here
-        sw fst, HEAP (usr)
 
 #---------------------------------------------------------------------
 # unexpected end of dictionary
@@ -219,14 +219,16 @@ wipe:
 abort:
 # reset data stack
         
-        la fst, sp0 
+        # la fst, sp0 
+        addi fst, usr, user_size + sp_size
         sw fst, SPTR (usr)
 
 #---------------------------------------------------------------------
 quit:
 # reset return stack
         
-        la fst, rp0 
+        #la fst, rp0 
+        addi fst, usr, user_size + sp_size + rp_size
         sw fst, RPTR (usr)
 
 #---------------------------------------------------------------------
@@ -320,7 +322,7 @@ eval:
         # compiling ? else
 compile:
         
-        call docomma
+        call comma
 
         j knot
 
@@ -444,7 +446,7 @@ pass:
         ret
 
 #---------------------------------------------------------------------
-docomma:
+comma:
 
         lw idx, HEAP (usr)
       
@@ -467,20 +469,20 @@ knotptr:
 # system dependences, linux ecall
 #---------------------------------------------------------------------
 
-#include "minimal.S"
+#include "linuxecall.S"
 
 #---------------------------------------------------------------------
-# forth primitives 
+# forth minimal 
 #---------------------------------------------------------------------
 
 .set last_next, 0x0
 
-#include "primitives.S"
+#include "minimals.S"
 
 #----------------------------------------------------------------------
 .ifdef cores
 
-#include "cores.S"
+#include "primitives.S"
 
 .endif
 

@@ -34,6 +34,8 @@ BEGIN {
 
   word = $2 
 
+  print word
+
   qtde[word] = NF - 3 ;
   
   for (n = 3; n < NF; n++) {
@@ -56,6 +58,8 @@ END {
       
       np = 0
 
+      print ">> " key
+
       deep(key) 
 
       print " ~ " key " " np " " qtde[key]   
@@ -67,6 +71,8 @@ END {
 
   
 function deep( key ) {
+
+print "> " key
 
   dp++
 
