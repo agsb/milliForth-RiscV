@@ -29,7 +29,10 @@
 
  \ from eforth, first EXIT is reserved for DOES> 
 
- : BODY 0 , ; \ crude pointer for CREATE DOES>
+
+ \ crude pointer for CREATE DOES>
+
+ : BODY ['] LIT , HERE CELL + , 0 , ;
 
  : CREATE :NAME 
         ['] LIT , 
