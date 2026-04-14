@@ -24,11 +24,13 @@ core:
 
     NAND AND OR XOR NOT NEG
 
-    = < 
+    = < . LIT ALIGN
 
     R@ >R R> 
 
-    @ ! C@ C! BRANCH 0BRANCH
+    @ ! C@ C! 
+
+    BRANCH 0BRANCH
 
     SP@ SP! RP@ RP!
 
@@ -38,9 +40,11 @@ core:
 
     STATE LATEST DP @SP @RP
 
+    NAN 1 2 CELL
+
 ## Extras
 
-    Those are selected at compileation
+    Those are selected at compilation
 
     BEATS   counts next executions
     

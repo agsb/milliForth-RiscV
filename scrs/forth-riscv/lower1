@@ -1,0 +1,8 @@
+#---------------------------------------------------------------------
+# lowercase key emit exit nand u@
+.equ hash_key,   0x0B876D32 
+.equ hash_emit,  0x7C6B87D0 
+.equ hash_nand,  0x7C727500 
+.equ hash_userat, 0x00596F90
+.equ hash_exit,  0x7C6BBE85 
+
