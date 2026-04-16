@@ -48,7 +48,14 @@
 
 12/04/2026
 
-    How enter numbers ? Score which are need and make words. 
+    Made a version in aeForth, with all primitives and a eforth based 
+    dictionary.
+
+    Milliforth-Riscv now uses 456 bytes.
+
+12/04/2026
+
+    How enter numbers ? Choose which are need and make words. 
     : 1234 LIT [ 1024 128 + 64 + 32 + 4 + 2 + ] ;
 
 10/04/2026
