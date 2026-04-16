@@ -1,3 +1,29 @@
    100f8:	00002417          	auipc	s0,0x2
-   100fc:	edc42403          	lw	s0,-292(s0) # 11fd4 <_GLOBAL_OFFSET_TABLE_+0x4>
-   102ba:	86a2                	mv	a3,s0
+   100fc:	ee842403          	lw	s0,-280(s0) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x4>
+   10100:	14440693          	addi	a3,s0,324
+   10104:	c454                	sw	a3,12(s0)
+   1010e:	c414                	sw	a3,8(s0)
+   10110:	0b040693          	addi	a3,s0,176
+   10114:	c014                	sw	a3,0(s0)
+   10116:	14040693          	addi	a3,s0,320
+   1011a:	c054                	sw	a3,4(s0)
+   1011c:	00042823          	sw	zero,16(s0)
+   10122:	440c                	lw	a1,8(s0)
+   1013c:	4810                	lw	a2,16(s0)
+   10184:	445c                	lw	a5,12(s0)
+   1018a:	c45c                	sw	a5,12(s0)
+   101dc:	405c                	lw	a5,4(s0)
+   101e2:	c05c                	sw	a5,4(s0)
+   101f8:	405c                	lw	a5,4(s0)
+   101fe:	c05c                	sw	a5,4(s0)
+   1020c:	4454                	lw	a3,12(s0)
+   1020e:	c854                	sw	a3,20(s0)
+   10212:	c814                	sw	a3,16(s0)
+   10214:	4414                	lw	a3,8(s0)
+   10228:	4854                	lw	a3,20(s0)
+   1022a:	c414                	sw	a3,8(s0)
+   1022c:	00042823          	sw	zero,16(s0)
+   102aa:	86a2                	mv	a3,s0
+   102ac:	401c                	lw	a5,0(s0)
+   102b2:	c01c                	sw	a5,0(s0)
+   102b6:	401c                	lw	a5,0(s0)

@@ -150,6 +150,8 @@ _start:
 # go ! go ! go !
 main:
 
+# #include "testv.S"
+
 # do any system inits
 # call _init
 
@@ -364,9 +366,8 @@ token:
 100:
         call _getc
 
-        blt fst, trd, 100b
-        beq fst, trd, 100b
-
+        bleu fst, trd, 100b
+        
         # hash character
 200:
 # xxx
@@ -388,7 +389,7 @@ token:
 300:
         call _getc
 
-        blt fst, trd, 300b
+        bltu fst, trd, 300b
         bne fst, trd, 200b
 
         # clear hash high bit 

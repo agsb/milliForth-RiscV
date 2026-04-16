@@ -1,0 +1,10 @@
+   10124:	d5f5                	beqz	a1,10110 <abort>
+   10136:	fec797e3          	bne	a5,a2,10124 <find+0x4>
+   1013e:	c601                	beqz	a2,10146 <execute>
+   10140:	e319                	bnez	a4,10146 <execute>
+   10162:	fed85fe3          	bge	a6,a3,10160 <token+0x10>
+   10170:	ff06cfe3          	blt	a3,a6,1016e <token+0x1e>
+   10174:	ff0699e3          	bne	a3,a6,10166 <token+0x16>
+   101b6:	dd71                	beqz	a0,10192 <_exit>
+   101f0:	00f6d463          	bge	a3,a5,101f8 <nest>
+   1029c:	d6a1                	beqz	a3,101e4 <next>
