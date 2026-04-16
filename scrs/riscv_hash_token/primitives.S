@@ -555,7 +555,7 @@ def_word ".", "dot", hash_DOT, it_byes
         
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word "+!", "plusto", hash_PLUSTO, it_dot
+def_word "+!", "plusto", hash_plusto, it_dot
 
         call pull2
 

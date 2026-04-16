@@ -365,7 +365,7 @@ token:
 100:
         call _getc
 
-        bleu fst, trd 100b
+        bleu fst, trd, 100b
 
         # hash character
 200:
@@ -778,6 +778,8 @@ pull2:
 
 #---------------------------------------------------------------------
 
+.equ hash_iMMEDIATE, 0x236DE614
+
 .equ hash_SUB, 0x0002B588 
 
 .equ hash_EQU, 0x0002B598 
@@ -808,7 +810,7 @@ pull2:
 .equ hash_ZBRANCH, 0x7D28616B
 
 .equ hash_DOT, 0x0002B58B
-.equ hash_ALIGN, 0x0C531CC8 
+.equ hash_ALIGNED, 0x6D8D6769
 
 .equ hash_TRUE, 0x7C879BF3
 .equ hash_FALSE, 0x0C3C6778
@@ -834,15 +836,31 @@ pull2:
 .equ hash_HEAP, 0x00597251
 
 # for catch and trow
-.equ hash_DEEP, 0x7C7F0AF1 
+.equ hash_DEPTH, 0x0C60B508 
 .equ hash_RPAT, 0x0B880527 
 .equ hash_SPAT, 0x0B8811E6 
 .equ hash_RPTO, 0x0B880546 
 .equ hash_SPTO, 0x0B881187 
 
 #---------------------------------------------------------------------
-# ( w1 -- w2 ) #; align to cell, word is 4 bytes
-def_word "ALIGN", "align", hash_ALIGN, init_primitives
+# ( w -- w ) #; align to cell, word is 4 bytes
+def_word "IMMEDIATE", "immediate", hash_IMMEDIATE, init_primitives
+
+        lw idx, LATEST (usr)
+
+        lw fst, 0 (idx)
+
+        lui snd, 0x80000
+
+        or  fst, fst, snd
+
+        sw fst, 0 (idx) 
+
+        j next
+
+#---------------------------------------------------------------------
+# ( w -- w ) #; align to cell, word is 4 bytes
+def_word "ALIGNED", "aligned", hash_ALIGNED, it_immediate
 
         call look0
 
@@ -854,7 +872,7 @@ def_word "ALIGN", "align", hash_ALIGN, init_primitives
 
 #---------------------------------------------------------------------
 # ( w -- w*2 ) #; shift left
-def_word "2*", "sfl", hash_sfl, it_align
+def_word "2*", "sfl", hash_sfl, it_aligned
 
         call look0
         
@@ -1169,7 +1187,7 @@ branch:
 
 #---------------------------------------------------------------------
 # ( -- ; -- ) #; @
-def_word "0BRANCH", "branchz", hash_ZBRANCH, it_branch
+def_word "0BRANCH", "zbranch", hash_ZBRANCH, it_branch
         
         call pull2
 
@@ -1186,7 +1204,7 @@ rdrop1:
 
 #---------------------------------------------------------------------
 # ( -- w ) #; @
-def_word "LIT", "lit", hash_LIT, it_branchz
+def_word "LIT", "lit", hash_LIT, it_zbranch
 
         lw idx, RPTR (usr)
 
@@ -1200,7 +1218,8 @@ def_word "LIT", "lit", hash_LIT, it_branchz
 
 #---------------------------------------------------------------------
 # ( -- TRUE ) #; push 0xFFFFFFFF
-def_word "TRUE", "true", hash_TRUE, it_LIT
+def_word "TRUE", "true", hash_TRUE, it_lit
+istrue:
 
         addi fst, zero, TRUE
 
@@ -1209,6 +1228,7 @@ def_word "TRUE", "true", hash_TRUE, it_LIT
 #---------------------------------------------------------------------
 # ( -- FALSE ) #; push 0x00000000
 def_word "FALSE", "false", hash_FALSE, it_true
+isfalse:
 
         addi fst, zero, FALSE
 
@@ -1307,28 +1327,8 @@ def_word "+!", "plusto", hash_plusto, it_byes
         j drop1
         
 #---------------------------------------------------------------------
-# ( w1 w2 -- w3 )  #; lesser w1 or w2
-def_word "MIN", "min", hash_MIN, it_plusto
-
-        call pull2
-
-        min fst, snd, fst
-
-        j keep1
-
-#---------------------------------------------------------------------
-# ( w1 w2 -- w3 )  #; greater w1 or w2
-def_word "MAX", "max", hash_MAX, it_min
-
-        call pull2
-
-        max fst, snd, fst
-
-        j keep1
-
-#---------------------------------------------------------------------
 # ( -- w ) #; @
-def_word "DEEP", "deep", hash_DEEP, it_plusto
+def_word "DEPTH", "depth", hash_DEPTH, it_plusto
 
         lw idx, SPTR (usr)
 
@@ -1344,7 +1344,7 @@ def_word "DEEP", "deep", hash_DEEP, it_plusto
         
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word ".", "dot", hash_DOT, it_deep
+def_word ".", "dot", hash_DOT, it_depth
 
         call pull2
 
