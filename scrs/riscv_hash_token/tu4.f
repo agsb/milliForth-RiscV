@@ -2,12 +2,16 @@
  \ FOR NEXT counts down and ends at zero
 
  : FOR ( n -- )
-        ['] HERE >R , ; IMMEDIATE 
+        HERE ['] >R , ; IMMEDIATE 
 
+\ ZZZZZ
  : NEXT ( -- 0 )
-        ['] R> , ['] -1 , ['] + , ['] DUP , 
-        ['] 0 , ['] = , ['] ?BRANCH , HERE - ,
+        ['] R> , ['] LIT , -1 , ['] + ,
+        ['] DUP , ['] LIT , 0 , ['] = , 
+        ['] ?BRANCH , HERE - , ['] DROP ,
         ; IMMEDIATE 
+
+ : BREAK ['] R> , ['] DROP , ['] LIT , 0 , ['] >R , ; IMMEDIATE
 
  \ clean stack
 

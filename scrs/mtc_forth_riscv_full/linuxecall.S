@@ -72,10 +72,11 @@ _getc:
 
         beq a0, zero, _exit
 
-.ifdef debug
-        j _putc
-.endif
+.ifndef debug
+
         ret
+
+.endif
 
 # linux ecall for putc
 _putc:

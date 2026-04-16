@@ -85,6 +85,10 @@
 .equ hash_ABORT, 0x0A1DFF4F
 .equ hash_BYE, 0x0B874AFB
 
+.equ hash_cfetch, 0x005972E6
+.equ hash_cstore, 0x00597287
+.equ hash_plusto, 0x0059676F
+
 .equ hash_sfl, 0x0059685D
 .equ hash_sfr, 0x00596858
 
@@ -236,8 +240,28 @@ def_word "-ROT", "nrot", hash_NROT, it_rot
         j next
 
 #---------------------------------------------------------------------
+ # ( a -- w ), w = [a], one byte
+ def_word "C@", "cfetch", hash_cfetch, it_nrot
+
+         call look0
+
+         lb fst, 0 (fst)
+
+         j keep0
+
+ #---------------------------------------------------------------------
+ # ( a w -- ),  [a] = w, one byte
+ def_word "C!", "cstore", hash_cstore, it_cfetch
+
+         call pull2
+
+         sb snd, 0 (fst)
+
+         j drop1
+
+#---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 - w2
-def_word "-", "sub", hash_SUB, it_nrot
+def_word "-", "sub", hash_SUB, it_cstore
 
         call pull2
 
@@ -251,7 +275,7 @@ def_word "AND", "and", hash_AND, it_sub
 
         call pull2
 
-        and fst, fst, snd
+        and fst, snd, fst
 
         j keep1
 
@@ -261,7 +285,7 @@ def_word "OR", "or", hash_OR, it_and
 
         call pull2
 
-        or fst, fst, snd
+        or fst, snd, fst
 
         j keep1
 
@@ -271,7 +295,7 @@ def_word "XOR", "xor", hash_XOR, it_or
 
         call pull2
 
-        xor fst, fst, snd
+        xor fst, snd, fst
 
         j keep1
 

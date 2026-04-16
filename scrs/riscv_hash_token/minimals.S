@@ -248,7 +248,7 @@ def_word "NAND", "nand", hash_NAND, it_fetch
         
         call pull2
 
-        and fst, fst, snd
+        and fst, snd, fst
         
         not fst, fst
 
@@ -260,8 +260,8 @@ def_word "+", "plus", hash_plus, it_nand
         
         call pull2
 
-        add fst, fst, snd
-        
+        add fst, snd, fst
+
         j keep1
 
 #---------------------------------------------------------------------
@@ -270,7 +270,7 @@ def_word "0#", "zeroq", hash_zeroq, it_plus
 
         call pull2
         
-        beq fst, zero, next
+        beq fst, zero, back1
 
         addi fst, zero, TRUE
         
@@ -298,6 +298,7 @@ save1:
         j next
 
 #---------------------------------------------------------------------
+
 pull2:
         
         lw idx, SPTR (usr)

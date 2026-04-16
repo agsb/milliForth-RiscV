@@ -2,6 +2,43 @@ testrcv:
 
 100:
 
+
+look0:
+        lw idx, SPTR (usr)
+
+        lw fst, 0 (idx)
+
+	ret
+
+pull2:
+	call look0
+
+        addi idx, idx, CELL
+
+        lw snd, 0 (idx)
+
+        ret
+
+
+pull2:
+
+         lw idx, SPTR (usr)
+
+         lw fst, 0 (idx)
+
+         addi idx, idx, CELL
+
+         lw snd, 0 (idx)
+
+         ret
+
+ look0:
+         lw idx, SPTR (usr)
+
+         lw fst, 0 (idx)
+
+         ret
+
 isrcv:
 
         lw a5, 0 ( s0 )

@@ -45,6 +45,8 @@
 
         ONLY ASCII TOKENS IN MIXED CASE AND BETWEEN SPACES
 
+        THIS VERSION INCLUDES EXTENDED PRIMITIVES
+
 #----------------------------------------------------------------------
 */
 
@@ -176,6 +178,7 @@ cold:
 warm:
 # next heap free cell
         
+        # la fst, h_here
         addi fst, usr, user_size + sp_size + rp_size + CELL
         sw fst, HEAP (usr)
 
@@ -362,8 +365,7 @@ token:
 100:
         call _getc
 
-        blt fst, trd, 100b
-        beq fst, trd, 100b
+        bleu fst, trd 100b
 
         # hash character
 200:
@@ -463,51 +465,16 @@ knotptr:
         
         .word knot
 
-#----------------------------------------------------------------------
-# system dependences, linux ecall
-#---------------------------------------------------------------------
-
-#include "minimal.S"
-
-#---------------------------------------------------------------------
-# forth primitives 
-#---------------------------------------------------------------------
-
-.set last_next, 0x0
-
-#---------------------------------------------------------------------
-# primitives djb2 hash cleared of bit 31
-#
-#---------------------------------------------------------------------
-# symbols ! @ + 0# : ;
-
-.equ hash_store, 0x0002B584 
-.equ hash_fetch, 0x0002B5E5 
-.equ hash_plus,  0x0002B58E 
-.equ hash_zeroq, 0x00596816 
-.equ hash_colon, 0x0002B59F 
-.equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
-
-.equ hash_KEY,   0x0B87F112
-.equ hash_EMIT,  0x7C7C87D0
-.equ hash_NAND,  0x7C8254C0
-.equ hash_USERAT, 0x005973B0
-.equ hash_EXIT,  0x7C7CC745
-
-#---------------------------------------------------------------------
-
-.equ init_primitives, last_next
-
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
 #
 # this is the Forth heart beat.
 #
-# nest aka enter or docol, 
+#       nest aka enter or docol  
 # 
-# unnest aka exit or semis
+#       unnest aka exit or semis
 #
-# ipt must stay preserved outside, ever.
+# ipt must be preserved outside, ever.
 #
 # "why there is no 'docol at start of words ?"
 #
@@ -580,9 +547,45 @@ move:
         
         j next
 
+#----------------------------------------------------------------------
+# system dependences, linux ecall
+#---------------------------------------------------------------------
+
+#include "linuxecall.S"
+
+#---------------------------------------------------------------------
+# forth minimal primitives 
+#---------------------------------------------------------------------
+
+.set last_next, 0x0
+
+#---------------------------------------------------------------------
+#
+# minimal primitives djb2 hash cleared of bit 31
+#
+#---------------------------------------------------------------------
+# symbols ! @ + 0# : ;
+
+.equ hash_store, 0x0002B584 
+.equ hash_fetch, 0x0002B5E5 
+.equ hash_plus,  0x0002B58E 
+.equ hash_zeroq, 0x00596816 
+.equ hash_colon, 0x0002B59F 
+.equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
+
+.equ hash_KEY,   0x0B87F112
+.equ hash_EMIT,  0x7C7C87D0
+.equ hash_NAND,  0x7C8254C0
+.equ hash_USERAT, 0x005973B0
+.equ hash_EXIT,  0x7C7CC745
+
+#---------------------------------------------------------------------
+
+.equ init_minimals, last_next
+
 #---------------------------------------------------------------------
 # ( -- ) ; aka figforth semis
-def_word "EXIT", "exit", hash_EXIT, init_primitives
+def_word "EXIT", "exit", hash_EXIT, init_minimals
         
         j unnest
 
@@ -640,6 +643,7 @@ def_word ";", "semis", hash_semis, it_colon
 
 finish:
 # compound words must ends with exit
+# dual jump, leave a hook for future
         
         la fst, is_exit
 
@@ -695,7 +699,7 @@ def_word "NAND", "nand", hash_NAND, it_fetch
         
         call pull2
 
-        and fst, fst, snd
+        and fst, snd, fst
         
         not fst, fst
 
@@ -707,7 +711,7 @@ def_word "+", "plus", hash_plus, it_nand
         
         call pull2
 
-        add fst, fst, snd
+        add fst, snd, fst
         
         j keep1
 
@@ -717,7 +721,7 @@ def_word "0#", "zeroq", hash_zeroq, it_plus
 
         call pull2
         
-        beq fst, zero, next
+        beq fst, zero, back1
 
         addi fst, zero, TRUE
         
@@ -745,22 +749,20 @@ save1:
         j next
 
 #---------------------------------------------------------------------
-pull2:
-        
-        lw idx, SPTR (usr)
-        
-        lw fst, 0 (idx)
-        
-        addi idx, idx, CELL
-
-        lw snd, 0 (idx)
-
-        ret
 
 look0:
         lw idx, SPTR (usr)
 
         lw fst, 0 (idx)
+
+	ret
+
+pull2:
+	call look0
+
+        addi idx, idx, CELL
+
+        lw snd, 0 (idx)
 
         ret
 
@@ -770,7 +772,9 @@ look0:
 
 #---------------------------------------------------------------------
 
-.equ init_cores, last_next
+#---------------------------------------------------------------------
+
+.equ init_primitives, last_next
 
 #---------------------------------------------------------------------
 
@@ -838,7 +842,7 @@ look0:
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; align to cell, word is 4 bytes
-def_word "ALIGN", "align", hash_ALIGN, init_cores
+def_word "ALIGN", "align", hash_ALIGN, init_primitives
 
         call look0
 
@@ -847,7 +851,6 @@ def_word "ALIGN", "align", hash_ALIGN, init_cores
         andi fst, fst, ~3
 
         j keep0
-
 
 #---------------------------------------------------------------------
 # ( w -- w*2 ) #; shift left
@@ -983,8 +986,6 @@ def_word "C!", "cstore", hash_cstore, it_cfetch
 
         sb snd, 0 (fst)
 
-        addi idx, idx, CELL
-
         j drop1
 
 #---------------------------------------------------------------------
@@ -1003,7 +1004,7 @@ def_word "AND", "and", hash_AND, it_sub
 
         call pull2
 
-        and fst, fst, snd
+        and fst, snd, fst
 
         j keep1
 
@@ -1013,7 +1014,7 @@ def_word "OR", "or", hash_OR, it_and
 
         call pull2
 
-        or fst, fst, snd
+        or fst, snd, fst
 
         j keep1
 
@@ -1023,7 +1024,7 @@ def_word "XOR", "xor", hash_XOR, it_or
 
         call pull2
 
-        xor fst, fst, snd
+        xor fst, snd, fst
 
         j keep1
 
@@ -1033,23 +1034,19 @@ def_word "=", "equ", hash_EQU, it_false
 
         call pull2
 
-        bne fst, snd, isfalse
+        addi idx, idx, CELL
 
-istrue:
-        addi fst, zero, TRUE
+        beq snd, fst, istrue
 
-        j keep0
-
-isfalse:
-        addi fst, zero, FALSE
-
-        j keep0
+        j isfalse
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 < w2 
 def_word "<", "less", hash_LESS, it_equ
 
         call pull2
+
+        addi idx, idx, CELL
 
         blt snd, fst, istrue
 
@@ -1202,10 +1199,10 @@ def_word "LIT", "lit", hash_LIT, it_branchz
         j push1
 
 #---------------------------------------------------------------------
-# ( -- TRUE ) #; push 0xFFFFFFFF 
-def_word "TRUE", "true", hash_TRUE, it_lit
-        
-        addi fst, zero, TRUE 
+# ( -- TRUE ) #; push 0xFFFFFFFF
+def_word "TRUE", "true", hash_TRUE, it_LIT
+
+        addi fst, zero, TRUE
 
         j push1
 
@@ -1213,7 +1210,7 @@ def_word "TRUE", "true", hash_TRUE, it_lit
 # ( -- FALSE ) #; push 0x00000000
 def_word "FALSE", "false", hash_FALSE, it_true
 
-        addi fst, zero, FALSE 
+        addi fst, zero, FALSE
 
         j push1
 
@@ -1309,6 +1306,26 @@ def_word "+!", "plusto", hash_plusto, it_byes
 
         j drop1
         
+#---------------------------------------------------------------------
+# ( w1 w2 -- w3 )  #; lesser w1 or w2
+def_word "MIN", "min", hash_MIN, it_plusto
+
+        call pull2
+
+        min fst, snd, fst
+
+        j keep1
+
+#---------------------------------------------------------------------
+# ( w1 w2 -- w3 )  #; greater w1 or w2
+def_word "MAX", "max", hash_MAX, it_min
+
+        call pull2
+
+        max fst, snd, fst
+
+        j keep1
+
 #---------------------------------------------------------------------
 # ( -- w ) #; @
 def_word "DEEP", "deep", hash_DEEP, it_plusto

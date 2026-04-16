@@ -10,13 +10,13 @@ vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.m
 and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
 
 This is an implementation of MilliForth (sector-forth) concept for RISCV ISA, 
-using [Minimal Thread Code](https://github.com/agsb/agsb.github.io/blob/main/The_words_in_MTC_Forth.v4.pdf).
+using [Minimal Indirect Thread Code](https://github.com/agsb/agsb.github.io/blob/main/The_words_in_MTC_Forth.v4.pdf).
 
 Milliforth uses a minimal set of primitives and functions for make a Forth.
 
 This version with minimal code (.text), uses only 458 bytes, 
     392 bytes for Forth engine and 66 bytes for linux system I/O. 
-    Not counting ELF headers. Used 56 bytes for load PIC address. 
+    Not counting ELF headers. Used 56 bytes for load ELF PIC address. 
 
 No human WORDS. It uses DJB2 hash in headers. 
 
@@ -24,7 +24,7 @@ No Terminal Input Buffer, just an token-to-hash ascii parser.
 
 Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN. 
 
-There are a file with core words in native code to use.
+There are a file with more core words in native code to use.
 
 ## For Size
 
@@ -38,7 +38,7 @@ How shink to a minimal compiled size in a Risc-V ?
 
     4. do not speculate;
 
-    5. Use streams no buffers;
+    5. Use streams, no buffers;
 
 ## For use
 
