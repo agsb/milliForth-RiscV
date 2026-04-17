@@ -9,6 +9,10 @@ minimal dictionary compiled words at 04/12/2025, @agsb
 vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) 
 and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
 
+Any Forth system depends on the I/O functions and executable and linkable format (ELF) of the host system. 
+
+The problem is reach a minimal code forth engine for RISCV ISA. 
+
 This is an implementation of MilliForth (sector-forth) concept for RISCV ISA, 
 using [Minimal Indirect Thread Code](https://github.com/agsb/agsb.github.io/blob/main/The_words_in_MTC_Forth.v4.pdf).
 
@@ -16,13 +20,13 @@ Milliforth uses a minimal set of primitives and functions for make a Forth.
 
 This version with minimal code (.text), uses only 458 bytes, 
     392 bytes for Forth engine and 66 bytes for linux system I/O. 
-    Not counting ELF headers. Used 56 bytes for load ELF PIC address. 
+    Not counting ELF headers. Used 56 bytes to load ELF PIC address. 
 
 No human WORDS. It uses DJB2 hash in headers. 
 
 No Terminal Input Buffer, just an token-to-hash ascii parser.
 
-Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN, used for errors.
+Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN, used to indicate errors.
 
 There are a file with more core words in native code to use.
 
@@ -120,7 +124,7 @@ contains the user variables for Forth
 
 __while 'tick was not in the compiled dictionary__
 
-Forth standart (now) have postone, instead of compile, and [compile].
+Forth standart (now) have postone instead of compile and [compile].
 
 Charles Moore, in 1974 [^8] make use of precedence of word and STATE, 
 to control between "always execute" STATE (0), 
@@ -143,7 +147,9 @@ The postpone is : POSTPONE ' , ; IMMEDIATE ( classics )
 
 ## Colon and Semis
 
-The colon **:** makes a header by:
+How do not use SMUDGE or else ?
+
+The colon *:* makes a header by:
         1. copy HERE to HEAD
         2. copy LATEST to first cell;
         3. calculate the djb2 hash of the next token;
@@ -153,26 +159,22 @@ The colon **:** makes a header by:
 In compile state, all non immediate words are compiled, 
         and the immediate words are executed. 
     
-The semis **;** ends the word by:
-        1. place a 'EXIT into last cell
-        2. copy HEAD to LATEST
+The semis *;* ends the word by:
+        1. copy HEAD to LATEST
+        2. place a 'EXIT into last cell
         3. change STATE to execute (0);
-
-if the compilation is interrupted, 
-    STATE and LATEST keeps untouched, 
-    but HERE changes and some junk was placed and stays into dictionary.
-    Could clean that with more some code, to copy HEAD to HERE
 
 ## Missed Hack
 
-When the compilation of a word breaks, the LATEST are keepd in order 
-but HERE was advanced with references of words compiled, that junk 
-stays lost in heap. 
+When the compilation breaks, by error or missing word,
+the STATE and LATEST are keepd in order but HERE was advanced with 
+references of words compiled, that junk stays lost in heap. 
 
-To clean just copy HEAD to HERE at error or missing.
+To clean heap, just copy HEAD to HERE.
 
-With this missed hack, the HERE returns to previous value before 
-start the last compilation.
+the HERE returns to previous value before start the last compilation.
+
+Also toggle STATE to interpret.
 
 ## CREATE and DOES>
 
@@ -219,10 +221,10 @@ primitives:
         
 only internals: 
     
-    main, cold, warm, abort, quit,   
-    token, skip, scan, hash, 
+    main, cold, warm, miss, abort, quit,   
+    token, skip, hash, scan, mask, 
     find, compile, execute, comma,  
-    unnest, next, nest, pick, jump, 
+    unnest, next, pick, jump, nest, move
 
     ps. exit is unnest, nest is enter/docol,
         next is not the NEXT of FOR loop !    
