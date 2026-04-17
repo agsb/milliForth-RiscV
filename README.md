@@ -22,7 +22,7 @@ No human WORDS. It uses DJB2 hash in headers.
 
 No Terminal Input Buffer, just an token-to-hash ascii parser.
 
-Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN. 
+Only use a IMMEDIATE flag, at MSBit (31) of hash, also is NaN, used for errors.
 
 There are a file with more core words in native code to use.
 
