@@ -1,17 +1,17 @@
 
  \ FOR NEXT counts down and ends at zero
 
- : FOR ( n -- )
+ : FOR ( n -- a ; -- w )
         HERE ['] >R , ; IMMEDIATE 
 
-\ ZZZZZ
- : NEXT ( -- 0 )
-        ['] R> , ['] LIT , -1 , ['] + ,
-        ['] DUP , ['] LIT , 0 , ['] = , 
-        ['] ?BRANCH , HERE - , ['] DROP ,
-        ; IMMEDIATE 
+ : NEXT ( a -- ; w -- w-1 ) 
+        ['] R> , ['] LIT , -1 , ['] + , 
+    ['] DUP , ['] 0# , ['] NOT , 
+    ['] ?BRANCH , HERE - , 
+    ['] DROP , ; IMMEDIATE 
 
- : BREAK ['] R> , ['] DROP , ['] LIT , 0 , ['] >R , ; IMMEDIATE
+ : BREAK ( -- ; -- w )
+        ['] DUP , ['] R> , ['] LEAVE , ; IMMEDIATE
 
  \ clean stack
 

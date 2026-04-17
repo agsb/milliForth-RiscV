@@ -76,11 +76,11 @@
 .equ hash_TRUE, 0x7C879BF3
 .equ hash_FALSE, 0x0C3C6778
 
-.equ hash_NAN, 0x0B87D404
 .equ hash_ONE, 0x00002B594
 .equ hash_TWO, 0x00002B597
 .equ hash_CELL, 0x07C81B0A3
 
+.equ hash_NAN, 0x0B87D404
 .equ hash_DOCODE, 0x075D9A73
 .equ hash_ABORT, 0x0A1DFF4F
 .equ hash_BYE, 0x0B874AFB
@@ -91,11 +91,6 @@
 
 .equ hash_sfl, 0x0059685D
 .equ hash_sfr, 0x00596858
-
-#define ROS 0(idx)
-#define TOS 0(idx)
-#define NOS 4(idx)
-#define QOS 8(idx)
 
 #---------------------------------------------------------------------
 

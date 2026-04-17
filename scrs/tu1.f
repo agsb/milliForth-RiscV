@@ -1,13 +1,15 @@
 
  \ this file is still a stub 
 
- \ for stack debug
-
  \ for compilation 
 
- : :NAME HERE : 0 STATE ! ; \ make a header
+ \ make a header
 
- : :NONAME HERE 1 STATE ! ; \ make a body
+ : :NAME HERE : 0 STATE ! ; 
+
+ \ make a body
+
+ : :NONAME HERE 1 STATE ! ; 
 
  : LINK>HASH CELL + ; 
 
@@ -27,12 +29,11 @@
 
  : POSTPONE ' , ; IMMEDIATE 
 
- \ from eforth, first EXIT is reserved for DOES> 
-
-
  \ crude pointer for CREATE DOES>
 
  : BODY ['] LIT , HERE CELL + , 0 , ;
+
+ \ from eforth, first EXIT is reserved for DOES> 
 
  : CREATE :NAME 
         ['] LIT , 
@@ -56,9 +57,10 @@
 
  : VALUE CREATE , DOES> @ ; 
  
- : TO ' CELL + @ STATE @ 
-   IF ' LIT , , ' ! , 
-   ELSE ! 
-   THEN ; 
+ : TO ' CELL + @ 
+        STATE @ 
+        IF ' LIT , , ' ! , 
+        ELSE ! 
+        THEN ; 
 
 

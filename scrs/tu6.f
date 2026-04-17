@@ -12,8 +12,9 @@
 
  : DOVAR R> DUP CELL + >R ;
  : DOCON R> DUP CELL + >R @ ;
- : LITERAL ['] LIT , , ;
+ : DOLIT R> DUP CELL + >R ;
  : EXECUTE >R ;
+ : LITERAL ['] LIT , , ;
 
  
 
