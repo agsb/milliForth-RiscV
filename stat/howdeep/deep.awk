@@ -1,6 +1,31 @@
+#!/usr/bin/awk
+#
+#       how deep is your Forth ?
+#       evaluate how deep levels the word takes
+#       deep find recursion levels
+#       agsb@2026
 #
 # define parameters
 #
+
+
+function deeps( key,  n, m ) {
+        
+        m = words[key][0]
+
+        print "> " key " " m " "
+
+        for (n=1; n < m; n++) {
+
+                word = words[key][n]
+
+                printf " %s ", word
+
+                }
+        print
+        return (m);
+        }        
+
 BEGIN {
 
   FS = " ";
@@ -23,54 +48,34 @@ BEGIN {
 # loop 
 #
 {
-  
+        # clean line 
         gsub(/\r/,"", $0)
         gsub(/\s+/," ", $0)
-        gsub(/^[ ]+/,"", $0)
-        gsub(/[ ]+$/,"", $0)
-        gsub(/[ ]+/," ", $0)
-
+        gsub(/^ +/,"", $0)
+        gsub(/ +$/,"", $0)
+        
+        # one word complete by line 
         if ( $1 != colon || $(NF) != semis ) {
                 print "? " $0
                 next
                 }
 
-        word = $2 
+        words[$2][0] = NF - 3 ;
 
-        qtde[word] = NF - 3 ;
-  
-        words[word, 0] = $0;
+        for (n = 3; n < NF ; n++) {
 
-        for (n = 3; n < NF; n++) {
-    
-                words[word, n - 2] = $(n);
+                words[$2][n-2] = $n;
 
-                }
-
-        } 
+                } 
+        }
 
 
 END {
-        for (key in qtde) {
+        for (key in words) {
 
-        st = 0
+                deeps(key) 
 
-        m = qtde[key] 
-
-        for (n = 1; n <= m; n++ ) {
-
-                wrd = words[key, n];
-
-                if (qtde[wrd]) {
-
-zzz
-
-                        }
-                else {
-                        print "~ " wrd
-                        }
-                }
-
+                } 
 
 }
 
