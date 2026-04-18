@@ -50,8 +50,8 @@ _char:
 
 # load system call for exit
 _exit:
-        addi a7, zero, _EXIT
-        addi a0, zero, _ZERO
+        li a7, _EXIT
+        li a0, _ZERO
         ecall
 
 # load system call for init
@@ -91,6 +91,7 @@ _rets:
         ret
 
 /*
+.ifdef extras
 #---------------------------------------------------------------------
 _sbrk:
         li a7, _SBRK
@@ -98,11 +99,11 @@ _sbrk:
         j _rets
 
         # this is where here is
-        mov a3, a0
+        # mov a3, a0
 
         # add memory 
         li a7, _SBRK
-        add a0, a0, a2
+        add a0, a0, a3
 
         j _rets
 
@@ -114,6 +115,7 @@ _fcntl: # fd, cdm, arg
         li a2, a5
         j _rets
         
+.endif
 */
 
 /*

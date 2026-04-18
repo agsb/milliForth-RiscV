@@ -1,7 +1,5 @@
  : VOID ; 
   
- : ABORT VOID ;  
-
  : -1 U@ 0# ; 
  : 0 -1 -1 NAND ; 
 
@@ -14,6 +12,12 @@
  : 4 2 2 + ; 
  : CELL 4 ; 
  
+ : 8 4 4 + ; 
+ : 16 8 8 + ;
+ : 32 16 16 + ;
+ 
+ : NAN 1 32 -1 + LSHIFT ;
+
  : SP U@ ; 
  : RP SP CELL + ; 
  
@@ -21,15 +25,24 @@
  : HEAP LATEST CELL + ; 
  : STATE HEAP CELL + ; 
 
- : HEAD  STATE CELL + ; 
- : BEATS HEAD CELL + ; 
- : TICKS BEATS CELL + ;  
- 
- : CLOCKS BEATS @ TICKS @ ;
+ NAN  .  
 
  : SP@ SP @ CELL + ; 
  : RP@ RP @ CELL + ; 
  
+ : DUP SP@ @ ;
+
+ : LIT RP@ @ DUP CELL + RP@ ! @ ; 
+ : >HASH LATEST @ CELL + ;
+ : IMMEDIATE >HASH @ NAN + >HASH ! ; 
+
+ : [ 0 STATE ! ; IMMEDIATE
+ : ] 1 STATE ! ;
+
+ : CELL LIT [ 4 ] ;
+
+BYE
+
  : SP! SP ! ;  
  : RP! RP ! ; 
 
@@ -38,9 +51,6 @@
  : AND NAND NOT ; 
  : - NOT 1 + + ; 
 
- : BRANCH RP@ @ DUP @ + RP@ ! ; 
- : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
- 
  : OVER SP@ CELL + @ ; 
  : SWAP OVER OVER SP@ CELL + CELL + CELL + ! SP@ CELL + ! ; 
 
@@ -90,7 +100,7 @@
  : 2** 2* 2* 2* 2* 2* 2* 2* 2* ; 
  : 80H 1 2* 2* 2* 2* 2* 2* 2* ; 
  : ISNEGATIVE 80H 2** 2** 2** ; 
- : IMMEDIATE LATEST @ CELL + DUP @ ISNEGATIVE + SWAP ! ; 
+ : IMMEDIATE LATEST @ CELL + DUP @ ISNEGATIVE OR SWAP ! ; 
  
  : ] 1 STATE ! ; 
  : [ 0 STATE ! ; IMMEDIATE 
@@ -100,6 +110,15 @@
  : RP0 LIT [ RP@ , ] ; 
 
  : ISNEGATIVE LIT [ ISNEGATIVE , ] ; 
+ 
+ : HEAD  STATE CELL + ; 
+ : BEATS HEAD CELL + ; 
+ : TICKS BEATS CELL + ;  
+ 
+ : CLOCKS BEATS @ TICKS @ ;
+
+ : BRANCH RP@ @ DUP @ + RP@ ! ; 
+ : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
  
  : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE 

@@ -43,7 +43,7 @@
 
         THIS VERSION USES STREAMS. NO TIB, NO LINES, NO CONTROLS
 
-        ONLY ASCII TOKENS IN MIXED CASE AND BETWEEN SPACES
+        USE ONLY ASCII TOKENS IN MIXED CASE AND BETWEEN SPACES
 
 #----------------------------------------------------------------------
 */
@@ -207,13 +207,13 @@ miss:
 # xxx
 .ifdef missed
 
-wipe:
-        # compiling ? 
-        lw fst, HEAD (usr)
+        # not compiling ? 
+        lw fst, STATE (usr)
         beq fst, zero, 100f
         # wipe remains
+        lw fst, HEAD (usr)
         sw fst, HEAP (usr)
-        sw zero, HEAD (usr)
+        sw zero, STATE (usr)
 100:
 .endif
 
@@ -240,7 +240,7 @@ quit:
 
 #---------------------------------------------------------------------
 # 
-knot:
+warp:
 
 # xxx
 .ifdef debug
@@ -255,21 +255,21 @@ knot:
 
 .endif
 
+        # get a hash of the next token in idx
+        
+        call token
+
 #---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
 #
 find:
-
-        # get a hash of the next token in idx
-        
-        call token
 
         # get the latest link
         
         lw lnk, LAST (usr)
 
 100:
-        # verify end of dictionary, do miss 
+        # verify end of dictionary 
         
         beq lnk, zero, miss
 
@@ -326,12 +326,12 @@ compile:
         
         call comma
 
-        j knot
+        j warp
 
 execute:
 immediate:
 
-        la ipt, knotptr
+        la ipt, is_warp
 
         j pick
 
@@ -363,20 +363,19 @@ token:
         addi trd, zero, BL
 
         # skip spaces
-100:
+skip:
         call _getc
 
-        bleu fst, trd, 100b
+        bleu fst, trd, skip
         
-        # hash character
-200:
+        # djb2 hash function
+hash:        
+
 # xxx
 .ifdef asciis
         call pass
 .endif
 
-        # djb2 hash function
-        
         mv snd, idx
 
         slli idx, idx, SFHT
@@ -386,11 +385,11 @@ token:
         xor idx, idx, fst
         
         # scan spaces
-300:
+scan:
         call _getc
+        bltu fst, trd, scan
 
-        bltu fst, trd, 300b
-        bne fst, trd, 200b
+        bne fst, trd, hash
 
         # clear hash high bit 
 mask:
@@ -462,9 +461,9 @@ comma:
 #---------------------------------------------------------------------
 # the outer loop, need for indirect
 
-knotptr:
+is_warp:
         
-        .word knot
+       .word warp
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
@@ -481,7 +480,7 @@ knotptr:
 #include "minimals.S"
 
 #----------------------------------------------------------------------
-.ifdef cores
+.ifdef primitives
 
 #include "primitives.S"
 

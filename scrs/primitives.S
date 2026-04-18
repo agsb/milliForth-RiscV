@@ -61,14 +61,14 @@
 
 .equ hash_RPAT, 0x0B880527 
 .equ hash_RPTO, 0x0B880546 
+.equ hash_RPZO, 0x0B880557  
 
 .equ hash_SPTO, 0x0B881187 
 .equ hash_SPAT, 0x0B8811E6 
+.equ hash_SPZO, 0x0B881196 
 
 .equ hash_BRANCH, 0x1E6C4191 
 .equ hash_ZBRANCH, 0x7D28616B
-
-.equ hash_DOT, 0x0002B58B
 
 .equ hash_LIT, 0x0B87DB14 
 .equ hash_ALIGN, 0x0C531CC8 
@@ -81,9 +81,6 @@
 .equ hash_CELL, 0x07C81B0A3
 
 .equ hash_NAN, 0x0B87D404
-.equ hash_DOCODE, 0x075D9A73
-.equ hash_ABORT, 0x0A1DFF4F
-.equ hash_BYE, 0x0B874AFB
 
 .equ hash_cfetch, 0x005972E6
 .equ hash_cstore, 0x00597287
@@ -94,7 +91,7 @@
 
 #---------------------------------------------------------------------
 
-.equ init_cores, last_next
+.equ init_primitives, last_next
 
 #---------------------------------------------------------------------
 look0:
@@ -108,7 +105,7 @@ keep0:
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; align to cell, word is 4 bytes
-def_word "ALIGN", "align", hash_ALIGN, init_cores
+def_word "ALIGN", "align", hash_ALIGN, init_primitives
 
         call look0
 
@@ -519,38 +516,24 @@ by_erro:
         j push1
 
 #---------------------------------------------------------------------
-# ( -- ) execute a jump and link to a reference at IP
-def_word ";CODE", "docode", hash_DOCODE, it_nan
+# ( -- w ; w -- ) #; @
+def_word "RP0", "rptop", hash_RPTOP, it_rpto
 
-        jalr ra, 0 (ipt)
+        la fst, rp0
 
-        j next
-
-#---------------------------------------------------------------------
-# ( -- ) ae abort
-def_word "ABORT", "aborts", hash_ABORT, it_docode
-
-        j abort
+        j push1
 
 #---------------------------------------------------------------------
-# ( -- ) exit forth
-def_word "BYE", "byes", hash_BYE, it_aborts
+# ( -- w ; w -- ) #; @
+def_word "SP0", "sptop", hash_SPTOP, it_rptop
 
-        j _exit
+        la fst, rp0
+
+        j push1
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word ".", "dot", hash_DOT, it_byes
-
-        call pull2
-
-        call tohex
-
-        j next
-        
-#---------------------------------------------------------------------
-# ( w -- ) #; @
-def_word "+!", "plusto", hash_plusto, it_dot
+def_word "+!", "plusto", hash_plusto, it_sptop
 
         call pull2
 
@@ -567,62 +550,4 @@ def_word "+!", "plusto", hash_plusto, it_dot
 .set last_next, it_plusto
 
 #---------------------------------------------------------------------
-# code a 32-bit word in ASCII hexadecimal
-#
-.global tohex
-tohex:
-
-        pushra
-
-        add  snd, zero, fst
-        
-        addi trd, zero, 58
-
-        addi t0, zero, 32
-
-        # rolls 
-100:
-        beq t0, zero, 300f
-
-        addi t0, t0, -4
-
-        srl  fst, snd, t0
-
-        andi fst, fst, 15
-        ori  fst, fst, 48
-        blt  fst, trd, 200f
-        addi fst, fst, 7
-200:
-        call _putc
-        
-        j 100b
-
-300:
-
-        pullra
-
-        ret
-
-#---------------------------------------------------------------------
-
-/*
-
-#---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @
-def_word "RP0", "rptop", hash_RPTOP, it_rpto
-
-        la fst, rp0
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @
-def_word "SP0", "sptop", hash_SPTOP, it_rptop
-
-        la fst, rp0
-
-        j push1
-
-*/
-
 

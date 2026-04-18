@@ -118,9 +118,11 @@
 
  /*
 
- .equ debug, YES
+ .equ extras, YES
 
- .equ cores, YES
+ .equ primitives, YES
+
+ .equ debug, YES
  
  .equ maths, YES
 

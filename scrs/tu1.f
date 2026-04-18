@@ -15,7 +15,7 @@
 
  : LINK>BODY CELL + CELL + ; 
 
- : HASH :NAME DUP HEAP ! CELL + @ ; 
+ : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
 
  : FIND LATEST @ BEGIN
     OVER OVER CELL + @

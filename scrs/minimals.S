@@ -26,7 +26,8 @@
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
-# primitives djb2 hash cleared of bit 31
+#
+#  djb2 hash cleared of bit 31
 #
 #---------------------------------------------------------------------
 # symbols ! @ + 0# : ;
@@ -56,7 +57,7 @@
 
 #---------------------------------------------------------------------
 
-.equ init_primitives, last_next
+.equ init_minimals, last_next
 
 #---------------------------------------------------------------------
 # Minimal Indirect Thread Code Engine
@@ -73,7 +74,7 @@
 #
 #---------------------------------------------------------------------
 # ( -- ) ; aka figforth semis
-def_word "EXIT", "exit", hash_EXIT, init_primitives
+def_word "EXIT", "exit", hash_EXIT, init_minimals
 unnest: 
 # return pull 
         
@@ -314,6 +315,119 @@ pull2:
 #---------------------------------------------------------------------
 
 .equ last_next, it_userat
+
+#---------------------------------------------------------------------
+
+.ifdef extras 
+
+#---------------------------------------------------------------------
+#
+#  djb2 hash cleared of bit 31
+#
+#---------------------------------------------------------------------
+.equ hash_DOCODE, 0x075D9A73
+.equ hash_ABORT, 0x0A1DFF4F
+.equ hash_BYE, 0x0B874AFB
+.equ hash_DOT, 0x0002B58B
+.equ hash_RSHIFT, 0x416E6B97
+.equ hash_LSHIFT, 0x2C5784C9 
+
+#---------------------------------------------------------------------
+
+.set init_extras, last_next
+
+#---------------------------------------------------------------------
+# ( w -- w*2 ) #; shift left
+def_word "LSHIFT", "lshift", hash_LSHIFT, init_extras
+
+        call pull2
+        
+        sll fst, snd, fst
+        
+        j keep1
+
+#---------------------------------------------------------------------
+# ( w -- w/2 ) #; shift right
+def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
+
+        call pull2
+        
+        srl fst, snd, fst
+        
+        j keep1
+
+#---------------------------------------------------------------------
+# ( -- ) execute a jump and link to a reference at IP
+def_word ";CODE", "docode", hash_DOCODE, it_rshift
+
+        jalr ra, 0 (ipt)
+
+        j next
+
+#---------------------------------------------------------------------
+# ( -- ) ae abort
+def_word "ABORT", "aborts", hash_ABORT, it_docode
+
+        j abort
+
+#---------------------------------------------------------------------
+# ( -- ) exit forth
+def_word "BYE", "byes", hash_BYE, it_aborts
+
+        j _exit
+
+#---------------------------------------------------------------------
+# ( w -- ) #; @
+def_word ".", "dot", hash_DOT, it_byes
+
+        call pull2
+
+        call tohex
+
+        j next
+        
+#---------------------------------------------------------------------
+
+.equ last_next, it_dot
+
+#---------------------------------------------------------------------
+# code a 32-bit word in ASCII hexadecimal
+#
+.global tohex
+tohex:
+
+        pushra
+
+        add  snd, zero, fst
+        
+        addi trd, zero, 58
+
+        addi t0, zero, 32
+
+        # rolls 
+100:
+        beq t0, zero, 300f
+
+        addi t0, t0, -4
+
+        srl  fst, snd, t0
+
+        andi fst, fst, 15
+        ori  fst, fst, 48
+        blt  fst, trd, 200f
+        addi fst, fst, 7
+200:
+        call _putc
+        
+        j 100b
+
+300:
+
+        pullra
+
+        ret
+
+.endif
 
 #---------------------------------------------------------------------
 
