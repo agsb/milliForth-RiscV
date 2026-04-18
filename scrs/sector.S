@@ -465,6 +465,87 @@ is_warp:
         
        .word warp
 
+#---------------------------------------------------------------------
+# Minimal Indirect Thread Code Engine
+#
+# this is the Forth heart beat.
+#
+# nest aka enter or docol, 
+# 
+# unnest aka exit or semis
+#
+# ipt must stay preserved outside, ever.
+#
+# "why there is no 'docol at start of words ?"
+#
+unnest: 
+# return pull 
+        
+        lw idx, RPTR (usr)
+        
+        lw ipt, 0 (idx)
+        
+        addi idx, idx, CELL
+        
+        sw idx, RPTR (usr)
+
+next:
+
+# xxx
+# count beats as next executions
+.ifdef beatme
+        lw idx, BEAT (usr)
+
+        addi idx, idx, 1
+        
+        sw idx, BEAT (usr)
+.endif
+
+        lw fst, 0 (ipt)
+        
+        addi ipt, ipt, CELL
+
+pick:
+# compare address, if is a primitive then jumps, MITC 
+        
+        la idx, ends
+        
+        bge fst, idx, nest
+
+jump: 
+# jump to primitive
+        
+# xxx
+# count ticks as primitive executions
+.ifdef tickme
+        lw idx, TICK (usr)
+
+        addi idx, idx, 1
+        
+        sw idx, TICK (usr)
+.endif
+
+        # really jump and link 
+        jalr ra, 0 (fst)
+
+nest:   
+# return push
+        
+        lw idx, RPTR (usr)
+        
+        addi idx, idx, -1 * CELL
+        
+        sw ipt, 0 (idx)
+        
+        sw idx, RPTR (usr)
+
+move: 
+# indirect access 
+        
+        mv ipt, fst
+        
+        j next
+
 #----------------------------------------------------------------------
 # system dependences, linux ecall
 #---------------------------------------------------------------------

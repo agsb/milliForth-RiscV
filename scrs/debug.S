@@ -86,7 +86,7 @@ def_word "SEE", "sees", hash_SEE, it_words
         j next
 
 #----------------------------------------------------------------------
-# ( u -- u ) print tos in hexadecimal
+# ( u -- u ) print all in hexadecimal
 def_word "SHOW", "show", hash_SHOW, it_sees
 
         call shows
