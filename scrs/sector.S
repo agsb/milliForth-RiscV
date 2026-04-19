@@ -246,13 +246,14 @@ warp:
 .ifdef debug
 
         lw fst, STAT (usr)
-        bne fst, zero, find
+        bne fst, zero, 100f
 
         putchar '\n'
         putchar 'O'
         putchar 'K'
         putchar '\n'
 
+100:
 .endif
 
         # get a hash of the next token in idx
