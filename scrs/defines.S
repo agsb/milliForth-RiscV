@@ -116,14 +116,14 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
- /*
-
+ .equ debug, YES
+ 
  .equ extras, YES
+
+ /*
 
  .equ primitives, YES
 
- .equ debug, YES
- 
  .equ missed, YES
 
  .equ beatme, YES

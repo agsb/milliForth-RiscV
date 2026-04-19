@@ -249,7 +249,7 @@ pull2:
 #---------------------------------------------------------------------
 .equ hash_DOCODE, 0x075D9A73
 .equ hash_ABORT, 0x0A1DFF4F
-.equ hash_BYE, 0x0B874AFB
+.equ hash_BYE, 0x0B87C61B
 .equ hash_DOT, 0x0002B58B
 .equ hash_RSHIFT, 0x416E6B97
 .equ hash_LSHIFT, 0x2C5784C9 
@@ -306,7 +306,7 @@ def_word ".", "dot", hash_DOT, it_byes
 
         call tohex
 
-        j next
+        j save1
         
 #---------------------------------------------------------------------
 

@@ -60,9 +60,9 @@
  
  : +! SWAP OVER @ + SWAP ! ; 
 
- : >R RP@ @ SWAP RP@ ! RP@ CELL - RP ! RP@ ! ; 
  : R> RP@ @ RP@ CELL + RP ! RP@ @ SWAP RP@ ! ; 
- : R@ R> DUP >R ; 
+ : >R RP@ @ SWAP RP@ ! RP@ CELL - RP ! RP@ ! ; 
+ : R@ R> R> DUP >R SWAP >R ; 
 
  : EXECUTE >R ; 
  : COMPILE R> DUP @ , CELL + >R ;
@@ -114,36 +114,37 @@
  : REPEAT SWAP ['] BRANCH , HERE - , 
         DUP HERE SWAP - SWAP ! ; IMMEDIATE 
  
- : DO HERE ['] >R , ['] >R , ; IMMEDIATE 
+ : DO ['] SWAP , HERE ['] >R , ['] >R , ; IMMEDIATE 
 
- : LOOP ['] R> , ['] R> , 
-    ['] LIT , 1 , ['] + , 
-    ['] 2DUP , ['] = , ['] ?BRANCH , 
-    HERE - , 
-    ['] 2DROP , ; IMMEDIATE 
+ : LOOP 
+        ['] R> , ['] LIT , 1 , ['] + , ['] R> , 
+        ['] 2DUP , ['] = , ['] ?BRANCH , HERE - , 
+        ['] 2DROP , ; IMMEDIATE 
 
- : I ['] R> , ['] R> , 
-    ['] DUP , ['] >R , 
-    ['] SWAP , ['] >R , ; IMMEDIATE 
+ : I ['] R@ , ; IMMEDIATE 
 
- : LEAVE ['] R> , ['] DROP ,
-     ['] R> , ['] DROP ,
-     ['] EXIT , ; IMMEDIATE 
+ : LEAVE 
+        ['] R> , ['] DROP ,
+        ['] R> , ['] DROP ,
+        ['] EXIT , ; IMMEDIATE 
 
  : ?DUP DUP IF DUP THEN ; 
 
  : CELL LIT [ 4 , ] ; 
- : CELLS DUP IF 0 SWAP 0 DO CELL + LOOP THEN ; 
+ : CELLS DUP + DUP + ; 
 
- : 1 LIT [ 1 + , ] ;
- : 2 LIT [ 2 + , ] ;
- : 4 LIT [ 4 + , ] ;
+ : 0 LIT [ 0 , ] ;
+ : 1 LIT [ 1 , ] ;
+ : 2 LIT [ 1 1 + , ] ;
+ : 4 LIT [ 2 2 + , ] ;
  : 8 LIT [ 4 4 + , ] ; 
  : 16 LIT [ 8 8 + , ] ; 
  : 32 LIT [ 16 16 + , ] ; 
  : 64 LIT [ 32 32 + , ] ; 
+ : 128 LIT [ 64 64 + , ] ; 
  
  : BL LIT [ 16 16 + , ] ; 
+ : QU LIT [ 16 16 + 2 + , ] ; 
  : CR LIT [ 8 2 + , ] EMIT ; 
  : NL LIT [ 8 4 + 1 + , ] EMIT ; 
  : SPACE BL EMIT ; 
@@ -175,7 +176,7 @@
 
  : ( 32 8 + 1 + SCAN ; IMMEDIATE
 
- : ." 32 2 + BEGIN KEY OVER OVER - WHILE EMIT REPEAT DROP ;
+ : ." 32 2 + BEGIN KEY OVER OVER - WHILE EMIT REPEAT DROP DROP ;
 
  \ comments
 
@@ -183,4 +184,4 @@
 
  ." That's all folks ! "
 
-
+ ." At least one more ! "
