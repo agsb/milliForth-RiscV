@@ -32,19 +32,15 @@
 
 .equ hash_SUB, 0x0002B588 
 
-.equ hash_PER, 0x0002B580 
-.equ hash_DIV, 0x0002B58A 
-.equ hash_MUL, 0x0002B58F
-
 .equ hash_EQU, 0x0002B598 
 .equ hash_LESS, 0x0002B599 
 
-.equ hash_CTO, 0x00597287 
-.equ hash_CAT, 0x005972E6 
+.equ hash_cfetch, 0x005972E6    # C@
+.equ hash_cstore, 0x00597287    # C!
 
-.equ hash_RAT, 0x00597497 
-.equ hash_TOR, 0x005968A9 
-.equ hash_RTO, 0x005974E9 
+.equ hash_RAT, 0x00597497       # R@
+.equ hash_TOR, 0x005968A9       # >R
+.equ hash_RTO, 0x005974E9       # R>
 
 .equ hash_AND, 0x0B87B72E 
 .equ hash_OR, 0x00597378 
@@ -59,13 +55,13 @@
 .equ hash_ROT, 0x0B8807CC 
 .equ hash_NROT, 0x7C4E8CA1 
 
-.equ hash_RPAT, 0x0B880527 
-.equ hash_RPTO, 0x0B880546 
-.equ hash_RPZO, 0x0B880557  
+.equ hash_RPAT, 0x0B880527      # RP!
+.equ hash_RPTO, 0x0B880546      # RP@
+.equ hash_RPZO, 0x0B880557      # RP0
 
-.equ hash_SPTO, 0x0B881187 
-.equ hash_SPAT, 0x0B8811E6 
-.equ hash_SPZO, 0x0B881196 
+.equ hash_SPTO, 0x0B881187      # SP!
+.equ hash_SPAT, 0x0B8811E6      # SP@
+.equ hash_SPZO, 0x0B881196      # SP0
 
 .equ hash_BRANCH, 0x1E6C4191 
 .equ hash_ZBRANCH, 0x7D28616B
@@ -79,11 +75,11 @@
 .equ hash_ONE, 0x00002B594
 .equ hash_TWO, 0x00002B597
 .equ hash_CELL, 0x07C81B0A3
-
 .equ hash_NAN, 0x0B87D404
 
-.equ hash_cfetch, 0x005972E6
-.equ hash_cstore, 0x00597287
+.equ hash_BYMUL, 0x005972C2     # M*
+.equ hash_BYMOD, 0x7C4D1C6C     # /MOD
+
 .equ hash_plusto, 0x0059676F
 
 .equ hash_sfl, 0x0059685D
@@ -147,7 +143,7 @@ def_word "NOT", "nots", hash_NOT, it_sfr
         j keep0
 
 #---------------------------------------------------------------------
-# ( w1 -- w2 ) #; NEG w
+# ( w1 -- w2 ) #; NEG w, arithmetic inverse
 def_word "NEG", "negs", hash_NEG, it_nots
 
         call look0
@@ -293,7 +289,7 @@ def_word "XOR", "xor", hash_XOR, it_or
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 = w2 
-def_word "=", "equ", hash_EQU, it_false
+def_word "=", "equ", hash_EQU, it_xor
 
         call pull2
 
@@ -320,13 +316,13 @@ def_word "<", "less", hash_LESS, it_equ
         j isfalse
 
 #---------------------------------------------------------------------
-# ( -- w ) #; @
+# ( -- w ) #; the value is at second cell
 def_word "R@", "rat", hash_RAT, it_less
 
 rlook0:
         lw idx, RPTR (usr)
 
-        lw fst, 0 (idx)
+        lw fst, CELL (idx)
 
         j push1
 
@@ -356,7 +352,7 @@ rpull1:
         j push1
 
 #---------------------------------------------------------------------
-# ( w --  ; -- w ) #; @
+# ( w --  ; -- w ) #; the value is at second cell
 def_word ">R", "tor", hash_TOR, it_rto
 
         call pull2 
@@ -387,6 +383,8 @@ def_word "RP@", "rpat", hash_RPAT, it_tor
 
         lw fst, RPTR (usr)
 
+        addi fst, fst, CELL
+
         j push1
 
 #---------------------------------------------------------------------
@@ -404,6 +402,8 @@ def_word "RP!", "rpto", hash_RPTO, it_rpat
 def_word "SP@", "spat", hash_SPAT, it_rpto
 
         lw fst, SPTR (usr)
+
+        addi fst, fst, CELL
 
         j push1
 
@@ -445,7 +445,7 @@ def_word "0BRANCH", "branchz", hash_ZBRANCH, it_branch
 rdrop1:
         lw idx, RPTR (usr)
 
-        addi idx, idx, +1 * CELL
+        addi idx, idx, CELL
 
         sw idx, RPTR (usr)
 
@@ -459,7 +459,7 @@ def_word "LIT", "lit", hash_LIT, it_branchz
 
         lw fst, 0 (idx)
 
-        addi idx, idx, +1 * CELL
+        addi idx, idx, CELL
 
         sw idx, RPTR (usr)
 
@@ -517,7 +517,7 @@ by_erro:
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "RP0", "rptop", hash_RPTOP, it_rpto
+def_word "RP0", "rptop", hash_RPZO, it_rpto
 
         la fst, rp0
 
@@ -525,15 +525,38 @@ def_word "RP0", "rptop", hash_RPTOP, it_rpto
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "SP0", "sptop", hash_SPTOP, it_rptop
+def_word "SP0", "sptop", hash_SPZO, it_rptop
 
         la fst, rp0
 
         j push1
 
 #---------------------------------------------------------------------
+# ( w1 w2 -- w3 w4 ) double multiply,  
+def_word "M*", "bymul", hash_BYMUL, it_sptop
+        
+        call pull2
+        mulh trd, fst, snd
+        mul snd, fst, snd
+
+push2:
+        sw snd, 0 (idx)
+        add fst, trd, zero
+	j back1
+
+#---------------------------------------------------------------------
+# ( w1 w2 -- w3 w4 ) divide
+def_word "/MOD", "bymod", hash_BYMOD, it_bymul
+        
+        call pull2
+	beqz snd, by_zero
+        div trd, fst, snd
+        rem snd, fst, snd
+	j push2
+
+#---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word "+!", "plusto", hash_plusto, it_sptop
+def_word "+!", "plusto", hash_plusto, it_bymod
 
         call pull2
 

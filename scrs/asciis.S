@@ -47,6 +47,6 @@
 
 .equ BL, 32    # blank space
 
-.equ QQ, 34    # quotation marks
+.equ QU, 34    # quotation marks
 
 

@@ -9,21 +9,27 @@
 #
 
 
-function deeps( key,  n, m ) {
+function deeps( key,    words, n, m, p ) {
         
-        m = words[key][0]
+        m = split(lines[key], words, " ")
 
-        print "> " key " " m " "
+        print "> " key " (" lines[key] ") " m
 
-        for (n=1; n < m; n++) {
+        for (n = 3; n < m ; n++) {
 
-                word = words[key][n]
+                w = words[n]
 
-                printf " %s ", word
-
+                if (lines[w] == "") {
+                        print "p " w
+                        }
+                else {        
+                        deeps( w )
+                        dp++;
+                        }
                 }
-        print
-        return (m);
+        
+        print "d " dp        
+
         }        
 
 BEGIN {
@@ -54,26 +60,24 @@ BEGIN {
         gsub(/^ +/,"", $0)
         gsub(/ +$/,"", $0)
         
-        # one word complete by line 
+        # one complete word by line 
         if ( $1 != colon || $(NF) != semis ) {
                 print "? " $0
                 next
                 }
 
-        words[$2][0] = NF - 3 ;
+        lines[$2] = $0
 
-        for (n = 3; n < NF ; n++) {
-
-                words[$2][n-2] = $n;
-
-                } 
         }
 
 
 END {
-        for (key in words) {
+        for (key in lines) {
 
+                dp = 0;
                 deeps(key) 
+                
+                print "> " key " " dp
 
                 } 
 

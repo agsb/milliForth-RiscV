@@ -90,7 +90,7 @@ is_\label:
 .section .data
 .p2align 2, 0x0
 
-.word 0xDEADBEEF
+.word 0xFEEDCAFE
 
 # There is no spoon.
 

@@ -1,0 +1,1385 @@
+
+sector.elf:     file format elf32-littleriscv
+sector.elf
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .note.gnu.build-id 00000024  000100d4  000100d4  000000d4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  1 .text         00000932  000100f8  000100f8  000000f8  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .got          00000028  00011fd0  00011fd0  00000fd0  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  3 .got.plt      00000008  00011ff8  00011ff8  00000ff8  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  4 .data         00000008  00012000  00012000  00001000  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  5 .bss          00040004  00012008  00012008  00001008  2**2
+                  ALLOC
+  6 .riscv.attributes 00000051  00000000  00000000  00001008  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+000100d4 l    d  .note.gnu.build-id	00000000 .note.gnu.build-id
+000100f8 l    d  .text	00000000 .text
+00011fd0 l    d  .got	00000000 .got
+00011ff8 l    d  .got.plt	00000000 .got.plt
+00012000 l    d  .data	00000000 .data
+00012008 l    d  .bss	00000000 .bss
+00000000 l    d  .riscv.attributes	00000000 .riscv.attributes
+00000000 l    df *ABS*	00000000 cc0gfmOO.o
+00040000 l       *ABS*	00000000 RAM_LIMIT
+00000000 l       *ABS*	00000000 FALSE
+ffffffff l       *ABS*	00000000 TRUE
+00000000 l       *ABS*	00000000 EXECUTE
+00000001 l       *ABS*	00000000 COMPILE
+00000001 l       *ABS*	00000000 ONE
+00000002 l       *ABS*	00000000 TWO
+00000004 l       *ABS*	00000000 CELL
+00000020 l       *ABS*	00000000 BL
+00000022 l       *ABS*	00000000 QU
+80000000 l       *ABS*	00000000 FLAG_IMM
+7fffffff l       *ABS*	00000000 MASK_IMM
+00000024 l       *ABS*	00000000 stacks
+00000090 l       *ABS*	00000000 sp_size
+00000090 l       *ABS*	00000000 rp_size
+00000008 l       *ABS*	00000000 params
+00000020 l       *ABS*	00000000 user_size
+00000000 l       *ABS*	00000000 SPTR
+00000004 l       *ABS*	00000000 RPTR
+00000008 l       *ABS*	00000000 LAST
+0000000c l       *ABS*	00000000 HEAP
+00000010 l       *ABS*	00000000 STAT
+00000014 l       *ABS*	00000000 HEAD
+00000018 l       *ABS*	00000000 BEAT
+0000001c l       *ABS*	00000000 TICK
+00012008 l       .bss	00000000 void
+0001200c l       .bss	00000000 _user
+000120bc l       .bss	00000000 sp0
+0001214c l       .bss	00000000 rp0
+0001214c l       .bss	00000000 mark
+00012150 l       .bss	00000000 h_here
+0005200c l       .bss	00000000 h_ends
+000100f8 l       .text	00000000 main
+000100f8 l       .text	00000000 cold
+00010100 l       .text	00000000 warm
+000103ba l       .text	00000000 h_last
+00010110 l       .text	00000000 miss
+0001028c l       .text	00000000 _putc
+00010164 l       .text	00000000 abort
+0001016a l       .text	00000000 quit
+00010174 l       .text	00000000 warp
+000101ce l       .text	00000000 find
+000101fc l       .text	00000000 token
+000101e8 l       .text	00000000 eval
+000101f2 l       .text	00000000 execute
+000101f2 l       .text	00000000 immediate
+000101ee l       .text	00000000 compile
+00010230 l       .text	00000000 comma
+0001023a l       .text	00000000 is_warp
+0001024a l       .text	00000000 pick
+00001505 l       *ABS*	00000000 DJB2
+00000005 l       *ABS*	00000000 SFHT
+0001020c l       .text	00000000 skip
+00010272 l       .text	00000000 _getc
+00010212 l       .text	00000000 hash
+0001021a l       .text	00000000 scan
+00010224 l       .text	00000000 mask
+0001022e l       .text	00000000 pass
+0001023e l       .text	00000000 unnest
+00010246 l       .text	00000000 next
+00010a2a l       .text	00000000 ends
+0001025a l       .text	00000000 nest
+00010256 l       .text	00000000 jump
+00010262 l       .text	00000000 move
+00000000 l       *ABS*	00000000 _ZERO
+00000001 l       *ABS*	00000000 _ONE
+00000000 l       *ABS*	00000000 _STDIN
+00000001 l       *ABS*	00000000 _STDOUT
+0000002d l       *ABS*	00000000 _SBRK
+00000037 l       *ABS*	00000000 _FCNT
+0000003f l       *ABS*	00000000 _GETC
+00000040 l       *ABS*	00000000 _PUTC
+0000005d l       *ABS*	00000000 _EXIT
+000000c0 l       *ABS*	00000000 _MMAP
+00012004 l       .data	00000000 _char
+00010266 l       .text	00000000 _exit
+00010270 l       .text	00000000 _init
+000102a0 l       .text	00000000 _rets
+000103ba l       .text	00000000 last_next
+0002b584 l       *ABS*	00000000 hash_store
+0002b5e5 l       *ABS*	00000000 hash_fetch
+0002b58e l       *ABS*	00000000 hash_plus
+00596816 l       *ABS*	00000000 hash_zeroq
+0002b59f l       *ABS*	00000000 hash_colon
+8002b59e l       *ABS*	00000000 hash_semis
+0b876d32 l       *ABS*	00000000 hash_key
+7c6b87d0 l       *ABS*	00000000 hash_emit
+7c727500 l       *ABS*	00000000 hash_nand
+00596f90 l       *ABS*	00000000 hash_userat
+7c6bbe85 l       *ABS*	00000000 hash_exit
+0b87f112 l       *ABS*	00000000 hash_KEY
+7c7c87d0 l       *ABS*	00000000 hash_EMIT
+7c8254c0 l       *ABS*	00000000 hash_NAND
+005973b0 l       *ABS*	00000000 hash_USERAT
+7c7cc745 l       *ABS*	00000000 hash_EXIT
+00000000 l       *ABS*	00000000 init_minimals
+000102a6 l       .text	00000000 it_exit
+000102ae l       .text	00000000 is_exit
+000102b0 l       .text	00000000 it_colon
+000102b8 l       .text	00000000 is_colon
+000102c0 l       .text	00000000 create
+000102c8 l       .text	00000000 docomma
+000102cc l       .text	00000000 it_semis
+000102d4 l       .text	00000000 is_semis
+000102dc l       .text	00000000 finish
+000102e6 l       .text	00000000 it_key
+000102ee l       .text	00000000 is_key
+00010358 l       .text	00000000 push1
+000102f2 l       .text	00000000 it_emit
+000102fa l       .text	00000000 is_emit
+00010362 l       .text	00000000 pull2
+0001035e l       .text	00000000 save1
+00010300 l       .text	00000000 it_store
+00010308 l       .text	00000000 is_store
+0001030c l       .text	00000000 drop1
+00010310 l       .text	00000000 it_fetch
+00010318 l       .text	00000000 is_fetch
+0001035a l       .text	00000000 back1
+0001031e l       .text	00000000 it_nand
+00010326 l       .text	00000000 is_nand
+0001035c l       .text	00000000 keep1
+00010330 l       .text	00000000 it_plus
+00010338 l       .text	00000000 is_plus
+0001033e l       .text	00000000 it_zeroq
+00010346 l       .text	00000000 is_zeroq
+0001034e l       .text	00000000 it_userat
+00010356 l       .text	00000000 is_userat
+005966c5 l       *ABS*	00000000 hash_tdot
+005965d3 l       *ABS*	00000000 hash_splist
+005965d2 l       *ABS*	00000000 hash_rplist
+7c6b2fe9 l       *ABS*	00000000 hash_DUMP
+0d9a5b98 l       *ABS*	00000000 hash_WORDS
+0b881316 l       *ABS*	00000000 hash_SEE
+7c8ab346 l       *ABS*	00000000 hash_SHOW
+0001034e l       .text	00000000 init_debug
+0001036c l       .text	00000000 it_splist
+00010374 l       .text	00000000 is_splist
+000104fa l       .text	00000000 stackS
+00010378 l       .text	00000000 it_rplist
+00010380 l       .text	00000000 is_rplist
+00010538 l       .text	00000000 stackR
+00010384 l       .text	00000000 it_dump
+0001038c l       .text	00000000 is_dump
+00010656 l       .text	00000000 dumps
+00010392 l       .text	00000000 it_words
+0001039a l       .text	00000000 is_words
+00010410 l       .text	00000000 wordf
+0001039e l       .text	00000000 it_sees
+000103a6 l       .text	00000000 is_sees
+00010458 l       .text	00000000 wordu
+000103aa l       .text	00000000 it_show
+000103b2 l       .text	00000000 is_show
+000106d2 l       .text	00000000 shows
+000103ba l       .text	00000000 it_tdot
+000103c2 l       .text	00000000 is_tdot
+000109fa l       .text	00000000 to2hex
+000103e0 l       .text	00000000 saves
+000103f4 l       .text	00000000 loads
+00010408 l       .text	00000000 returns
+00010474 l       .text	00000000 wordt
+000109fa l       .text	00000000 puthex
+00010576 l       .text	00000000 stackp
+00010950 l       .text	00000000 number
+00010970 l       .text	00000000 digit
+00010990 l       .text	00000000 puthexy
+00011fd0 l     O .got	00000000 _GLOBAL_OFFSET_TABLE_
+00012808 g       *ABS*	00000000 __global_pointer$
+00012008 g       .data	00000000 __SDATA_BEGIN__
+000100f8 g       .text	00000000 _start
+0005200c g       .bss	00000000 __BSS_END__
+00012008 g       .bss	00000000 __bss_start
+00012000 g       .data	00000000 __DATA_BEGIN__
+00012008 g       .data	00000000 _edata
+0005200c g       .bss	00000000 _end
+
+
+
+Disassembly of section .text:
+
+000100f8 <_start>:
+   100f8:	00002417          	auipc	s0,0x2
+   100fc:	edc42403          	lw	s0,-292(s0) # 11fd4 <_GLOBAL_OFFSET_TABLE_+0x4>
+
+00010100 <warm>:
+   10100:	14440693          	addi	a3,s0,324
+   10104:	c454                	sw	a3,12(s0)
+   10106:	00002697          	auipc	a3,0x2
+   1010a:	ede6a683          	lw	a3,-290(a3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x14>
+   1010e:	c414                	sw	a3,8(s0)
+
+00010110 <miss>:
+   10110:	8e2a                	mv	t3,a0
+   10112:	8eae                	mv	t4,a1
+   10114:	8f32                	mv	t5,a2
+   10116:	8fb6                	mv	t6,a3
+   10118:	46a9                	li	a3,10
+   1011a:	2a8d                	jal	1028c <_putc>
+   1011c:	8572                	mv	a0,t3
+   1011e:	85f6                	mv	a1,t4
+   10120:	867a                	mv	a2,t5
+   10122:	86fe                	mv	a3,t6
+   10124:	8e2a                	mv	t3,a0
+   10126:	8eae                	mv	t4,a1
+   10128:	8f32                	mv	t5,a2
+   1012a:	8fb6                	mv	t6,a3
+   1012c:	03f00693          	li	a3,63
+   10130:	2ab1                	jal	1028c <_putc>
+   10132:	8572                	mv	a0,t3
+   10134:	85f6                	mv	a1,t4
+   10136:	867a                	mv	a2,t5
+   10138:	86fe                	mv	a3,t6
+   1013a:	8e2a                	mv	t3,a0
+   1013c:	8eae                	mv	t4,a1
+   1013e:	8f32                	mv	t5,a2
+   10140:	8fb6                	mv	t6,a3
+   10142:	03f00693          	li	a3,63
+   10146:	2299                	jal	1028c <_putc>
+   10148:	8572                	mv	a0,t3
+   1014a:	85f6                	mv	a1,t4
+   1014c:	867a                	mv	a2,t5
+   1014e:	86fe                	mv	a3,t6
+   10150:	8e2a                	mv	t3,a0
+   10152:	8eae                	mv	t4,a1
+   10154:	8f32                	mv	t5,a2
+   10156:	8fb6                	mv	t6,a3
+   10158:	46a9                	li	a3,10
+   1015a:	2a0d                	jal	1028c <_putc>
+   1015c:	8572                	mv	a0,t3
+   1015e:	85f6                	mv	a1,t4
+   10160:	867a                	mv	a2,t5
+   10162:	86fe                	mv	a3,t6
+
+00010164 <abort>:
+   10164:	0b040693          	addi	a3,s0,176
+   10168:	c014                	sw	a3,0(s0)
+
+0001016a <quit>:
+   1016a:	14040693          	addi	a3,s0,320
+   1016e:	c054                	sw	a3,4(s0)
+   10170:	00042823          	sw	zero,16(s0)
+
+00010174 <warp>:
+   10174:	4814                	lw	a3,16(s0)
+   10176:	eea1                	bnez	a3,101ce <find>
+   10178:	8e2a                	mv	t3,a0
+   1017a:	8eae                	mv	t4,a1
+   1017c:	8f32                	mv	t5,a2
+   1017e:	8fb6                	mv	t6,a3
+   10180:	46a9                	li	a3,10
+   10182:	2229                	jal	1028c <_putc>
+   10184:	8572                	mv	a0,t3
+   10186:	85f6                	mv	a1,t4
+   10188:	867a                	mv	a2,t5
+   1018a:	86fe                	mv	a3,t6
+   1018c:	8e2a                	mv	t3,a0
+   1018e:	8eae                	mv	t4,a1
+   10190:	8f32                	mv	t5,a2
+   10192:	8fb6                	mv	t6,a3
+   10194:	04f00693          	li	a3,79
+   10198:	28d5                	jal	1028c <_putc>
+   1019a:	8572                	mv	a0,t3
+   1019c:	85f6                	mv	a1,t4
+   1019e:	867a                	mv	a2,t5
+   101a0:	86fe                	mv	a3,t6
+   101a2:	8e2a                	mv	t3,a0
+   101a4:	8eae                	mv	t4,a1
+   101a6:	8f32                	mv	t5,a2
+   101a8:	8fb6                	mv	t6,a3
+   101aa:	04b00693          	li	a3,75
+   101ae:	28f9                	jal	1028c <_putc>
+   101b0:	8572                	mv	a0,t3
+   101b2:	85f6                	mv	a1,t4
+   101b4:	867a                	mv	a2,t5
+   101b6:	86fe                	mv	a3,t6
+   101b8:	8e2a                	mv	t3,a0
+   101ba:	8eae                	mv	t4,a1
+   101bc:	8f32                	mv	t5,a2
+   101be:	8fb6                	mv	t6,a3
+   101c0:	46a9                	li	a3,10
+   101c2:	20e9                	jal	1028c <_putc>
+   101c4:	8572                	mv	a0,t3
+   101c6:	85f6                	mv	a1,t4
+   101c8:	867a                	mv	a2,t5
+   101ca:	86fe                	mv	a3,t6
+   101cc:	2805                	jal	101fc <token>
+
+000101ce <find>:
+   101ce:	440c                	lw	a1,8(s0)
+   101d0:	d1a1                	beqz	a1,10110 <miss>
+   101d2:	86ae                	mv	a3,a1
+   101d4:	428c                	lw	a1,0(a3)
+   101d6:	0691                	addi	a3,a3,4
+   101d8:	4290                	lw	a2,0(a3)
+   101da:	80000737          	lui	a4,0x80000
+   101de:	8f71                	and	a4,a4,a2
+   101e0:	8e39                	xor	a2,a2,a4
+   101e2:	fec797e3          	bne	a5,a2,101d0 <find+0x2>
+   101e6:	0691                	addi	a3,a3,4
+
+000101e8 <eval>:
+   101e8:	4810                	lw	a2,16(s0)
+   101ea:	c601                	beqz	a2,101f2 <execute>
+   101ec:	e319                	bnez	a4,101f2 <execute>
+
+000101ee <compile>:
+   101ee:	2089                	jal	10230 <comma>
+   101f0:	b751                	j	10174 <warp>
+
+000101f2 <execute>:
+   101f2:	00002497          	auipc	s1,0x2
+   101f6:	df64a483          	lw	s1,-522(s1) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0x18>
+   101fa:	a881                	j	1024a <pick>
+
+000101fc <token>:
+   101fc:	1171                	addi	sp,sp,-4
+   101fe:	c006                	sw	ra,0(sp)
+   10200:	000017b7          	lui	a5,0x1
+   10204:	50578793          	addi	a5,a5,1285 # 1505 <DJB2>
+   10208:	02000813          	li	a6,32
+
+0001020c <skip>:
+   1020c:	209d                	jal	10272 <_getc>
+   1020e:	fed87fe3          	bgeu	a6,a3,1020c <skip>
+
+00010212 <hash>:
+   10212:	873e                	mv	a4,a5
+   10214:	0796                	slli	a5,a5,0x5
+   10216:	97ba                	add	a5,a5,a4
+   10218:	8fb5                	xor	a5,a5,a3
+
+0001021a <scan>:
+   1021a:	28a1                	jal	10272 <_getc>
+   1021c:	ff06efe3          	bltu	a3,a6,1021a <scan>
+   10220:	ff0699e3          	bne	a3,a6,10212 <hash>
+
+00010224 <mask>:
+   10224:	0786                	slli	a5,a5,0x1
+   10226:	8385                	srli	a5,a5,0x1
+   10228:	4082                	lw	ra,0(sp)
+   1022a:	0111                	addi	sp,sp,4
+   1022c:	8082                	ret
+
+0001022e <pass>:
+   1022e:	8082                	ret
+
+00010230 <comma>:
+   10230:	445c                	lw	a5,12(s0)
+   10232:	c394                	sw	a3,0(a5)
+   10234:	0791                	addi	a5,a5,4
+   10236:	c45c                	sw	a5,12(s0)
+   10238:	8082                	ret
+
+0001023a <is_warp>:
+   1023a:	00010174          	.word	0x00010174
+
+0001023e <unnest>:
+   1023e:	405c                	lw	a5,4(s0)
+   10240:	4384                	lw	s1,0(a5)
+   10242:	0791                	addi	a5,a5,4
+   10244:	c05c                	sw	a5,4(s0)
+
+00010246 <next>:
+   10246:	4094                	lw	a3,0(s1)
+   10248:	0491                	addi	s1,s1,4
+
+0001024a <pick>:
+   1024a:	00002797          	auipc	a5,0x2
+   1024e:	da27a783          	lw	a5,-606(a5) # 11fec <_GLOBAL_OFFSET_TABLE_+0x1c>
+   10252:	00f6d463          	bge	a3,a5,1025a <nest>
+
+00010256 <jump>:
+   10256:	000680e7          	jalr	a3
+
+0001025a <nest>:
+   1025a:	405c                	lw	a5,4(s0)
+   1025c:	17f1                	addi	a5,a5,-4
+   1025e:	c384                	sw	s1,0(a5)
+   10260:	c05c                	sw	a5,4(s0)
+
+00010262 <move>:
+   10262:	84b6                	mv	s1,a3
+   10264:	b7cd                	j	10246 <next>
+
+00010266 <_exit>:
+   10266:	05d00893          	li	a7,93
+   1026a:	4501                	li	a0,0
+   1026c:	00000073          	ecall
+
+00010270 <_init>:
+   10270:	8082                	ret
+
+00010272 <_getc>:
+   10272:	03f00893          	li	a7,63
+   10276:	4501                	li	a0,0
+   10278:	00002597          	auipc	a1,0x2
+   1027c:	d785a583          	lw	a1,-648(a1) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x20>
+   10280:	4605                	li	a2,1
+   10282:	00000073          	ecall
+   10286:	00058683          	lb	a3,0(a1)
+   1028a:	dd71                	beqz	a0,10266 <_exit>
+
+0001028c <_putc>:
+   1028c:	04000893          	li	a7,64
+   10290:	4505                	li	a0,1
+   10292:	00002597          	auipc	a1,0x2
+   10296:	d5e5a583          	lw	a1,-674(a1) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x20>
+   1029a:	4605                	li	a2,1
+   1029c:	00d58023          	sb	a3,0(a1)
+
+000102a0 <_rets>:
+   102a0:	00000073          	ecall
+   102a4:	8082                	ret
+
+000102a6 <it_exit>:
+   102a6:	00000000          	.word	0x00000000
+   102aa:	7c7cc745          	.word	0x7c7cc745
+
+000102ae <is_exit>:
+   102ae:	bf41                	j	1023e <unnest>
+
+000102b0 <it_colon>:
+   102b0:	000102a6          	.word	0x000102a6
+   102b4:	0002b59f          	.word	0x0002b59f
+
+000102b8 <is_colon>:
+   102b8:	4454                	lw	a3,12(s0)
+   102ba:	c854                	sw	a3,20(s0)
+   102bc:	4685                	li	a3,1
+   102be:	c814                	sw	a3,16(s0)
+
+000102c0 <create>:
+   102c0:	4414                	lw	a3,8(s0)
+   102c2:	37bd                	jal	10230 <comma>
+   102c4:	3f25                	jal	101fc <token>
+   102c6:	86be                	mv	a3,a5
+
+000102c8 <docomma>:
+   102c8:	37a5                	jal	10230 <comma>
+   102ca:	bfb5                	j	10246 <next>
+
+000102cc <it_semis>:
+   102cc:	000102b0          	.word	0x000102b0
+   102d0:	8002b59e          	.word	0x8002b59e
+
+000102d4 <is_semis>:
+   102d4:	4854                	lw	a3,20(s0)
+   102d6:	c414                	sw	a3,8(s0)
+   102d8:	00042823          	sw	zero,16(s0)
+
+000102dc <finish>:
+   102dc:	00002697          	auipc	a3,0x2
+   102e0:	d186a683          	lw	a3,-744(a3) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x24>
+   102e4:	b7d5                	j	102c8 <docomma>
+
+000102e6 <it_key>:
+   102e6:	000102cc          	.word	0x000102cc
+   102ea:	0b87f112          	.word	0x0b87f112
+
+000102ee <is_key>:
+   102ee:	3751                	jal	10272 <_getc>
+   102f0:	a0a5                	j	10358 <push1>
+
+000102f2 <it_emit>:
+   102f2:	000102e6          	.word	0x000102e6
+   102f6:	7c7c87d0          	.word	0x7c7c87d0
+
+000102fa <is_emit>:
+   102fa:	20a5                	jal	10362 <pull2>
+   102fc:	3f41                	jal	1028c <_putc>
+   102fe:	a085                	j	1035e <save1>
+
+00010300 <it_store>:
+   10300:	000102f2          	.word	0x000102f2
+   10304:	0002b584          	.word	0x0002b584
+
+00010308 <is_store>:
+   10308:	28a9                	jal	10362 <pull2>
+   1030a:	c298                	sw	a4,0(a3)
+
+0001030c <drop1>:
+   1030c:	0791                	addi	a5,a5,4
+   1030e:	a881                	j	1035e <save1>
+
+00010310 <it_fetch>:
+   10310:	00010300          	.word	0x00010300
+   10314:	0002b5e5          	.word	0x0002b5e5
+
+00010318 <is_fetch>:
+   10318:	20a9                	jal	10362 <pull2>
+   1031a:	4294                	lw	a3,0(a3)
+   1031c:	a83d                	j	1035a <back1>
+
+0001031e <it_nand>:
+   1031e:	00010310          	.word	0x00010310
+   10322:	7c8254c0          	.word	0x7c8254c0
+
+00010326 <is_nand>:
+   10326:	2835                	jal	10362 <pull2>
+   10328:	8ef9                	and	a3,a3,a4
+   1032a:	fff6c693          	not	a3,a3
+   1032e:	a03d                	j	1035c <keep1>
+
+00010330 <it_plus>:
+   10330:	0001031e          	.word	0x0001031e
+   10334:	0002b58e          	.word	0x0002b58e
+
+00010338 <is_plus>:
+   10338:	202d                	jal	10362 <pull2>
+   1033a:	96ba                	add	a3,a3,a4
+   1033c:	a005                	j	1035c <keep1>
+
+0001033e <it_zeroq>:
+   1033e:	00010330          	.word	0x00010330
+   10342:	00596816          	.word	0x00596816
+
+00010346 <is_zeroq>:
+   10346:	2831                	jal	10362 <pull2>
+   10348:	ca89                	beqz	a3,1035a <back1>
+   1034a:	56fd                	li	a3,-1
+   1034c:	a039                	j	1035a <back1>
+
+0001034e <init_debug>:
+   1034e:	0001033e          	.word	0x0001033e
+   10352:	005973b0          	.word	0x005973b0
+
+00010356 <is_userat>:
+   10356:	86a2                	mv	a3,s0
+
+00010358 <push1>:
+   10358:	401c                	lw	a5,0(s0)
+
+0001035a <back1>:
+   1035a:	17f1                	addi	a5,a5,-4
+
+0001035c <keep1>:
+   1035c:	c394                	sw	a3,0(a5)
+
+0001035e <save1>:
+   1035e:	c01c                	sw	a5,0(s0)
+   10360:	b5dd                	j	10246 <next>
+
+00010362 <pull2>:
+   10362:	401c                	lw	a5,0(s0)
+   10364:	4394                	lw	a3,0(a5)
+   10366:	0791                	addi	a5,a5,4
+   10368:	4398                	lw	a4,0(a5)
+   1036a:	8082                	ret
+
+0001036c <it_splist>:
+   1036c:	0001034e          	.word	0x0001034e
+   10370:	005965d3          	.word	0x005965d3
+
+00010374 <is_splist>:
+   10374:	2259                	jal	104fa <stackS>
+   10376:	bdc1                	j	10246 <next>
+
+00010378 <it_rplist>:
+   10378:	0001036c          	.word	0x0001036c
+   1037c:	005965d2          	.word	0x005965d2
+
+00010380 <is_rplist>:
+   10380:	2a65                	jal	10538 <stackR>
+   10382:	b5d1                	j	10246 <next>
+
+00010384 <it_dump>:
+   10384:	00010378          	.word	0x00010378
+   10388:	7c6b2fe9          	.word	0x7c6b2fe9
+
+0001038c <is_dump>:
+   1038c:	3fd9                	jal	10362 <pull2>
+   1038e:	24e1                	jal	10656 <dumps>
+   10390:	bfb5                	j	1030c <drop1>
+
+00010392 <it_words>:
+   10392:	00010384          	.word	0x00010384
+   10396:	0d9a5b98          	.word	0x0d9a5b98
+
+0001039a <is_words>:
+   1039a:	289d                	jal	10410 <wordf>
+   1039c:	b56d                	j	10246 <next>
+
+0001039e <it_sees>:
+   1039e:	00010392          	.word	0x00010392
+   103a2:	0b881316          	.word	0x0b881316
+
+000103a6 <is_sees>:
+   103a6:	284d                	jal	10458 <wordu>
+   103a8:	bd79                	j	10246 <next>
+
+000103aa <it_show>:
+   103aa:	0001039e          	.word	0x0001039e
+   103ae:	7c8ab346          	.word	0x7c8ab346
+
+000103b2 <is_show>:
+   103b2:	2605                	jal	106d2 <shows>
+   103b4:	2299                	jal	104fa <stackS>
+   103b6:	2249                	jal	10538 <stackR>
+   103b8:	b579                	j	10246 <next>
+
+000103ba <h_last>:
+   103ba:	000103aa          	.word	0x000103aa
+   103be:	005966c5          	.word	0x005966c5
+
+000103c2 <is_tdot>:
+   103c2:	3745                	jal	10362 <pull2>
+   103c4:	636000ef          	jal	109fa <puthex>
+   103c8:	8e2a                	mv	t3,a0
+   103ca:	8eae                	mv	t4,a1
+   103cc:	8f32                	mv	t5,a2
+   103ce:	8fb6                	mv	t6,a3
+   103d0:	02000693          	li	a3,32
+   103d4:	3d65                	jal	1028c <_putc>
+   103d6:	8572                	mv	a0,t3
+   103d8:	85f6                	mv	a1,t4
+   103da:	867a                	mv	a2,t5
+   103dc:	86fe                	mv	a3,t6
+   103de:	b5a5                	j	10246 <next>
+
+000103e0 <saves>:
+   103e0:	1101                	addi	sp,sp,-32
+   103e2:	c02a                	sw	a0,0(sp)
+   103e4:	c22e                	sw	a1,4(sp)
+   103e6:	c432                	sw	a2,8(sp)
+   103e8:	c636                	sw	a3,12(sp)
+   103ea:	c83a                	sw	a4,16(sp)
+   103ec:	ca3e                	sw	a5,20(sp)
+   103ee:	cc42                	sw	a6,24(sp)
+   103f0:	ce46                	sw	a7,28(sp)
+   103f2:	8082                	ret
+
+000103f4 <loads>:
+   103f4:	4502                	lw	a0,0(sp)
+   103f6:	4592                	lw	a1,4(sp)
+   103f8:	4622                	lw	a2,8(sp)
+   103fa:	46b2                	lw	a3,12(sp)
+   103fc:	4742                	lw	a4,16(sp)
+   103fe:	47d2                	lw	a5,20(sp)
+   10400:	4862                	lw	a6,24(sp)
+   10402:	48f2                	lw	a7,28(sp)
+   10404:	6105                	addi	sp,sp,32
+   10406:	8082                	ret
+
+00010408 <returns>:
+   10408:	37f5                	jal	103f4 <loads>
+   1040a:	4082                	lw	ra,0(sp)
+   1040c:	0111                	addi	sp,sp,4
+   1040e:	8082                	ret
+
+00010410 <wordf>:
+   10410:	1171                	addi	sp,sp,-4
+   10412:	c006                	sw	ra,0(sp)
+   10414:	37f1                	jal	103e0 <saves>
+   10416:	441c                	lw	a5,8(s0)
+   10418:	00002817          	auipc	a6,0x2
+   1041c:	bc882803          	lw	a6,-1080(a6) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x10>
+   10420:	ff07c4e3          	blt	a5,a6,10408 <returns>
+   10424:	00c42803          	lw	a6,12(s0)
+   10428:	00002b97          	auipc	s7,0x2
+   1042c:	bb8bab83          	lw	s7,-1096(s7) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x10>
+   10430:	8e2a                	mv	t3,a0
+   10432:	8eae                	mv	t4,a1
+   10434:	8f32                	mv	t5,a2
+   10436:	8fb6                	mv	t6,a3
+   10438:	46a9                	li	a3,10
+   1043a:	3d89                	jal	1028c <_putc>
+   1043c:	8572                	mv	a0,t3
+   1043e:	85f6                	mv	a1,t4
+   10440:	867a                	mv	a2,t5
+   10442:	86fe                	mv	a3,t6
+   10444:	fc07c2e3          	bltz	a5,10408 <returns>
+   10448:	fd77c0e3          	blt	a5,s7,10408 <returns>
+   1044c:	8c3e                	mv	s8,a5
+   1044e:	201d                	jal	10474 <wordt>
+   10450:	8862                	mv	a6,s8
+   10452:	00082783          	lw	a5,0(a6)
+   10456:	b7fd                	j	10444 <wordf+0x34>
+
+00010458 <wordu>:
+   10458:	1171                	addi	sp,sp,-4
+   1045a:	c006                	sw	ra,0(sp)
+   1045c:	3751                	jal	103e0 <saves>
+   1045e:	441c                	lw	a5,8(s0)
+   10460:	00002817          	auipc	a6,0x2
+   10464:	b8082803          	lw	a6,-1152(a6) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x10>
+   10468:	fb07c0e3          	blt	a5,a6,10408 <returns>
+   1046c:	00c42803          	lw	a6,12(s0)
+   10470:	2011                	jal	10474 <wordt>
+   10472:	bf59                	j	10408 <returns>
+
+00010474 <wordt>:
+   10474:	1171                	addi	sp,sp,-4
+   10476:	c006                	sw	ra,0(sp)
+   10478:	8e2a                	mv	t3,a0
+   1047a:	8eae                	mv	t4,a1
+   1047c:	8f32                	mv	t5,a2
+   1047e:	8fb6                	mv	t6,a3
+   10480:	46a9                	li	a3,10
+   10482:	3529                	jal	1028c <_putc>
+   10484:	8572                	mv	a0,t3
+   10486:	85f6                	mv	a1,t4
+   10488:	867a                	mv	a2,t5
+   1048a:	86fe                	mv	a3,t6
+   1048c:	1171                	addi	sp,sp,-4
+   1048e:	c006                	sw	ra,0(sp)
+   10490:	3f81                	jal	103e0 <saves>
+   10492:	86be                	mv	a3,a5
+   10494:	239d                	jal	109fa <puthex>
+   10496:	3fb9                	jal	103f4 <loads>
+   10498:	4082                	lw	ra,0(sp)
+   1049a:	0111                	addi	sp,sp,4
+   1049c:	8e2a                	mv	t3,a0
+   1049e:	8eae                	mv	t4,a1
+   104a0:	8f32                	mv	t5,a2
+   104a2:	8fb6                	mv	t6,a3
+   104a4:	02000693          	li	a3,32
+   104a8:	33d5                	jal	1028c <_putc>
+   104aa:	8572                	mv	a0,t3
+   104ac:	85f6                	mv	a1,t4
+   104ae:	867a                	mv	a2,t5
+   104b0:	86fe                	mv	a3,t6
+   104b2:	4398                	lw	a4,0(a5)
+   104b4:	1171                	addi	sp,sp,-4
+   104b6:	c006                	sw	ra,0(sp)
+   104b8:	3725                	jal	103e0 <saves>
+   104ba:	86ba                	mv	a3,a4
+   104bc:	2b3d                	jal	109fa <puthex>
+   104be:	3f1d                	jal	103f4 <loads>
+   104c0:	4082                	lw	ra,0(sp)
+   104c2:	0111                	addi	sp,sp,4
+   104c4:	8e2a                	mv	t3,a0
+   104c6:	8eae                	mv	t4,a1
+   104c8:	8f32                	mv	t5,a2
+   104ca:	8fb6                	mv	t6,a3
+   104cc:	02000693          	li	a3,32
+   104d0:	3b75                	jal	1028c <_putc>
+   104d2:	8572                	mv	a0,t3
+   104d4:	85f6                	mv	a1,t4
+   104d6:	867a                	mv	a2,t5
+   104d8:	86fe                	mv	a3,t6
+   104da:	0791                	addi	a5,a5,4
+   104dc:	f9079ee3          	bne	a5,a6,10478 <wordt+0x4>
+   104e0:	8e2a                	mv	t3,a0
+   104e2:	8eae                	mv	t4,a1
+   104e4:	8f32                	mv	t5,a2
+   104e6:	8fb6                	mv	t6,a3
+   104e8:	46a9                	li	a3,10
+   104ea:	334d                	jal	1028c <_putc>
+   104ec:	8572                	mv	a0,t3
+   104ee:	85f6                	mv	a1,t4
+   104f0:	867a                	mv	a2,t5
+   104f2:	86fe                	mv	a3,t6
+   104f4:	4082                	lw	ra,0(sp)
+   104f6:	0111                	addi	sp,sp,4
+   104f8:	8082                	ret
+
+000104fa <stackS>:
+   104fa:	1171                	addi	sp,sp,-4
+   104fc:	c006                	sw	ra,0(sp)
+   104fe:	35cd                	jal	103e0 <saves>
+   10500:	8e2a                	mv	t3,a0
+   10502:	8eae                	mv	t4,a1
+   10504:	8f32                	mv	t5,a2
+   10506:	8fb6                	mv	t6,a3
+   10508:	46a9                	li	a3,10
+   1050a:	3349                	jal	1028c <_putc>
+   1050c:	8572                	mv	a0,t3
+   1050e:	85f6                	mv	a1,t4
+   10510:	867a                	mv	a2,t5
+   10512:	86fe                	mv	a3,t6
+   10514:	8e2a                	mv	t3,a0
+   10516:	8eae                	mv	t4,a1
+   10518:	8f32                	mv	t5,a2
+   1051a:	8fb6                	mv	t6,a3
+   1051c:	05300693          	li	a3,83
+   10520:	33b5                	jal	1028c <_putc>
+   10522:	8572                	mv	a0,t3
+   10524:	85f6                	mv	a1,t4
+   10526:	867a                	mv	a2,t5
+   10528:	86fe                	mv	a3,t6
+   1052a:	401c                	lw	a5,0(s0)
+   1052c:	00002817          	auipc	a6,0x2
+   10530:	aac82803          	lw	a6,-1364(a6) # 11fd8 <_GLOBAL_OFFSET_TABLE_+0x8>
+   10534:	2089                	jal	10576 <stackp>
+   10536:	bdc9                	j	10408 <returns>
+
+00010538 <stackR>:
+   10538:	1171                	addi	sp,sp,-4
+   1053a:	c006                	sw	ra,0(sp)
+   1053c:	3555                	jal	103e0 <saves>
+   1053e:	8e2a                	mv	t3,a0
+   10540:	8eae                	mv	t4,a1
+   10542:	8f32                	mv	t5,a2
+   10544:	8fb6                	mv	t6,a3
+   10546:	46a9                	li	a3,10
+   10548:	3391                	jal	1028c <_putc>
+   1054a:	8572                	mv	a0,t3
+   1054c:	85f6                	mv	a1,t4
+   1054e:	867a                	mv	a2,t5
+   10550:	86fe                	mv	a3,t6
+   10552:	8e2a                	mv	t3,a0
+   10554:	8eae                	mv	t4,a1
+   10556:	8f32                	mv	t5,a2
+   10558:	8fb6                	mv	t6,a3
+   1055a:	05200693          	li	a3,82
+   1055e:	333d                	jal	1028c <_putc>
+   10560:	8572                	mv	a0,t3
+   10562:	85f6                	mv	a1,t4
+   10564:	867a                	mv	a2,t5
+   10566:	86fe                	mv	a3,t6
+   10568:	405c                	lw	a5,4(s0)
+   1056a:	00002817          	auipc	a6,0x2
+   1056e:	a7282803          	lw	a6,-1422(a6) # 11fdc <_GLOBAL_OFFSET_TABLE_+0xc>
+   10572:	2011                	jal	10576 <stackp>
+   10574:	bd51                	j	10408 <returns>
+
+00010576 <stackp>:
+   10576:	1171                	addi	sp,sp,-4
+   10578:	c006                	sw	ra,0(sp)
+   1057a:	8e2a                	mv	t3,a0
+   1057c:	8eae                	mv	t4,a1
+   1057e:	8f32                	mv	t5,a2
+   10580:	8fb6                	mv	t6,a3
+   10582:	03d00693          	li	a3,61
+   10586:	3319                	jal	1028c <_putc>
+   10588:	8572                	mv	a0,t3
+   1058a:	85f6                	mv	a1,t4
+   1058c:	867a                	mv	a2,t5
+   1058e:	86fe                	mv	a3,t6
+   10590:	1171                	addi	sp,sp,-4
+   10592:	c006                	sw	ra,0(sp)
+   10594:	35b1                	jal	103e0 <saves>
+   10596:	86be                	mv	a3,a5
+   10598:	218d                	jal	109fa <puthex>
+   1059a:	3da9                	jal	103f4 <loads>
+   1059c:	4082                	lw	ra,0(sp)
+   1059e:	0111                	addi	sp,sp,4
+   105a0:	8e2a                	mv	t3,a0
+   105a2:	8eae                	mv	t4,a1
+   105a4:	8f32                	mv	t5,a2
+   105a6:	8fb6                	mv	t6,a3
+   105a8:	03a00693          	li	a3,58
+   105ac:	31c5                	jal	1028c <_putc>
+   105ae:	8572                	mv	a0,t3
+   105b0:	85f6                	mv	a1,t4
+   105b2:	867a                	mv	a2,t5
+   105b4:	86fe                	mv	a3,t6
+   105b6:	1171                	addi	sp,sp,-4
+   105b8:	c006                	sw	ra,0(sp)
+   105ba:	351d                	jal	103e0 <saves>
+   105bc:	86c2                	mv	a3,a6
+   105be:	2935                	jal	109fa <puthex>
+   105c0:	3d15                	jal	103f4 <loads>
+   105c2:	4082                	lw	ra,0(sp)
+   105c4:	0111                	addi	sp,sp,4
+   105c6:	8e2a                	mv	t3,a0
+   105c8:	8eae                	mv	t4,a1
+   105ca:	8f32                	mv	t5,a2
+   105cc:	8fb6                	mv	t6,a3
+   105ce:	05b00693          	li	a3,91
+   105d2:	396d                	jal	1028c <_putc>
+   105d4:	8572                	mv	a0,t3
+   105d6:	85f6                	mv	a1,t4
+   105d8:	867a                	mv	a2,t5
+   105da:	86fe                	mv	a3,t6
+   105dc:	8e2a                	mv	t3,a0
+   105de:	8eae                	mv	t4,a1
+   105e0:	8f32                	mv	t5,a2
+   105e2:	8fb6                	mv	t6,a3
+   105e4:	02000693          	li	a3,32
+   105e8:	3155                	jal	1028c <_putc>
+   105ea:	8572                	mv	a0,t3
+   105ec:	85f6                	mv	a1,t4
+   105ee:	867a                	mv	a2,t5
+   105f0:	86fe                	mv	a3,t6
+   105f2:	03078963          	beq	a5,a6,10624 <stackp+0xae>
+   105f6:	4398                	lw	a4,0(a5)
+   105f8:	1171                	addi	sp,sp,-4
+   105fa:	c006                	sw	ra,0(sp)
+   105fc:	33d5                	jal	103e0 <saves>
+   105fe:	86ba                	mv	a3,a4
+   10600:	2eed                	jal	109fa <puthex>
+   10602:	3bcd                	jal	103f4 <loads>
+   10604:	4082                	lw	ra,0(sp)
+   10606:	0111                	addi	sp,sp,4
+   10608:	8e2a                	mv	t3,a0
+   1060a:	8eae                	mv	t4,a1
+   1060c:	8f32                	mv	t5,a2
+   1060e:	8fb6                	mv	t6,a3
+   10610:	02000693          	li	a3,32
+   10614:	39a5                	jal	1028c <_putc>
+   10616:	8572                	mv	a0,t3
+   10618:	85f6                	mv	a1,t4
+   1061a:	867a                	mv	a2,t5
+   1061c:	86fe                	mv	a3,t6
+   1061e:	0791                	addi	a5,a5,4
+   10620:	fd07cbe3          	blt	a5,a6,105f6 <stackp+0x80>
+   10624:	8e2a                	mv	t3,a0
+   10626:	8eae                	mv	t4,a1
+   10628:	8f32                	mv	t5,a2
+   1062a:	8fb6                	mv	t6,a3
+   1062c:	05d00693          	li	a3,93
+   10630:	39b1                	jal	1028c <_putc>
+   10632:	8572                	mv	a0,t3
+   10634:	85f6                	mv	a1,t4
+   10636:	867a                	mv	a2,t5
+   10638:	86fe                	mv	a3,t6
+   1063a:	8e2a                	mv	t3,a0
+   1063c:	8eae                	mv	t4,a1
+   1063e:	8f32                	mv	t5,a2
+   10640:	8fb6                	mv	t6,a3
+   10642:	02000693          	li	a3,32
+   10646:	3199                	jal	1028c <_putc>
+   10648:	8572                	mv	a0,t3
+   1064a:	85f6                	mv	a1,t4
+   1064c:	867a                	mv	a2,t5
+   1064e:	86fe                	mv	a3,t6
+   10650:	4082                	lw	ra,0(sp)
+   10652:	0111                	addi	sp,sp,4
+   10654:	8082                	ret
+
+00010656 <dumps>:
+   10656:	1171                	addi	sp,sp,-4
+   10658:	c006                	sw	ra,0(sp)
+   1065a:	3359                	jal	103e0 <saves>
+   1065c:	87b6                	mv	a5,a3
+   1065e:	883a                	mv	a6,a4
+   10660:	4ea1                	li	t4,8
+   10662:	8e2a                	mv	t3,a0
+   10664:	8eae                	mv	t4,a1
+   10666:	8f32                	mv	t5,a2
+   10668:	8fb6                	mv	t6,a3
+   1066a:	46a9                	li	a3,10
+   1066c:	3105                	jal	1028c <_putc>
+   1066e:	8572                	mv	a0,t3
+   10670:	85f6                	mv	a1,t4
+   10672:	867a                	mv	a2,t5
+   10674:	86fe                	mv	a3,t6
+   10676:	1171                	addi	sp,sp,-4
+   10678:	c006                	sw	ra,0(sp)
+   1067a:	339d                	jal	103e0 <saves>
+   1067c:	86be                	mv	a3,a5
+   1067e:	2eb5                	jal	109fa <puthex>
+   10680:	3b95                	jal	103f4 <loads>
+   10682:	4082                	lw	ra,0(sp)
+   10684:	0111                	addi	sp,sp,4
+   10686:	8e2a                	mv	t3,a0
+   10688:	8eae                	mv	t4,a1
+   1068a:	8f32                	mv	t5,a2
+   1068c:	8fb6                	mv	t6,a3
+   1068e:	03a00693          	li	a3,58
+   10692:	3eed                	jal	1028c <_putc>
+   10694:	8572                	mv	a0,t3
+   10696:	85f6                	mv	a1,t4
+   10698:	867a                	mv	a2,t5
+   1069a:	86fe                	mv	a3,t6
+   1069c:	8e2a                	mv	t3,a0
+   1069e:	8eae                	mv	t4,a1
+   106a0:	8f32                	mv	t5,a2
+   106a2:	8fb6                	mv	t6,a3
+   106a4:	02000693          	li	a3,32
+   106a8:	36d5                	jal	1028c <_putc>
+   106aa:	8572                	mv	a0,t3
+   106ac:	85f6                	mv	a1,t4
+   106ae:	867a                	mv	a2,t5
+   106b0:	86fe                	mv	a3,t6
+   106b2:	4398                	lw	a4,0(a5)
+   106b4:	1171                	addi	sp,sp,-4
+   106b6:	c006                	sw	ra,0(sp)
+   106b8:	3325                	jal	103e0 <saves>
+   106ba:	86ba                	mv	a3,a4
+   106bc:	2e3d                	jal	109fa <puthex>
+   106be:	3b1d                	jal	103f4 <loads>
+   106c0:	4082                	lw	ra,0(sp)
+   106c2:	0111                	addi	sp,sp,4
+   106c4:	0791                	addi	a5,a5,4
+   106c6:	1efd                	addi	t4,t4,-1
+   106c8:	f80e8ce3          	beqz	t4,10660 <dumps+0xa>
+   106cc:	ff07c3e3          	blt	a5,a6,106b2 <dumps+0x5c>
+   106d0:	bb25                	j	10408 <returns>
+
+000106d2 <shows>:
+   106d2:	1171                	addi	sp,sp,-4
+   106d4:	c006                	sw	ra,0(sp)
+   106d6:	3329                	jal	103e0 <saves>
+   106d8:	8e2a                	mv	t3,a0
+   106da:	8eae                	mv	t4,a1
+   106dc:	8f32                	mv	t5,a2
+   106de:	8fb6                	mv	t6,a3
+   106e0:	46a9                	li	a3,10
+   106e2:	366d                	jal	1028c <_putc>
+   106e4:	8572                	mv	a0,t3
+   106e6:	85f6                	mv	a1,t4
+   106e8:	867a                	mv	a2,t5
+   106ea:	86fe                	mv	a3,t6
+   106ec:	8e2a                	mv	t3,a0
+   106ee:	8eae                	mv	t4,a1
+   106f0:	8f32                	mv	t5,a2
+   106f2:	8fb6                	mv	t6,a3
+   106f4:	05500693          	li	a3,85
+   106f8:	3e51                	jal	1028c <_putc>
+   106fa:	8572                	mv	a0,t3
+   106fc:	85f6                	mv	a1,t4
+   106fe:	867a                	mv	a2,t5
+   10700:	86fe                	mv	a3,t6
+   10702:	8e2a                	mv	t3,a0
+   10704:	8eae                	mv	t4,a1
+   10706:	8f32                	mv	t5,a2
+   10708:	8fb6                	mv	t6,a3
+   1070a:	02000693          	li	a3,32
+   1070e:	3ebd                	jal	1028c <_putc>
+   10710:	8572                	mv	a0,t3
+   10712:	85f6                	mv	a1,t4
+   10714:	867a                	mv	a2,t5
+   10716:	86fe                	mv	a3,t6
+   10718:	8e2a                	mv	t3,a0
+   1071a:	8eae                	mv	t4,a1
+   1071c:	8f32                	mv	t5,a2
+   1071e:	8fb6                	mv	t6,a3
+   10720:	05300693          	li	a3,83
+   10724:	36a5                	jal	1028c <_putc>
+   10726:	8572                	mv	a0,t3
+   10728:	85f6                	mv	a1,t4
+   1072a:	867a                	mv	a2,t5
+   1072c:	86fe                	mv	a3,t6
+   1072e:	8e2a                	mv	t3,a0
+   10730:	8eae                	mv	t4,a1
+   10732:	8f32                	mv	t5,a2
+   10734:	8fb6                	mv	t6,a3
+   10736:	02000693          	li	a3,32
+   1073a:	3e89                	jal	1028c <_putc>
+   1073c:	8572                	mv	a0,t3
+   1073e:	85f6                	mv	a1,t4
+   10740:	867a                	mv	a2,t5
+   10742:	86fe                	mv	a3,t6
+   10744:	4814                	lw	a3,16(s0)
+   10746:	1171                	addi	sp,sp,-4
+   10748:	c006                	sw	ra,0(sp)
+   1074a:	3959                	jal	103e0 <saves>
+   1074c:	86b6                	mv	a3,a3
+   1074e:	2475                	jal	109fa <puthex>
+   10750:	3155                	jal	103f4 <loads>
+   10752:	4082                	lw	ra,0(sp)
+   10754:	0111                	addi	sp,sp,4
+   10756:	8e2a                	mv	t3,a0
+   10758:	8eae                	mv	t4,a1
+   1075a:	8f32                	mv	t5,a2
+   1075c:	8fb6                	mv	t6,a3
+   1075e:	02000693          	li	a3,32
+   10762:	362d                	jal	1028c <_putc>
+   10764:	8572                	mv	a0,t3
+   10766:	85f6                	mv	a1,t4
+   10768:	867a                	mv	a2,t5
+   1076a:	86fe                	mv	a3,t6
+   1076c:	8e2a                	mv	t3,a0
+   1076e:	8eae                	mv	t4,a1
+   10770:	8f32                	mv	t5,a2
+   10772:	8fb6                	mv	t6,a3
+   10774:	04c00693          	li	a3,76
+   10778:	3e11                	jal	1028c <_putc>
+   1077a:	8572                	mv	a0,t3
+   1077c:	85f6                	mv	a1,t4
+   1077e:	867a                	mv	a2,t5
+   10780:	86fe                	mv	a3,t6
+   10782:	8e2a                	mv	t3,a0
+   10784:	8eae                	mv	t4,a1
+   10786:	8f32                	mv	t5,a2
+   10788:	8fb6                	mv	t6,a3
+   1078a:	02000693          	li	a3,32
+   1078e:	3cfd                	jal	1028c <_putc>
+   10790:	8572                	mv	a0,t3
+   10792:	85f6                	mv	a1,t4
+   10794:	867a                	mv	a2,t5
+   10796:	86fe                	mv	a3,t6
+   10798:	4414                	lw	a3,8(s0)
+   1079a:	1171                	addi	sp,sp,-4
+   1079c:	c006                	sw	ra,0(sp)
+   1079e:	3189                	jal	103e0 <saves>
+   107a0:	86b6                	mv	a3,a3
+   107a2:	2ca1                	jal	109fa <puthex>
+   107a4:	3981                	jal	103f4 <loads>
+   107a6:	4082                	lw	ra,0(sp)
+   107a8:	0111                	addi	sp,sp,4
+   107aa:	8e2a                	mv	t3,a0
+   107ac:	8eae                	mv	t4,a1
+   107ae:	8f32                	mv	t5,a2
+   107b0:	8fb6                	mv	t6,a3
+   107b2:	02000693          	li	a3,32
+   107b6:	3cd9                	jal	1028c <_putc>
+   107b8:	8572                	mv	a0,t3
+   107ba:	85f6                	mv	a1,t4
+   107bc:	867a                	mv	a2,t5
+   107be:	86fe                	mv	a3,t6
+   107c0:	8e2a                	mv	t3,a0
+   107c2:	8eae                	mv	t4,a1
+   107c4:	8f32                	mv	t5,a2
+   107c6:	8fb6                	mv	t6,a3
+   107c8:	04800693          	li	a3,72
+   107cc:	34c1                	jal	1028c <_putc>
+   107ce:	8572                	mv	a0,t3
+   107d0:	85f6                	mv	a1,t4
+   107d2:	867a                	mv	a2,t5
+   107d4:	86fe                	mv	a3,t6
+   107d6:	8e2a                	mv	t3,a0
+   107d8:	8eae                	mv	t4,a1
+   107da:	8f32                	mv	t5,a2
+   107dc:	8fb6                	mv	t6,a3
+   107de:	02000693          	li	a3,32
+   107e2:	346d                	jal	1028c <_putc>
+   107e4:	8572                	mv	a0,t3
+   107e6:	85f6                	mv	a1,t4
+   107e8:	867a                	mv	a2,t5
+   107ea:	86fe                	mv	a3,t6
+   107ec:	4454                	lw	a3,12(s0)
+   107ee:	1171                	addi	sp,sp,-4
+   107f0:	c006                	sw	ra,0(sp)
+   107f2:	36fd                	jal	103e0 <saves>
+   107f4:	86b6                	mv	a3,a3
+   107f6:	2411                	jal	109fa <puthex>
+   107f8:	3ef5                	jal	103f4 <loads>
+   107fa:	4082                	lw	ra,0(sp)
+   107fc:	0111                	addi	sp,sp,4
+   107fe:	8e2a                	mv	t3,a0
+   10800:	8eae                	mv	t4,a1
+   10802:	8f32                	mv	t5,a2
+   10804:	8fb6                	mv	t6,a3
+   10806:	02000693          	li	a3,32
+   1080a:	3449                	jal	1028c <_putc>
+   1080c:	8572                	mv	a0,t3
+   1080e:	85f6                	mv	a1,t4
+   10810:	867a                	mv	a2,t5
+   10812:	86fe                	mv	a3,t6
+   10814:	8e2a                	mv	t3,a0
+   10816:	8eae                	mv	t4,a1
+   10818:	8f32                	mv	t5,a2
+   1081a:	8fb6                	mv	t6,a3
+   1081c:	04400693          	li	a3,68
+   10820:	34b5                	jal	1028c <_putc>
+   10822:	8572                	mv	a0,t3
+   10824:	85f6                	mv	a1,t4
+   10826:	867a                	mv	a2,t5
+   10828:	86fe                	mv	a3,t6
+   1082a:	8e2a                	mv	t3,a0
+   1082c:	8eae                	mv	t4,a1
+   1082e:	8f32                	mv	t5,a2
+   10830:	8fb6                	mv	t6,a3
+   10832:	02000693          	li	a3,32
+   10836:	3c99                	jal	1028c <_putc>
+   10838:	8572                	mv	a0,t3
+   1083a:	85f6                	mv	a1,t4
+   1083c:	867a                	mv	a2,t5
+   1083e:	86fe                	mv	a3,t6
+   10840:	4854                	lw	a3,20(s0)
+   10842:	1171                	addi	sp,sp,-4
+   10844:	c006                	sw	ra,0(sp)
+   10846:	3e69                	jal	103e0 <saves>
+   10848:	86b6                	mv	a3,a3
+   1084a:	2a45                	jal	109fa <puthex>
+   1084c:	3665                	jal	103f4 <loads>
+   1084e:	4082                	lw	ra,0(sp)
+   10850:	0111                	addi	sp,sp,4
+   10852:	8e2a                	mv	t3,a0
+   10854:	8eae                	mv	t4,a1
+   10856:	8f32                	mv	t5,a2
+   10858:	8fb6                	mv	t6,a3
+   1085a:	02000693          	li	a3,32
+   1085e:	a2fff0ef          	jal	1028c <_putc>
+   10862:	8572                	mv	a0,t3
+   10864:	85f6                	mv	a1,t4
+   10866:	867a                	mv	a2,t5
+   10868:	86fe                	mv	a3,t6
+   1086a:	8e2a                	mv	t3,a0
+   1086c:	8eae                	mv	t4,a1
+   1086e:	8f32                	mv	t5,a2
+   10870:	8fb6                	mv	t6,a3
+   10872:	05300693          	li	a3,83
+   10876:	a17ff0ef          	jal	1028c <_putc>
+   1087a:	8572                	mv	a0,t3
+   1087c:	85f6                	mv	a1,t4
+   1087e:	867a                	mv	a2,t5
+   10880:	86fe                	mv	a3,t6
+   10882:	8e2a                	mv	t3,a0
+   10884:	8eae                	mv	t4,a1
+   10886:	8f32                	mv	t5,a2
+   10888:	8fb6                	mv	t6,a3
+   1088a:	05000693          	li	a3,80
+   1088e:	9ffff0ef          	jal	1028c <_putc>
+   10892:	8572                	mv	a0,t3
+   10894:	85f6                	mv	a1,t4
+   10896:	867a                	mv	a2,t5
+   10898:	86fe                	mv	a3,t6
+   1089a:	8e2a                	mv	t3,a0
+   1089c:	8eae                	mv	t4,a1
+   1089e:	8f32                	mv	t5,a2
+   108a0:	8fb6                	mv	t6,a3
+   108a2:	02000693          	li	a3,32
+   108a6:	9e7ff0ef          	jal	1028c <_putc>
+   108aa:	8572                	mv	a0,t3
+   108ac:	85f6                	mv	a1,t4
+   108ae:	867a                	mv	a2,t5
+   108b0:	86fe                	mv	a3,t6
+   108b2:	4014                	lw	a3,0(s0)
+   108b4:	1171                	addi	sp,sp,-4
+   108b6:	c006                	sw	ra,0(sp)
+   108b8:	3625                	jal	103e0 <saves>
+   108ba:	86b6                	mv	a3,a3
+   108bc:	2a3d                	jal	109fa <puthex>
+   108be:	3e1d                	jal	103f4 <loads>
+   108c0:	4082                	lw	ra,0(sp)
+   108c2:	0111                	addi	sp,sp,4
+   108c4:	8e2a                	mv	t3,a0
+   108c6:	8eae                	mv	t4,a1
+   108c8:	8f32                	mv	t5,a2
+   108ca:	8fb6                	mv	t6,a3
+   108cc:	02000693          	li	a3,32
+   108d0:	9bdff0ef          	jal	1028c <_putc>
+   108d4:	8572                	mv	a0,t3
+   108d6:	85f6                	mv	a1,t4
+   108d8:	867a                	mv	a2,t5
+   108da:	86fe                	mv	a3,t6
+   108dc:	8e2a                	mv	t3,a0
+   108de:	8eae                	mv	t4,a1
+   108e0:	8f32                	mv	t5,a2
+   108e2:	8fb6                	mv	t6,a3
+   108e4:	05200693          	li	a3,82
+   108e8:	9a5ff0ef          	jal	1028c <_putc>
+   108ec:	8572                	mv	a0,t3
+   108ee:	85f6                	mv	a1,t4
+   108f0:	867a                	mv	a2,t5
+   108f2:	86fe                	mv	a3,t6
+   108f4:	8e2a                	mv	t3,a0
+   108f6:	8eae                	mv	t4,a1
+   108f8:	8f32                	mv	t5,a2
+   108fa:	8fb6                	mv	t6,a3
+   108fc:	05000693          	li	a3,80
+   10900:	98dff0ef          	jal	1028c <_putc>
+   10904:	8572                	mv	a0,t3
+   10906:	85f6                	mv	a1,t4
+   10908:	867a                	mv	a2,t5
+   1090a:	86fe                	mv	a3,t6
+   1090c:	8e2a                	mv	t3,a0
+   1090e:	8eae                	mv	t4,a1
+   10910:	8f32                	mv	t5,a2
+   10912:	8fb6                	mv	t6,a3
+   10914:	02000693          	li	a3,32
+   10918:	975ff0ef          	jal	1028c <_putc>
+   1091c:	8572                	mv	a0,t3
+   1091e:	85f6                	mv	a1,t4
+   10920:	867a                	mv	a2,t5
+   10922:	86fe                	mv	a3,t6
+   10924:	4054                	lw	a3,4(s0)
+   10926:	1171                	addi	sp,sp,-4
+   10928:	c006                	sw	ra,0(sp)
+   1092a:	3c5d                	jal	103e0 <saves>
+   1092c:	86b6                	mv	a3,a3
+   1092e:	20f1                	jal	109fa <puthex>
+   10930:	34d1                	jal	103f4 <loads>
+   10932:	4082                	lw	ra,0(sp)
+   10934:	0111                	addi	sp,sp,4
+   10936:	8e2a                	mv	t3,a0
+   10938:	8eae                	mv	t4,a1
+   1093a:	8f32                	mv	t5,a2
+   1093c:	8fb6                	mv	t6,a3
+   1093e:	02000693          	li	a3,32
+   10942:	94bff0ef          	jal	1028c <_putc>
+   10946:	8572                	mv	a0,t3
+   10948:	85f6                	mv	a1,t4
+   1094a:	867a                	mv	a2,t5
+   1094c:	86fe                	mv	a3,t6
+   1094e:	bc6d                	j	10408 <returns>
+
+00010950 <number>:
+   10950:	1171                	addi	sp,sp,-4
+   10952:	c006                	sw	ra,0(sp)
+   10954:	3471                	jal	103e0 <saves>
+   10956:	00000633          	add	a2,zero,zero
+   1095a:	00800593          	li	a1,8
+   1095e:	4394                	lw	a3,0(a5)
+   10960:	01068763          	beq	a3,a6,1096e <number+0x1e>
+   10964:	2031                	jal	10970 <digit>
+   10966:	0612                	slli	a2,a2,0x4
+   10968:	8e55                	or	a2,a2,a3
+   1096a:	15fd                	addi	a1,a1,-1
+   1096c:	f9ed                	bnez	a1,1095e <number+0xe>
+   1096e:	bc69                	j	10408 <returns>
+
+00010970 <digit>:
+   10970:	fd068693          	addi	a3,a3,-48
+   10974:	0006cb63          	bltz	a3,1098a <digit+0x1a>
+   10978:	05a00713          	li	a4,90
+   1097c:	00d74763          	blt	a4,a3,1098a <digit+0x1a>
+   10980:	4729                	li	a4,10
+   10982:	00e6c363          	blt	a3,a4,10988 <digit+0x18>
+   10986:	069d                	addi	a3,a3,7
+   10988:	8082                	ret
+   1098a:	000006b3          	add	a3,zero,zero
+   1098e:	8082                	ret
+
+00010990 <puthexy>:
+   10990:	1171                	addi	sp,sp,-4
+   10992:	c006                	sw	ra,0(sp)
+   10994:	8936                	mv	s2,a3
+   10996:	03a00a93          	li	s5,58
+   1099a:	02000693          	li	a3,32
+   1099e:	8efff0ef          	jal	1028c <_putc>
+   109a2:	01895993          	srli	s3,s2,0x18
+   109a6:	2831                	jal	109c2 <puthexy+0x32>
+   109a8:	01095993          	srli	s3,s2,0x10
+   109ac:	2819                	jal	109c2 <puthexy+0x32>
+   109ae:	00895993          	srli	s3,s2,0x8
+   109b2:	2801                	jal	109c2 <puthexy+0x32>
+   109b4:	00095993          	srli	s3,s2,0x0
+   109b8:	2029                	jal	109c2 <puthexy+0x32>
+   109ba:	86ca                	mv	a3,s2
+   109bc:	4082                	lw	ra,0(sp)
+   109be:	0111                	addi	sp,sp,4
+   109c0:	8082                	ret
+   109c2:	1171                	addi	sp,sp,-4
+   109c4:	c006                	sw	ra,0(sp)
+   109c6:	0ff9f993          	zext.b	s3,s3
+   109ca:	0049da13          	srli	s4,s3,0x4
+   109ce:	2039                	jal	109dc <puthexy+0x4c>
+   109d0:	0009da13          	srli	s4,s3,0x0
+   109d4:	2021                	jal	109dc <puthexy+0x4c>
+   109d6:	4082                	lw	ra,0(sp)
+   109d8:	0111                	addi	sp,sp,4
+   109da:	8082                	ret
+   109dc:	1171                	addi	sp,sp,-4
+   109de:	c006                	sw	ra,0(sp)
+   109e0:	00fa7a13          	andi	s4,s4,15
+   109e4:	030a6a13          	ori	s4,s4,48
+   109e8:	015a4363          	blt	s4,s5,109ee <puthexy+0x5e>
+   109ec:	0a1d                	addi	s4,s4,7
+   109ee:	86d2                	mv	a3,s4
+   109f0:	89dff0ef          	jal	1028c <_putc>
+   109f4:	4082                	lw	ra,0(sp)
+   109f6:	0111                	addi	sp,sp,4
+   109f8:	8082                	ret
+
+000109fa <puthex>:
+   109fa:	1171                	addi	sp,sp,-4
+   109fc:	c006                	sw	ra,0(sp)
+   109fe:	8736                	mv	a4,a3
+   10a00:	03a00813          	li	a6,58
+   10a04:	02000293          	li	t0,32
+   10a08:	00028e63          	beqz	t0,10a24 <puthex+0x2a>
+   10a0c:	12f1                	addi	t0,t0,-4
+   10a0e:	005756b3          	srl	a3,a4,t0
+   10a12:	8abd                	andi	a3,a3,15
+   10a14:	0306e693          	ori	a3,a3,48
+   10a18:	0106c363          	blt	a3,a6,10a1e <puthex+0x24>
+   10a1c:	069d                	addi	a3,a3,7
+   10a1e:	86fff0ef          	jal	1028c <_putc>
+   10a22:	b7dd                	j	10a08 <puthex+0xe>
+   10a24:	4082                	lw	ra,0(sp)
+   10a26:	0111                	addi	sp,sp,4
+   10a28:	8082                	ret

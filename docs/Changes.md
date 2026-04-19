@@ -46,12 +46,21 @@
 
 ## Done
 
-12/04/2026
+18/04/2026
+
+    Made a extense review. Rename labels, regroup functions, 
+    change registers code. 
+
+    Sector with outer and inner engines, linuxecall with system I/O,
+    minimal with minimal set of words, extras witn complementary
+    primitives with more Forth core and debug with helper functions.
+
+14/04/2026
 
     Made a version in aeForth, with all primitives and a eforth based 
     dictionary.
 
-    Milliforth-Riscv now uses 456 bytes.
+    Milliforth-Riscv now uses 458 bytes.
 
 12/04/2026
 

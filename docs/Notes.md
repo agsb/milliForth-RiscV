@@ -23,7 +23,7 @@
  
     All user structure, data (36 cells) and return (36 cells) stacks, 
 
-    Only IMMEDIATE flag used as $8000, no hide, no compile, no extras;
+    Only IMMEDIATE flag used as $80000000, also used as NAN.
  
     As ANSI Forth 1983: FALSE is 0 and TRUE is -1 ;
  
@@ -34,19 +34,19 @@
  
     No overflow or underflow stack checks;
  
-    No numbers only words (yet);
+    No numbers only words ;
 
  ## NO MORE
 
     Those are no more used.
 
-        Added a pack of 8 cells for scratch workspace, generic use.
+    ~~Added a pack of 8 cells for scratch workspace, generic use.~~
 
-        TIB (80 bytes) and locals (8 cells) are in sequence; 
+    ~~TIB (80 bytes) and locals (8 cells) are in sequence;~~ 
 
-        PAD (84 bytes) and PIC (68 bytes) must be allocated if need;
+    ~~PAD (84 bytes) and PIC (68 bytes) must be allocated if need;~~
  
-        TIB, PAD, PIC grows forward, stacks grows backwards;
+    ~~TIB, PAD, PIC grows forward, stacks grows backwards;~~
  
 ## Remarks
  
@@ -54,31 +54,27 @@
  
     No TOS or ROS registers, all values keeped at stacks;
  
-    Locals are fixed variables and do not stack.
+    Using compiled words, could define :
 
-    PAD is for temporaries, formats, buffers, etc;  
+        PAD is for temporaries, formats, buffers, etc;  
 
-    PIC is for number formating;
+        PIC is for number formating;
 
-    TIB (terminal input buffer) is like a stream;
+        TIB (terminal input buffer) is like a stream;
  
-    Only 7-bit ASCII characters, plus \n, no controls;
-          ( later maybe \b backspace and \u cancel )
+    Only 7-bit ASCII characters, no controls;
  
     Words must be between spaces, before and after;
  
     Words are case-sensitivy and less than 32 characters;
- 
-    No line wrap, do not break words between lines;
  
     No multiuser, no multitask, no checks, not faster;
 
     IMMEDIATE word only works outside word definition, 
     it always make latest word immediate.
  
-    Not using smudge, 
           colon saves HERE into HEAD and 
-          semis loads LATEST from HEAD;
+          semis loads HEAD into LATEST;
  
 ## For Devs
  
@@ -101,10 +97,11 @@
         pull is 'fetch and increase'
  
     Stacks represented as (standart)
-        (w1 w2 w3 -- u1 u2), (w1 w2 w3 -- u1 u2)
-        data, return (before -- after), top at left.
+        (w1 w2 w3 -- u1 u2 ; w1 w2 w3 -- u1 u2)
+        Read as (before -- after), top at left.
         c unsigned 8-bit character, a 32-bit address,
         w signed 32-bit, u unsigned 32-bit,
+        (Data stack ; Return Stack)
  
 ## For RiscV
  
