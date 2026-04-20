@@ -36,7 +36,7 @@
 
 20/04/2026
 
-    include as optional extras, select in define.S : 
+    included as optional extras, select in define.S : 
         
         ;CODE   to jump to native code at ipt address
 
@@ -45,6 +45,15 @@
         ABORT   to reset stacks and outer interpreter
         
         .       to print TOS in hexadecimal
+
+    included in primitives.S
+
+        STATE   Forth state variable, 0 execute, 1 compile
+        HEAP    aka DP, heap pointer to unused memory
+        LAST    aka LATEST, last word in dictionary
+
+        HEAD    absolute start of free memory
+        TAIL    absolute end of free memory
 
     Start to debug tu*.f sets for compiled words.
 
