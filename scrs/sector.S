@@ -208,12 +208,14 @@ miss:
 .ifdef missed
 
         # not compiling ? 
-        lw fst, STATE (usr)
+        lw fst, STAT (usr)
+        # execute is zero
         beq fst, zero, 100f
         # wipe remains
         lw fst, HEAD (usr)
         sw fst, HEAP (usr)
-        sw zero, STATE (usr)
+        li fst, EXECUTE
+        sw fst, STAT (usr)
 100:
 .endif
 
@@ -236,7 +238,8 @@ quit:
 #---------------------------------------------------------------------
 # stat is 'interpret' == \0
         
-        sw zero, STAT (usr)
+        li fst, EXECUTE
+        sw fst, STAT (usr)
 
 #---------------------------------------------------------------------
 # 
@@ -246,6 +249,7 @@ warp:
 .ifdef debug
 
         lw fst, STAT (usr)
+        # execute is zero
         bne fst, zero, 100f
 
         putchar '\n'
@@ -322,7 +326,7 @@ eval:
 
         bne snd, zero, immediate      
 
-        # compiling ? else
+        # compiling ? elses
 compile:
         
         call comma
