@@ -1,7 +1,9 @@
 # Changes
 
-    The milliforth uses Minimal Indirect Thread Code 
-    and DJB2 hashes instead flag-size-name-pads. 
+    The milliforth uses Minimal Indirect Thread Code, 
+    DJB2 hashes instead flag-size-name-pads and 
+    no Terminal Input Buffer, just a stream.
+
     With a minimal native code dictionary (primitives),
         + nand ! @ : ; 0# u@ exit key emit 
     and a user array for main forth variables.
@@ -20,31 +22,31 @@
     __The "first hash bug", was just a debug error__ 
             but no :(: it is a real bug.
 
-    Best choices for extensions: 
-        
-        ;CODE for native jump to native code at an address, inline
-
-        NAN, number $80000000, flag negative, flag IMMEDIATE
-
-        2/ normal shift right 
-
-        2* normal shift left
-
-        BYE to end the Forth unconditionaly
-
-        ABORT to reset stacks and outer interpreter
-
 ## DJB hash
 
     All hashs are 31 bits, high bit reserved for flag
 
 ## WIP
 
-    Include the eforth dictionary for expantion
+    Include the eforth dictionary for reference
 
     Change ." to only be compiled as in ANSI and TalyForth
 
 ## Done
+
+20/04/2026
+
+    include as optional extras, select in define.S : 
+        
+        ;CODE   to jump to native code at ipt address
+
+        BYE     to end the Forth unconditionaly
+
+        ABORT   to reset stacks and outer interpreter
+        
+        .       to print TOS in hexadecimal
+
+    Start to debug tu*.f sets for compiled words.
 
 18/04/2026
 

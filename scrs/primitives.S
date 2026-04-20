@@ -30,13 +30,13 @@
 # djb2 hash cleared of bit 31
 #
 
-.equ hash_SUB, 0x0002B588 
+.equ hash_MINUS, 0x0002B588 
 
 .equ hash_EQU, 0x0002B598 
 .equ hash_LESS, 0x0002B599 
 
-.equ hash_cfetch, 0x005972E6    # C@
-.equ hash_cstore, 0x00597287    # C!
+.equ hash_CFETCH, 0x005972E6    # C@
+.equ hash_CSTORE, 0x00597287    # C!
 
 .equ hash_RAT, 0x00597497       # R@
 .equ hash_TOR, 0x005968A9       # >R
@@ -77,13 +77,16 @@
 .equ hash_CELL, 0x07C81B0A3
 .equ hash_NAN, 0x0B87D404
 
+.equ hash_PLUSTO, 0x0059676F    # +!
+
 .equ hash_BYMUL, 0x005972C2     # M*
 .equ hash_BYMOD, 0x7C4D1C6C     # /MOD
 
-.equ hash_plusto, 0x0059676F
+.equ hash_TWOMUL, 0x0059685D
+.equ hash_TWODIV, 0x00596858
 
-.equ hash_sfl, 0x0059685D
-.equ hash_sfr, 0x00596858
+.equ hash_RSHIFT, 0x416E6B97
+.equ hash_LSHIFT, 0x2C5784C9 
 
 #---------------------------------------------------------------------
 
@@ -112,28 +115,8 @@ def_word "ALIGN", "align", hash_ALIGN, init_primitives
         j keep0
 
 #---------------------------------------------------------------------
-# ( w -- w*2 ) #; shift left
-def_word "2*", "sfl", hash_sfl, it_align
-
-        call look0
-        
-        slli fst, fst, 1
-        
-        j keep0
-
-#---------------------------------------------------------------------
-# ( w -- w/2 ) #; shift right
-def_word "2/", "sfr", hash_sfr, it_sfl
-
-        call look0
-        
-        srli fst, fst, 1
-        
-        j keep0
-
-#---------------------------------------------------------------------
 # ( w1 -- w2 ) #; NOT w
-def_word "NOT", "nots", hash_NOT, it_sfr
+def_word "NOT", "nots", hash_NOT, it_align
 
         call look0
 
@@ -229,7 +212,7 @@ def_word "-ROT", "nrot", hash_NROT, it_rot
 
 #---------------------------------------------------------------------
  # ( a -- w ), w = [a], one byte
- def_word "C@", "cfetch", hash_cfetch, it_nrot
+ def_word "C@", "cfetch", hash_CFETCH, it_nrot
 
          call look0
 
@@ -239,7 +222,7 @@ def_word "-ROT", "nrot", hash_NROT, it_rot
 
  #---------------------------------------------------------------------
  # ( a w -- ),  [a] = w, one byte
- def_word "C!", "cstore", hash_cstore, it_cfetch
+ def_word "C!", "cstore", hash_CSTORE, it_cfetch
 
          call pull2
 
@@ -249,7 +232,7 @@ def_word "-ROT", "nrot", hash_NROT, it_rot
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 - w2
-def_word "-", "sub", hash_SUB, it_cstore
+def_word "-", "minus", hash_MINUS, it_cstore
 
         call pull2
 
@@ -259,7 +242,7 @@ def_word "-", "sub", hash_SUB, it_cstore
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 AND w2
-def_word "AND", "and", hash_AND, it_sub
+def_word "AND", "and", hash_AND, it_minus
 
         call pull2
 
@@ -508,16 +491,18 @@ def_word "CELL", "cell", hash_CELL, it_two
 #---------------------------------------------------------------------
 # ( -- ) push 0x80000000
 def_word "NAN", "nan", hash_NAN, it_cell
-by_zero:
 by_erro:
-        
+by_divzero:
+by_underflow:        
+by_overflow:
+
         lui fst, 0x80000
         
         j push1
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "RP0", "rptop", hash_RPZO, it_rpto
+def_word "RP0", "rpzo", hash_RPZO, it_nan
 
         la fst, rp0
 
@@ -525,7 +510,7 @@ def_word "RP0", "rptop", hash_RPZO, it_rpto
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "SP0", "sptop", hash_SPZO, it_rptop
+def_word "SP0", "spzo", hash_SPZO, it_rpzo
 
         la fst, rp0
 
@@ -533,7 +518,7 @@ def_word "SP0", "sptop", hash_SPZO, it_rptop
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 w4 ) double multiply,  
-def_word "M*", "bymul", hash_BYMUL, it_sptop
+def_word "M*", "bymul", hash_BYMUL, it_spzo
         
         call pull2
         mulh trd, fst, snd
@@ -555,8 +540,48 @@ def_word "/MOD", "bymod", hash_BYMOD, it_bymul
 	j push2
 
 #---------------------------------------------------------------------
+# ( w -- w*2 ) #; shift left
+def_word "2*", "twomul", hash_TWOMUL, it_bymod
+
+        call look0
+        
+        slli fst, fst, 1
+        
+        j keep0
+
+#---------------------------------------------------------------------
+# ( w -- w/2 ) #; shift right
+def_word "2/", "todiv", hash_TWODIV, it_twomul
+
+        call look0
+        
+        srli fst, fst, 1
+        
+        j keep0
+
+#---------------------------------------------------------------------
+# ( w1 w2 -- w1<<w2 ) #; shift left
+def_word "LSHIFT", "lshift", hash_LSHIFT, it_twodiv
+
+        call pull2
+        
+        sll fst, snd, fst
+        
+        j keep1
+
+#---------------------------------------------------------------------
+# ( w1 w2 -- w1>>w2 ) #; shift right
+def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
+
+        call pull2
+        
+        srl fst, snd, fst
+        
+        j keep1
+
+#---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word "+!", "plusto", hash_plusto, it_bymod
+def_word "+!", "plusto", hash_plusto, it_rshift
 
         call pull2
 
