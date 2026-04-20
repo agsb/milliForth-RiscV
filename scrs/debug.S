@@ -391,9 +391,9 @@ shows:
         mhex fst
         putchar ' '
        
-       putchar 'M'
+       putchar 'F'
         putchar ' '
-        lw fst, MAZE (usr)
+        lw fst, FAUX (usr)
         mhex fst
         putchar ' '
        

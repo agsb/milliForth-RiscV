@@ -105,7 +105,7 @@
 # reserved 
 
 # last heap while compiling
-.equ MAZE, 5 * CELL
+.equ FAUX, 5 * CELL
 
 # counter of words executed by next
 .equ BEAT, 6 * CELL

@@ -212,7 +212,7 @@ miss:
         # execute is zero
         beq fst, zero, 100f
         # wipe remains
-        lw fst, MAZE (usr)
+        lw fst, FAUX (usr)
         sw fst, HEAP (usr)
         li fst, EXECUTE
         sw fst, STAT (usr)
