@@ -77,6 +77,14 @@
 .equ hash_CELL, 0x07C81B0A3
 .equ hash_NAN, 0x0B87D404
 
+.equ hash_STATE, 0x0DD1F032
+
+.equ hash_LAST, 0x7C835F2F
+.equ hash_HEAP, 0x7C857DF9
+
+.equ hash_HEAD, 0x7C857DED
+.equ hash_TAIL, 0x7C87C175
+
 .equ hash_PLUSTO, 0x0059676F    # +!
 
 .equ hash_BYMUL, 0x005972C2     # M*
@@ -460,7 +468,7 @@ def_word "TRUE", "true", hash_TRUE, it_lit
 # ( -- FALSE ) #; push 0x00000000
 def_word "FALSE", "false", hash_FALSE, it_true
 
-        addi fst, zero, FALSE 
+        li fst, FALSE 
 
         j push1
 
@@ -468,7 +476,7 @@ def_word "FALSE", "false", hash_FALSE, it_true
 # ( -- 1 ) #; push 0x00000001
 def_word "1", "one", hash_ONE, it_false
 
-        addi fst, zero, ONE
+        li fst, ONE
 
         j push1
 
@@ -476,7 +484,7 @@ def_word "1", "one", hash_ONE, it_false
 # ( -- 2 ) #; push 0x00000002
 def_word "2", "two", hash_TWO, it_one
 
-        addi fst, zero, TWO
+        li fst, TWO
 
         j push1
 
@@ -484,7 +492,7 @@ def_word "2", "two", hash_TWO, it_one
 # ( -- 4 ) #; push 0x00000004
 def_word "CELL", "cell", hash_CELL, it_two
 
-        addi fst, zero, CELL
+        li fst, CELL
 
         j push1
 
@@ -492,9 +500,9 @@ def_word "CELL", "cell", hash_CELL, it_two
 # ( -- ) push 0x80000000
 def_word "NAN", "nan", hash_NAN, it_cell
 by_erro:
-by_divzero:
-by_underflow:        
-by_overflow:
+by_zero:
+by_under:        
+by_over:
 
         lui fst, 0x80000
         
@@ -517,8 +525,48 @@ def_word "SP0", "spzo", hash_SPZO, it_rpzo
         j push1
 
 #---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @
+def_word "STATE", "state", hash_STATE, it_spzo
+
+        lw fst, STAT (usr)
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @ last in dictionary
+def_word "LAST", "last", hash_LAST, it_state
+
+        lw fst, LAST (usr)
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @ heap in memory
+def_word "HEAP", "heap", hash_HEAP, it_last
+
+        lw fst, HEAP (usr)
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @ start of memory for use
+def_word "HEAD", "head", hash_HEAD, it_heap
+
+        la fst, h_here
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @ end of memory for use
+def_word "TAIL", "tail", hash_TAIL, it_head
+
+        la fst, h_ends
+
+        j push1
+
+#---------------------------------------------------------------------
 # ( w1 w2 -- w3 w4 ) double multiply,  
-def_word "M*", "bymul", hash_BYMUL, it_spzo
+def_word "M*", "bymul", hash_BYMUL, it_tail
         
         call pull2
         mulh trd, fst, snd
@@ -551,7 +599,7 @@ def_word "2*", "twomul", hash_TWOMUL, it_bymod
 
 #---------------------------------------------------------------------
 # ( w -- w/2 ) #; shift right
-def_word "2/", "todiv", hash_TWODIV, it_twomul
+def_word "2/", "twodiv", hash_TWODIV, it_twomul
 
         call look0
         
@@ -581,7 +629,7 @@ def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word "+!", "plusto", hash_plusto, it_rshift
+def_word "+!", "plusto", hash_PLUSTO, it_rshift
 
         call pull2
 

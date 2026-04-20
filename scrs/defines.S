@@ -105,7 +105,7 @@
 # reserved 
 
 # last heap while compiling
-.equ HEAD, 5 * CELL
+.equ MAZE, 5 * CELL
 
 # counter of words executed by next
 .equ BEAT, 6 * CELL
@@ -120,9 +120,9 @@
  
  .equ extras, YES
 
- /*
-
  .equ primitives, YES
+
+/* 
 
  .equ missed, YES
 
