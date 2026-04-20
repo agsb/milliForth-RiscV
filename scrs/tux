@@ -1,0 +1,39 @@
+
+ : latest U@ CELL + CELL + ;
+ : toggle latest @ latest @ NAND 1 1 NAND NAND latest ! ;
+
+ : test  DUP NAND 1 1 NAND NAND ;
+
+  32  
+ 
+ SHOW
+
+ %S test %S .
+
+  32 1 + 
+
+ SHOW
+ 
+ %S test %S .
+
+ BYE 
+
+ : aa 32 >R %S %R R@ %S %R R> %S %R ;
+
+ aa 
+
+ : a1 32 0 DO I . CR LOOP ;
+
+ a1 
+
+ : a2 32 FOR I . CR NEXT ;
+
+ a2 
+
+
+ : a3 0 FOR I . CR NEXT ;
+
+ a3 
+
+
+

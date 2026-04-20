@@ -36,16 +36,7 @@
 .equ hash_plus,  0x0002B58E 
 .equ hash_zeroq, 0x00596816 
 .equ hash_colon, 0x0002B59F 
-
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
-
-#---------------------------------------------------------------------
-# lowercase key emit exit nand u@
-.equ hash_key,   0x0B876D32 
-.equ hash_emit,  0x7C6B87D0 
-.equ hash_nand,  0x7C727500 
-.equ hash_userat, 0x00596F90
-.equ hash_exit,  0x7C6BBE85 
 
 #---------------------------------------------------------------------
 # uppercase KEY EMIT EXIT NAND U@
@@ -247,40 +238,19 @@ pull2:
 #  djb2 hash cleared of bit 31
 #
 #---------------------------------------------------------------------
+
 .equ hash_DOCODE, 0x075D9A73
 .equ hash_ABORT, 0x0A1DFF4F
 .equ hash_BYE, 0x0B87C61B
 .equ hash_DOT, 0x0002B58B
-.equ hash_RSHIFT, 0x416E6B97
-.equ hash_LSHIFT, 0x2C5784C9 
 
 #---------------------------------------------------------------------
 
 .set init_extras, last_next
 
 #---------------------------------------------------------------------
-# ( w -- w*2 ) #; shift left
-def_word "LSHIFT", "lshift", hash_LSHIFT, init_extras
-
-        call pull2
-        
-        sll fst, snd, fst
-        
-        j keep1
-
-#---------------------------------------------------------------------
-# ( w -- w/2 ) #; shift right
-def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
-
-        call pull2
-        
-        srl fst, snd, fst
-        
-        j keep1
-
-#---------------------------------------------------------------------
 # ( -- ) execute a jump and link to a reference at IP
-def_word ";CODE", "docode", hash_DOCODE, it_rshift
+def_word ";CODE", "docode", hash_DOCODE, init_extras
 
         jalr ra, 0 (ipt)
 
