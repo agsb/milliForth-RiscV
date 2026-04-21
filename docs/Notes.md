@@ -1,14 +1,9 @@
 # NOTES
 
-*STILL A BUNCH (NOT ORGANIZED) OF IDEAS*
+    *STILL A BUNCH (NOT ORGANIZED) OF IDEAS*
 
-    Sectorforth and Milliforth was made for x86 and Z80 arch 
-    and uses full 16-bit registers. 
- 
-    The way at 6502 is use page zero and lots of lda/sta.
- 
-    The way of RiscV and ARM is use linear memory and 32-bit registers.
- 
+## Why
+
     Focus in size not performance.
  
     why ? For understand better my skills, riscv code and thread codes
@@ -16,6 +11,15 @@
     how ? Programming a old Forth for new cpu ISAs
  
     what ? Design the best minimal Forth engine and vocabulary
+ 
+## 6502 and RISCV
+
+    Sectorforth and Milliforth was made for x86 and Z80 arch 
+    and uses full 16-bit registers. 
+ 
+    The way at 6502 is use page zero and lots of lda/sta.
+ 
+    The way of RiscV and ARM is use linear memory and 32-bit registers.
  
 ## Changes
  
@@ -36,6 +40,8 @@
  
     No numbers only words ;
 
+    No Terminal Input Buffer (TIB), just a parser word-to-hash.
+
  ## NO MORE
 
     Those are no more used.
@@ -48,12 +54,8 @@
  
     ~~TIB, PAD, PIC grows forward, stacks grows backwards;~~
  
-## Remarks
- 
-    This code uses Minimal Indirect Thread Code, aka MITC;
- 
-    No TOS or ROS registers, all values keeped at stacks;
- 
+    Those could be made by user if when need.
+
     Using compiled words, could define :
 
         PAD is for temporaries, formats, buffers, etc;  
@@ -61,27 +63,40 @@
         PIC is for number formating;
 
         TIB (terminal input buffer) is like a stream;
+
+## Remarks
+ 
+    This code uses Minimal Indirect Thread Code, aka MITC;
+ 
+    No TOS or ROS registers, all values keeped at stacks;
  
     Only 7-bit ASCII characters, no controls;
  
     Words must be between spaces, before and after;
  
-    Words are case-sensitivy and less than 32 characters;
+    Words are case-sensitivy and no size limit of characters;
  
     No multiuser, no multitask, no checks, not faster;
 
     IMMEDIATE word only works outside word definition, 
     it always make latest word immediate.
  
-          colon saves HERE into HEAD and 
-          semis loads HEAD into LATEST;
+    No SMUDGE ou HIDDEN Flags, colon saves HERE into FAUX and 
+    semis loads FAUX into LATEST;
  
 ## For Devs
  
-    Chuck Moore uses 64 columns. Be wise, obey the rule of 
-        72 characters per line; 
+    Chuck Moore uses 16 lines. 
+
+    Chuck Moore uses 64 columns. 
+
+    Chuck Moore uses 22 deep stacks. 
+
+    Why you need more ?
+    
+    Never mess with two underscore variables.
  
-    Never mess with two underscore variables;
+    When the heap moves forward, the stack moves backward. 
  
 # For stacks
  
@@ -90,8 +105,6 @@
     The hello_world.forth file states that stacks works to allow 
         : dup sp@ @ ; so spt must point to actual TOS;
     
-    "when the heap moves forward, the stack moves backward"; 
- 
     The stack movement to be:
         push is 'decrease and store'
         pull is 'fetch and increase'
@@ -116,6 +129,131 @@
     No direct memory access, only accessed using a register as pointer.
 
     No register indexed offset, only immediate offsets (+/- 1024 bytes).
+
+## For compiler options
+
+    compiler suit of RISCV: gcc riscv64-unknown-elf-* -Oz
+
+    which memory map be used and pages size: default GCC
+  
+    simulator of RISCV: qemu 
+    
+    the heap and stack: .heap at end of .bss, .stack elsewhere.
+
+    systems calls of core functions: linux ecalls
+
+    system stack pointer: not used as Forth stack.
+    
+## RiscV ISA
+
+the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit 
+    [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) 
+or 
+    [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
+
+The milliForth is a ELF program called by 'elsewhere alien operational system', 
+and use registers r0, ra, sp, s0, s1, a0-a7, t0-t1. 
+
+## Coding
+
+*"qemu -kernel loads the kernel at 0x80000000 and causes each hart (i.e. core of CPU) to jump there."*
+
+For assembler, use [standart Risc-V](https://github.com/riscv-non-isa/riscv-asm-manual) style 
+with pre-processor directives eg. #define.
+
+For now, using riscv-unknown-elf-gcc suit with qemu emulator
+for a single core minimal footprint Forth thread.  
+
+It uses less than 1k byte, without extras and user dictionary.
+
+The milliForth must use memory pointers for data stack and return stack, 
+because does fetch and store from a special 'user structure', which 
+contains the user variables for Forth 
+( sptr, rptr, state, last, heap ).
+
+## Note
+
+the originals files from milliforth was edited.
+
+the bf.FORTH and hello_world.FORTH are from original milliForth[^1]
+
+the my_hello_world.FORTH is adapted for miiliforth-riscv
+
+## Postpone Hack
+
+__while 'tick was not in the compiled dictionary__
+
+Forth standart (now) have postone instead of compile and [compile].
+
+Charles Moore, in 1974 [^8] make use of precedence of word and STATE, 
+to control between "always execute" STATE (0), 
+"compile or execute" STATE (1), "always compile" STATE(2), 
+using a extra STATE and a flag for precedence.
+
+| situation | STATE | precedence 0 | precedence 1 | precedence 2 |
+| --- | --- | --- | --- | --- |
+| during execution | 0  | execute | execute | execute |
+| during compilation | 1 | compile | execute | execute |
+| after IMMEDIATE | 2 | compile | compile | execute |
+
+Always compile is what POSTPONE does.
+
+In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, 
+
+By the way, tick and comma are in compiled dictionary.
+
+The postpone is : POSTPONE ' , ; IMMEDIATE ( classics )
+
+## Colon and Semis
+
+How do not use flags as SMUDGE or HIDDEM or else ?
+
+The colon *:* makes a header by:
+        1. copy HERE to FAUX
+        2. copy LATEST to first cell;
+        3. calculate the djb2 hash of the next token;
+        4. copy hash to second cell;
+        5. change STATE to compile (1);
+
+In compile mode, all non immediate words are compiled, 
+        and the immediate words are executed. 
+    
+The semis *;* ends the word by:
+        1. copy FAUX to LATEST
+        2. place a 'EXIT into last cell
+        3. change STATE to execute (0);
+
+## Missed Hack
+
+When the compilation breaks, by error or missing word,
+the STATE and LATEST are keepd in order but HERE was advanced with 
+references of words compiled, that junk stays lost in heap. 
+
+To clean heap, just copy FAUX to HERE. The HERE returns to previous 
+value before start the last compilation.
+
+Also toggle STATE to interpret mode.
+
+## CREATE and DOES>
+
+    (from eforth ideas)
+
+CREATE place the data address in stack and compiles two EXIT, 
+        the address of the first is saved at Forth variable BODY, 
+        the data address is the cell after second EXIT;
+
+DOES> uses the address in BODY to save the complile address of 
+        what follows DOES>;
+
+VARIABLE uses the data address to access a cell;
+    
+CONSTANT uses the data address to access a value;
+    
+BUFFER uses thr data address to access a array of bytes;
+
+ARRAY uses the data address to access the nth byte;
+    
+Note by that way, DOES> is just one word and is not immediate.
 
 ## For Assembler:
 
@@ -164,29 +302,31 @@
     to keep the reference to 'user struct' and another (ipt) to hold 
     the Forth instruction pointer. Those must be keeped untouched.
 
-    4. The indirect code defaults:
+    4. The pull and push code defaults:
 
 ```
 wpull:
 # load the index of data stack
-        lw idx, SPT (usr)
+        lw spr, SPT (usr)
 # pull the value
-        lw fst, 0 (idx)
+        lw fst, 0 (spr)
 # update the index
-        addi idx, idx, +1 * CELL
+        addi spr, spr, +1 * CELL
 # save the index
-        sw idx, SPT (usr)
+        sw spr, SPT (usr)
 
 wpush:
 # load the index of data stack
-        lw idx, SPT (usr)
+        lw spr, SPT (usr)
 # update the index
-        addi idx, idx, -1 * CELL
-# pull the value
-        sw fst, 0 (idx)
+        addi spr, spr, -1 * CELL
+# push the value
+        sw fst, 0 (spr)
 # save the index
-        sw idx, SPT (usr)
+        sw spr, SPT (usr)
 ```
+
+    Those are 4 instructions cycles (load/save) over minimal code (pull-push/update) .
 
     5. But which registers ?
 
@@ -200,25 +340,25 @@ wpush:
 
     All code must be align to CELL size, also the dictionary headers.
     
-    6. The jal and jalr, save PC+4 in register ra,
+    The jal and jalr, save PC+4 in register ra,
         does only ONE level of call, more levels must 
         save the register ra elsewhere and load it at ret.
 
-    7. the ELF format leaves for linux system define the real 
+    The ELF format leaves for linux system define the real 
         SP address stack, better use it for save RA inside deep 
         nested routines.
 
-    8. The RiscV compressed instructions allow X8 to X15, 
+    The RiscV compressed instructions allow X8 to X15, 
         as S0, S1, A0-A5, and system ecalls could use A0 to A7. 
         The _putc and _getc uses iA0, A1, A2, A3, A7 and A3 as argument.
     
-    9. The milliForth use S0 as pointer for user structure, 
+    The milliForth use S0 as pointer for user structure, 
         S1 to hold the instruction pointer IPT, and two groups of 
         registers. A upper group A0, A1, A2 for routines without 
         ecalls and a lower group A3, A4, A5, for generic routines, 
         with ecalls. A6 and A7 are scratch.
 
-        In some debug and extras routines more registers could be used.
+    In some debug and extras routines more registers could be used.
         
 ## For Heaps
 
@@ -264,7 +404,7 @@ To keep safe from colisions, check the hash of token inside colon (:)
 
 Also could export a name:hash, to make a list for human reference.
     
-The hash over 0x00000000 to 0x7FFFFFFF, reserve -1 to IMMEDIATE flag
+The hash is over 0x00000000 to 0x7FFFFFFF, the high bit is IMMEDIATE flag
 
 _" there is no spoon "_
 
@@ -292,13 +432,7 @@ Only four bytes hash with lower bit or higher bit as flags.
 When the immediate flag (FLAG_IMM)
 define 0x8000000 and 0x7FFFFFF as constants to mask it in hashes.
 
-Cons:
-
-Can not calculate the hash within a assembler macro, 
-need a program to calculate the hashes for primitives 
-and make the headers by hand.
-
-## For Numbers
+## Not a Number
 
 To represent short signed integer numbers is used the high bit 
 of the MSB as signal indicator, eg for one byte, 00000001
