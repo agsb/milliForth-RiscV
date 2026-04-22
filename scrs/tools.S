@@ -31,8 +31,8 @@
 #
 
 .equ hash_tdot, 0x005966C5
-.equ hash_splist, 0x005966B8
-.equ hash_rplist, 0x005966B9
+.equ hash_splist, 0x005965D3
+.equ hash_rplist, 0x005965D2
 
 .equ hash_DUMP, 0x7C6B2FE9 
 .equ hash_WORDS, 0x0D9A5B98 
