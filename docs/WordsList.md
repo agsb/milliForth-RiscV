@@ -5,7 +5,9 @@
 
  ( w1 w2 -- w3 ; u1 u2 -- u1 ) 
  
- top at right , before -- after , data stack ; return stack 
+    __botton at left top at right__ 
+    __before -- after__
+    __data stack ; return stack__ 
 
    | symbol | type | word 32 bits| 
    | -- | -- | -- |
@@ -37,7 +39,7 @@
 
   | name | word | stacks | use | defined | 
   | -- | -- | -- | -- | -- | 
-  | docode | ( ;CODE ) | execute native code at next cell | FigForth |
+  | docode | ( ;CODE ) | ( -- ) | execute native code at next dictionary cell | internal |
   | abort | ABORT | ( -- ) | restart interpreter | core |
   | bye | BYE | ( -- ) | ends Forth | core | 
   | dot | ( . ) | ( w -- ) | prints w in hexadecimal | core |
@@ -60,32 +62,32 @@
   | minus | - | ( w1 w2 -- w3 ) | w3 == w2 - w1 | core |
   | and | AND | ( w1 w2 -- w3 ) | w3 = w2 AND w1 | core |
   | or | OR | ( w1 w2 -- w3 ) | w3 = w2 OR w1 | core |
-  | xor | XOR | ( w1 w2 -- w3 ) | w3 = w2 XOR w1 |   core |
-  | equ | = | ( w1 w2 - w3 )  | FALSE | TRUE = w2 == w1 | core |
-  | less | < | ( w1 w2 -- w3 ) | FALSE | TRUE =  w2 > w1 | core |
+  | xor | XOR | ( w1 w2 -- w3 ) | w3 = w2 XOR w1 | core |
+  | equ | = | ( w1 w2 - w3 )  | FALSE \| TRUE ? w2 == w1 | core |
+  | less | < | ( w1 w2 -- w3 ) | FALSE \| TRUE ? w2 > w1 | core |
   | rat | R@ | ( -- w ; w -- w ) | ditto | core |
   | rto | R> | ( -- w ; w -- ) | ditto | core |
   | tor | >R | ( w -- ; -- w ) | ditto | core |
-  | rpat | RP@ | ( -- rp ) | ditto | core |
-  | rpto | RP! | ( rp -- ) | ditto | core |
-  | spat | SP@ | ( -- sp ) | ditto | core |
-  | spto | SP! | ( sp -- ) | ditto | core |
-  | branch | BRANCH | ( -- ) | todo | core |
-  | branchz | 0BRANCH | ( -- ) | todo | core |
-  | lit | LIT | ( -- w ) | todo | core |
+  | rpat | RP@ | ( -- rp ) | ditto | exception |
+  | rpto | RP! | ( rp -- ) | ditto | exception |
+  | spat | SP@ | ( -- sp ) | ditto | exception |
+  | spto | SP! | ( sp -- ) | ditto | exception |
+  | branch | BRANCH | ( -- ) | todo | internal |
+  | branchz | 0BRANCH | ( -- ) | todo | internal |
+  | lit | LIT | ( -- w ) | todo | internal |
   | true | TRUE | ( -- -1 ) | ditto | core |
   | false | FALSE |  ( -- 0 ) | ditto | core |
-  | one | 1 | ( -- 1 ) |  ditto | core |
-  | two | 2 | ( -- 2 ) |  ditto | core |
+  | one | 1 | ( -- 1 ) |  ditto | internal |
+  | two | 2 | ( -- 2 ) |  ditto | internal |
   | cell | CELL | ( -- 4 ) | size in bytes of Forth cell | core |
-  | nan | NAN | ( -- 0x80000000 ) | Not a Number | core |
-  | rpzo | RP0 | ( -- rp0 ) | address to bottom of return stack | core |
-  | spzo | SP0 | ( -- sp0 ) | address to botton of data stack | core |
+  | nan | NAN | ( -- 0x80000000 ) | Not a Number, flag IMMEDIATE | internal |
+  | rpzo | RP0 | ( -- rp0 ) | address to bottom of return stack | internal |
+  | spzo | SP0 | ( -- sp0 ) | address to botton of data stack | internal |
   | state | STATE | ( -- c ) |  0 execute 1 compile | core |
-  | latest | LAST | ( -- a ) | address of latest word address | core |
-  | heap | HEAP | ( -- a ) | address of next cell in free memory aka DP | core |
-  | head | HEAD | ( -- a ) |  initial address of free memory | core |
-  | tail | TAIL | ( -- a ) |  final address of free memory | core |
+  | latest | LAST | ( -- a ) | address of latest word link in dictionary | internal |
+  | heap | HEAP | ( -- a ) | address of next cell in free memory aka DP | internal |
+  | head | HEAD | ( -- a ) | initial address of free memory | internal |
+  | tail | TAIL | ( -- a ) | final address of free memory | internal |
   | bymul | M* | ( w1 w2 -- w3 w4 ) | w1/w2 == w3 reminder w4 quotient | core |
   | bymod | \*/MOD | ( w1 w2 -- w3 w4 ) | w1 * w2 == w3 lower w4 upper | core |
   | twomul | 2* | ( w -- w * 2 ) | ditto | core |
@@ -98,11 +100,11 @@
 
   | name | word | stacks | use | defined | 
   | -- | -- | -- | -- | -- | 
-  | splist | %S | ( -- ) | pretty print data stack | debug |
-  | rplist | %R | ( -- ) | pretty print return stack | debug |
-  | dump | DUMP | ( a1 a2 -- ) | pretty print memory from a1 to a2 | debug |
-  | words | WORDS | ( -- ) | pretty print all compiled words backwards | debug |
-  | sees | SEE | ( -- ) | pretty print latest word | debug |
+  | splist | .S | ( -- ) | pretty print data stack | tools |
+  | rplist | .R | ( -- ) | pretty print return stack | tools* |
+  | dump | DUMP | ( a1 a2 -- ) | pretty print memory from a1 to a2 | extras |
+  | words | WORDS | ( -- ) | pretty print all compiled words backwards | tools |
+  | sees | SEE | ( -- ) | pretty print latest word | tools |
   | show | SHOW | ( -- ) | shows variables and lists data and return stacks | debug |
   | twodot | .. | ( w -- w ) | print TOS in hexadecimal, leave TOS | debug |
 
