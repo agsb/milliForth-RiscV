@@ -30,10 +30,10 @@
 # djb2 hash cleared of bit 31
 #
 
-.equ hash_MINUS, 0x0002B588 
+.equ hash_MINUS, 0x0002B588     # - 
 
-.equ hash_EQU, 0x0002B598 
-.equ hash_LESS, 0x0002B599 
+.equ hash_EQU, 0x0002B598       # = 
+.equ hash_LESS, 0x0002B599      # < 
 
 .equ hash_CFETCH, 0x005972E6    # C@
 .equ hash_CSTORE, 0x00597287    # C!
@@ -72,10 +72,10 @@
 .equ hash_TRUE, 0x7C879BF3
 .equ hash_FALSE, 0x0C3C6778
 
-.equ hash_ONE, 0x00002B594
-.equ hash_TWO, 0x00002B597
+.equ hash_ONE, 0x00002B594      # 1
+.equ hash_TWO, 0x00002B597      # 2
 .equ hash_CELL, 0x07C81B0A3
-.equ hash_NAN, 0x0B87D404
+.equ hash_NAN, 0x0B87D404       
 
 .equ hash_STATE, 0x0DD1F032
 
@@ -90,8 +90,8 @@
 .equ hash_BYMUL, 0x005972C2     # M*
 .equ hash_BYMOD, 0x7C4D1C6C     # /MOD
 
-.equ hash_TWOMUL, 0x0059685D
-.equ hash_TWODIV, 0x00596858
+.equ hash_TWOMUL, 0x0059685D    # 2*
+.equ hash_TWODIV, 0x00596858    # 2/
 
 .equ hash_RSHIFT, 0x416E6B97
 .equ hash_LSHIFT, 0x2C5784C9 

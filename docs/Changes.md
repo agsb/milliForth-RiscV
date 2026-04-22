@@ -43,14 +43,14 @@
 
     An option is reserve a token to precede numbers.
 
-    After token $, next token is a signed integer hexadecimal,
+    After token $ next token is a signed integer hexadecimal,
     defined with valid ascii, 0-9 and A-F, and the converted value 
     is placed at data stack or NaN, in any error.
 
     _Jump and Link_
 
-    The ;CODE name is reserved with CODE END-CODE by standart legacy,
-    whatever changed name to ;$ called DOEXE, for a reference to execute 
+    The ;CODE name is already reserved with CODE END-CODE by standart legacy,
+    whatever changed name to ;$ , called DOCODE , for a reference to execute 
     by "link and jump then return to next", usefull to make those
     ;CODE CODE END-CODE standart words.
 
@@ -68,6 +68,8 @@
         ABORT   to reset stacks and outer interpreter
         
         .       to print TOS in hexadecimal
+
+        $       to parse a signed integer hexagesimal number
 
     included in primitives.S, select in define.S :
 

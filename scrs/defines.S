@@ -112,7 +112,7 @@
 .equ TAIL, 8 * CELL
 
 #---------------------------------------------------------------------
-# for counter
+# for counters
 
 # counter of words executed by next
 .equ BEAT, 9 * CELL
@@ -160,6 +160,8 @@
  .equ beatme, YES
 
  .equ tickme, YES
+ 
+ .equ tackme, YES
  
  .equ asciis, YES
 
