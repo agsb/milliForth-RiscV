@@ -27,7 +27,8 @@ No human WORDS. It uses DJB2 hash in headers.
 
 No Terminal Input Buffer, just an token-to-hash stream ascii parser.
 
-Only use a IMMEDIATE flag, at MSBit (31) of hash, it also is NaN, used to indicate errors.
+Only use a IMMEDIATE flag, at MSBit (31) of hash, it also is NaN, 
+used to indicate errors.
 
 There are a file with more core words in native code to use.
 
@@ -78,7 +79,7 @@ How shink to a minimal compiled size in a Risc-V ?
         no linux calls for memory allocation. (Anyone ?)
 
     The source could be compiled with 'missed' hack and
-        more native code word set.
+        more extensive native code word set.
 
 ## Internals
 
@@ -120,10 +121,11 @@ with externals, ecall to linux:
 
 extras: (selectable)
 
-    ;CODE   execute native code at instruction pointer (IP)
-    ABORT   restart the Forth
+    ;CODE   execute native code at instruction pointer (IP), vide Notes
+    ABORT   restart the Forth interpreter
     BYE     ends the Forth, return to system
     .       show the cell at top of data stack in hexadecimal 
+    %       next token is a signed integer hexadecimal number to TOS 
     
 debug:    
     %S      list cells in data stack

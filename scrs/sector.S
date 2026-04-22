@@ -110,21 +110,26 @@ void:
 _user:
 .skip user_size
 
+# end of stacks
+mark:
+        .word 0x0
+
 # data stack grows backward, bottom 
 .skip sp_size
 sp0: 
+        # top of data stack
+        .word 0x0
 
 # return stack grows backward, bottom
 .skip rp_size
 rp0: 
-
-# end of stacks
-mark:
+        # top of return stack
         .word 0x0
 
 # start of user dictionary 
 h_here: 
 .skip RAM_LIMIT - ( h_here - _user )
+# end of memory
 h_ends:
 
 #----------------------------------------------------------------------
@@ -380,7 +385,7 @@ token:
 
         # load word separator, BL is space
 
-        addi trd, zero, BL
+        li trd, BL
 
         # skip spaces
 skip:

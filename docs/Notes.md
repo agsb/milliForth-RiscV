@@ -255,6 +255,23 @@ ARRAY uses the data address to access the nth byte;
     
 Note by that way, DOES> is just one word and is not immediate.
 
+## ;CODE CODE END-CODE
+
+    Those are classic methods to execute compiled native code in 
+    dictionary. 
+
+    But ;CODE depends on CREATE and CODE END-CODE on DOCOL, to know
+    where jump to execute the native code.
+
+    In a RISCV with MITC, a better way is do a jump and link to IPT 
+    and end the native code with a return.
+
+    gonative:
+
+        jarl ra, 0 (IPT)
+
+        j next
+    
 ## For Assembler:
 
     1. Why ".equ name, register", does not work ?

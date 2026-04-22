@@ -305,11 +305,11 @@ tohex:
 
         pushra
 
-        add  snd, zero, fst
+        mv snd, fst
         
-        addi trd, zero, 58
+        li trd, 58
 
-        addi t0, zero, 32
+        li t0, 32
 
         # rolls 
 100:
@@ -347,9 +347,9 @@ number:
 
         # load word separator, BL is space      
 
-        addi trd, zero, BL
+        li trd, BL
 
-        # skip spaces
+        # skip spaces 
 nskip:
         call _getc
         bleu fst, trd, nskip
@@ -358,11 +358,15 @@ ndigit:
 
         call digit
 
+        lui hsh, 0x80000
+
+        beq fst, hsh, nodigit
+
         slli idx, idx, 4
 
         add idx, idx, fst
         
-        # scan spaces
+        # scan spaces 
 nscan:
         call _getc
         bltu fst, trd, nscan
@@ -370,6 +374,10 @@ nscan:
         bne fst, trd, ndigit
 
 nreturn:
+
+        mv fst, idx 
+
+nodigit:
 
         pullra
 
@@ -390,10 +398,7 @@ digit:
         #; normalize gap
         addi fst, fst, -7
 
-        # clear 5th bit
-        andi fst, fst, 95 
-
-        #; A to F 
+        #; A to F ?
         li hsh, 16
         bgt fst, hsh, 400f
 

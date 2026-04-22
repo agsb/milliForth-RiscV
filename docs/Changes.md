@@ -39,14 +39,15 @@
     How parse numbers ?
     
     Without a terminal input buffer, there is no way to "rewind" 
-    to try interpret a token as number. 
+    to interpret a token as a number. 
 
-    The simple option is reserve a token to precede numbers.
+    An option is reserve a token to precede numbers.
 
     Then a token, as a sequence of ascii characters between spaces, 
     could be a name or a number. 
 
-    If preceded by %, the token is a signed integer hexadecimal.
+    If preceded by %, the token is a signed integer hexadecimal,
+    defined with valid asciii, 0-9 and A-F, in any error returns NaN.
 
 20/04/2026
 
