@@ -36,6 +36,8 @@
 
 20/04/2026
 
+    renamed debug.S to tools.S
+
     included as optional extras, select in define.S : 
         
         ;CODE   to jump to native code at ipt address
@@ -46,7 +48,7 @@
         
         .       to print TOS in hexadecimal
 
-    included in primitives.S
+    included in primitives.S, select in define.S :
 
         STATE   Forth state variable, 0 execute, 1 compile
         HEAP    aka DP, heap pointer to unused memory

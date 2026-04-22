@@ -133,7 +133,7 @@ h_ends:
 
 #---------------------------------------------------------------------
 # xxx
-.ifdef debug
+.ifdef tools
 
 #include "puthex.S"
 
@@ -193,7 +193,7 @@ warm:
 miss:
 
 # xxx 
-.ifdef debug
+.ifdef tools
 
         putchar '\n'
 
@@ -246,7 +246,7 @@ quit:
 warp:
 
 # xxx
-.ifdef debug
+.ifdef tools
 
         lw fst, STAT (usr)
         # execute is zero
@@ -573,9 +573,9 @@ move:
 .endif
 
 #----------------------------------------------------------------------
-.ifdef debug
+.ifdef tools
 
-#include "debug.S"
+#include "tools.S"
 
 .endif
 

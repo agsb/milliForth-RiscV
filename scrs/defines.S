@@ -118,7 +118,7 @@
 
 /* 
 
- .equ debug, YES
+ .equ tools, YES
  
  .equ extras, YES
 
