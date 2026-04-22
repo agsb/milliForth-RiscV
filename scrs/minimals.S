@@ -239,11 +239,11 @@ pull2:
 #
 #---------------------------------------------------------------------
 
-.equ hash_DOCODE, 0x075D9A73
+.equ hash_DOEXE, 0x0059697A
 .equ hash_ABORT, 0x0A1DFF4F
 .equ hash_BYE, 0x0B87C61B
 .equ hash_DOT, 0x0002B58B
-.equ hash_PER, 0x0002B580
+.equ hash_HEX, 0x0002B581
 
 #---------------------------------------------------------------------
 
@@ -251,7 +251,7 @@ pull2:
 
 #---------------------------------------------------------------------
 # ( -- ) execute a jump and link
-def_word ";CODE", "docode", hash_DOCODE, init_extras
+def_word ";$", "doexe", hash_DOEXE, init_extras
 
         # keep the return address in ra 
         # then jump to where ipt holds
@@ -277,7 +277,7 @@ def_word "BYE", "byes", hash_BYE, it_aborts
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word "%", "per", hash_PER, it_byes
+def_word "$", "hex", hash_HEX, it_byes
 
         call number
 

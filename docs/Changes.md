@@ -36,18 +36,24 @@
 
 22/04/2026
 
-    How parse numbers ?
+    _How parse numbers_?
     
     Without a terminal input buffer, there is no way to "rewind" 
     to interpret a token as a number. 
 
     An option is reserve a token to precede numbers.
 
-    Then a token, as a sequence of ascii characters between spaces, 
-    could be a name or a number. 
+    After token $, next token is a signed integer hexadecimal,
+    defined with valid ascii, 0-9 and A-F, and the converted value 
+    is placed at data stack or NaN, in any error.
 
-    If preceded by %, the token is a signed integer hexadecimal,
-    defined with valid asciii, 0-9 and A-F, in any error returns NaN.
+    _Jump and Link_
+
+    The ;CODE name is reserved with CODE END-CODE by standart legacy,
+    whatever changed name to ;$ called DOEXE, for a reference to execute 
+    by "link and jump then return to next", usefull to make those
+    ;CODE CODE END-CODE standart words.
+
 
 20/04/2026
 
@@ -55,7 +61,7 @@
 
     included as optional extras, select in define.S : 
         
-        ;CODE   to jump to native code at ipt address
+        ;$      to jump to native code at ipt address
 
         BYE     to end the Forth unconditionaly
 

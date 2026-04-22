@@ -39,7 +39,7 @@
 
   | name | word | stacks | use | defined | 
   | -- | -- | -- | -- | -- | 
-  | docode | ( ;CODE ) | ( -- ) | execute native code at next dictionary cell | internal |
+  | exec | ( ;$ ) | ( -- ) | execute native code at next dictionary cell | internal |
   | abort | ABORT | ( -- ) | restart interpreter | core |
   | bye | BYE | ( -- ) | ends Forth | core | 
   | dot | ( . ) | ( w -- ) | prints w in hexadecimal | core |
