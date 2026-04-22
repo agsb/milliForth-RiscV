@@ -174,6 +174,12 @@ cold:
         sw zero, TICK (usr)
 .endif
 
+# xxx 
+.ifdef tackme
+
+        sw zero, TACK (usr)
+.endif
+
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
@@ -240,6 +246,15 @@ quit:
         
         li fst, EXECUTE
         sw fst, STAT (usr)
+
+
+#---------------------------------------------------------------------
+# XXX
+.ifdef extras
+# default base is hexadecimal
+        li fst, 16
+        sw fst, BASE (usr)
+.endif
 
 #---------------------------------------------------------------------
 # 

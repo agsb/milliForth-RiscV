@@ -243,6 +243,7 @@ pull2:
 .equ hash_ABORT, 0x0A1DFF4F
 .equ hash_BYE, 0x0B87C61B
 .equ hash_DOT, 0x0002B58B
+.equ hash_PER, 0x0002B580
 
 #---------------------------------------------------------------------
 
@@ -276,7 +277,15 @@ def_word "BYE", "byes", hash_BYE, it_aborts
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word ".", "dot", hash_DOT, it_byes
+def_word "%", "per", hash_PER, it_byes
+
+        call number
+
+        j push1
+        
+#---------------------------------------------------------------------
+# ( w -- ) #; @
+def_word ".", "dot", hash_DOT, it_per
 
         call pull2
 
@@ -325,7 +334,82 @@ tohex:
 
         ret
 
-.endif
+#----------------------------------------------------------------------
+# code a ASCII $0-F(Z) hexadecimal in a value
+#
+number:
 
+        pushra
+
+        # clear result
+
+        li idx, 0
+
+        # load word separator, BL is space      
+
+        addi trd, zero, BL
+
+        # skip spaces
+nskip:
+        call _getc
+        bleu fst, trd, nskip
+
+ndigit:
+
+        call digit
+
+        slli idx, idx, 4
+
+        add idx, idx, fst
+        
+        # scan spaces
+nscan:
+        call _getc
+        bltu fst, trd, nscan
+
+        bne fst, trd, ndigit
+
+nreturn:
+
+        pullra
+
+        ret
+
+# verify valid digit and convert it
+digit:
+
+100:
+        #; valid digit, 0-9 and A-F  
+        addi fst, fst, -48
+        blt fst, zero, 400f
+
+        #; 0-9 ?
+        li hsh, 10
+        blt fst, hsh, 200f
+
+        #; normalize gap
+        addi fst, fst, -7
+
+        # clear 5th bit
+        andi fst, fst, 95 
+
+        #; A to F 
+        li hsh, 16
+        bgt fst, hsh, 400f
+
+200:
+        #; fst [ 0 .. 16 ]
+
+        ret
+
+400:
+# is_error, NaN
+
+        lui fst, 0x80000
+
+        ret
+
+#---------------------------------------------------------------------
+.endif
 #---------------------------------------------------------------------
 

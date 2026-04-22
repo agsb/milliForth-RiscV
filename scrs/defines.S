@@ -72,15 +72,6 @@
 
 .equ rp_size, stacks * CELL
 
-# user parameter stack: sp rp last heap state 
-# internal: head beat tick 
-
-.equ params, 8
-
-# user stack
-
-.equ user_size, params * CELL
-
 #---------------------------------------------------------------------
 # the order must be preserved, same in source. 
 
@@ -101,17 +92,56 @@
 # state flag
 .equ STAT, 4 * CELL
 
+# base flag
+.equ BASE, 5 * CELL
+
 #---------------------------------------------------------------------
-# reserved 
+# reserved internals
 
 # last heap while compiling
-.equ FAUX, 5 * CELL
+.equ FAUX, 6 * CELL
+
+#---------------------------------------------------------------------
+# not initialized
+
+# first absolute free cell, DICTIONARY__INIT 
+.equ HEAD, 7 * CELL
+
+# last absolute free cell, RAM_LIMIT
+.equ TAIL, 8 * CELL
+
+#---------------------------------------------------------------------
+# for counter
 
 # counter of words executed by next
-.equ BEAT, 6 * CELL
+.equ BEAT, 9 * CELL
 
 # counter of primitives executed 
-.equ TICK, 7 * CELL
+.equ TICK, 10 * CELL
+
+# counter of compiled executed 
+.equ TACK, 11 * CELL
+
+#---------------------------------------------------------------------
+# scratch temporary 
+
+.equ TEMP1, 12 * CELL
+
+.equ TEMP2, 13 * CELL
+
+.equ TEMP3, 14 * CELL
+
+.equ TEMP4, 15 * CELL
+
+# user parameter stack: sp rp last heap state base
+# internal: faux head tail beat tick tack
+# temporay: temp1, temp2, temp3, temp4
+
+.equ params, 16
+
+# user stack
+
+.equ user_size, params * CELL
 
 #---------------------------------------------------------------------
 # flags for compiler options
