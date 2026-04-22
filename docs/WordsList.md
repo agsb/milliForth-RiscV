@@ -19,29 +19,30 @@
 
  ## Minimals
 
- EXIT ( -- ; a -- )   
- COLON ( : )
- SEMIS ( ; )
- KEY    ( -- c )    ditto
- EMIT   ( c -- )    ditto
- STORE ( ! ) ( w1 w2 -- ) [w2] = w1
- FETCH ( @ ) ( w1 -- w2 ) w2 = [w1]
- NAND ( w1 w2 -- w3 ) w3 = w2 NAND w1
- PLUS ( + ) ( w1 w2 - w3 ) w3 = w2 + w1
-
- ZEROQ ( 0# ) ( w1 -- w2 ) TRUE | FALSE = w1 != 0
- USERAT ( U@ ) ( -- a ) address of _user structure
+  | name | word | stacks | use |
+  | -- | -- | -- | -- |
+  | exit | EXIT | ( -- ; a -- ) | |
+  | colon | : | ( -- ) | |
+  | semis | ; | ( -- ) | |
+  | key | KEY | ( -- c ) | ditto |
+  | emit | EMIT | ( c -- ) | ditto |
+  | store | ! |  ( w1 w2 -- ) | [w2] = w1 |
+  | fetch | @ |  ( w1 -- w2 ) | w2 = [w1] |
+  | plus |  +  |  ( w1 w2 - w3 ) | w3 = w2 + w1 |
+  | nand | NAND | ( w1 w2 -- w3 ) | w3 = w2 NAND w1 |
+  | zeroq | 0# |  ( w1 -- w2 ) | w1 != 0 ? TRUE \| FALSE |
+  | userat | U@ | ( -- a ) | address of _user structure |
 
  ## Extras
 
- DOCODE ( ;CODE )
- ABORT ( -- ) restart interpreter
- BYE ( -- ) ends Forth
- DOT ( . ) ( w -- ) prints w in hexadecimal
+ DOCODE | ( ;CODE )
+ ABORT | ( -- ) restart interpreter
+ BYE | ( -- ) ends Forth
+ DOT | ( . ) ( w -- ) prints w in hexadecimal
 
  ## Primitives
 
- ALIGN  ( w1 -- w2 ) w2 == w1 aligned 4 bytes 
+ ALIGN  | ( w1 -- w2 ) w2 == w1 aligned 4 bytes 
  NOT    ( w1 -- w2 ) two complement, w2 = 0 - w1 + 1
  NEG    ( w1 -- w1 ) one complement, w2 = invert bits of w1
  DUP    ( w -- w w )
