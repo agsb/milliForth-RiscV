@@ -249,10 +249,16 @@ pull2:
 .set init_extras, last_next
 
 #---------------------------------------------------------------------
-# ( -- ) execute a jump and link to a reference at IP
+# ( -- ) execute a jump and link
 def_word ";CODE", "docode", hash_DOCODE, init_extras
 
+        # keep the return address in ra 
+        # then jump to where ipt holds
+
         jalr ra, 0 (ipt)
+        
+        # at there, a ret # jalr zero, 0 ( ra )
+        # will return here 
 
         j next
 
