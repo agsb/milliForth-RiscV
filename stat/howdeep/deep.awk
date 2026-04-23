@@ -1,37 +1,6 @@
-#!/usr/bin/awk
-#
-#       how deep is your Forth ?
-#       evaluate how deep levels the word takes
-#       deep find recursion levels
-#       agsb@2026
 #
 # define parameters
 #
-
-
-function deeps( key,    words, n, m, p ) {
-        
-        m = split(lines[key], words, " ")
-
-        print "> " key " (" lines[key] ") " m
-
-        for (n = 3; n < m ; n++) {
-
-                w = words[n]
-
-                if (lines[w] == "") {
-                        print "p " w
-                        }
-                else {        
-                        deeps( w )
-                        dp++;
-                        }
-                }
-        
-        print "d " dp        
-
-        }        
-
 BEGIN {
 
   FS = " ";
@@ -54,32 +23,69 @@ BEGIN {
 # loop 
 #
 {
-        # clean line 
-        gsub(/\r/,"", $0)
-        gsub(/\s+/," ", $0)
-        gsub(/^ +/,"", $0)
-        gsub(/ +$/,"", $0)
-        
-        # one complete word by line 
-        if ( $1 != colon || $(NF) != semis ) {
-                print "? " $0
-                next
-                }
+	
+  gsub(/\r/,"", $0)
+  gsub(/\t+/,"", $0)
+  gsub(/^[ ]+/,"", $0)
+  gsub(/[ ]+$/,"", $0)
+  gsub(/[ ]+/," ", $0)
 
-        lines[$2] = $0
+  if ( $1 == colon && $(NF) == semis ) {
 
-        }
+  word = $2 
+
+  qtde[word] = NF - 3 ;
+  
+  for (n = 3; n < NF; n++) {
+    
+    words[word,n - 3] = $(n);
+  
+    }
+
+  print "  " word " " NF 
+
+  }
+
+} 
 
 
 END {
-        for (key in lines) {
 
-                dp = 0;
-                deeps(key) 
-                
-                print "> " key " " dp
 
-                } 
+  for (key in qtde) {
 
+      dp = 0 
+      
+      np = 0
+
+      deep(key) 
+
+      print " ~ " key " " np " " qtde[key]   
+
+      }
+
+
+  }
+
+  
+function deep( key ) {
+
+        print "- " key
+
+  dp++
+
+  if (dp > np) np = dp
+
+  m = qtde[key]
+
+  for (n = 0; n < m; n++) {
+    
+    yek = words[key,n]
+
+    if ( qtde[yek] > 1) { deep( yek ) } 
+    
+    }
+    
+  dp--
 }
 
