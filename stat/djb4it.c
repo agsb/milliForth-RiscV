@@ -71,7 +71,7 @@ int main ( int argc, char * argv[]) {
 
                 hasf = hash & (0x80000000 - 1);
 
-                printf (".equ hash_%s, 0x%08X\n", word, hasf);
+                printf (".equ hash_%s, 0x%08X #; ( %s ) \n", word, hasf, word);
 
                 }
 

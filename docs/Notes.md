@@ -2,7 +2,7 @@
 
     *STILL A BUNCH (NOT ORGANIZED) OF IDEAS*
 
-## Why
+## Why this ?
 
     Focus in size not performance.
  
@@ -36,16 +36,14 @@
 
     The header order is LINK, HASH and code or references.
  
-    No overflow or underflow stack checks;
- 
-    No numbers only words ;
-
     No Terminal Input Buffer (TIB), just a parser word-to-hash.
 
  ## NO MORE
 
     Those are no more used.
 
+    ~~ Overflow or underflow stack checks.~~
+ 
     ~~Added a pack of 8 cells for scratch workspace, generic use.~~
 
     ~~TIB (80 bytes) and locals (8 cells) are in sequence;~~ 
@@ -74,14 +72,13 @@
  
     Words must be between spaces, before and after;
  
-    Words are case-sensitivy and no size limit of characters;
+    Words are case-sensitivy and no length limit;
  
     No multiuser, no multitask, no checks, not faster;
 
-    IMMEDIATE word only works outside word definition, 
-    it always make latest word immediate.
+    IMMEDIATE always toggle latest word flag immediate.
  
-    No SMUDGE ou HIDDEN Flags, colon saves HERE into FAUX and 
+    No SMUDGE ou HIDDEN flags, colon saves HERE into FAUX and 
     semis loads FAUX into LATEST;
  
 ## For Devs
@@ -118,41 +115,28 @@
  
 ## For RiscV
  
-    A 32-bit processor with 32-bit address space and reduced ISA;
- 
-    There is no automatic pull and push of SP.
-
-    There is no immediate values in comparations.
-
-    Only 12-bits immediate adds.
-
-    No direct memory access, only accessed using a register as pointer.
-
-    No register indexed offset, only immediate offsets (+/- 1024 bytes).
-
-## For compiler options
-
-    compiler suit of RISCV: gcc riscv64-unknown-elf-* -Oz
-
-    which memory map be used and pages size: default GCC
-  
-    simulator of RISCV: qemu 
-    
-    the heap and stack: .heap at end of .bss, .stack elsewhere.
-
-    systems calls of core functions: linux ecalls
-
-    system stack pointer: not used as Forth stack.
-    
-## RiscV ISA
-
 the RISCV is a 4 bytes (32-bit) cell CPU with 32-bit 
     [ISA](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf) 
 or 
     [ISA](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
 
-The milliForth is a ELF program called by 'elsewhere alien operational system', 
-and use registers r0, ra, sp, s0, s1, a0-a7, t0-t1. 
+A 32-bit processor with 32-bit registers, address space and reduced ISA;
+ 
+There is no automatic pull and push of SP.
+
+There is no immediate values in comparations.
+
+Only 12-bits immediate adds (+/- 1024 bytes).
+
+No direct memory access, only accessed using a register as pointer.
+
+No register indexed offset, only immediate offsets (+/- 1024 bytes).
+
+Use "link and jump" concept like old PDPs.
+
+Have a ZERO dedicated register.
+
+The milliForth uses registers r0, ra, sp, s0, s1, a0-a7, t0-t1. 
 
 ## Coding
 
@@ -171,13 +155,52 @@ because does fetch and store from a special 'user structure', which
 contains the user variables for Forth 
 ( sptr, rptr, state, last, heap ).
 
-## Note
+### For compiler options
 
-the originals files from milliforth was edited.
+    compiler suit of RISCV: gcc riscv64-unknown-elf-* -Oz
 
-the bf.FORTH and hello_world.FORTH are from original milliForth[^1]
+    which memory map be used and pages size: default GCC
+  
+    simulator of RISCV: qemu 
+    
+    the heap and stack: .heap at start of .bss, .stack at end of .bss.
 
-the my_hello_world.FORTH is adapted for miiliforth-riscv
+    systems calls of core functions: linux ecalls
+
+    system stack pointer: not used as Forth stack.
+
+
+## Hell of Makefiles
+
+In Linux, I use the GCC gnu toolchain, for Intel x*86*, ARMs and RiscVs.
+there are a defined namespace for each chain, so:
+
+For linux systems, x86-64-linux-gnu, riscv64-linux-gnu, arm-linux-gnueabi 
+and for embeded systems riscv64-unknown-elf, arm-linux-gnueabi, arm-none-eabi.
+
+The QEMU uses qemu-system and qemu-user packs.
+
+My common parameters are: xxxx is the ISA
+
+
+        $(GCCFLAGS) = -nodefaultlibs -nostartfiles -static -Oz \
+                      -march=xxxx -mabi=xxxx 
+
+        $(ASFLAGS) = -Wa,-alms=$@.lst 
+
+        $(LDFLAGS) = -Wl,--stats
+
+        $(PASS)gcc $(GCCFLAGS) $(LDFLAGS) $(ASFLAGS) -o $@.elf $@.S 2> err | tee out
+
+        $(PASS)objdump -hdta $@.elf > $@.dmp
+
+        $(PASS)readelf -a $(MY).elf > $(MY).map
+
+        $(PASS)objcopy --dump-section .text=$(MY).sec $(MY).elf
+        
+        $(PASS)objcopy $(MY).elf -O binary $(MY).bin
+
+        od --endian=little -A x -t x1 -v $(MY).sec > $(MY).hex
 
 ## Postpone Hack
 
@@ -200,9 +223,9 @@ Always compile is what POSTPONE does.
 
 In Milliforth, precedence is the IMMEDIATE flag and could be 0 or 1, 
 
-By the way, tick and comma are in compiled dictionary.
+By the way, tick and comma are in compiled dictionary, 
 
-The postpone is : POSTPONE ' , ; IMMEDIATE ( classics )
+: POSTPONE ' , ; IMMEDIATE ( classics )
 
 ## Colon and Semis
 
@@ -229,14 +252,15 @@ When the compilation breaks, by error or missing word,
 the STATE and LATEST are keepd in order but HERE was advanced with 
 references of words compiled, that junk stays lost in heap. 
 
-To clean heap, just copy FAUX to HERE. The HERE returns to previous 
-value before start the last compilation.
+To clean heap, HERE must returns to value before start the last compilation. 
 
-Also toggle STATE to interpret mode.
+That is why FAUX exists, to keep last mark, then just need copy FAUX to HERE. 
+
+Also need toggle STATE to interpret mode.
 
 ## CREATE and DOES>
 
-    (from eforth ideas)
+   _ (from eforth ideas)_
 
 CREATE place the data address in stack and compiles two EXIT, 
         the address of the first is saved at Forth variable BODY, 
@@ -257,27 +281,27 @@ Note by that way, DOES> is just one word and is not immediate.
 
 ## ;CODE CODE END-CODE
 
-    Those are classic methods to execute compiled native code in 
-    dictionary. 
+Those are classic methods to execute compiled native code in 
+ dictionary. 
 
-    But ;CODE depends on CREATE and CODE END-CODE on DOCOL, to know
-    where jump to execute the native code.
+But ;CODE depends on CREATE and CODE END-CODE on DOCOL, to know
+where jump to execute the native code.
 
-    In a RISCV with MITC, a better way is do a jump and link to IPT 
-    and end the native code with a return.
+In a RISCV with MITC, a better way is do a jump and link to IPT 
+and end the native code with a return.
 
-    gonative:
+gonative:
 
-        jarl ra, 0 (IPT)
+    jarl ra, 0 (IPT)
 
-        j next
+    j next
     
-## For Assembler:
+## The whys:
 
     1. Why ".equ name, register", does not work ?
         Also r0 must ever be called as zero.
 
-    I dunno about another way to make register name alias
+        I dunno about another way to make register name alias
         but using cpp to pre-process the alias, eg. 
         #define mytmp  t1     
 
@@ -304,15 +328,16 @@ Note by that way, DOES> is just one word and is not immediate.
             or
             beq r1, r2, offset
 
-    3. Forth uses a 'user struct' with variables and pointers, then 
+    4. Forth uses a 'user struct' with variables and pointers, then 
     for each memory reference "la rd, reference_memory" is really
     two instructions 
         
             lui rd, %hi(address)
-
             addi rd, %lo(address)
+
             or
-            addi rd, gp, offset
+
+            addi rd, rp, offset
     
     For sake of size better keep the reference in a register 
     and do offsets "lw rd, offser (rf)" then reserve one register (usr)
@@ -324,23 +349,23 @@ Note by that way, DOES> is just one word and is not immediate.
 ```
 wpull:
 # load the index of data stack
-        lw spr, SPT (usr)
+        lw idx, SPT (usr)
 # pull the value
-        lw fst, 0 (spr)
+        lw fst, 0 (idx)
 # update the index
-        addi spr, spr, +1 * CELL
+        addi idx, idx, +4
 # save the index
-        sw spr, SPT (usr)
+        sw idx, SPT (usr)
 
 wpush:
 # load the index of data stack
-        lw spr, SPT (usr)
+        lw idx, SPT (usr)
 # update the index
-        addi spr, spr, -1 * CELL
+        addi idx, idx, -4
 # push the value
-        sw fst, 0 (spr)
+        sw fst, 0 (idx)
 # save the index
-        sw spr, SPT (usr)
+        sw idx, SPT (usr)
 ```
 
     Those are 4 instructions cycles (load/save) over minimal code (pull-push/update) .
@@ -367,7 +392,7 @@ wpush:
 
     The RiscV compressed instructions allow X8 to X15, 
         as S0, S1, A0-A5, and system ecalls could use A0 to A7. 
-        The _putc and _getc uses iA0, A1, A2, A3, A7 and A3 as argument.
+        The _putc and _getc uses A0, A1, A2, A3, A7 and A3 as argument.
     
     The milliForth use S0 as pointer for user structure, 
         S1 to hold the instruction pointer IPT, and two groups of 
@@ -401,7 +426,7 @@ Where are the .heap and .stack ? Forth needs those @!@
 The Minimal Inderect Thread Code, for a linear memory model relies 
 in known where are the primitives.
     
-Maybe without .rodata, at end of .bss could be a good place to start...
+Maybe without .rodata, at start of .bss could be a good place to start...
     
  _For sake, 0x2000000 is a good place._
 
@@ -416,10 +441,10 @@ Moore once used size and first three characters of name as words
     in dictionary. Now with 32-bit CPUs the find of a word could be 
     easy, done just one comparation, and the header as: link, hash, code.
 
-To keep safe from colisions, check the hash of token inside colon (:)
-    and when exists, block that token.
+If need to keep safe from colisions, check the hash of token,  
+    and when exists, block that name. 
 
-Also could export a name:hash, to make a list for human reference.
+Also export name:hash, to make a list for human reference.
     
 The hash is over 0x00000000 to 0x7FFFFFFF, the high bit is IMMEDIATE flag
 
@@ -460,4 +485,10 @@ In MilliForth, -128 is not a number ( NaN ) and is used to indicate
 numeric errors in conversion, overflow, undeflow, zero division.
 
 Sure it is extended to 4 bytes cells. 
+
+## Linux ecalls
+
+https://www.chromium.org/chromium-os/developer-library/reference/linux-constants/syscalls/
+
+
 

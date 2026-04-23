@@ -96,6 +96,8 @@
 .equ hash_RSHIFT, 0x416E6B97
 .equ hash_LSHIFT, 0x2C5784C9 
 
+.equ hash_PERFORM, 0x15EEB854 #; ( PERFORM )
+
 #---------------------------------------------------------------------
 
 .equ init_primitives, last_next
@@ -629,7 +631,17 @@ def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word "+!", "plusto", hash_PLUSTO, it_rshift
+def_word "PERFORM", "perform", hash_PLUSTO, it_rshift
+
+        call pull2
+
+        jalr ra, 0 (fst)
+
+        j save1
+        
+#---------------------------------------------------------------------
+# ( w -- ) #; @
+def_word "+!", "plusto", hash_PLUSTO, it_perform
 
         call pull2
 
