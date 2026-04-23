@@ -155,8 +155,6 @@ _start:
 # go ! go ! go !
 main:
 
-# #include "testv.S"
-
 # do any system inits
 # call _init
 

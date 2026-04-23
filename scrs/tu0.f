@@ -76,6 +76,9 @@
  : XOR OVER OVER AND -ROT NOR NOR ; 
  : XNOR XOR NOT ; 
  
+ : 0= 0# NOT ; 
+ : 0< ISNEGATIVE AND 0# ; 
+
  : 2DUP OVER OVER ; 
  : 2DROP DROP DROP ; 
  : 2SWAP ROT >R ROT R> ;
@@ -128,6 +131,20 @@
         ['] R> , ['] DROP ,
         ['] EXIT , ; IMMEDIATE 
 
+ : FOR HERE ['] >R , ; IMMEDIATE
+
+ : NEXTz 
+        ['] R> , ['] LIT , 1 , ['] - ,  
+        ['] DUP , ['] 0# , ['] NOT , 
+        ['] ?BRANCH , HERE - , ['] DROP , ; IMMEDIATE
+
+ : NEXT 
+        ['] R> , 
+        ['] LIT , 1 , ['] - ,  
+        ['] DUP , 
+        ['] 0< , ['] NOT , 
+        ['] ?BRANCH , HERE - , ['] DROP , ; IMMEDIATE
+
  : ?DUP DUP IF DUP THEN ; 
 
  : CELL LIT [ 4 , ] ; 
@@ -145,13 +162,11 @@
  
  : BL LIT [ 16 16 + , ] ; 
  : QU LIT [ 16 16 + 2 + , ] ; 
- : CR LIT [ 8 2 + , ] EMIT ; 
- : NL LIT [ 8 4 + 1 + , ] EMIT ; 
+ : CR 8 2 + EMIT ; 
+ : NL 8 4 + 1 + EMIT ; 
  : SPACE BL EMIT ; 
  : SPACES 0 DO SPACE LOOP ; 
 
- : 0= 0# NOT ; 
- : 0< ISNEGATIVE AND 0# ; 
  : 0> DUP 
         0= IF DROP FALSE EXIT THEN 
         0< IF FALSE EXIT THEN

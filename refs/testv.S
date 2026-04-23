@@ -1,16 +1,44 @@
+
+
+
+        nop
+
+        lw idx, SPTR (usr)
+
+        lw fst, 0 (idx)
+
+        mv a0, fst 
+
+        lw fst, CELL (idx)
+
+        mv a1, fst 
+
+        lw fst, 2 * CELL (idx)
+
+        mv a2, fst 
+
+        lw fst, 2 * CELL (idx)
+
+        addi idx, idx, 2 * CELL  
+
+        sw idx, SPTR (usr )
+
+        ret
+
+
 testrcv:
 
 100:
 
 
-look0:
+xlook0:
         lw idx, SPTR (usr)
 
         lw fst, 0 (idx)
 
 	ret
 
-pull2:
+xpull2:
 	call look0
 
         addi idx, idx, CELL
@@ -20,7 +48,7 @@ pull2:
         ret
 
 
-pull2:
+ypull2:
 
          lw idx, SPTR (usr)
 
@@ -32,7 +60,7 @@ pull2:
 
          ret
 
- look0:
+ ylook0:
          lw idx, SPTR (usr)
 
          lw fst, 0 (idx)

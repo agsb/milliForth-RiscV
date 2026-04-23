@@ -39,10 +39,11 @@
 
   | name | word | stacks | use | defined | 
   | -- | -- | -- | -- | -- | 
-  | exec | ( ;$ ) | ( -- ) | execute native code at next dictionary cell | internal |
+  | docode | ( ;$ ) | ( -- ) | execute native code at next dictionary cell | internal |
   | abort | ABORT | ( -- ) | restart interpreter | core |
   | bye | BYE | ( -- ) | ends Forth | core | 
   | dot | ( . ) | ( w -- ) | prints w in hexadecimal | core |
+  | per | ( $ ) | ( -- w ) | receive a signed integer in hexadecimal | internal |
 
  ## Primitives
 
@@ -64,10 +65,10 @@
   | or | OR | ( w1 w2 -- w3 ) | w3 = w2 OR w1 | core |
   | xor | XOR | ( w1 w2 -- w3 ) | w3 = w2 XOR w1 | core |
   | equ | = | ( w1 w2 - w3 )  | FALSE \| TRUE ? w2 == w1 | core |
-  | less | < | ( w1 w2 -- w3 ) | FALSE \| TRUE ? w2 > w1 | core |
+  | less | \< | ( w1 w2 -- w3 ) | FALSE \| TRUE ? w2 > w1 | core |
   | rat | R@ | ( -- w ; w -- w ) | ditto | core |
-  | rto | R> | ( -- w ; w -- ) | ditto | core |
-  | tor | >R | ( w -- ; -- w ) | ditto | core |
+  | rto | R\> | ( -- w ; w -- ) | ditto | core |
+  | tor | \>R | ( w -- ; -- w ) | ditto | core |
   | rpat | RP@ | ( -- rp ) | ditto | exception |
   | rpto | RP! | ( rp -- ) | ditto | exception |
   | spat | SP@ | ( -- sp ) | ditto | exception |
