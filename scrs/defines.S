@@ -149,27 +149,17 @@
 
 /* 
 
- .equ tools, YES
- 
  .equ extras, YES
+
+ .equ tools, YES
 
  .equ primitives, YES
 
- .equ missed, YES
+# enable clean if try compile a missed word 
+ .equ missme, YES
 
+# enable counters of words executed
  .equ beatme, YES
-
- .equ tickme, YES
- 
- .equ tackme, YES
- 
- .equ asciis, YES
-
- .equ asciionly, YES
-
- # .equ upperonly, YES
- 
- # .equ loweronly, YES
 
 */
 

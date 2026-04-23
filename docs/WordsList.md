@@ -39,11 +39,11 @@
 
   | name | word | stacks | use | defined | 
   | -- | -- | -- | -- | -- | 
-  | docode | ( ;$ ) | ( -- ) | execute native code at next dictionary cell | internal |
+  | docode | ( ;$ ) | ( -- ) | execute native code at next dictionary cell | milli |
   | abort | ABORT | ( -- ) | restart interpreter | core |
   | bye | BYE | ( -- ) | ends Forth | core | 
   | dot | ( . ) | ( w -- ) | prints w in hexadecimal | core |
-  | per | ( $ ) | ( -- w ) | receive a signed integer in hexadecimal | internal |
+  | per | ( $ ) | ( -- w ) | accept a signed integer hexadecimal to stack | milli |
 
  ## Primitives
 
@@ -103,10 +103,10 @@
   | -- | -- | -- | -- | -- | 
   | splist | .S | ( -- ) | pretty print data stack | tools |
   | rplist | .R | ( -- ) | pretty print return stack | tools* |
-  | dump | DUMP | ( a1 a2 -- ) | pretty print memory from a1 to a2 | extras |
+  | dump | DUMP | ( a1 a2 -- ) | pretty print memory from a1 to a2 | tools* |
   | words | WORDS | ( -- ) | pretty print all compiled words backwards | tools |
   | sees | SEE | ( -- ) | pretty print latest word | tools |
-  | show | SHOW | ( -- ) | shows variables and lists data and return stacks | debug |
-  | twodot | .. | ( w -- w ) | print TOS in hexadecimal, leave TOS | debug |
+  | show | SHOW | ( -- ) | shows variables and lists data and return stacks | tools* |
+  | twodot | .. | ( w -- w ) | print TOS in hexadecimal, leave TOS | tools* |
 
 

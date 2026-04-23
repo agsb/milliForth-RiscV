@@ -126,6 +126,12 @@ rp0:
         # top of return stack
         .word 0x0
 
+#----------------------------------------------------------------------
+# NOTE:
+# user_size + sp_size + rp_size must be less than 1024 bytes
+# because code uses addi (+12bits) to setup offset address
+#----------------------------------------------------------------------
+
 # start of user dictionary 
 h_here: 
 .skip RAM_LIMIT - ( h_here - _user )
@@ -155,7 +161,7 @@ _start:
 # go ! go ! go !
 main:
 
-# do any system inits
+# do any system initializations
 # call _init
 
 #----------------------------------------------------------------------
@@ -169,33 +175,26 @@ cold:
 .ifdef beatme
 
         sw zero, BEAT (usr)
-.endif
-
-# xxx 
-.ifdef tickme
 
         sw zero, TICK (usr)
-.endif
-
-# xxx 
-.ifdef tackme
 
         sw zero, TACK (usr)
+
 .endif
 
 #----------------------------------------------------------------------
 # wipe the dictionary
 warm:
+# last link list of primitives, aka dictionary
+
+        la fst, h_last
+        sw fst, LAST (usr)
+
 # next heap free cell
         
         # la fst, h_here
         addi fst, usr, user_size + sp_size + rp_size + CELL
         sw fst, HEAP (usr)
-
-# last link list of primitives, aka dictionary
-
-        la fst, h_last
-        sw fst, LAST (usr)
 
 #---------------------------------------------------------------------
 # unexpected end of dictionary
@@ -204,11 +203,10 @@ miss:
 # xxx 
 .ifdef tools
 
+        # emote 
         putchar '\n'
-
         putchar '?'
         putchar '?'
-
         putchar '\n'
 
 .endif
@@ -220,7 +218,8 @@ miss:
         lw fst, STAT (usr)
         # execute is zero
         beq fst, zero, 100f
-        # wipe remains
+        
+        # wipe remains, reclaims space.
         lw fst, FAUX (usr)
         sw fst, HEAP (usr)
         li fst, EXECUTE
@@ -250,15 +249,6 @@ quit:
         li fst, EXECUTE
         sw fst, STAT (usr)
 
-
-#---------------------------------------------------------------------
-# XXX
-.ifdef extras
-# default base is hexadecimal
-        li fst, 16
-        sw fst, BASE (usr)
-.endif
-
 #---------------------------------------------------------------------
 # 
 warp:
@@ -266,10 +256,12 @@ warp:
 # xxx
 .ifdef tools
 
+        # not compiling ?
         lw fst, STAT (usr)
         # execute is zero
         bne fst, zero, 100f
 
+        # emote 
         putchar '\n'
         putchar 'O'
         putchar 'K'
@@ -284,6 +276,7 @@ warp:
 
 #---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
+# idx have the hash of the word
 #
 find:
 
@@ -318,7 +311,7 @@ find:
 
         xor wrd, wrd, snd
 
-        # compare trd eq  hash
+        # compare trd equ hash
         
         bne idx, wrd, 100b
 
@@ -327,10 +320,8 @@ find:
         addi fst, fst, CELL
 
 #---------------------------------------------------------------------         
-# idx have the hash of the word
-# snd have the flags
+# snd have the flag
 # fst have the address after header
-
 eval:
         # what to do ?
 
@@ -344,7 +335,7 @@ eval:
 
         bne snd, zero, immediate      
 
-        # compiling ? elses
+        # compiling  
 compile:
         
         call comma
@@ -360,8 +351,7 @@ immediate:
 
 #---------------------------------------------------------------------
 # crude token
-# load a valid sequence of ascii from stream, 
-# wipes all controls (\t, \n, \r, ... ), 
+# load a valid sequence of ascii from stream, wipes all controls, 
 # any token must be between spaces
 #----------------------------------------------------------------------
 # djb2 hash function
@@ -371,7 +361,7 @@ immediate:
 .equ DJB2, 5381
 .equ SFHT, 5
 #---------------------------------------------------------------------
-# return the hash of token 
+# return the hash of token in idx 
 # do not change the registers !
 token:
         pushra
@@ -394,11 +384,6 @@ skip:
         # djb2 hash function
 hash:        
 
-# xxx
-.ifdef asciis
-        call pass
-.endif
-
         mv snd, idx
 
         slli idx, idx, SFHT
@@ -410,6 +395,9 @@ hash:
         # scan spaces
 scan:
         call _getc
+
+        # andi fst, fst, 127
+
         bltu fst, trd, scan
 
         bne fst, trd, hash
@@ -425,49 +413,6 @@ mask:
 
         ret
         
-#---------------------------------------------------------------------
-pass:
-
-# xxx
-100:
-.ifdef asciionly
-
-        andi fst, fst, 127
-
-.endif
-
-# xxx
-200:
-.ifdef loweronly
-
-        addi a7, zero, 'A'       
-        blt fst, a7, 300f
-
-        addi a7, zero, 'Z'      
-        blt a7, fst, 300f
-        
-        # set the 6th bit, 
-        ori fst, fst, 32     
-        
-.endif
-
-# xxx
-300:
-.ifdef upperonly
-
-        addi a7, zero, 'a'       
-        blt fst, a7, 400f
-
-        addi a7, zero, 'z'      
-        blt a7, fst, 400f
-        
-        # clear the 6th bit, 
-        andi fst, fst, 95     
-        
-.endif
-
-        ret
-
 #---------------------------------------------------------------------
 comma:
 
@@ -501,8 +446,9 @@ is_warp:
 #
 # "why there is no 'docol at start of words ?"
 #
-unnest: 
+#---------------------------------------------------------------------
 # return pull 
+unnest: 
         
         lw idx, RPTR (usr)
         
@@ -512,48 +458,42 @@ unnest:
         
         sw idx, RPTR (usr)
 
+# next heart beat
 next:
-
 # xxx
-# count beats as next executions
 .ifdef beatme
-        lw idx, BEAT (usr)
-
-        addi idx, idx, 1
-        
-        sw idx, BEAT (usr)
+        call beats
 .endif
+
 
         lw fst, 0 (ipt)
         
         addi ipt, ipt, CELL
 
-pick:
 # compare address, if is a primitive then jumps, MITC 
+pick:
         
         la idx, ends
         
         bge fst, idx, nest
 
-jump: 
 # jump to primitive
-        
+jump: 
 # xxx
-# count ticks as primitive executions
-.ifdef tickme
-        lw idx, TICK (usr)
-
-        addi idx, idx, 1
-        
-        sw idx, TICK (usr)
+.ifdef beatme
+        call ticks
 .endif
 
         # really jump and link 
         jalr ra, 0 (fst)
 
-nest:   
 # return push
-        
+nest:   
+# xxx
+.ifdef beatme
+        call tacks
+.endif
+
         lw idx, RPTR (usr)
         
         addi idx, idx, -1 * CELL
@@ -563,11 +503,48 @@ nest:
         sw idx, RPTR (usr)
 
 move: 
-# indirect access 
+# resolve indirect thread
         
         mv ipt, fst
         
         j next
+
+#----------------------------------------------------------------------
+# xxx
+.ifdef beatme
+
+# count heart beats 
+beats:
+        lw idx, BEAT (usr)
+
+        addi idx, idx, 1
+        
+        sw idx, BEAT (usr)
+
+        ret
+
+# count ticks as primitive executions
+ticks:
+        lw idx, TICK (usr)
+
+        addi idx, idx, 1
+        
+        sw idx, TICK (usr)
+
+        ret
+
+# count tacks as composed executions
+tacks:
+        lw idx, TACK (usr)
+
+        addi idx, idx, 1
+        
+        sw idx, TACK (usr)
+
+        ret
+
+.endif
+#----------------------------------------------------------------------
 
 #----------------------------------------------------------------------
 # system dependences, linux ecall
@@ -576,9 +553,10 @@ move:
 #include "linuxecall.S"
 
 #---------------------------------------------------------------------
-# forth minimal 
+# forth words
 #---------------------------------------------------------------------
 
+#----------------------------------------------------------------------
 .set last_next, 0x0
 
 #include "minimals.S"
