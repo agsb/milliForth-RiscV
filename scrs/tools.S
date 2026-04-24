@@ -435,11 +435,11 @@ to2hex:
 puthex:
         pushra
 
-        add  snd, zero, fst
+        mv snd, fst
         
-        addi trd, zero, 58
+        li trd, 58
 
-        addi t0, zero, 32
+        li t0, 32
 
         # rolls 
 100:

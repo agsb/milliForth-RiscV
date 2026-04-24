@@ -19,9 +19,10 @@ using [Minimal Indirect Thread Code](https://github.com/agsb/agsb.github.io/blob
 
 Milliforth uses a minimal set of functions and primitives for make a Forth.
 
-This version with minimal code (.text), uses only 458 bytes, 
-    392 bytes for Forth engine and 66 bytes for linux system I/O. 
-    Not counting ELF headers. Used 56 bytes to load ELF PIC address. 
+This version with minimal code (.text), uses only 454 bytes, 
+    388 bytes for Forth engine and 66 bytes for linux system I/O. 
+    Not counting ELF headers. 
+    Used 56 bytes to load ELF PIC address and 44 bytes for word headers.
 
 No human WORDS. It uses DJB2 hash in headers. 
 

@@ -94,8 +94,9 @@
  : FOR HERE ['] >R , ;
  : NEXT ['] R> , ['] LIT , 1 , ['] - , ['] DUP , ['] 0< , ['] NOT , ['] ?BRANCH , HERE - , ['] DROP , ;
  : ?DUP DUP IF DUP THEN ;
- \ : CELL LIT [ 4 , ] ;
  : CELLS DUP + DUP + ;
+ \ : CELL ['] [ 4 , ] ;
+ \ : CELL LIT [ 4 , ] ;
  \ : 0 LIT [ 0 , ] ;
  \ : 1 LIT [ 1 , ] ;
  \ : 2 LIT [ 1 1 + , ] ;
@@ -107,7 +108,6 @@
  \ : 128 LIT [ 64 64 + , ] ;
  \ : BL LIT [ 16 16 + , ] ;
  \ : QU LIT [ 16 16 + 2 + , ] ;
-
  : CR 8 2 + EMIT ;
  : NL 8 4 + 1 + EMIT ;
  : SPACE BL EMIT ;

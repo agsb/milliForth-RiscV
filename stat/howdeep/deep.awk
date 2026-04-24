@@ -25,12 +25,12 @@ BEGIN {
 {
 	
   gsub(/\r/,"", $0)
-  gsub(/\t+/,"", $0)
+  gsub(/\s+/," ", $0)
   gsub(/^[ ]+/,"", $0)
   gsub(/[ ]+$/,"", $0)
   gsub(/[ ]+/," ", $0)
 
-  if ( $1 == colon && $(NF) == semis ) {
+  if ( $1 != colon || $(NF) != semis ) next
 
   word = $2 
 
@@ -42,10 +42,6 @@ BEGIN {
   
     }
 
-  print "  " word " " NF 
-
-  }
-
 } 
 
 
@@ -54,13 +50,19 @@ END {
 
   for (key in qtde) {
 
-      dp = 0 
+      dp = 0
+
+      ep = 0
       
       np = 0
 
+      nc = 0
+
+      print "\n@ " key " " qtde[key] 
+
       deep(key) 
 
-      print " ~ " key " " np " " qtde[key]   
+      print "\n~ " key " " ep " " dp " " np " " nc    
 
       }
 
@@ -68,13 +70,11 @@ END {
   }
 
   
-function deep( key ) {
-
-        print "- " key " " dp 
+function deep( key,     n, m, yek) {
 
   dp++
 
-  if (dp > np) np = dp
+  if (dp > ep) ep = dp
 
   m = qtde[key]
 
@@ -82,10 +82,22 @@ function deep( key ) {
     
     yek = words[key,n]
 
-    if ( qtde[yek] > 1) { deep( yek ) } 
-    
+    if ( qtde[yek] > 0) { 
+        nc++
+        deep( yek ) 
+        } 
+    else {
+        np++
+        printf " " yek 
+        }
+
+    # escape next ?
+    if (yek == "[']") {
+        n++
+        }
+
     }
-    
+
   dp--
 }
 

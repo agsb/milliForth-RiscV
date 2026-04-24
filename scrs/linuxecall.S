@@ -27,6 +27,7 @@
 #---------------------------------------------------------------------
 # linux ecall stuff, 29/07/2025, vide:
 # https://github.com/riscv-software-src/riscv-pk/blob/master/pk/syscall.h
+# https://gpages.juszkiewicz.com.pl/syscalls-table/syscalls.html
 
 .equ _ZERO,      0
 .equ _ONE,       1
