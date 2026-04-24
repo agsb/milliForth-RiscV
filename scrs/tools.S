@@ -30,7 +30,7 @@
 # djb2 hash cleared of bit 31
 #
 
-.equ hash_tdot, 0x005966C5
+.equ hash_twodot, 0x005966C5
 .equ hash_splist, 0x005965D3
 .equ hash_rplist, 0x005965D2
 
@@ -99,7 +99,7 @@ def_word "SHOW", "show", hash_SHOW, it_sees
 
 #----------------------------------------------------------------------
 # ( u -- u ) print tos in hexadecimal
-def_word "..", "tdot", hash_tdot, it_show
+def_word "..", "twodot", hash_twodot, it_show
 
         call pull2
 
@@ -111,7 +111,7 @@ def_word "..", "tdot", hash_tdot, it_show
 
 #---------------------------------------------------------------------
 
-.set last_next, it_tdot
+.set last_next, it_twodot
 
 #---------------------------------------------------------------------
 #

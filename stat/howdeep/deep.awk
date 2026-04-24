@@ -70,7 +70,7 @@ END {
   
 function deep( key ) {
 
-        print "- " key
+        print "- " key " " dp 
 
   dp++
 

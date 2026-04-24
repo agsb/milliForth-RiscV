@@ -54,8 +54,6 @@ QEMU = ${BASE}qemu-riscv32
 
 QFLAGS = -display none -bios none -serial mon:stdio -smp 1 -machine virt 
 
-MY = minimal
-
 MY = sector
 
 ########################################
