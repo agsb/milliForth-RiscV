@@ -299,11 +299,11 @@ def_word ".", "dot", hash_DOT, it_hexnum
 
 #---------------------------------------------------------------------
 # code a 32-bit word in ASCII hexadecimal
-#
-.global tohex
+# safe inside Forth words
+# 
 tohex:
 
-        pushra
+        rasave
 
         mv snd, fst
         
@@ -330,20 +330,24 @@ tohex:
 
 300:
 
-        pullra
+        raload
 
         ret
 
 #----------------------------------------------------------------------
-# code a ASCII $0-F(Z) hexadecimal in a value
-#
+# code a ASCII $0-9A-F hexadecimal to value
+# safe inside Forth words
 number:
 
-        pushra
+        rasave
 
         # clear result
 
         li idx, 0
+
+        # load NaN
+
+        lui snd, 0x80000
 
         # load word separator, BL is space      
 
@@ -358,9 +362,7 @@ ndigit:
 
         call digit
 
-        lui hsh, 0x80000
-
-        beq fst, hsh, nodigit
+        beq fst, snd, nodigit
 
         slli idx, idx, 4
 
@@ -373,13 +375,13 @@ nscan:
 
         bne fst, trd, ndigit
 
-nreturn:
+isdigit:
 
         mv fst, idx 
 
 nodigit:
 
-        pullra
+        raload
 
         ret
 
@@ -395,15 +397,18 @@ digit:
         li hsh, 10
         blt fst, hsh, 200f
 
-        #; normalize gap
+        #; normalize gap ascii 9 to A
         addi fst, fst, -7
 
-        #; A to F ?
+        #; A to F ? No esoteric bases !
         li hsh, 16
         bgt fst, hsh, 400f
 
 200:
         #; fst [ 0 .. 16 ]
+        
+        # lw hst, BASE (usr)
+        # bgt fst, hst, 400f
 
         ret
 

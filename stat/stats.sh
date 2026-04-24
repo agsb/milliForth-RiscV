@@ -18,6 +18,8 @@ grep -E 'beq|bne|blt|ble|bgt|bge' dmp > decisions
 
 grep -E ' it_' dmp > hooks
 
+grep -E ' hash_' dmp > hashs
+
 grep -E '_GLOBAL_|auipc' dmp > globals
 
 grep -E 'lui|aui' dmp > lauis

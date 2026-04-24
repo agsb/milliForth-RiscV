@@ -70,19 +70,17 @@ is_\label:
 
 #---------------------------------------------------------------------
 # Riscv does not have automatic, and hidden, SP push/pull
-# for nested calls, use pushra and pullra
+# for two level nested calls, use rasave and raload
 #
 
-.global pushra
-.macro pushra
-        addi sp, sp, -4   
-        sw ra, 0(sp)    
+# one deep
+
+.macro  rasave
+        mv s2, ra
 .endm
 
-.global pullra
-.macro pullra
-        lw ra, 0(sp)    
-        addi sp, sp, +4   
+.macro  raload
+        mv ra, s2
 .endm
 
 #----------------------------------------------------------------------
@@ -364,7 +362,7 @@ immediate:
 # return the hash of token in idx 
 # do not change the registers !
 token:
-        pushra
+        rasave
 
         # prepare for hash
 
@@ -409,7 +407,7 @@ mask:
 
         srli idx, idx, ONE
 
-        pullra
+        raload
 
         ret
         
@@ -464,7 +462,6 @@ next:
 .ifdef beatme
         call beats
 .endif
-
 
         lw fst, 0 (ipt)
         

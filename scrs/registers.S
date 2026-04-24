@@ -23,8 +23,27 @@
 # using pre-processor CPP (GNU GCC)
 # for alias register names 
 # beware about changes
-# a0,a1,a2,a3,a7 used by ecalls in _putc, _getc, _fcntl, etc
-# a4,a5,a6 are generics ecall safe
+#
+# sp not used
+#
+# jalr/jal using ra
+#
+# s0,s1,a0,a1,a2,a3,a4,a5 (x8-x15) used for compact instruction
+#
+# a0,a1,a2,a3,a7 used by ecalls in _putc, _getc, _exit, etc
+#
+# a0,a1,a2 used in no ecalls
+#
+# a4,a5,a6 used as ecall safe
+#
+# t0,t1,t2 used as counters
+#
+# t3,t4,t5,t6 used as holders for a0,a1,a2,a3 for ecalls
+#
+# s2 used to keep ra
+#
+# a3 used as joker :)
+#
 #---------------------------------------------------------------------
 /*
 

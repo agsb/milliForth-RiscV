@@ -25,46 +25,51 @@
 # macros for debug
 #
 #---------------------------------------------------------------------
-.globl tinto
-.macro tinto
-        add t3, zero, a0
-        add t4, zero, a1
-        add t5, zero, a2
-        add t6, zero, a3
+.globl esave
+.macro esave
+        mv t3, a0
+        mv t4, a1
+        mv t5, a2
+        mv t6, a3
 .endm
 
-.globl tfrom
-.macro tfrom
-        add a0, zero, t3
-        add a1, zero, t4
-        add a2, zero, t5
-        add a3, zero, t6
+.globl eload
+.macro eload
+        mv a0, t3
+        mv a1, t4
+        mv a2, t5
+        mv a3, t6
 .endm
 
 .globl putchar
 .macro putchar value
-       tinto
+       esave
        li a3, \value
        call _putc
-       tfrom
+       eload
 .endm
 
 #---------------------------------------------------------------------
 .globl mhit
 .macro mhit it
-        putchar '\n'
-        putchar \it
-        putchar ' '
+        esave
+        li a3, '\n'
+        call _putc
+        li a3, \it'
+        call _putc
+        li a3, '\n'
+        call _putc
+        eload
 .endm
 
 #---------------------------------------------------------------------
 .globl mhex
 .macro mhex rg
         pushra
-        call saves
-        add a3, zero, \rg
+        esave
+        mv a3, \rg
         call puthex
-        call loads
+        eload
         pullra 
 .endm
 

@@ -6,7 +6,7 @@ Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
   0 .note.gnu.build-id 00000024  000100d4  000100d4  000000d4  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  1 .text         000001ca  000100f8  000100f8  000000f8  2**2
+  1 .text         000001c6  000100f8  000100f8  000000f8  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   2 .got          0000001c  00011fdc  00011fdc  00000fdc  2**2
                   CONTENTS, ALLOC, LOAD, DATA
@@ -26,7 +26,7 @@ SYMBOL TABLE:
 00012000 l    d  .data	00000000 .data
 00012008 l    d  .bss	00000000 .bss
 00000000 l    d  .riscv.attributes	00000000 .riscv.attributes
-00000000 l    df *ABS*	00000000 ccfcA39T.o
+00000000 l    df *ABS*	00000000 ccbWiAiR.o
 00040000 l       *ABS*	00000000 RAM_LIMIT
 00000000 l       *ABS*	00000000 FALSE
 ffffffff l       *ABS*	00000000 TRUE
@@ -42,45 +42,61 @@ ffffffff l       *ABS*	00000000 TRUE
 00000024 l       *ABS*	00000000 stacks
 00000090 l       *ABS*	00000000 sp_size
 00000090 l       *ABS*	00000000 rp_size
-00000008 l       *ABS*	00000000 params
-00000020 l       *ABS*	00000000 user_size
 00000000 l       *ABS*	00000000 SPTR
 00000004 l       *ABS*	00000000 RPTR
 00000008 l       *ABS*	00000000 LAST
 0000000c l       *ABS*	00000000 HEAP
 00000010 l       *ABS*	00000000 STAT
-00000014 l       *ABS*	00000000 HEAD
-00000018 l       *ABS*	00000000 BEAT
-0000001c l       *ABS*	00000000 TICK
+00000014 l       *ABS*	00000000 BASE
+00000018 l       *ABS*	00000000 FAUX
+0000001c l       *ABS*	00000000 HEAD
+00000020 l       *ABS*	00000000 TAIL
+00000024 l       *ABS*	00000000 BEAT
+00000028 l       *ABS*	00000000 TICK
+0000002c l       *ABS*	00000000 TACK
+00000030 l       *ABS*	00000000 TEMP1
+00000034 l       *ABS*	00000000 TEMP2
+00000038 l       *ABS*	00000000 TEMP3
+0000003c l       *ABS*	00000000 TEMP4
+00000010 l       *ABS*	00000000 params
+00000040 l       *ABS*	00000000 user_size
 00012008 l       .bss	00000000 void
 0001200c l       .bss	00000000 _user
-000120bc l       .bss	00000000 sp0
-0001214c l       .bss	00000000 rp0
-0001214c l       .bss	00000000 mark
-00012150 l       .bss	00000000 h_here
+0001204c l       .bss	00000000 mark
+000120e0 l       .bss	00000000 sp0
+00012174 l       .bss	00000000 rp0
+00012178 l       .bss	00000000 h_here
 0005200c l       .bss	00000000 h_ends
 000100f8 l       .text	00000000 main
 000100f8 l       .text	00000000 cold
 00010100 l       .text	00000000 warm
-000102a2 l       .text	00000000 h_last
+0001029e l       .text	00000000 h_last
 00010110 l       .text	00000000 miss
 00010110 l       .text	00000000 abort
 00010116 l       .text	00000000 quit
-00010120 l       .text	00000000 knot
-00010120 l       .text	00000000 find
+00010120 l       .text	00000000 warp
 00010150 l       .text	00000000 token
+00010122 l       .text	00000000 find
 0001013c l       .text	00000000 eval
 00010146 l       .text	00000000 execute
 00010146 l       .text	00000000 immediate
 00010142 l       .text	00000000 compile
-00010184 l       .text	00000000 comma
-0001018e l       .text	00000000 knotptr
-000101e8 l       .text	00000000 pick
+0001017e l       .text	00000000 comma
+00010188 l       .text	00000000 is_warp
+00010198 l       .text	00000000 pick
 00001505 l       *ABS*	00000000 DJB2
 00000005 l       *ABS*	00000000 SFHT
-0001019e l       .text	00000000 _getc
-00010178 l       .text	00000000 mask
-00010182 l       .text	00000000 pass
+0001015e l       .text	00000000 skip
+000101c0 l       .text	00000000 _getc
+00010164 l       .text	00000000 hash
+0001016c l       .text	00000000 scan
+00010176 l       .text	00000000 mask
+0001018c l       .text	00000000 unnest
+00010194 l       .text	00000000 next
+000102bc l       .text	00000000 ends
+000101a8 l       .text	00000000 nest
+000101a4 l       .text	00000000 jump
+000101b0 l       .text	00000000 move
 00000000 l       *ABS*	00000000 _ZERO
 00000001 l       *ABS*	00000000 _ONE
 00000000 l       *ABS*	00000000 _STDIN
@@ -92,65 +108,54 @@ ffffffff l       *ABS*	00000000 TRUE
 0000005d l       *ABS*	00000000 _EXIT
 000000c0 l       *ABS*	00000000 _MMAP
 00012004 l       .data	00000000 _char
-00010192 l       .text	00000000 _exit
-0001019c l       .text	00000000 _init
-000101ba l       .text	00000000 _putc
-000101ce l       .text	00000000 _rets
-000102a2 l       .text	00000000 last_next
+000101b4 l       .text	00000000 _exit
+000101be l       .text	00000000 _init
+000101dc l       .text	00000000 _putc
+000101f0 l       .text	00000000 _rets
+0001029e l       .text	00000000 last_next
 0002b584 l       *ABS*	00000000 hash_store
 0002b5e5 l       *ABS*	00000000 hash_fetch
 0002b58e l       *ABS*	00000000 hash_plus
 00596816 l       *ABS*	00000000 hash_zeroq
 0002b59f l       *ABS*	00000000 hash_colon
 8002b59e l       *ABS*	00000000 hash_semis
-0b876d32 l       *ABS*	00000000 hash_key
-7c6b87d0 l       *ABS*	00000000 hash_emit
-7c727500 l       *ABS*	00000000 hash_nand
-00596f90 l       *ABS*	00000000 hash_userat
-7c6bbe85 l       *ABS*	00000000 hash_exit
 0b87f112 l       *ABS*	00000000 hash_KEY
 7c7c87d0 l       *ABS*	00000000 hash_EMIT
 7c8254c0 l       *ABS*	00000000 hash_NAND
 005973b0 l       *ABS*	00000000 hash_USERAT
 7c7cc745 l       *ABS*	00000000 hash_EXIT
-00000000 l       *ABS*	00000000 init_primitives
-000101d4 l       .text	00000000 it_exit
-000101dc l       .text	00000000 is_exit
-000101dc l       .text	00000000 unnest
-000101e4 l       .text	00000000 next
-000102c0 l       .text	00000000 ends
-000101f8 l       .text	00000000 nest
-000101f4 l       .text	00000000 jump
-00010200 l       .text	00000000 move
-00010204 l       .text	00000000 it_colon
-0001020c l       .text	00000000 is_colon
-00010214 l       .text	00000000 create
-0001021c l       .text	00000000 docomma
-00010220 l       .text	00000000 it_semis
-00010228 l       .text	00000000 is_semis
-00010230 l       .text	00000000 finish
-0001023a l       .text	00000000 it_key
-00010242 l       .text	00000000 is_key
-000102ac l       .text	00000000 push1
-00010246 l       .text	00000000 it_emit
-0001024e l       .text	00000000 is_emit
-000102b6 l       .text	00000000 pull2
-000102b2 l       .text	00000000 save1
-00010254 l       .text	00000000 it_store
-0001025c l       .text	00000000 is_store
-00010260 l       .text	00000000 drop1
-00010264 l       .text	00000000 it_fetch
-0001026c l       .text	00000000 is_fetch
-000102ae l       .text	00000000 back1
-00010272 l       .text	00000000 it_nand
-0001027a l       .text	00000000 is_nand
-000102b0 l       .text	00000000 keep1
-00010284 l       .text	00000000 it_plus
-0001028c l       .text	00000000 is_plus
-00010292 l       .text	00000000 it_zeroq
-0001029a l       .text	00000000 is_zeroq
-000102a2 l       .text	00000000 it_userat
-000102aa l       .text	00000000 is_userat
+00000000 l       *ABS*	00000000 init_minimals
+000101f6 l       .text	00000000 it_exit
+000101fe l       .text	00000000 is_exit
+00010200 l       .text	00000000 it_colon
+00010208 l       .text	00000000 is_colon
+00010210 l       .text	00000000 create
+00010218 l       .text	00000000 docomma
+0001021c l       .text	00000000 it_semis
+00010224 l       .text	00000000 is_semis
+0001022c l       .text	00000000 finish
+00010236 l       .text	00000000 it_key
+0001023e l       .text	00000000 is_key
+000102a8 l       .text	00000000 push1
+00010242 l       .text	00000000 it_emit
+0001024a l       .text	00000000 is_emit
+000102b2 l       .text	00000000 pull2
+000102ae l       .text	00000000 save1
+00010250 l       .text	00000000 it_store
+00010258 l       .text	00000000 is_store
+0001025c l       .text	00000000 drop1
+00010260 l       .text	00000000 it_fetch
+00010268 l       .text	00000000 is_fetch
+000102aa l       .text	00000000 back1
+0001026e l       .text	00000000 it_nand
+00010276 l       .text	00000000 is_nand
+000102ac l       .text	00000000 keep1
+00010280 l       .text	00000000 it_plus
+00010288 l       .text	00000000 is_plus
+0001028e l       .text	00000000 it_zeroq
+00010296 l       .text	00000000 is_zeroq
+0001029e l       .text	00000000 it_userat
+000102a6 l       .text	00000000 is_userat
 00011fdc l     O .got	00000000 _GLOBAL_OFFSET_TABLE_
 00012808 g       *ABS*	00000000 __global_pointer$
 00012008 g       .data	00000000 __SDATA_BEGIN__
@@ -170,23 +175,26 @@ Disassembly of section .text:
    100fc:	ee842403          	lw	s0,-280(s0) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x4>
 
 00010100 <warm>:
-   10100:	14440693          	addi	a3,s0,324
-   10104:	c454                	sw	a3,12(s0)
-   10106:	00002697          	auipc	a3,0x2
-   1010a:	ede6a683          	lw	a3,-290(a3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x8>
-   1010e:	c414                	sw	a3,8(s0)
+   10100:	00002697          	auipc	a3,0x2
+   10104:	ee46a683          	lw	a3,-284(a3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x8>
+   10108:	c414                	sw	a3,8(s0)
+   1010a:	16440693          	addi	a3,s0,356
+   1010e:	c454                	sw	a3,12(s0)
 
 00010110 <abort>:
-   10110:	0b040693          	addi	a3,s0,176
+   10110:	0d040693          	addi	a3,s0,208
    10114:	c014                	sw	a3,0(s0)
 
 00010116 <quit>:
-   10116:	14040693          	addi	a3,s0,320
+   10116:	16040693          	addi	a3,s0,352
    1011a:	c054                	sw	a3,4(s0)
-   1011c:	00042823          	sw	zero,16(s0)
+   1011c:	4681                	li	a3,0
+   1011e:	c814                	sw	a3,16(s0)
 
-00010120 <find>:
+00010120 <warp>:
    10120:	2805                	jal	10150 <token>
+
+00010122 <find>:
    10122:	440c                	lw	a1,8(s0)
    10124:	d5f5                	beqz	a1,10110 <abort>
    10126:	86ae                	mv	a3,a1
@@ -196,7 +204,7 @@ Disassembly of section .text:
    1012e:	80000737          	lui	a4,0x80000
    10132:	8f71                	and	a4,a4,a2
    10134:	8e39                	xor	a2,a2,a4
-   10136:	fec797e3          	bne	a5,a2,10124 <find+0x4>
+   10136:	fec797e3          	bne	a5,a2,10124 <find+0x2>
    1013a:	0691                	addi	a3,a3,4
 
 0001013c <eval>:
@@ -205,240 +213,244 @@ Disassembly of section .text:
    10140:	e319                	bnez	a4,10146 <execute>
 
 00010142 <compile>:
-   10142:	2089                	jal	10184 <comma>
-   10144:	bff1                	j	10120 <find>
+   10142:	2835                	jal	1017e <comma>
+   10144:	bff1                	j	10120 <warp>
 
 00010146 <execute>:
    10146:	00002497          	auipc	s1,0x2
    1014a:	ea24a483          	lw	s1,-350(s1) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0xc>
-   1014e:	a869                	j	101e8 <pick>
+   1014e:	a0a9                	j	10198 <pick>
 
 00010150 <token>:
-   10150:	1171                	addi	sp,sp,-4
-   10152:	c006                	sw	ra,0(sp)
-   10154:	000017b7          	lui	a5,0x1
-   10158:	50578793          	addi	a5,a5,1285 # 1505 <DJB2>
-   1015c:	02000813          	li	a6,32
-   10160:	283d                	jal	1019e <_getc>
-   10162:	fed85fe3          	bge	a6,a3,10160 <token+0x10>
-   10166:	873e                	mv	a4,a5
-   10168:	0796                	slli	a5,a5,0x5
-   1016a:	97ba                	add	a5,a5,a4
-   1016c:	8fb5                	xor	a5,a5,a3
-   1016e:	2805                	jal	1019e <_getc>
-   10170:	ff06cfe3          	blt	a3,a6,1016e <token+0x1e>
-   10174:	ff0699e3          	bne	a3,a6,10166 <token+0x16>
+   10150:	8906                	mv	s2,ra
+   10152:	000017b7          	lui	a5,0x1
+   10156:	50578793          	addi	a5,a5,1285 # 1505 <DJB2>
+   1015a:	02000813          	li	a6,32
 
-00010178 <mask>:
-   10178:	0786                	slli	a5,a5,0x1
-   1017a:	8385                	srli	a5,a5,0x1
-   1017c:	4082                	lw	ra,0(sp)
-   1017e:	0111                	addi	sp,sp,4
-   10180:	8082                	ret
+0001015e <skip>:
+   1015e:	208d                	jal	101c0 <_getc>
+   10160:	fed87fe3          	bgeu	a6,a3,1015e <skip>
 
-00010182 <pass>:
-   10182:	8082                	ret
+00010164 <hash>:
+   10164:	873e                	mv	a4,a5
+   10166:	0796                	slli	a5,a5,0x5
+   10168:	97ba                	add	a5,a5,a4
+   1016a:	8fb5                	xor	a5,a5,a3
 
-00010184 <comma>:
-   10184:	445c                	lw	a5,12(s0)
-   10186:	c394                	sw	a3,0(a5)
-   10188:	0791                	addi	a5,a5,4
-   1018a:	c45c                	sw	a5,12(s0)
-   1018c:	8082                	ret
+0001016c <scan>:
+   1016c:	2891                	jal	101c0 <_getc>
+   1016e:	ff06efe3          	bltu	a3,a6,1016c <scan>
+   10172:	ff0699e3          	bne	a3,a6,10164 <hash>
 
-0001018e <knotptr>:
-   1018e:	00010120          	.word	0x00010120
+00010176 <mask>:
+   10176:	0786                	slli	a5,a5,0x1
+   10178:	8385                	srli	a5,a5,0x1
+   1017a:	80ca                	mv	ra,s2
+   1017c:	8082                	ret
 
-00010192 <_exit>:
-   10192:	05d00893          	li	a7,93
-   10196:	4501                	li	a0,0
-   10198:	00000073          	ecall
+0001017e <comma>:
+   1017e:	445c                	lw	a5,12(s0)
+   10180:	c394                	sw	a3,0(a5)
+   10182:	0791                	addi	a5,a5,4
+   10184:	c45c                	sw	a5,12(s0)
+   10186:	8082                	ret
 
-0001019c <_init>:
-   1019c:	8082                	ret
+00010188 <is_warp>:
+   10188:	00010120          	.word	0x00010120
 
-0001019e <_getc>:
-   1019e:	03f00893          	li	a7,63
-   101a2:	4501                	li	a0,0
-   101a4:	00002597          	auipc	a1,0x2
-   101a8:	e485a583          	lw	a1,-440(a1) # 11fec <_GLOBAL_OFFSET_TABLE_+0x10>
-   101ac:	4605                	li	a2,1
-   101ae:	00000073          	ecall
-   101b2:	00058683          	lb	a3,0(a1)
-   101b6:	dd71                	beqz	a0,10192 <_exit>
-   101b8:	8082                	ret
+0001018c <unnest>:
+   1018c:	405c                	lw	a5,4(s0)
+   1018e:	4384                	lw	s1,0(a5)
+   10190:	0791                	addi	a5,a5,4
+   10192:	c05c                	sw	a5,4(s0)
 
-000101ba <_putc>:
-   101ba:	04000893          	li	a7,64
-   101be:	4505                	li	a0,1
-   101c0:	00002597          	auipc	a1,0x2
-   101c4:	e2c5a583          	lw	a1,-468(a1) # 11fec <_GLOBAL_OFFSET_TABLE_+0x10>
-   101c8:	4605                	li	a2,1
-   101ca:	00d58023          	sb	a3,0(a1)
+00010194 <next>:
+   10194:	4094                	lw	a3,0(s1)
+   10196:	0491                	addi	s1,s1,4
 
-000101ce <_rets>:
-   101ce:	00000073          	ecall
-   101d2:	8082                	ret
+00010198 <pick>:
+   10198:	00002797          	auipc	a5,0x2
+   1019c:	e547a783          	lw	a5,-428(a5) # 11fec <_GLOBAL_OFFSET_TABLE_+0x10>
+   101a0:	00f6d463          	bge	a3,a5,101a8 <nest>
 
-000101d4 <it_exit>:
-   101d4:	00000000          	.word	0x00000000
-   101d8:	7c7cc745          	.word	0x7c7cc745
+000101a4 <jump>:
+   101a4:	000680e7          	jalr	a3
 
-000101dc <is_exit>:
-   101dc:	405c                	lw	a5,4(s0)
-   101de:	4384                	lw	s1,0(a5)
-   101e0:	0791                	addi	a5,a5,4
-   101e2:	c05c                	sw	a5,4(s0)
+000101a8 <nest>:
+   101a8:	405c                	lw	a5,4(s0)
+   101aa:	17f1                	addi	a5,a5,-4
+   101ac:	c384                	sw	s1,0(a5)
+   101ae:	c05c                	sw	a5,4(s0)
 
-000101e4 <next>:
-   101e4:	4094                	lw	a3,0(s1)
-   101e6:	0491                	addi	s1,s1,4
+000101b0 <move>:
+   101b0:	84b6                	mv	s1,a3
+   101b2:	b7cd                	j	10194 <next>
 
-000101e8 <pick>:
-   101e8:	00002797          	auipc	a5,0x2
-   101ec:	e0c7a783          	lw	a5,-500(a5) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x18>
-   101f0:	00f6d463          	bge	a3,a5,101f8 <nest>
+000101b4 <_exit>:
+   101b4:	05d00893          	li	a7,93
+   101b8:	4501                	li	a0,0
+   101ba:	00000073          	ecall
 
-000101f4 <jump>:
-   101f4:	000680e7          	jalr	a3
+000101be <_init>:
+   101be:	8082                	ret
 
-000101f8 <nest>:
-   101f8:	405c                	lw	a5,4(s0)
-   101fa:	17f1                	addi	a5,a5,-4
-   101fc:	c384                	sw	s1,0(a5)
-   101fe:	c05c                	sw	a5,4(s0)
+000101c0 <_getc>:
+   101c0:	03f00893          	li	a7,63
+   101c4:	4501                	li	a0,0
+   101c6:	00002597          	auipc	a1,0x2
+   101ca:	e2a5a583          	lw	a1,-470(a1) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x14>
+   101ce:	4605                	li	a2,1
+   101d0:	00000073          	ecall
+   101d4:	00058683          	lb	a3,0(a1)
+   101d8:	dd71                	beqz	a0,101b4 <_exit>
+   101da:	8082                	ret
 
-00010200 <move>:
-   10200:	84b6                	mv	s1,a3
-   10202:	b7cd                	j	101e4 <next>
+000101dc <_putc>:
+   101dc:	04000893          	li	a7,64
+   101e0:	4505                	li	a0,1
+   101e2:	00002597          	auipc	a1,0x2
+   101e6:	e0e5a583          	lw	a1,-498(a1) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x14>
+   101ea:	4605                	li	a2,1
+   101ec:	00d58023          	sb	a3,0(a1)
 
-00010204 <it_colon>:
-   10204:	000101d4          	.word	0x000101d4
-   10208:	0002b59f          	.word	0x0002b59f
+000101f0 <_rets>:
+   101f0:	00000073          	ecall
+   101f4:	8082                	ret
 
-0001020c <is_colon>:
-   1020c:	4454                	lw	a3,12(s0)
-   1020e:	c854                	sw	a3,20(s0)
-   10210:	4685                	li	a3,1
-   10212:	c814                	sw	a3,16(s0)
+000101f6 <it_exit>:
+   101f6:	00000000          	.word	0x00000000
+   101fa:	7c7cc745          	.word	0x7c7cc745
 
-00010214 <create>:
-   10214:	4414                	lw	a3,8(s0)
-   10216:	37bd                	jal	10184 <comma>
-   10218:	3f25                	jal	10150 <token>
-   1021a:	86be                	mv	a3,a5
+000101fe <is_exit>:
+   101fe:	b779                	j	1018c <unnest>
 
-0001021c <docomma>:
-   1021c:	37a5                	jal	10184 <comma>
-   1021e:	b7d9                	j	101e4 <next>
+00010200 <it_colon>:
+   10200:	000101f6          	.word	0x000101f6
+   10204:	0002b59f          	.word	0x0002b59f
 
-00010220 <it_semis>:
-   10220:	00010204          	.word	0x00010204
-   10224:	8002b59e          	.word	0x8002b59e
+00010208 <is_colon>:
+   10208:	4454                	lw	a3,12(s0)
+   1020a:	cc14                	sw	a3,24(s0)
+   1020c:	4685                	li	a3,1
+   1020e:	c814                	sw	a3,16(s0)
 
-00010228 <is_semis>:
-   10228:	4854                	lw	a3,20(s0)
-   1022a:	c414                	sw	a3,8(s0)
-   1022c:	00042823          	sw	zero,16(s0)
+00010210 <create>:
+   10210:	4414                	lw	a3,8(s0)
+   10212:	37b5                	jal	1017e <comma>
+   10214:	3f35                	jal	10150 <token>
+   10216:	86be                	mv	a3,a5
 
-00010230 <finish>:
-   10230:	00002697          	auipc	a3,0x2
-   10234:	dc06a683          	lw	a3,-576(a3) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x14>
-   10238:	b7d5                	j	1021c <docomma>
+00010218 <docomma>:
+   10218:	379d                	jal	1017e <comma>
+   1021a:	bfad                	j	10194 <next>
 
-0001023a <it_key>:
-   1023a:	00010220          	.word	0x00010220
-   1023e:	0b87f112          	.word	0x0b87f112
+0001021c <it_semis>:
+   1021c:	00010200          	.word	0x00010200
+   10220:	8002b59e          	.word	0x8002b59e
 
-00010242 <is_key>:
-   10242:	3fb1                	jal	1019e <_getc>
-   10244:	a0a5                	j	102ac <push1>
+00010224 <is_semis>:
+   10224:	4c14                	lw	a3,24(s0)
+   10226:	c414                	sw	a3,8(s0)
+   10228:	00042823          	sw	zero,16(s0)
 
-00010246 <it_emit>:
-   10246:	0001023a          	.word	0x0001023a
-   1024a:	7c7c87d0          	.word	0x7c7c87d0
+0001022c <finish>:
+   1022c:	00002697          	auipc	a3,0x2
+   10230:	dc86a683          	lw	a3,-568(a3) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x18>
+   10234:	b7d5                	j	10218 <docomma>
 
-0001024e <is_emit>:
-   1024e:	20a5                	jal	102b6 <pull2>
-   10250:	37ad                	jal	101ba <_putc>
-   10252:	a085                	j	102b2 <save1>
+00010236 <it_key>:
+   10236:	0001021c          	.word	0x0001021c
+   1023a:	0b87f112          	.word	0x0b87f112
 
-00010254 <it_store>:
-   10254:	00010246          	.word	0x00010246
-   10258:	0002b584          	.word	0x0002b584
+0001023e <is_key>:
+   1023e:	3749                	jal	101c0 <_getc>
+   10240:	a0a5                	j	102a8 <push1>
 
-0001025c <is_store>:
-   1025c:	28a9                	jal	102b6 <pull2>
-   1025e:	c298                	sw	a4,0(a3)
+00010242 <it_emit>:
+   10242:	00010236          	.word	0x00010236
+   10246:	7c7c87d0          	.word	0x7c7c87d0
 
-00010260 <drop1>:
-   10260:	0791                	addi	a5,a5,4
-   10262:	a881                	j	102b2 <save1>
+0001024a <is_emit>:
+   1024a:	20a5                	jal	102b2 <pull2>
+   1024c:	3f41                	jal	101dc <_putc>
+   1024e:	a085                	j	102ae <save1>
 
-00010264 <it_fetch>:
-   10264:	00010254          	.word	0x00010254
-   10268:	0002b5e5          	.word	0x0002b5e5
+00010250 <it_store>:
+   10250:	00010242          	.word	0x00010242
+   10254:	0002b584          	.word	0x0002b584
 
-0001026c <is_fetch>:
-   1026c:	20a9                	jal	102b6 <pull2>
-   1026e:	4294                	lw	a3,0(a3)
-   10270:	a83d                	j	102ae <back1>
+00010258 <is_store>:
+   10258:	28a9                	jal	102b2 <pull2>
+   1025a:	c298                	sw	a4,0(a3)
 
-00010272 <it_nand>:
-   10272:	00010264          	.word	0x00010264
-   10276:	7c8254c0          	.word	0x7c8254c0
+0001025c <drop1>:
+   1025c:	0791                	addi	a5,a5,4
+   1025e:	a881                	j	102ae <save1>
 
-0001027a <is_nand>:
-   1027a:	2835                	jal	102b6 <pull2>
-   1027c:	8ef9                	and	a3,a3,a4
-   1027e:	fff6c693          	not	a3,a3
-   10282:	a03d                	j	102b0 <keep1>
+00010260 <it_fetch>:
+   10260:	00010250          	.word	0x00010250
+   10264:	0002b5e5          	.word	0x0002b5e5
 
-00010284 <it_plus>:
-   10284:	00010272          	.word	0x00010272
-   10288:	0002b58e          	.word	0x0002b58e
+00010268 <is_fetch>:
+   10268:	20a9                	jal	102b2 <pull2>
+   1026a:	4294                	lw	a3,0(a3)
+   1026c:	a83d                	j	102aa <back1>
 
-0001028c <is_plus>:
-   1028c:	202d                	jal	102b6 <pull2>
-   1028e:	96ba                	add	a3,a3,a4
-   10290:	a005                	j	102b0 <keep1>
+0001026e <it_nand>:
+   1026e:	00010260          	.word	0x00010260
+   10272:	7c8254c0          	.word	0x7c8254c0
 
-00010292 <it_zeroq>:
-   10292:	00010284          	.word	0x00010284
-   10296:	00596816          	.word	0x00596816
+00010276 <is_nand>:
+   10276:	2835                	jal	102b2 <pull2>
+   10278:	8ef9                	and	a3,a3,a4
+   1027a:	fff6c693          	not	a3,a3
+   1027e:	a03d                	j	102ac <keep1>
 
-0001029a <is_zeroq>:
-   1029a:	2831                	jal	102b6 <pull2>
-   1029c:	d6a1                	beqz	a3,101e4 <next>
-   1029e:	56fd                	li	a3,-1
-   102a0:	a039                	j	102ae <back1>
+00010280 <it_plus>:
+   10280:	0001026e          	.word	0x0001026e
+   10284:	0002b58e          	.word	0x0002b58e
 
-000102a2 <h_last>:
-   102a2:	00010292          	.word	0x00010292
-   102a6:	005973b0          	.word	0x005973b0
+00010288 <is_plus>:
+   10288:	202d                	jal	102b2 <pull2>
+   1028a:	96ba                	add	a3,a3,a4
+   1028c:	a005                	j	102ac <keep1>
 
-000102aa <is_userat>:
-   102aa:	86a2                	mv	a3,s0
+0001028e <it_zeroq>:
+   1028e:	00010280          	.word	0x00010280
+   10292:	00596816          	.word	0x00596816
 
-000102ac <push1>:
-   102ac:	401c                	lw	a5,0(s0)
+00010296 <is_zeroq>:
+   10296:	2831                	jal	102b2 <pull2>
+   10298:	ca89                	beqz	a3,102aa <back1>
+   1029a:	56fd                	li	a3,-1
+   1029c:	a039                	j	102aa <back1>
 
-000102ae <back1>:
-   102ae:	17f1                	addi	a5,a5,-4
+0001029e <h_last>:
+   1029e:	0001028e          	.word	0x0001028e
+   102a2:	005973b0          	.word	0x005973b0
 
-000102b0 <keep1>:
-   102b0:	c394                	sw	a3,0(a5)
+000102a6 <is_userat>:
+   102a6:	86a2                	mv	a3,s0
 
-000102b2 <save1>:
-   102b2:	c01c                	sw	a5,0(s0)
-   102b4:	bf05                	j	101e4 <next>
+000102a8 <push1>:
+   102a8:	401c                	lw	a5,0(s0)
 
-000102b6 <pull2>:
-   102b6:	401c                	lw	a5,0(s0)
-   102b8:	4394                	lw	a3,0(a5)
-   102ba:	0791                	addi	a5,a5,4
-   102bc:	4398                	lw	a4,0(a5)
-   102be:	8082                	ret
+000102aa <back1>:
+   102aa:	17f1                	addi	a5,a5,-4
 
-000102c0 <ends>:
+000102ac <keep1>:
+   102ac:	c394                	sw	a3,0(a5)
+
+000102ae <save1>:
+   102ae:	c01c                	sw	a5,0(s0)
+   102b0:	b5d5                	j	10194 <next>
+
+000102b2 <pull2>:
+   102b2:	401c                	lw	a5,0(s0)
+   102b4:	4394                	lw	a3,0(a5)
+   102b6:	0791                	addi	a5,a5,4
+   102b8:	4398                	lw	a4,0(a5)
+   102ba:	8082                	ret
+
+000102bc <ends>:
 	...

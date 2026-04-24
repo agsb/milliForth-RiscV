@@ -402,6 +402,28 @@ wpush:
 
     In some debug and extras routines more registers could be used.
         
+    Sumary:  
+
+          sp not used
+         
+          jalr/jal uses ra
+         
+          s0,s1,a0,a1,a2,a3,a4,a5 (x8-x15) used for compact instruction
+         
+          a0,a1,a2,a3,a7 used by ecalls in _putc, _getc, _exit, etc
+         
+          a0,a1,a2 used as ecalls unsafe
+         
+          a4,a5,a6 used as ecall safe
+         
+          t0,t1,t2 used as counters
+         
+          t3,t4,t5,t6 used as holders for a0,a1,a2,a3 for ecalls
+         
+          s2 used to keep ra, two level threads
+         
+          a3 used as joker :)
+         
 ## For Heaps
 
 _"From a 6502 64k memory to a Risc-V 4GB memory, Mind the Gap."_
@@ -446,7 +468,8 @@ If need to keep safe from colisions, check the hash of token,
 
 Also export name:hash, to make a list for human reference.
     
-The hash is over 0x00000000 to 0x7FFFFFFF, the high bit is IMMEDIATE flag
+The hash is over 0x00000000 to 0x7FFFFFFF, to reserve
+the high bit is IMMEDIATE flag
 
 _" there is no spoon "_
 
@@ -457,7 +480,7 @@ traditional name header with /link, size+flag, name+pad/ and other
 using a hash header with /link, hash/.
 
 In 32-bit systems, the use of hash does far lesser size than using 
-name in dictionary.
+names in dictionary.
 
 Pros:
 

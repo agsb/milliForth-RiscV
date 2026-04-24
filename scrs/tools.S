@@ -26,6 +26,21 @@
 #----------------------------------------------------------------------
 
 #---------------------------------------------------------------------
+# Riscv does not have automatic, and hidden, SP push/pull
+# for nested calls, use pushra and pullra
+#
+
+.macro pushra
+        addi sp, sp, -4   
+        sw ra, 0(sp)    
+.endm
+
+.macro pullra
+        lw ra, 0(sp)    
+        addi sp, sp, +4   
+.endm
+
+#---------------------------------------------------------------------
 #
 # djb2 hash cleared of bit 31
 #
@@ -116,8 +131,7 @@ def_word "..", "twodot", hash_twodot, it_show
 #---------------------------------------------------------------------
 #
 # Note: 
-#       nested user calls must save ra, 
-#       relies in pushra and pullra
+#       nested calls must save ra, 
 #
 #---------------------------------------------------------------------
 
