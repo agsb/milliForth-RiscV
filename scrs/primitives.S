@@ -514,7 +514,7 @@ by_over:
 # ( -- w ; w -- ) #; @
 def_word "RP0", "rpzo", hash_RPZO, it_nan
 
-        la fst, rp0
+        la fst, _rp0
 
         j push1
 
@@ -522,7 +522,7 @@ def_word "RP0", "rpzo", hash_RPZO, it_nan
 # ( -- w ; w -- ) #; @
 def_word "SP0", "spzo", hash_SPZO, it_rpzo
 
-        la fst, rp0
+        la fst, _sp0
 
         j push1
 
@@ -554,7 +554,7 @@ def_word "HEAP", "heap", hash_HEAP, it_last
 # ( -- w ; w -- ) #; @ start of memory for use
 def_word "HEAD", "head", hash_HEAD, it_heap
 
-        la fst, h_here
+        la fst, h_where
 
         j push1
 
@@ -562,7 +562,7 @@ def_word "HEAD", "head", hash_HEAD, it_heap
 # ( -- w ; w -- ) #; @ end of memory for use
 def_word "TAIL", "tail", hash_TAIL, it_head
 
-        la fst, h_ends
+        la fst, h_there
 
         j push1
 

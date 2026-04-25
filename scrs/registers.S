@@ -42,6 +42,7 @@
 #
 # s2 used to keep ra
 #
+# s2 
 # a3 used as joker :)
 #
 #---------------------------------------------------------------------
@@ -66,6 +67,15 @@
 
 # forth instruction pointer, preserved
 #define ipt s1
+
+# used to keep ra, preseved
+#define rak s2
+
+# forth end of native code, constant
+#define nib s3
+
+# forth external loop of native code, constant
+#define bow s4
 
 # hash value
 #define hsh a0

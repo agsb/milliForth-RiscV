@@ -70,17 +70,17 @@ is_\label:
 
 #---------------------------------------------------------------------
 # Riscv does not have automatic, and hidden, SP push/pull
-# for two level nested calls, use rasave and raload
-#
+# for two level nested calls, use save_ra and load_ra
+# ever use as macro
 
 # one deep
 
-.macro  rasave
-        mv s2, ra
+.macro  save_ra
+        mv rak, ra
 .endm
 
-.macro  raload
-        mv ra, s2
+.macro  load_ra
+        mv ra, rak
 .endm
 
 #----------------------------------------------------------------------
@@ -108,20 +108,18 @@ void:
 _user:
 .skip user_size
 
-# end of stacks
-mark:
-        .word 0x0
-
 # data stack grows backward, bottom 
+_spz:
 .skip sp_size
-sp0: 
-        # top of data stack
+_sp0: 
+        # top of data stack, keep
         .word 0x0
 
 # return stack grows backward, bottom
+_rpz:
 .skip rp_size
-rp0: 
-        # top of return stack
+_rp0: 
+        # top of return stack, keep
         .word 0x0
 
 #----------------------------------------------------------------------
@@ -130,11 +128,12 @@ rp0:
 # because code uses addi (+12bits) to setup offset address
 #----------------------------------------------------------------------
 
-# start of user dictionary 
-h_here: 
-.skip RAM_LIMIT - ( h_here - _user )
-# end of memory
-h_ends:
+# user dictionary 
+# at start of memory
+h_where: 
+.skip RAM_LIMIT - ( h_where - _user )
+# to end of  memory
+h_there:
 
 #----------------------------------------------------------------------
 .text 
@@ -165,9 +164,13 @@ main:
 #----------------------------------------------------------------------
 # do what need be only once
 cold:
-# load user pointer address
+# load constant pointer address
 
         la usr, _user
+
+        la nib, _nibs
+        
+        la bow, is_warp
 
 # xxx 
 .ifdef beatme
@@ -190,8 +193,8 @@ warm:
 
 # next heap free cell
         
-        # la fst, h_here
-        addi fst, usr, user_size + sp_size + rp_size + CELL
+        # la fst, h_where
+        addi fst, usr, user_size + sp_size + CELL + rp_size + CELL
         sw fst, HEAP (usr)
 
 #---------------------------------------------------------------------
@@ -230,7 +233,7 @@ abort:
 # reset data stack
         
         # la fst, sp0 
-        addi fst, usr, user_size + sp_size
+        addi fst, usr, user_size + sp_size + CELL
         sw fst, SPTR (usr)
 
 #---------------------------------------------------------------------
@@ -238,7 +241,7 @@ quit:
 # reset return stack
         
         #la fst, rp0 
-        addi fst, usr, user_size + sp_size + rp_size
+        addi fst, usr, user_size + sp_size + CELL + rp_size + CELL
         sw fst, RPTR (usr)
 
 #---------------------------------------------------------------------
@@ -343,7 +346,7 @@ compile:
 execute:
 immediate:
 
-        la ipt, is_warp
+        mv ipt, bow
 
         j pick
 
@@ -362,7 +365,7 @@ immediate:
 # return the hash of token in idx 
 # do not change the registers !
 token:
-        rasave
+        save_ra
 
         # prepare for hash
 
@@ -407,7 +410,7 @@ mask:
 
         srli idx, idx, ONE
 
-        raload
+        load_ra
 
         ret
         
@@ -470,9 +473,10 @@ next:
 # compare address, if is a primitive then jumps, MITC 
 pick:
         
-        la idx, ends
+        # la idx, _ends
+        # bge fst, idx, nest
         
-        bge fst, idx, nest
+        bge fst, nib, nest
 
 # jump to primitive
 jump: 
@@ -580,7 +584,7 @@ tacks:
 # it is used to know if a 'address' is primitive or not
 #---------------------------------------------------------------------
 
-ends:
+_nibs:
 
 #---------------------------------------------------------------------
 .end
