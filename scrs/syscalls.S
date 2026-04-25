@@ -65,7 +65,7 @@ _getc:
         li a7, _GETC
         li a0, _STDIN
         la a1, _char
-        la a2, _ONE
+        li a2, _ONE
         ecall
         lb a3, 0 (a1)
         
@@ -73,7 +73,7 @@ _getc:
 
         beq a0, zero, _exit
 
-.ifndef debug
+.ifndef echoo
 
         ret
 
@@ -84,7 +84,7 @@ _putc:
         li a7, _PUTC
         li a0, _STDOUT
         la a1, _char
-        la a2, _ONE
+        li a2, _ONE
         sb a3, 0 (a1)
 
 _rets:

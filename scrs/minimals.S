@@ -303,7 +303,7 @@ def_word ".", "dot", hash_DOT, it_hexnum
 # 
 tohex:
 
-        rasave
+        save_ra
 
         mv snd, fst
         
@@ -330,7 +330,7 @@ tohex:
 
 300:
 
-        raload
+        load_ra
 
         ret
 
@@ -339,7 +339,7 @@ tohex:
 # safe inside Forth words
 number:
 
-        rasave
+        save_ra
 
         # clear result
 
@@ -381,7 +381,7 @@ isdigit:
 
 nodigit:
 
-        raload
+        load_ra
 
         ret
 

@@ -86,7 +86,7 @@ is_\label:
 #----------------------------------------------------------------------
 # Nothing here, void.
 .section .data
-.p2align 2, 0x0
+.p2align 4, 0x0
 
 .word 0xFEEDCAFE
 
@@ -95,11 +95,9 @@ is_\label:
 #----------------------------------------------------------------------
 # but always in RAM :)
 .section .bss
-.p2align 2, 0x0
+.p2align 4, 0x0
 
 # void at top of bss 
-void: 
-        .word 0x0
 
 # all forth variables and stacks by offset of _user
 # beware change offsets
@@ -129,6 +127,8 @@ _rp0:
 #----------------------------------------------------------------------
 
 # user dictionary 
+.word 0x0
+
 # at start of memory
 h_where: 
 .skip RAM_LIMIT - ( h_where - _user )
@@ -194,7 +194,7 @@ warm:
 # next heap free cell
         
         # la fst, h_where
-        addi fst, usr, user_size + sp_size + CELL + rp_size + CELL
+        addi fst, usr, user_size + sp_size + CELL + rp_size + CELL 
         sw fst, HEAP (usr)
 
 #---------------------------------------------------------------------
@@ -233,7 +233,7 @@ abort:
 # reset data stack
         
         # la fst, sp0 
-        addi fst, usr, user_size + sp_size + CELL
+        addi fst, usr, user_size + sp_size
         sw fst, SPTR (usr)
 
 #---------------------------------------------------------------------
@@ -241,7 +241,7 @@ quit:
 # reset return stack
         
         #la fst, rp0 
-        addi fst, usr, user_size + sp_size + CELL + rp_size + CELL
+        addi fst, usr, user_size + sp_size + CELL + rp_size
         sw fst, RPTR (usr)
 
 #---------------------------------------------------------------------

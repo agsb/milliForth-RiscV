@@ -149,17 +149,20 @@
 
 /* 
 
- .equ extras, YES
+.equ extras, YES
 
- .equ tools, YES
+.equ tools, YES
 
- .equ primitives, YES
+.equ primitives, YES
+
+# enable echo
+.equ echoo, YES
 
 # enable clean if try compile a missed word 
- .equ missme, YES
+.equ missme, YES
 
 # enable counters of words executed
- .equ beatme, YES
+.equ beatme, YES
 
 */
 

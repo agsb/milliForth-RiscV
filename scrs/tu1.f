@@ -1,8 +1,4 @@
 
- \ this file is still a stub 
-
- \ for compilation 
-
  \ make a header
 
  : :NAME HERE : 0 STATE ! ; 
@@ -62,5 +58,4 @@
         IF ' LIT , , ' ! , 
         ELSE ! 
         THEN ; 
-
 

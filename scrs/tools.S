@@ -184,30 +184,26 @@ wordf:
         
         lw a5, LAST (usr)
         
-        la a6, h_here
-
-        blt a5, a6, returns
-
         lw a6, HEAP (usr)
         
 # init of compiled dictionary
 
-        la s7, h_here 
+        la s7, h_where 
 
         putchar '\n'
 
 100:
 # verify end of compiled dictionary
 
-        blt a5, zero, returns
+        # end of compiled dictionary
 
         blt a5, s7, returns
 
-        add s8, zero, a5
+        mv  s8, a5
 
         call wordt
 
-        add a6, zero, s8
+        mv a6, s8
 
         lw a5, 0 (a6)
 
@@ -222,9 +218,9 @@ wordu:
 
         lw a5, LAST (usr)
 
-        la a6, h_here
+        la a6, h_where
 
-        blt a5, a6, returns
+        ble a5, a6, returns
 
         lw a6, HEAP (usr)
 
@@ -255,7 +251,7 @@ wordt:
 
         addi a5, a5, CELL
 
-        bne a5, a6, 100b
+        blt a5, a6, 100b
 
         putchar '\n'
 
@@ -274,7 +270,7 @@ stackS:
         putchar 'S'
 
         lw a5, SPTR (usr)
-        la a6, sp0
+        la a6, _sp0
 
         call stackp
 
@@ -291,7 +287,7 @@ stackR:
         putchar 'R'
 
         lw a5, RPTR (usr)
-        la a6, rp0
+        la a6, _rp0
         
         call stackp
 
@@ -435,9 +431,9 @@ to2hex:
 puthex:
         pushra
 
-        mv snd, fst
+        mv t2, fst
         
-        li trd, 58
+        li t1, 58
 
         li t0, 32
 
@@ -447,13 +443,13 @@ puthex:
 
         addi t0, t0, -4
 
-        srl  fst, snd, t0
+        srl  fst, t2, t0
 
         andi fst, fst, 15
 
         ori  fst, fst, 48
         
-        blt  fst, trd, 200f
+        blt  fst, t1, 200f
         
         addi fst, fst, 7
 
