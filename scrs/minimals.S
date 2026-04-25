@@ -305,9 +305,9 @@ tohex:
 
         save_ra
 
-        mv snd, fst
+        mv t2, fst
         
-        li trd, 58
+        li t1, 58
 
         li t0, 32
 
@@ -317,11 +317,10 @@ tohex:
 
         addi t0, t0, -4
 
-        srl  fst, snd, t0
-
+        srl  fst, t2, t0
         andi fst, fst, 15
         ori  fst, fst, 48
-        blt  fst, trd, 200f
+        blt  fst, t1, 200f
         addi fst, fst, 7
 200:
         call _putc
