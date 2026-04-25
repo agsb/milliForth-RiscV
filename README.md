@@ -43,7 +43,7 @@ How shink to a minimal compiled size in a Risc-V ?
 
     3. warn the user about possible errors but abandon error checking;
 
-    4. Use streams, no buffers;
+    4. use streams, no buffers;
 
     5. do not speculate;
 
@@ -93,7 +93,7 @@ minimal primitives:
     0#    if top of data stack is not zero returns -1 (0xFFFFFFFF)
 
     +     adds two values at top of data stack
-    nand  logic not-and the two values at top of data stack
+    NAND  logic not-and the two values at top of data stack
     
     @     fetch a value of cell wich address at top of data stack
     !     store a value into a cell wich address at top of data stack
@@ -101,10 +101,10 @@ minimal primitives:
     :     starts compiling a new word
     ;     stops compiling a new word
     
-    exit  ends a word
+    EXIT  ends a word
 
-    key   get a char from default terminal (stdin)
-    emit  put a char into default terminal (stdout)
+    KEY  get a char from default terminal (stdin)
+    EMIT  put a char into default terminal (stdout)
         
 only internals: 
     
@@ -113,29 +113,27 @@ only internals:
     find, eval, compile, execute, immediate, comma,  
     unnest, next, pick, jump, nest, move
 
-    ps. exit is unnest, nest is enter/docol,
-        next is not the NEXT of FOR loop !    
+    ps. next is not the NEXT of FOR NEXT loop !    
 
 with externals, ecall to linux:
 
     _getc, _putc, _exit, ( _fcntl, _init ) 
 
-extras: (selectable)
+```
 
-    ;CODE   execute native code at instruction pointer (IP), vide Notes
+## Vocabulary
+
+More words in native code are selectable in defines.S
+
+Eg. extras:
+
+    ;$      execute native code at instruction pointer (IP), vide Notes
     ABORT   restart the Forth interpreter
     BYE     ends the Forth, return to system
     .       show the cell at top of data stack in hexadecimal 
-    %       next token is a signed integer hexadecimal number to TOS 
+    $       next token is a signed integer hexadecimal number to TOS 
     
-debug:    
-    %S      list cells in data stack
-    %R      list cells in return stack
-    WORDS   list all compiled words in dictionary order
-    DUMP    list contents of dictionary in memory order
-    SEE     list compiled hash contents of last word 
-
-```
+A full list of primitives in [Word Lists](https://github.com/agsb/milliForth-RiscV/blob/main/docs/WordsList.md)
 
 ## the Language
 
