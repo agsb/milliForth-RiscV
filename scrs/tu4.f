@@ -36,7 +36,7 @@
  : CCOPY< ( from into many -- ) 
         FOR OVER @ OVER ! 1 - SWAP 1 - SWAP NEXT DROPS ;
 
- : XXXCOUNT ( c a -- a n )
+ : zzzCOUNT ( c a -- a n )
         SWAP OVER BEGIN OVER OVER @ = 
         ;
 

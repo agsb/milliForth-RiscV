@@ -551,7 +551,7 @@ tacks:
 # system dependences, linux ecall
 #---------------------------------------------------------------------
 
-#include "linuxecall.S"
+#include "syscalls.S"
 
 #---------------------------------------------------------------------
 # forth words
