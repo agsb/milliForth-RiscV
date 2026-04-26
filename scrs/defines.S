@@ -147,16 +147,17 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
-/* 
-
 .equ extras, YES
 
 .equ tools, YES
 
+.equ echoo, YES
+
+/* 
+
 .equ primitives, YES
 
 # enable echo
-.equ echoo, YES
 
 # enable clean if try compile a missed word 
 .equ missme, YES

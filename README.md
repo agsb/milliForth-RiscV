@@ -82,6 +82,50 @@ How shink to a minimal compiled size in a Risc-V ?
     The source could be compiled with 'missed' hack and
         more extensive native code word set.
 
+## No name, just a hash
+
+*I AM AFR--- THA- THE LET--- IN THE LAS- ISS-- ABO--
+FOR-- INC- USI-- ONL- THR-- LET--- NAM- FIE--- HAS
+HAD THE OPP ..... EFF--- FRO- WHA- THE WRI--- WAN---*
+
+[Full text](https://github.com/agsb/agsb.github.io/blob/main/notes/Essay.md)
+
+The letter to the Editor of Forth Dimensions [Moore 1983] concerning 
+the practice of storing names of Forth words as a count and first three characters,
+
+A count and first three characters, four bytes was enough.
+
+_"AI uses hash code as word, Humans uses semantics as word"_
+     [Liang Ng](https://www.youtube.com/watch?v=sSlM3Mr_9sI)
+
+In this century, computers uses hashes to compare contents, so why not 
+use a 4 bytes hash to identify tokens ? 
+
+This version of milliforth uses 32-bit DJB2 hash. It provide a fast 
+comparation in compilations and have small footprint.
+
+For a 32-bit DJB2 hash, collisions become highly probable after 
+approximately 65,536 items which requires an absurdly large dictionary.
+
+## No Terminal Input Buffer
+
+_"The melange must flow"_
+
+_Chuck executes or compiles each word indiviually rather than line by line.
+In fact Chuck doesn't really have lines. I will also go word by word rather
+than line by line in aha._
+
+[Jeff Fox](https://www.ultratechnology.com/enthflux.htm) ?
+
+Why no Terminal Input Buffer ?
+
+Forth is not a editor. Does not need of undo, redo, copy or paste.
+
+The input is a stream, just flows tokens. 
+
+A token is being defined, has been defined, or has not been defined and
+Forth reacts.
+
 ## Internals
 
 This version uses DJB2 hash for dictionary entries, and includes: 
@@ -156,6 +200,8 @@ For A Problem Oriented Language see
 [^4]: The miniforth: https://github.com/meithecatte/miniforth
 [^5]: Forth standart ANSI X3.215-1994: http://www.forth.org/svfig/Win32Forth/DPANS94.txt
 [^6]: Notes and Times: https://github.com/agsb/milliForth-6502/blob/acc2f8ddc6aafb2dec6346e90f5372ee16b38c8c/docs/Notes.md
+[^9]: Evolution of Forth: https://dl.acm.org/doi/epdf/10.1145/234286.1057832 
+        https://raw.githubusercontent.com/larsbrinkhoff/forth-documents/master/Evolution.pdf
 [^7]: A minimal thread code for Forth: https://github.com/agsb/immu/blob/main/The_words_in_MTC_Forth.en.pdf
 [^8]: Forth: A new way to program: https://adsabs.harvard.edu/full/1974A%26AS...15..497M (Astro. Astrophys. Suppl. 14, 497-511, 1974)
 [^9]: Another sector Forth: https://github.com/meithecatte/miniforth

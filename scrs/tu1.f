@@ -21,25 +21,27 @@
     = IF SWAP DROP FALSE EXIT THEN
     AGAIN ; 
  
- : ' HASH FIND IF CELL + CELL + THEN ; 
+ : ' HASH FIND IF CELL + CELL + THEN ;  
+
+ SEE 
 
  : POSTPONE ' , ; IMMEDIATE 
 
  \ crude pointer for CREATE DOES>
 
- : BODY ['] LIT , HERE CELL + , 0 , ;
+ : >BODY ['] LIT , HERE CELL + , 0 , ;
 
  \ from eforth, first EXIT is reserved for DOES> 
 
  : CREATE :NAME 
         ['] LIT , 
         HERE CELL + CELL + CELL + , 
-        HERE BODY ! 
+        HERE >BODY ! 
         ['] EXIT , 
         ['] EXIT , 
         LATEST ! ; 
  
- : DOES> R> BODY @ ! ; 
+ : DOES> R> >BODY @ ! ; 
 
  : <BUILDS CREATE 0 , ; 
 

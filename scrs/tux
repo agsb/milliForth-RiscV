@@ -1,0 +1,90 @@
+
+ %S
+ 
+ ' IF  
+ 
+ ' ELSE 
+ 
+ ' THEN 
+ 
+ %S 
+
+ SHOW
+
+ HERE 
+
+ ' IF , 
+ 
+ ' ELSE ,
+ 
+ ' THEN ,
+ 
+ %S 
+
+ DUP @ . CELL + DUP @ . CELL + @ .
+
+ %S
+
+
+ : TESTE  
+        POSTPONE IF 
+        POSTPONE ELSE 
+        POSTPONE THEN 
+        ; IMMEDIATE
+ 
+
+ SHOW
+ 
+ SEE 
+
+ BYE 
+
+ %S %R  
+ 
+ 1 2 3 4 %R 
+ DUP %S 
+ DROP %S 
+ OVER %S 
+ DROP %S
+ SWAP %S 
+ SWAP %S
+ ROT %S 
+ -ROT %S 
+ 
+ %R  
+ >R %S %R 
+ >R %S %R 
+ >R %S %R 
+ R@ . %S %R  
+ R> 
+ R@ . %S %R 
+ R> 
+ R@ . %S %R 
+ R> 
+ R@ . %S %R 
+
+ : DO0 0 DO I 32 + EMIT SPACE LOOP ;
+
+ %S 16 DO0 %S 
+
+ %R 
+ 
+ : DOI 0 DO I . SPACE LOOP ;
+ 
+ %S 16 DOI %S 
+
+ %R 
+
+ : BE0 BEGIN DUP . SPACE 1 - DUP 0 = UNTIL DROP ;   
+ 
+ %S 16 BE0 %S
+
+ %R 
+ 
+ HASH POSTPONE FIND %S . . 
+
+ HASH POSTPONES FIND %S . . 
+
+ %S %R 
+
+

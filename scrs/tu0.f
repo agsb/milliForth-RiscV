@@ -30,6 +30,9 @@
  : RP! RP ! ; 
 
  : DUP SP@ @ ; 
+
+ SEE 
+
  : NOT DUP NAND ; 
  : AND NAND NOT ; 
  : - NOT 1 + + ; 
@@ -54,6 +57,8 @@
  : ALLOT HERE + HEAP ! ; 
  : , HERE ! CELL ALLOT ; 
  
+ SEE 
+
  : +! SWAP OVER @ + SWAP ! ; 
 
  : R> RP@ @ RP@ CELL + RP ! RP@ @ SWAP RP@ ! ; 
@@ -102,10 +107,16 @@
  
  : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
  
+ SEE 
+
  : ELSE ['] BRANCH , HERE 0 , SWAP 
         DUP HERE SWAP - SWAP ! ; IMMEDIATE  
  
+ SEE 
+
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE 
+
+ SEE 
 
  : BEGIN HERE ; IMMEDIATE 
  

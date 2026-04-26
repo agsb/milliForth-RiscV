@@ -34,6 +34,13 @@
 
 ## Done
 
+26/04/2026
+
+    Rewrite verify in forth words files, tu0, tu1, tu2, etc
+
+    Something wrong with POSTPONE. In execution mode, tick and comma 
+    does a good work but in compiler mode halt to Segment Fault.
+
 22/04/2026
 
     _How parse numbers_?
