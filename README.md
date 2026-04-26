@@ -105,7 +105,7 @@ This version of milliforth uses 32-bit DJB2 hash. It provide a fast
 comparation in compilations and have small footprint.
 
 For a 32-bit DJB2 hash, collisions become highly probable after 
-approximately 65,536 items which requires an absurdly large dictionary.
+approximately 65,536 items which requires a damn huge dictionary.
 
 ## No Terminal Input Buffer
 

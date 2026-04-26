@@ -1,6 +1,11 @@
 
+ : HSH HASH . ;
+
+ HSH POSTPONE 
+
  %S
  
+ BYE 
  ' IF  
  
  ' ELSE 
