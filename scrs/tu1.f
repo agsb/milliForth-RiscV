@@ -12,6 +12,20 @@
  : LINK>BODY CELL + CELL + ; 
 
  : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
+ 
+ : DJB2_CNTP
+        ( $1501 )
+        ;
+
+ : HASHED ( -- HSH )
+        BL BEGIN KEY OVER OVER = UNTIL ( BL -- BL KEY )
+        DJB2_CNTP
+        BEGIN >R
+        KEY OVER OVER 
+        WHILE R> DUP DUP + DUP + DUP + DUP + DUP + + XOR
+        REPEAT ( BL KEY ; HSH )
+        DROP DROP R> 
+        ;
 
  : FIND LATEST @ BEGIN
     OVER OVER CELL + @

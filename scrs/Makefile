@@ -49,8 +49,8 @@ OBJDUMP = ${PASS}objdump
 #QEMU = ${BASE}qemu-system-riscv64
 #QEMU = ${BASE}qemu-system-riscv32
 
-QEMU = ${BASE}qemu-riscv64
 QEMU = ${BASE}qemu-riscv32
+QEMU = ${BASE}qemu-riscv64
 
 QFLAGS = -display none -bios none -serial mon:stdio -smp 1 -machine virt 
 
