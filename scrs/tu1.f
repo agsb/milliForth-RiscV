@@ -11,22 +11,20 @@
 
  : LINK>BODY CELL + CELL + ; 
 
- : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
+ \ : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
+
+ : DJB2 LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] ; 
+
+ : HASH 
+        BL BEGIN KEY OVER OVER = NOT UNTIL DJB2 
+        BEGIN 
+                DUP DUP + DUP + DUP + DUP + DUP + + XOR >R
+                KEY OVER OVER = 
+                IF TRUE ELSE R> FALSE THEN
+        UNTIL
+        DROP DROP R>  
+        ;
  
- : DJB2_CNTP
-        ( $1501 )
-        ;
-
- : HASHED ( -- HSH )
-        BL BEGIN KEY OVER OVER = UNTIL ( BL -- BL KEY )
-        DJB2_CNTP
-        BEGIN >R
-        KEY OVER OVER 
-        WHILE R> DUP DUP + DUP + DUP + DUP + DUP + + XOR
-        REPEAT ( BL KEY ; HSH )
-        DROP DROP R> 
-        ;
-
  : FIND LATEST @ BEGIN
     OVER OVER CELL + @
     ISNEGATIVE 1 - AND
@@ -35,9 +33,7 @@
     = IF SWAP DROP FALSE EXIT THEN
     AGAIN ; 
  
- : ' HASH FIND IF CELL + CELL + THEN ; IMMEDIATE  
-
- SEE 
+ : ' HASH FIND IF CELL + CELL + THEN ;  
 
  : POSTPONE ' , ; IMMEDIATE 
 
@@ -72,6 +68,5 @@
  : TO ' CELL + @ 
         STATE @ 
         IF ' LIT , , ' ! , 
-        ELSE ! 
-        THEN ; 
+        ELSE ! THEN ; 
 

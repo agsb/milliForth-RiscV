@@ -1,7 +1,5 @@
  : VOID ; 
    
-        SHOW 
-
  : ABORT VOID ;  
 
  : -1 U@ 0# ; 
@@ -31,11 +29,11 @@
 
  : DUP SP@ @ ; 
 
- SEE 
-
  : NOT DUP NAND ; 
  : AND NAND NOT ; 
- : - NOT 1 + + ; 
+
+ : NEGATE NOT 1 + ;
+ : - NEGATE + ; 
 
  : BRANCH RP@ @ DUP @ + RP@ ! ; 
  : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
@@ -57,8 +55,6 @@
  : ALLOT HERE + HEAP ! ; 
  : , HERE ! CELL ALLOT ; 
  
- SEE 
-
  : +! SWAP OVER @ + SWAP ! ; 
 
  : R> RP@ @ RP@ CELL + RP ! RP@ @ SWAP RP@ ! ; 
@@ -67,6 +63,7 @@
 
  : EXECUTE >R ; 
  : COMPILE R> DUP @ , CELL + >R ;
+ : STATE? STATE @ ;
 
  : LIT RP@ @ DUP CELL + RP@ ! @ ; 
  : ['] RP@ @ DUP CELL + RP@ ! @ ; 
@@ -95,28 +92,23 @@
  
  : ] 1 STATE ! ; 
  : [ 0 STATE ! ; IMMEDIATE 
+
+ : LITERAL ['] LIT , ; IMMEDIATE
  
  : 0= 0# NOT ; 
  : 0< ISNEGATIVE AND 0# ; 
 
  : SP0 LIT [ SP@ , ] ;  
- 
  : RP0 LIT [ RP@ , ] ; 
 
  : ISNEGATIVE LIT [ ISNEGATIVE , ] ; 
  
  : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
  
- SEE 
-
  : ELSE ['] BRANCH , HERE 0 , SWAP 
         DUP HERE SWAP - SWAP ! ; IMMEDIATE  
- 
- SEE 
 
  : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE 
-
- SEE 
 
  : BEGIN HERE ; IMMEDIATE 
  
@@ -169,6 +161,9 @@
  : 32 LIT [ 16 16 + , ] ; 
  : 64 LIT [ 32 32 + , ] ; 
  : 128 LIT [ 64 64 + , ] ; 
+ : 256 LIT [ 128 128 + , ] ; 
+ : 512 LIT [ 256 256 + , ] ; 
+ : 1024 LIT [ 512 512 + , ] ; 
  
  : BL LIT [ 16 16 + , ] ; 
  : QU LIT [ 16 16 + 2 + , ] ; 

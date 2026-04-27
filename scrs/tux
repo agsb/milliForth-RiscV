@@ -1,7 +1,61 @@
+ ( 
+ : DJB2 
+        LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] 
+        ; 
 
-HASH POSTPONE
+ : HASH 
+        BL BEGIN KEY OVER OVER = NOT UNTIL DJB2 
+        BEGIN 
+                DUP DUP + DUP + DUP + DUP + DUP + + XOR >R
+                KEY OVER OVER =  
+                IF TRUE ELSE R> FALSE THEN
+        UNTIL
+        DROP DROP R>   
+        ;
 
-HASHED POSTPONE
+ HASH EMIT %S . 
+ HASH EXIT %S .
+ HASH NAND %S .
+ HASH : %S .
+ HASH ; %S . 
+ HASH ! %S . 
+ HASH @ %S . 
+ 
+ %S 
+
+ ) 
+
+ HASH HASH %S 
+ FIND %S 
+ 0 
+ ' HASH %S 
+ 0
+
+ ' IF ' ELSE ' THEN %S 
+
+ : TEST ' IF , ' ELSE , ' THEN , ; 
+
+ SEE 
+
+ %S TEST %S
+
+ : TEST POSTPONE IF POSTPONE ELSE POSTPONE THEN ; 
+
+ SEE 
+
+ %S TEST %S
+
+ BYE 
+
+%S 
+
+HASH POSTPONE .
+
+%S
+
+HASHED POSTPONE .
+
+%S
 
 BYE
 
