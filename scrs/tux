@@ -1,11 +1,12 @@
 
- : HSH HASH . ;
+ : HSH HASH DUP . ;
 
  HSH POSTPONE 
 
  %S
  
  BYE 
+
  ' IF  
  
  ' ELSE 
