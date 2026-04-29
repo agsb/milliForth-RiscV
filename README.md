@@ -128,7 +128,8 @@ Forth reacts.
 
 ## Internals
 
-This version uses DJB2 hash for dictionary entries, and includes: 
+This version uses DJB2 hash for dictionary entries, uses relatives branches
+and includes: 
 
 ```
 minimal primitives:

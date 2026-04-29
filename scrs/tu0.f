@@ -36,7 +36,7 @@
  : - NEGATE + ; 
 
  : BRANCH RP@ @ DUP @ + RP@ ! ; 
- : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
+ : 0BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
  
  : OVER SP@ CELL + @ ; 
  : SWAP OVER OVER SP@ CELL + CELL + CELL + ! SP@ CELL + ! ; 
@@ -103,29 +103,30 @@
 
  : ISNEGATIVE LIT [ ISNEGATIVE , ] ; 
  
- : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
- 
- : ELSE ['] BRANCH , HERE 0 , SWAP 
-        DUP HERE SWAP - SWAP ! ; IMMEDIATE  
-
- : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE 
-
  : BEGIN HERE ; IMMEDIATE 
- 
+
  : AGAIN ['] BRANCH , HERE - , ; IMMEDIATE 
- 
- : UNTIL ['] ?BRANCH , HERE - , ; IMMEDIATE 
- 
- : WHILE ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
- 
- : REPEAT SWAP ['] BRANCH , HERE - , 
-        DUP HERE SWAP - SWAP ! ; IMMEDIATE 
- 
+
+ : UNTIL ['] 0BRANCH , HERE - , ; IMMEDIATE 
+
+ : BACK HERE - , ; IMMEDIATE
+
+ : THEN HERE OVER - SWAP ! ; IMMEDIATE 
+
+ : IF ['] 0BRANCH , HERE 0 , ; IMMEDIATE 
+
+ : ELSE ['] BRANCH , HERE 0 , 
+        SWAP HERE OVER - SWAP ! ; IMMEDIATE 
+
+ : WHILE ['] 0BRANCH , HERE 0 , ; IMMEDIATE 
+
+ : REPEAT SWAP ['] BRANCH , HERE - , HERE OVER - SWAP ! ; IMMEDIATE 
+
  : DO ['] SWAP , HERE ['] >R , ['] >R , ; IMMEDIATE 
 
  : LOOP 
         ['] R> , ['] LIT , 1 , ['] + , ['] R> , 
-        ['] 2DUP , ['] = , ['] ?BRANCH , HERE - , 
+        ['] 2DUP , ['] = , ['] 0BRANCH , HERE - , 
         ['] 2DROP , ; IMMEDIATE 
 
  : I ['] R@ , ; IMMEDIATE 
@@ -141,7 +142,7 @@
  : FOR 0 >R HERE ['] >R , ; IMMEDIATE
 
  : NEXT ['] R> , ['] LIT , 1 , ['] - ,  ['] DUP , 
-        ['] 0< , ['] NOT , ['] ?BRANCH , HERE - , 
+        ['] 0< , ['] NOT , ['] 0BRANCH , HERE - , 
         ['] 2DROP , ; IMMEDIATE
 
  : ?DUP DUP IF DUP THEN ; 

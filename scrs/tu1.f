@@ -26,12 +26,12 @@
         ;
  
  : FIND LATEST @ BEGIN
-    OVER OVER CELL + @
-    ISNEGATIVE 1 - AND
-    = IF SWAP DROP TRUE EXIT THEN
-    @ DUP 0 
-    = IF SWAP DROP FALSE EXIT THEN
-    AGAIN ; 
+        OVER OVER CELL + @
+        ISNEGATIVE 1 - AND
+        = IF SWAP DROP TRUE EXIT THEN
+        @ DUP 0 
+        = IF SWAP DROP FALSE EXIT THEN
+        AGAIN ; 
  
  : ' HASH FIND IF CELL + CELL + THEN ;  
 

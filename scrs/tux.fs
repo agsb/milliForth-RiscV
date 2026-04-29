@@ -1,4 +1,33 @@
- ( 
+ 
+ \ : REPEATS SWAP AGAIN THEN ; IMMEDIATE 
+
+ %S %R SEE
+
+ \ : AFT DROP ['] COMPILE BRANCH , HERE 0 , HERE SWAP ; IMMEDIATE 
+
+ \ %S %R SEE
+
+ \ : AFT DROP AHEAD HERE SWAP ; IMMEDIATE 
+ 
+ \ %S %R SEE 
+
+
+ : TESTE
+        %S
+        IF CR ELSE CR THEN 
+        %S 
+        BEGIN CR AGAIN
+        %S
+        BEGIN CR UNTIL
+        %S
+        BEGIN CR WHILE CR REPEAT
+        %S
+        ;
+ SEE
+
+ BYE
+
+( 
  : DJB2 
         LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] 
         ; 
