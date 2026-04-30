@@ -243,7 +243,7 @@ pull2:
 .equ hash_ABORT, 0x0A1DFF4F
 .equ hash_BYE, 0x0B87C61B
 .equ hash_DOT, 0x0002B58B
-.equ hash_HEXNUM, 0x0002B581
+.equ hash_HEX, 0x0002B581
 
 #---------------------------------------------------------------------
 
@@ -277,7 +277,7 @@ def_word "BYE", "byes", hash_BYE, it_aborts
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word "$", "hexnum", hash_HEXNUM, it_byes
+def_word "$", "hex", hash_HEX, it_byes
 
         call number
 
@@ -285,7 +285,7 @@ def_word "$", "hexnum", hash_HEXNUM, it_byes
         
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word ".", "dot", hash_DOT, it_hexnum
+def_word ".", "dot", hash_DOT, it_hex
 
         call pull2
 

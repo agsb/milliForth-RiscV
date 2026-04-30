@@ -24,9 +24,6 @@
  : SP@ SP @ CELL + ; 
  : RP@ RP @ CELL + ; 
  
- : SP! SP ! ;  
- : RP! RP ! ; 
-
  : DUP SP@ @ ; 
 
  : NOT DUP NAND ; 
@@ -93,34 +90,37 @@
  : ] 1 STATE ! ; 
  : [ 0 STATE ! ; IMMEDIATE 
 
- : LITERAL ['] LIT , ; IMMEDIATE
+ : LITERAL ['] LIT , , ; IMMEDIATE
  
  : 0= 0# NOT ; 
  : 0< ISNEGATIVE AND 0# ; 
 
- : SP0 LIT [ SP@ , ] ;  
- : RP0 LIT [ RP@ , ] ; 
+ : SP0 LIT [ SP@ , ] ; SP0
+ : RP0 LIT [ RP@ , ] ; RP0
 
  : ISNEGATIVE LIT [ ISNEGATIVE , ] ; 
  
  : BEGIN HERE ; IMMEDIATE 
 
- : AGAIN ['] BRANCH , HERE - , ; IMMEDIATE 
+ : BACK HERE - , ; 
 
- : UNTIL ['] 0BRANCH , HERE - , ; IMMEDIATE 
+ : AGAIN ['] BRANCH , BACK ; IMMEDIATE 
 
- : BACK HERE - , ; IMMEDIATE
+ : UNTIL ['] 0BRANCH , BACK ; IMMEDIATE 
 
- : THEN HERE OVER - SWAP ! ; IMMEDIATE 
+ : ENDIF HERE OVER - SWAP ! ; 
 
- : IF ['] 0BRANCH , HERE 0 , ; IMMEDIATE 
+ : MARK HERE 0 , ;
 
- : ELSE ['] BRANCH , HERE 0 , 
-        SWAP HERE OVER - SWAP ! ; IMMEDIATE 
+ : IF ['] 0BRANCH , MARK ; IMMEDIATE 
 
- : WHILE ['] 0BRANCH , HERE 0 , ; IMMEDIATE 
+ : ELSE ['] BRANCH , MARK SWAP ENDIF ; IMMEDIATE 
 
- : REPEAT SWAP ['] BRANCH , HERE - , HERE OVER - SWAP ! ; IMMEDIATE 
+ : THEN ENDIF ; IMMEDIATE 
+
+ : WHILE ['] 0BRANCH , MARK ; IMMEDIATE 
+
+ : REPEAT SWAP ['] BRANCH , BACK ENDIF ; IMMEDIATE 
 
  : DO ['] SWAP , HERE ['] >R , ['] >R , ; IMMEDIATE 
 
@@ -165,6 +165,8 @@
  : 256 LIT [ 128 128 + , ] ; 
  : 512 LIT [ 256 256 + , ] ; 
  : 1024 LIT [ 512 512 + , ] ; 
+ : 2048 LIT [ 1024 1024 + , ] ; 
+ : 4096 LIT [ 2048 2048 + , ] ; 
  
  : BL LIT [ 16 16 + , ] ; 
  : QU LIT [ 16 16 + 2 + , ] ; 
@@ -181,6 +183,7 @@
 
  : 0fh LIT [ 16 1 - , ] ; 
  : ffh LIT [ 0fh 2* 2* 2* 2* 0fh OR , ] ; 
+ : FFh LIT [ 128 128 + 1 - , ] ;
 
  : C@ @ ffh AND ; 
  : C! DUP @ ffh NOT AND ROT ffh AND OR SWAP ! ; 

@@ -147,11 +147,11 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
+.equ echoo, YES
+
 .equ extras, YES
 
 .equ tools, YES
-
-.equ echoo, YES
 
 /* 
 

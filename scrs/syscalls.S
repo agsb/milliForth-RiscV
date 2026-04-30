@@ -92,7 +92,29 @@ _rets:
         ret
 
 /*
+
 .ifdef extras
+#---------------------------------------------------------------------
+_fcntl: # fd, cdm, arg
+        li a7, _FCNT 
+        mv a0, a3
+        mv a1, a4
+        mv a2, a5
+        j _rets
+        
+#---------------------------------------------------------------------
+_fcntl:
+        lw idx, SPTR (usr)
+        lw a0, 0 (idx)
+        lw a1, 4 (idx)
+        lw a2, 8 (idx)
+        addi idx, idx, 8
+        sw idx, SPTR (usr)
+
+        li a7, _FCNT 
+        ecall
+        ret
+        
 #---------------------------------------------------------------------
 _sbrk:
         li a7, _SBRK
@@ -108,14 +130,6 @@ _sbrk:
 
         j _rets
 
-#---------------------------------------------------------------------
-_fcntl: # fd, cdm, arg
-        li a7, _FNCT
-        li a0, a3
-        li a1, a4
-        li a2, a5
-        j _rets
-        
 .endif
 */
 

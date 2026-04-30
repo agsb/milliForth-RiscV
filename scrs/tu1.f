@@ -34,6 +34,8 @@
         AGAIN ; 
  
  : ' HASH FIND IF CELL + CELL + THEN ;  
+ 
+ : '= ' ; IMMEDIATE  
 
  : POSTPONE ' , ; IMMEDIATE 
 
@@ -67,6 +69,7 @@
  
  : TO ' CELL + @ 
         STATE @ 
-        IF ' LIT , , ' ! , 
+        IF ['] LIT , , ['] ! , 
         ELSE ! THEN ; 
+
 

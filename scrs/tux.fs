@@ -1,11 +1,7 @@
  
  \ : REPEATS SWAP AGAIN THEN ; IMMEDIATE 
 
- %S %R SEE
-
  \ : AFT DROP ['] COMPILE BRANCH , HERE 0 , HERE SWAP ; IMMEDIATE 
-
- \ %S %R SEE
 
  \ : AFT DROP AHEAD HERE SWAP ; IMMEDIATE 
  
@@ -13,19 +9,19 @@
 
 
  : TESTE
-        %S
+        CR
         IF CR ELSE CR THEN 
-        %S 
+        CR 
         BEGIN CR AGAIN
-        %S
+        CR
         BEGIN CR UNTIL
-        %S
+        CR
         BEGIN CR WHILE CR REPEAT
-        %S
+        CR
         ;
  SEE
 
- BYE
+ BYE 
 
 ( 
  : DJB2 
