@@ -20,6 +20,8 @@
  | [ ] | content of memory | 32 |
  |   |   |   |   |   |
 
+ values are 32-bit signed integers
+
  ## Minimals
 
  | name | word | stacks | use for | set | 
@@ -31,8 +33,8 @@
  | emit | EMIT | ( c -- ) | put a character into stdout | core |
  | store | ! | ( w1 w2 -- ) | [w2] = w1 | core |
  | fetch | @ | ( w1 -- w2 ) | w2 = [w1] | core |
- | plus | + | ( w1 w2 -- w3 ) | w3 = w2 + w1 | core |
- | nand | NAND | ( w1 w2 -- w3 ) | w3 = w2 NAND w1 | milli |
+ | plus | + | ( w1 w2 -- w3 ) | w3 = w1 + w2 | core |
+ | nand | NAND | ( w1 w2 -- w3 ) | w3 = w1 NAND w2 | milli |
  | zeroq | 0# | ( w1 -- w2 ) | w1 != 0 ? TRUE \| FALSE | milli |
  | userat | U@ | ( -- a ) | address of _user structure | milli |
  |   |   |   |   |   |
@@ -44,8 +46,8 @@
  | docode | ( ;$ ) | ( -- ) | execute native code at next dictionary cell | milli |
  | abort | ABORT | ( -- ) | restart interpreter | core |
  | bye | BYE | ( -- ) | ends Forth | core | 
- | dot | ( . ) | ( w -- ) | prints a 32-bit signed integer hexadecimal from stack| core |
- | dolar | ( $ ) | ( -- w ) | accept a 32-bit signed integer hexadecimal into stack | milli |
+ | dot | ( . ) | ( w -- ) | outputs a value, in hexadecimal, from stack | core |
+ | dolar | ( $ ) | ( -- w ) | inputs a value, in hexadecimal, into stack | milli |
  |   |   |   |   |   |
 
  ## Primitives
