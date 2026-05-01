@@ -18,14 +18,15 @@
  | n | counter | 32 |
  | c | character | 8 |
  | [ ] | content of memory | 32 |
+ |   |   |   |   |   |
 
  ## Minimals
 
  | name | word | stacks | use for | set | 
  | -- | -- | -- | -- | -- | 
- | exit | EXIT | ( -- ; a -- ) | execute next word | core |
- | colon | : | ( -- ) | init a compiled word | core |
- | semis | ; | ( -- ) | ends a compiled word | core |
+ | exit | EXIT | ( -- ; -- ) | ends execution | core |
+ | colon | : | ( -- ) | init compilation | core |
+ | semis | ; | ( -- ) | exit compilation | core |
  | key | KEY | ( -- c ) | get a character from stdin | core |
  | emit | EMIT | ( c -- ) | put a character into stdout | core |
  | store | ! | ( w1 w2 -- ) | [w2] = w1 | core |
@@ -34,6 +35,7 @@
  | nand | NAND | ( w1 w2 -- w3 ) | w3 = w2 NAND w1 | milli |
  | zeroq | 0# | ( w1 -- w2 ) | w1 != 0 ? TRUE \| FALSE | milli |
  | userat | U@ | ( -- a ) | address of _user structure | milli |
+ |   |   |   |   |   |
 
  ## Extras
 
@@ -42,8 +44,9 @@
  | docode | ( ;$ ) | ( -- ) | execute native code at next dictionary cell | milli |
  | abort | ABORT | ( -- ) | restart interpreter | core |
  | bye | BYE | ( -- ) | ends Forth | core | 
- | dot | ( . ) | ( w -- ) | prints w in hexadecimal | core |
- | per | ( $ ) | ( -- w ) | accept a signed integer hexadecimal to stack | milli |
+ | dot | ( . ) | ( w -- ) | prints a 32-bit signed integer hexadecimal from stack| core |
+ | dolar | ( $ ) | ( -- w ) | accept a 32-bit signed integer hexadecimal into stack | milli |
+ |   |   |   |   |   |
 
  ## Primitives
 
@@ -64,8 +67,8 @@
  | and | AND | ( w1 w2 -- w3 ) | w3 = w2 AND w1 | core |
  | or | OR | ( w1 w2 -- w3 ) | w3 = w2 OR w1 | core |
  | xor | XOR | ( w1 w2 -- w3 ) | w3 = w2 XOR w1 | core |
- | equ | = | ( w1 w2 - w3 ) | FALSE \| TRUE ? w2 == w1 | core |
- | less | \< | ( w1 w2 -- w3 ) | FALSE \| TRUE ? w2 > w1 | core |
+ | equ | = | ( w1 w2 - w3 ) | w2 == w1 ? TRUE \| FALSE | core |
+ | less | \< | ( w1 w2 -- w3 ) | w1 < w2 ? TRUE \| FALSE | core |
  | rat | R@ | ( -- w ; w -- w ) | ditto | core |
  | rto | R\> | ( -- w ; w -- ) | ditto | core |
  | tor | \>R | ( w -- ; -- w ) | ditto | core |
@@ -73,22 +76,24 @@
  | rpto | RP! | ( rp -- ) | ditto | exception |
  | spat | SP@ | ( -- sp ) | ditto | exception |
  | spto | SP! | ( sp -- ) | ditto | exception |
- | branch | BRANCH | ( -- ) | todo | internal |
- | branchz | 0BRANCH | ( -- ) | todo | internal |
- | lit | LIT | ( -- w ) | todo | internal |
- | true | TRUE | ( -- -1 ) | ditto | core |
- | false | FALSE | ( -- 0 ) | ditto | core |
+ | branch | BRANCH | ( -- ) | jump to relative by next dictionary cell value | internal |
+ | branchz | 0BRANCH | ( -- ) | branch if TOS is 0 | internal |
+ | lit | LIT | ( -- w ) | push next dictionary cell value to stack | internal |
+ | true | TRUE | ( -- -1 ) | push TRUE to stack | core |
+ | false | FALSE | ( -- 0 ) | push FALSE to stack | core |
  | one | 1 | ( -- 1 ) | ditto | internal |
  | two | 2 | ( -- 2 ) | ditto | internal |
  | cell | CELL | ( -- 4 ) | size in bytes of Forth cell | core |
  | nan | NAN | ( -- 0x80000000 ) | Not a Number, flag IMMEDIATE | internal |
- | rpzo | RP0 | ( -- rp0 ) | address to bottom of return stack | internal |
- | spzo | SP0 | ( -- sp0 ) | address to botton of data stack | internal |
- | state | STATE | ( -- c ) | 0 execute 1 compile | core |
- | latest | LAST | ( -- a ) | address of latest word link in dictionary | internal |
- | heap | HEAP | ( -- a ) | address of next cell in free memory aka DP | internal |
- | head | HEAD | ( -- a ) | initial address of free memory | internal |
- | tail | TAIL | ( -- a ) | final address of free memory | internal |
+ | state | STATE | ( -- c ) | 0 execute 1 compile 2 postpone ? | core |
+ | last | LAST | ( -- a ) | address of last node of linked list dictionary, aka LATEST | internal |
+ | heap | HEAP | ( -- a ) | address of next unnused cell in free memory, aka DP | internal |
+ | ceil | CEIL | ( -- a ) | address of last unnused cell in free memory | internal |
+ | faux | FAUX | ( -- a ) | address of HEAP before compiling | internal |
+ | rpzo | RP0 | ( -- rp0 ) | constant address to bottom of return stack | internal |
+ | spzo | SP0 | ( -- sp0 ) | constant address to botton of data stack | internal |
+ | head | HEAD | ( -- a ) | constant initial address of memory | internal |
+ | tail | TAIL | ( -- a ) | constant final address of memory | internal |
  | bymul | M* | ( w1 w2 -- w3 w4 ) | w1/w2 == w3 reminder w4 quotient | core |
  | bymod | \*/MOD | ( w1 w2 -- w3 w4 ) | w1 * w2 == w3 lower w4 upper | core |
  | twomul | 2* | ( w -- w * 2 ) | ditto | core |
@@ -97,6 +102,7 @@
  | rshift | RSHIFT | ( w1 w2 -- w1\>\> w2 ) | ditto | core |
  | plusto | +! | ( w1 w2 -- ) | [w1] = [w1] + w2 | core |
  | perform | PERFORM | ( a -- ) | execute native code at address on top of stack | proposed* |
+ |   |   |   |   |   |
 
  ## Debug
 
@@ -108,6 +114,6 @@
  | words | WORDS | ( -- ) | pretty print all compiled words backwards | tools |
  | sees | SEE | ( -- ) | pretty print latest word | tools |
  | show | SHOW | ( -- ) | shows variables and lists data and return stacks | tools* |
- | twodot | .. | ( w -- w ) | print TOS in hexadecimal, leave TOS | tools* |
-
+ | twodot | .. | ( w -- w ) | print TOS in hexadecimal, DUP DOT | tools* |
+ |   |   |   |   |   |
 
