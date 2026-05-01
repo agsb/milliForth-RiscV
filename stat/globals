@@ -1,15 +1,15 @@
 00011fdc l     O .got	00000000 _GLOBAL_OFFSET_TABLE_
    100f8:	00002417          	auipc	s0,0x2
    100fc:	ee842403          	lw	s0,-280(s0) # 11fe0 <_GLOBAL_OFFSET_TABLE_+0x4>
-   10100:	00002697          	auipc	a3,0x2
-   10104:	ee46a683          	lw	a3,-284(a3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x8>
-   10146:	00002497          	auipc	s1,0x2
-   1014a:	ea24a483          	lw	s1,-350(s1) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0xc>
-   10198:	00002797          	auipc	a5,0x2
-   1019c:	e547a783          	lw	a5,-428(a5) # 11fec <_GLOBAL_OFFSET_TABLE_+0x10>
-   101c6:	00002597          	auipc	a1,0x2
-   101ca:	e2a5a583          	lw	a1,-470(a1) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x14>
-   101e2:	00002597          	auipc	a1,0x2
-   101e6:	e0e5a583          	lw	a1,-498(a1) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x14>
-   1022c:	00002697          	auipc	a3,0x2
-   10230:	dc86a683          	lw	a3,-568(a3) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x18>
+   10100:	00002997          	auipc	s3,0x2
+   10104:	ee49a983          	lw	s3,-284(s3) # 11fe4 <_GLOBAL_OFFSET_TABLE_+0x8>
+   10108:	00002a17          	auipc	s4,0x2
+   1010c:	ee0a2a03          	lw	s4,-288(s4) # 11fe8 <_GLOBAL_OFFSET_TABLE_+0xc>
+   10110:	00002697          	auipc	a3,0x2
+   10114:	edc6a683          	lw	a3,-292(a3) # 11fec <_GLOBAL_OFFSET_TABLE_+0x10>
+   101c8:	00002597          	auipc	a1,0x2
+   101cc:	e285a583          	lw	a1,-472(a1) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x14>
+   101e4:	00002597          	auipc	a1,0x2
+   101e8:	e0c5a583          	lw	a1,-500(a1) # 11ff0 <_GLOBAL_OFFSET_TABLE_+0x14>
+   1022e:	00002697          	auipc	a3,0x2
+   10232:	dc66a683          	lw	a3,-570(a3) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x18>

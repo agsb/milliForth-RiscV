@@ -40,6 +40,8 @@
 
 .equ COMPILE, 1
 
+.equ POSTPONE, 2
+
 # usefull
 
 .equ ONE, 1
@@ -83,24 +85,23 @@
 # return stack index
 .equ RPTR, 1 * CELL 
 
-# last link cell in heap dictionary linked list
-.equ LAST, 2 * CELL
+# next free cell in heap dictionary, aka dp
+.equ HEAP, 2 * CELL
 
-# next free cell in heap dictionary, aka dpt
-.equ HEAP, 3 * CELL
+# last link cell in heap dictionary linked list
+.equ LAST, 3 * CELL
 
 # state flag
 .equ STAT, 4 * CELL
 
-#---------------------------------------------------------------------
-# base flag
-.equ BASE, 5 * CELL
+# last heap while compiling
+.equ FAUX, 5 * CELL
+
+# last free cell for heap dictionary  
+.equ CEIL, 6 * CELL
 
 #---------------------------------------------------------------------
 # reserved internals
-
-# last heap while compiling
-.equ FAUX, 6 * CELL
 
 #---------------------------------------------------------------------
 # not initialized
@@ -147,20 +148,23 @@
 #---------------------------------------------------------------------
 # flags for compiler options
 
+# enable echo
+
+/* 
+
 .equ echoo, YES
 
 .equ extras, YES
 
 .equ tools, YES
 
-/* 
-
 .equ primitives, YES
-
-# enable echo
 
 # enable clean if try compile a missed word 
 .equ missme, YES
+
+# enable native POSTPONE 
+.equ postpone, YES
 
 # enable counters of words executed
 .equ beatme, YES

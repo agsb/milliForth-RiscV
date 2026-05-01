@@ -328,13 +328,23 @@ eval:
 
         lw wrd, STAT (usr)
         
+# XXX
+.ifdef postpone
+        li lnk, POSTPONE
+        bne wrd, lnk, 100f
+        li lnk, COMPILE
+        sw lnk, STAT (usr)
+        j compile
+100:
+.endif
+        
         # executing ? if state == 0
 
         beq wrd, zero, execute
 
         # immediate ? if flaged
 
-        bne snd, zero, immediate      
+        bne snd, zero, execute      
 
         # compiling  
 compile:
@@ -343,8 +353,8 @@ compile:
 
         j warp
 
+# immediate:
 execute:
-immediate:
 
         mv ipt, bow
 

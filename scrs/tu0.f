@@ -17,9 +17,12 @@
  : SP U@ ; 
  : RP SP CELL + ; 
  
- : LATEST RP CELL + ; 
- : HEAP LATEST CELL + ; 
+ : HEAP RP CELL + ; 
+ : LATEST HEAP CELL + ; 
  : STATE HEAP CELL + ; 
+
+ : FAUX STATE CELL + ;
+ : CEIL FAUX  CELL + ;
 
  : SP@ SP @ CELL + ; 
  : RP@ RP @ CELL + ; 
@@ -52,6 +55,8 @@
  : ALLOT HERE + HEAP ! ; 
  : , HERE ! CELL ALLOT ; 
  
+ : RECURSE FAUX @ , ;
+
  : +! SWAP OVER @ + SWAP ! ; 
 
  : R> RP@ @ RP@ CELL + RP ! RP@ @ SWAP RP@ ! ; 
@@ -59,7 +64,7 @@
  : R@ R> R> DUP >R SWAP >R ; 
 
  : EXECUTE >R ; 
- : COMPILE R> DUP @ , CELL + >R ;
+ : COMPILE R> DUP CELL + >R @ , ;
  : STATE? STATE @ ;
 
  : LIT RP@ @ DUP CELL + RP@ ! @ ; 
@@ -100,6 +105,18 @@
 
  : ISNEGATIVE LIT [ ISNEGATIVE , ] ; 
  
+ : >mark HERE 0 , ; 
+ : >resolve HERE SWAP ! ;
+ : <mark HERE ;
+ : <resolve , ;
+ : if COMPILE 0BRANCH >mark ; IMMEDIATE
+ : else COMPILE BRANCH >mark swap >resolve ; IMMEDIATE
+ : then >resolve ; IMMEDIATE
+ : begin <mark ; IMMEDIATE
+ : while COMPILE 0BRANCH >mark ; IMMEDIATE
+ : repeat COMPILE BRANCH SWAP <resolve >resolve ; IMMEDIATE
+
+
  : BEGIN HERE ; IMMEDIATE 
 
  : BACK HERE - , ; 

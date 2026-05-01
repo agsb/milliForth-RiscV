@@ -84,9 +84,7 @@ How shink to a minimal compiled size in a Risc-V ?
 
 ## No name, just a hash
 
-*I AM AFR--- THA- THE LET--- IN THE LAS- ISS-- ABO--
-FOR-- INC- USI-- ONL- THR-- LET--- NAM- FIE--- HAS
-HAD THE OPP ..... EFF--- FRO- WHA- THE WRI--- WAN---*
+"WE STI.. DON.. SEE THE NEE. FOR 31 CHA...... NAM.. IN THE GEN.... CAS."
 
 [Full text](https://github.com/agsb/agsb.github.io/blob/main/notes/Essay.md)
 
@@ -111,7 +109,7 @@ approximately 65,536 items which requires a damn huge dictionary.
 
 _"The melange must flow"_
 
-_Chuck executes or compiles each word indiviually rather than line by line.
+_Chuck executes or compiles each word individually rather than line by line.
 In fact Chuck doesn't really have lines. I will also go word by word rather
 than line by line in aha._
 

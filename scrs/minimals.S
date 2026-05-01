@@ -67,7 +67,7 @@ def_word ":", "colon", hash_colon, it_exit
 
 # stat is 'compile' == 1
         
-        addi fst, zero, ONE
+        li fst, COMPILE
         
         sw fst, STAT (usr)
 
@@ -106,7 +106,9 @@ def_word ";", "semis", hash_semis, it_colon
 
 # stat is 'interpret' == 0
         
-        sw zero, STAT (usr)
+        li fst, EXECUTE
+
+        sw fst, STAT (usr)
 
 finish:
 # compound words must ends with exit
@@ -253,12 +255,20 @@ pull2:
 # ( -- ) execute a jump and link
 def_word ";$", "docode", hash_DOCODE, init_extras
 
-        # keep the return address in ra 
-        # then jump to where ipt holds
+        # pull the next reference 
+        lw idx, SPRT (usr)
+        lw fst, 0 (idx)
 
-        jalr ra, 0 (ipt)
+        # update return stack 
+        addi idx, idx, 4
+        sw idx, SPRT (usr)
+
+        # then jump and link to where R@
+
+        jalr ra, 0 (fst)
         
-        # at there, a ret # jalr zero, 0 ( ra )
+        # at there, ending with a ret ;# jalr zero, 0 ( ra )
+
         # will return here 
 
         j next
