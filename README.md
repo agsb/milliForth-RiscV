@@ -2,9 +2,11 @@
 
 *"To master riding bicycles you have do ride bicycles"*
 
-    started at 23/07/2025, agsb@
-    first version at 12/10/2025, @agsb
-    minimal dictionary compiled words at 04/12/2025, @agsb
+started at 23/07/2025, agsb@
+
+first version at 12/10/2025, @agsb
+
+minimal dictionary compiled words at 04/12/2025, @agsb
 
 Please, vide [Changes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Changes.md) 
 and [Notes](https://github.com/agsb/milliForth-RiscV/blob/main/docs/Notes.md)
@@ -151,10 +153,12 @@ minimal primitives:
         
 only internals: 
     
-    main, cold, warm, miss, warp, abort, quit,   
+    main, cold, warm, 
+    miss, abort, quit, warp,
     token, skip, hash, scan, mask, 
-    find, eval, compile, execute, immediate, comma,  
+    find, eval, compile, execute,   
     unnest, next, pick, jump, nest, move
+    comma, _init, _getc, _putc, _exit
 
     ps. next is not the NEXT of FOR NEXT loop !    
 
@@ -171,6 +175,9 @@ More words in native code are selectable in defines.S
 Eg. extras:
 
     ;$      execute native code at instruction pointer (IP), vide Notes
+    NAN     place 0x80000000 into stack
+    LSHIFT  shift left a value by n bits
+    RSHIFT  shift right a value by n bits
     ABORT   restart the Forth interpreter
     BYE     ends the Forth, return to system
     .       show the cell at top of data stack in hexadecimal 

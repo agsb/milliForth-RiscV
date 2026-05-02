@@ -34,6 +34,19 @@
 
 ## Done
 
+02/05/2026
+
+    Include FAUX and CEIL in user struct. 
+    FAUX hold the last HEAP before last compiling,
+    CEIL points to last unused cell in memory.
+
+    FAUX could be used to make RECURSIVE words and to clean heap when 
+    compilation fails.
+
+    Tune of DOT ( . ) and ( $ ) dollar, for hexadecimal
+
+    Test of DOCODE ( ;$ ) to jump and link to next address in dictionary
+
 26/04/2026
 
     Rewrite verify in forth words files, tu0, tu1, tu2, etc
