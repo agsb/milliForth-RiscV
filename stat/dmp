@@ -26,7 +26,7 @@ SYMBOL TABLE:
 00012000 l    d  .data	00000000 .data
 00012010 l    d  .bss	00000000 .bss
 00000000 l    d  .riscv.attributes	00000000 .riscv.attributes
-00000000 l    df *ABS*	00000000 cc2Cyp0a.o
+00000000 l    df *ABS*	00000000 cckzwZoC.o
 00040000 l       *ABS*	00000000 RAM_LIMIT
 00000000 l       *ABS*	00000000 FALSE
 ffffffff l       *ABS*	00000000 TRUE
@@ -352,7 +352,8 @@ Disassembly of section .text:
 00010226 <is_semis>:
    10226:	4854                	lw	a3,20(s0)
    10228:	c454                	sw	a3,12(s0)
-   1022a:	00042823          	sw	zero,16(s0)
+   1022a:	4681                	li	a3,0
+   1022c:	c814                	sw	a3,16(s0)
 
 0001022e <finish>:
    1022e:	00002697          	auipc	a3,0x2

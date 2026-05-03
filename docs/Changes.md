@@ -34,6 +34,17 @@
 
 ## Done
 
+03/05/2026
+
+    Compose a vocabulary of compiled words of those in 
+    http://www.euroforth.org/ef15/papers/knaggs.pdf
+
+    Insights from 
+            https://compilercrim.es/bootstrap/miniforth/
+            https://groups.google.com/g/comp.lang.forth/c/KHw28PKZXUk/m/JrXcjrYshxAJ
+
+    review of primitives extras
+
 02/05/2026
 
     Include FAUX and CEIL in user struct. 

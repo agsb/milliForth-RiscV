@@ -34,6 +34,8 @@
 
 .equ hash_EQU, 0x0002B598       # = 
 .equ hash_LESS, 0x0002B599      # < 
+.equ hash_ULESS, 0x005973CC     # U< 
+.equ hash_GTZERO, 0x0059680B    # 0>
 
 .equ hash_CFETCH, 0x005972E6    # C@
 .equ hash_CSTORE, 0x00597287    # C!
@@ -65,6 +67,7 @@
 
 .equ hash_BRANCH, 0x1E6C4191 
 .equ hash_ZBRANCH, 0x7D28616B
+.equ hash_GBRANCH, 0x689E2DB6    
 
 .equ hash_LIT, 0x0B87DB14 
 .equ hash_ALIGN, 0x0C531CC8 
@@ -106,13 +109,26 @@
 .equ init_primitives, last_next
 
 #---------------------------------------------------------------------
+#
 look0:
         lw idx, SPTR (usr)
+
         lw fst, 0 (idx)
+
         ret
 
 keep0:
         sw fst, 0 (idx)
+
+        j next
+
+rdrop1:
+        lw idx, RPTR (usr)
+
+        addi idx, idx, CELL
+
+        sw idx, RPTR (usr)
+
         j next
 
 #---------------------------------------------------------------------
@@ -206,26 +222,8 @@ def_word "ROT", "rot", hash_ROT, it_swap
         j next
 
 #---------------------------------------------------------------------
-# ( w1 w2 w3 -- w3 w1 w2 ) #; rot tos
-def_word "-ROT", "nrot", hash_NROT, it_rot
-
-        call look0
-
-        lw snd, CELL (idx)
-        
-        lw trd, 2 * CELL (idx)
-
-        sw snd, 0 (idx)
-
-        sw trd, CELL (idx)
-
-        sw fst, 2 * CELL (idx)
-
-        j next
-
-#---------------------------------------------------------------------
  # ( a -- w ), w = [a], one byte
- def_word "C@", "cfetch", hash_CFETCH, it_nrot
+ def_word "C@", "cfetch", hash_CFETCH, it_rot
 
          call look0
 
@@ -312,8 +310,28 @@ def_word "<", "less", hash_LESS, it_equ
         j isfalse
 
 #---------------------------------------------------------------------
+# ( w1 w2 -- w3 ) #; w1 < w2 unsigned
+def_word "U<", "uless", hash_ULESS, it_less     
+
+        call pull2
+
+        bltu snd, fst, istrue
+
+        j isfalse
+
+#---------------------------------------------------------------------
+# ( w1 w2 -- w3 ) #; w1 < w2 greater than zero
+def_word "0>", "gtzero", hash_GTZERO, it_uless     
+
+        call pull2
+
+        bgt fst, zero, istrue
+
+        j isfalse
+
+#---------------------------------------------------------------------
 # ( -- w ) #; the value is at second cell
-def_word "R@", "rat", hash_RAT, it_less
+def_word "R@", "rat", hash_RAT, it_gtzero
 
 rlook0:
         lw idx, RPTR (usr)
@@ -414,7 +432,7 @@ def_word "SP!", "spto", hash_SPTO, it_spat
         j next
 
 #---------------------------------------------------------------------
-# ( -- ; -- ) #; @
+# ( -- ; -- ) #; branch is relative, not absolute
 def_word "BRANCH", "branch", hash_BRANCH, it_spto
 
 branch:
@@ -431,25 +449,28 @@ branch:
         j next
 
 #---------------------------------------------------------------------
-# ( -- ; -- ) #; @
-def_word "0BRANCH", "branchz", hash_ZBRANCH, it_branch
+# ( -- ; -- ) #; branch if zero
+def_word "0BRANCH", "zbranch", hash_ZBRANCH, it_branch
         
         call pull2
 
         beq fst, zero, branch
 
-rdrop1:
-        lw idx, RPTR (usr)
-
-        addi idx, idx, CELL
-
-        sw idx, RPTR (usr)
-
-        j next
+        j rdrop1
 
 #---------------------------------------------------------------------
-# ( -- w ) #; @
-def_word "LIT", "lit", hash_LIT, it_branchz
+# ( -- ; -- ) #; branch if greater than zero
+def_word "GBRANCH", "gbranch", hash_GBRANCH, it_zbranch
+        
+        call pull2
+
+        bgt fst, zero, branch
+
+        j drop1
+
+#---------------------------------------------------------------------
+# ( -- w ) #; 
+def_word "LIT", "lit", hash_LIT, it_gbranch
 
         lw idx, RPTR (usr)
 
@@ -478,51 +499,23 @@ def_word "FALSE", "false", hash_FALSE, it_true
         j push1
 
 #---------------------------------------------------------------------
-# ( -- 1 ) #; push 0x00000001
-def_word "1", "one", hash_ONE, it_false
-
-        li fst, ONE
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- 2 ) #; push 0x00000002
-def_word "2", "two", hash_TWO, it_one
-
-        li fst, TWO
-
-        j push1
-
-#---------------------------------------------------------------------
 # ( -- 4 ) #; push 0x00000004
-def_word "CELL", "cell", hash_CELL, it_two
+def_word "CELL", "cell", hash_CELL, it_false
 
         li fst, CELL
 
         j push1
 
 #---------------------------------------------------------------------
-# ( -- ) push 0x80000000
-def_word "NAN", "nan", hash_NAN, it_cell
-by_erro:
-by_zero:
-by_under:        
-by_over:
-
-        lui fst, 0x80000
-        
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @
-def_word "RP0", "rpzo", hash_RPZO, it_nan
+# ( -- w ; w -- ) #; constant
+def_word "RP0", "rpzo", hash_RPZO, it_cell
 
         la fst, _rp0
 
         j push1
 
 #---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @
+# ( -- w ; w -- ) #; constant
 def_word "SP0", "spzo", hash_SPZO, it_rpzo
 
         la fst, _sp0
@@ -570,24 +563,8 @@ def_word "CEIL", "ceil", hash_CEIL, it_faux
         j push1
 
 #---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @ start of memory for use
-def_word "HEAD", "head", hash_HEAD, it_ceil
-
-        la fst, h_where
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @ end of memory for use
-def_word "TAIL", "tail", hash_TAIL, it_head
-
-        la fst, h_there
-
-        j push1
-
-#---------------------------------------------------------------------
 # ( w1 w2 -- w3 w4 ) double multiply,  
-def_word "M*", "bymul", hash_BYMUL, it_tail
+def_word "M*", "bymul", hash_BYMUL, it_ceil
         
         call pull2
         mulh trd, fst, snd
@@ -609,6 +586,71 @@ def_word "/MOD", "bymod", hash_BYMOD, it_bymul
 	j push2
 
 #---------------------------------------------------------------------
+# ( w -- ) #; @
+def_word "PERFORM", "perform", hash_PERFORM, it_bymod
+
+        call pull2
+
+        jalr ra, 0 (fst)
+
+        j save1
+        
+#---------------------------------------------------------------------
+
+.set last_next, it_perform
+
+#---------------------------------------------------------------------
+
+/*
+#---------------------------------------------------------------------
+# extras already defined or not used
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @ start of memory for use
+def_word "HEAD", "head", hash_HEAD, it_ceil
+
+        la fst, h_where
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- w ; w -- ) #; @ end of memory for use
+def_word "TAIL", "tail", hash_TAIL, it_head
+
+        la fst, h_there
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- ) push 0x80000000
+def_word "NAN", "nan", hash_NAN, it_cell
+by_erro:
+by_zero:
+by_under:        
+by_over:
+
+        lui fst, 0x80000
+        
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- 1 ) #; push 0x00000001
+def_word "1", "one", hash_ONE, it_false
+
+        li fst, ONE
+
+        j push1
+
+#---------------------------------------------------------------------
+# ( -- 2 ) #; push 0x00000002
+def_word "2", "two", hash_TWO, it_one
+
+        li fst, TWO
+
+        j push1
+
+#---------------------------------------------------------------------
 # ( w -- w*2 ) #; shift left
 def_word "2*", "twomul", hash_TWOMUL, it_bymod
 
@@ -627,6 +669,7 @@ def_word "2/", "twodiv", hash_TWODIV, it_twomul
         srli fst, fst, 1
         
         j keep0
+
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1<<w2 ) #; shift left
@@ -649,15 +692,23 @@ def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
         j keep1
 
 #---------------------------------------------------------------------
-# ( w -- ) #; @
-def_word "PERFORM", "perform", hash_PLUSTO, it_rshift
+# ( w1 w2 w3 -- w3 w1 w2 ) #; rot tos
+def_word "-ROT", "nrot", hash_NROT, it_rot
 
-        call pull2
+        call look0
 
-        jalr ra, 0 (fst)
-
-        j save1
+        lw snd, CELL (idx)
         
+        lw trd, 2 * CELL (idx)
+
+        sw snd, 0 (idx)
+
+        sw trd, CELL (idx)
+
+        sw fst, 2 * CELL (idx)
+
+        j next
+
 #---------------------------------------------------------------------
 # ( w -- ) #; @
 def_word "+!", "plusto", hash_PLUSTO, it_perform
@@ -672,9 +723,5 @@ def_word "+!", "plusto", hash_PLUSTO, it_perform
 
         j drop1
         
-#---------------------------------------------------------------------
-
-.set last_next, it_plusto
-
-#---------------------------------------------------------------------
+*/
 

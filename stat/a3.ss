@@ -32,6 +32,8 @@
    10218:	86be                	mv	a3,a5
    10226:	4854                	lw	a3,20(s0)
    10228:	c454                	sw	a3,12(s0)
+   1022a:	4681                	li	a3,0
+   1022c:	c814                	sw	a3,16(s0)
    1022e:	00002697          	auipc	a3,0x2
    10232:	dc66a683          	lw	a3,-570(a3) # 11ff4 <_GLOBAL_OFFSET_TABLE_+0x18>
    1025c:	c298                	sw	a4,0(a3)

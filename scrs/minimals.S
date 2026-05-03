@@ -161,6 +161,14 @@ def_word "@", "fetch", hash_fetch, it_store
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
 def_word "NAND", "nand", hash_NAND, it_fetch
+# generic error
+by_erro:
+# division by zero
+by_zero:
+# undeflow
+by_unflow:
+# overflow
+by_ovflow:
         
         call pull2
 
@@ -256,22 +264,26 @@ pull2:
 def_word ";$", "docode", hash_DOCODE, init_extras
 
         # pull the next reference 
-        lw idx, SPRT (usr)
+        lw idx, SPTR (usr)
         lw fst, 0 (idx)
 
         # update return stack 
         addi idx, idx, 4
-        sw idx, SPRT (usr)
+        sw idx, SPTR (usr)
 
-        # then jump and link to where R@
+        # then jump and link to there R@
 
         jalr ra, 0 (fst)
         
-        # at there, ending with a ret ;# jalr zero, 0 ( ra )
-
+        # at there, ending with a ret
         # will return here 
 
-        j next
+        j unnest
+
+        # how about COMBINE ;$ $ ..., $ ... , $; CONTINUE  
+        # doing as CODE ( ;$ ) ...code... END-CODE ( $; ) but inside a word ?
+        # how get the offset from pos-COMBINE to pre-CONTINE
+
 
 #---------------------------------------------------------------------
 # ( -- ) ae abort
