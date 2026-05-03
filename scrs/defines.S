@@ -149,8 +149,7 @@
 # flags for compiler options
 
 # enable echo
-
-.equ echoo, YES
+#.equ echoo, YES
 
 .equ extras, YES
 
