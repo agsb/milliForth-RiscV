@@ -109,7 +109,7 @@ approximately 65,536 items which requires a damn huge dictionary.
 
 ## No Terminal Input Buffer
 
-_"The melange must flow"_
+_"The spice must flow"_
 
 _Chuck executes or compiles each word individually rather than line by line.
 In fact Chuck doesn't really have lines. I will also go word by word rather
