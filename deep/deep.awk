@@ -108,10 +108,13 @@ function deep( key,     n, m, yek) {
                 # escape next ?
                 if (    (yek == "[']") ||
                         (yek == "LIT") ||
+                        (yek == "COMP") ||
                         (yek == "COMPILE") ||
                         (yek == "[COMPILE]") ||
                         (yek == "POSTPONE")     ) {
                         n++
+                        yek = words[key,n]
+                        used[yek] = used[yek] + 1
                         }
 
                 }
