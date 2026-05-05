@@ -1,15 +1,4 @@
  : VOID ;
- : ! ;
- : @ ;
- : NAND ;
- : + ;
- : EXIT ;
- : KEY ;
- : EMIT ;
- : \: ;
- : \; ;
- : U@ ;
- : 0# ;
  : ABORT VOID ;
  : -1 U@ 0# ;
  : 0 -1 -1 NAND ;
@@ -94,20 +83,19 @@
  : FOR HERE ['] >R , ;
  : NEXT ['] R> , ['] LIT , 1 , ['] - , ['] DUP , ['] 0< , ['] NOT , ['] ?BRANCH , HERE - , ['] DROP , ;
  : ?DUP DUP IF DUP THEN ;
+ : CELL LIT [ 4 , ] ;
  : CELLS DUP + DUP + ;
- \ : CELL ['] [ 4 , ] ;
- \ : CELL LIT [ 4 , ] ;
- \ : 0 LIT [ 0 , ] ;
- \ : 1 LIT [ 1 , ] ;
- \ : 2 LIT [ 1 1 + , ] ;
- \ : 4 LIT [ 2 2 + , ] ;
- \ : 8 LIT [ 4 4 + , ] ;
- \ : 16 LIT [ 8 8 + , ] ;
- \ : 32 LIT [ 16 16 + , ] ;
- \ : 64 LIT [ 32 32 + , ] ;
- \ : 128 LIT [ 64 64 + , ] ;
- \ : BL LIT [ 16 16 + , ] ;
- \ : QU LIT [ 16 16 + 2 + , ] ;
+ : 0 LIT [ 0 , ] ;
+ : 1 LIT [ 1 , ] ;
+ : 2 LIT [ 1 1 + , ] ;
+ : 4 LIT [ 2 2 + , ] ;
+ : 8 LIT [ 4 4 + , ] ;
+ : 16 LIT [ 8 8 + , ] ;
+ : 32 LIT [ 16 16 + , ] ;
+ : 64 LIT [ 32 32 + , ] ;
+ : 128 LIT [ 64 64 + , ] ;
+ : BL LIT [ 16 16 + , ] ;
+ : QU LIT [ 16 16 + 2 + , ] ;
  : CR 8 2 + EMIT ;
  : NL 8 4 + 1 + EMIT ;
  : SPACE BL EMIT ;
@@ -125,4 +113,7 @@
  : \ 8 2 + SCAN ;
  : ( 32 8 + 1 + SCAN ;
  : ." 32 2 + BEGIN KEY OVER OVER - WHILE EMIT REPEAT DROP DROP ;
+
+  ." this is all folks " 
+
 

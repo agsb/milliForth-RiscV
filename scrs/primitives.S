@@ -486,7 +486,7 @@ def_word "LIT", "lit", hash_LIT, it_gbranch
 # ( -- TRUE ) #; push 0xFFFFFFFF 
 def_word "TRUE", "true", hash_TRUE, it_lit
         
-        addi fst, zero, TRUE 
+        li fst, TRUE 
 
         j push1
 

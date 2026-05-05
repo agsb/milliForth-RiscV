@@ -3,6 +3,8 @@
  \ https://stackoverflow.com/questions/78708194/
  \ logical-shift-right-without-dedicated-shift-instruction
 
+ : 2*   DUP + ;
+
  : 2/   0 32 2 DO
         OVER ISNEGATIVE AND IF 1 + THEN  
         DUP + SWAP

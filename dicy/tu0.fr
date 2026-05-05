@@ -1,6 +1,6 @@
  : VOID ; 
-   
- : ABORT VOID ;  
+ 
+ : ABORT VOID ; 
 
  : -1 U@ 0# ; 
  : 0 -1 -1 NAND ; 
@@ -22,7 +22,7 @@
  : STATE HEAP CELL + ; 
 
  : FAUX STATE CELL + ;
- : CEIL FAUX  CELL + ;
+ : CEIL FAUX CELL + ;
 
  : SP@ SP @ CELL + ; 
  : RP@ RP @ CELL + ; 
@@ -67,7 +67,7 @@
  : COMPILE R> DUP CELL + >R @ , ;
  : STATE? STATE @ ;
 
- : LIT RP@ @ DUP CELL + RP@ ! @ ; 
+ : TLIT RP@ @ DUP CELL + RP@ ! @ ; 
  : ['] RP@ @ DUP CELL + RP@ ! @ ; 
  
  : ROT >R SWAP R> SWAP ; 
@@ -97,11 +97,11 @@
 
  : LITERAL ['] LIT , , ; IMMEDIATE
  
+ : SP0 TLIT [ SP@ , ] ; SP0  
+ : RP0 TLIT [ RP@ , ] ; RP0 
+
  : 0= 0# NOT ; 
  : 0< ISNEGATIVE AND 0# ; 
-
- : SP0 LIT [ SP@ , ] ; SP0
- : RP0 LIT [ RP@ , ] ; RP0
 
  : ISNEGATIVE LIT [ ISNEGATIVE , ] ; 
  
@@ -142,25 +142,25 @@
  : DO ['] SWAP , HERE ['] >R , ['] >R , ; IMMEDIATE 
 
  : LOOP 
-        ['] R> , ['] LIT , 1 , ['] + , ['] R> , 
-        ['] 2DUP , ['] = , ['] 0BRANCH , HERE - , 
-        ['] 2DROP , ; IMMEDIATE 
+ ['] R> , ['] LIT , 1 , ['] + , ['] R> , 
+ ['] 2DUP , ['] = , ['] 0BRANCH , HERE - , 
+ ['] 2DROP , ; IMMEDIATE 
 
  : I ['] R@ , ; IMMEDIATE 
 
- : J    ['] R> , ['] R> , ['] R@ , 
-        ['] SWAP , ['] >R , ['] SWAP , ['] >R , ; IMMEDIATE 
+ : J ['] R> , ['] R> , ['] R@ , 
+ ['] SWAP , ['] >R , ['] SWAP , ['] >R , ; IMMEDIATE 
 
  : LEAVE 
-        ['] R> , ['] DROP ,
-        ['] R> , ['] DROP ,
-        ['] EXIT , ; IMMEDIATE 
+ ['] R> , ['] DROP ,
+ ['] R> , ['] DROP ,
+ ['] EXIT , ; IMMEDIATE 
 
  : FOR 0 >R HERE ['] >R , ; IMMEDIATE
 
- : NEXT ['] R> , ['] LIT , 1 , ['] - ,  ['] DUP , 
-        ['] 0< , ['] NOT , ['] 0BRANCH , HERE - , 
-        ['] 2DROP , ; IMMEDIATE
+ : NEXT ['] R> , ['] LIT , 1 , ['] - , ['] DUP , 
+ ['] 0< , ['] NOT , ['] 0BRANCH , HERE - , 
+ ['] 2DROP , ; IMMEDIATE
 
  : ?DUP DUP IF DUP THEN ; 
 
@@ -194,9 +194,9 @@
  : SPACES 0 DO SPACE LOOP ; 
 
  : 0> DUP 
-        0= IF DROP FALSE EXIT THEN 
-        0< IF FALSE EXIT THEN
-        TRUE ; 
+ 0= IF DROP FALSE EXIT THEN 
+ 0< IF FALSE EXIT THEN
+ TRUE ; 
 
  : 0fh LIT [ 16 1 - , ] ; 
  : ffh LIT [ 0fh 2* 2* 2* 2* 0fh OR , ] ; 
