@@ -34,6 +34,14 @@
 
 ## Done
 
+06/05/2026
+
+    Preparing a presentation about millifort-riscv for forth2020
+
+    Howdeep.awk doing some statistics about Forth
+
+    Headshake with compose vocabulary
+
 03/05/2026
 
     Compose a vocabulary of compiled words of those in 

@@ -15,6 +15,10 @@ BEGIN {
 
   dp = 0;
 
+  ep = 0;
+
+  nc = 0;
+
   np = 0;
 
 }
@@ -95,6 +99,8 @@ function deep( key,     n, m, yek) {
         for (n = 0; n < m; n++) {
     
                 yek = words[key,n]
+
+                used[yek] = used[yek] + 1
 
                 if ( qtde[yek] > 0) { 
                         nc++

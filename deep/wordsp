@@ -35,8 +35,8 @@
  \: NOT DUP NAND ;
  \: AND NAND NOT ;
  \: - NOT 1 + + ;
- : BRANCH RP@ @ DUP @ + RP@ ! ;
- : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ;
+ \: BRANCH RP@ @ DUP @ + RP@ ! ;
+ \: ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ;
  \: OVER SP@ CELL + @ ;
  \: SWAP OVER OVER SP@ CELL + CELL + CELL + ! SP@ CELL + ! ;
  \: OR NOT SWAP NOT AND NOT ;
