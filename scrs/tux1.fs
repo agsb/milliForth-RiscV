@@ -1,15 +1,4 @@
  : VOID ;
- : ! ;
- : @ ;
- : NAND ;
- : + ;
- : EXIT ;
- : KEY ;
- : EMIT ;
- : \: ;
- : \; ;
- : U@ ;
- : 0# ;
  : ABORT VOID ;
  : -1 U@ 0# ;
  : 0 -1 -1 NAND ;
@@ -34,7 +23,8 @@
  : DUP SP@ @ ;
  : NOT DUP NAND ;
  : AND NAND NOT ;
- : - NOT 1 + + ;
+ : NEGATE NOT 1 + ;
+ : - NEGATE + ;
  : BRANCH RP@ @ DUP @ + RP@ ! ;
  : ?BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ;
  : OVER SP@ CELL + @ ;
@@ -65,11 +55,9 @@
  : DOCON R> DUP CELL + >R @ ;
  : DOLIT R> DUP CELL + >R ;
  : EXECUTE >R ;
- : LITERAL ['] LIT , , ;
+ : LITERAL ['] LIT , , ; IMMEDIATE 
  : XOR OVER OVER AND -ROT NOR NOR ;
  : XNOR XOR NOT ;
- : 0= 0# NOT ;
- : 0< ISNEGATIVE AND 0# ;
  : 2DUP OVER OVER ;
  : 2DROP DROP DROP ;
  : 2SWAP ROT >R ROT R> ;
@@ -84,38 +72,45 @@
  : ISNEGATIVE 80H 2** 2** 2** ;
  : IMMEDIATE LATEST @ CELL + DUP @ ISNEGATIVE + SWAP ! ;
  : ] 1 STATE ! ;
- : [ 0 STATE ! ;
+ : [ 0 STATE ! ; IMMEDIATE
  : SP0 LIT [ SP@ , ] ;
  : RP0 LIT [ RP@ , ] ;
  : ISNEGATIVE LIT [ ISNEGATIVE , ] ;
- : IF ['] ?BRANCH , HERE 0 , ;
- : THEN DUP HERE SWAP - SWAP ! ;
- : ELSE ['] BRANCH , HERE 0 , SWAP DUP HERE SWAP - SWAP ! ;
- : BEGIN HERE ;
- : AGAIN ['] BRANCH , HERE - , ;
- : UNTIL ['] ?BRANCH , HERE - , ;
- : WHILE ['] ?BRANCH , HERE 0 , ;
- : REPEAT SWAP ['] BRANCH , HERE - , DUP HERE SWAP - SWAP ! ;
- : DO ['] SWAP , HERE ['] >R , ['] >R , ;
- : LOOP ['] R> , ['] LIT , 1 , ['] + , ['] R> , ['] 2DUP , ['] = , ['] ?BRANCH , HERE - , ['] 2DROP , ;
- : I ['] R@ , ;
- : LEAVE ['] R> , ['] DROP , ['] R> , ['] DROP , ['] EXIT , ;
- : FOR HERE ['] >R , ;
- : NEXT ['] R> , ['] LIT , 1 , ['] - , ['] DUP , ['] 0< , ['] NOT , ['] ?BRANCH , HERE - , ['] DROP , ;
+ : 0= 0# NOT ;
+ : 0< ISNEGATIVE AND 0# ;
+ : IF ['] ?BRANCH , HERE 0 , ; IMMEDIATE
+ : THEN DUP HERE SWAP - SWAP ! ; IMMEDIATE
+ : ELSE ['] BRANCH , HERE 0 , SWAP DUP HERE SWAP - SWAP ! ; IMMEDIATE
+ : BEGIN HERE ; IMMEDIATE
+ : AGAIN ['] BRANCH , HERE - , ; IMMEDIATE 
+ : UNTIL ['] ?BRANCH , HERE - , ; IMMEDIATE 
+ : WHILE ['] ?BRANCH , HERE 0 , ; IMMEDIATE 
+ : REPEAT SWAP ['] BRANCH , HERE - , DUP HERE SWAP - SWAP ! ; IMMEDIATE 
+ : DO ['] SWAP , HERE ['] >R , ['] >R , ; IMMEDIATE 
+ : LOOP ['] R> , ['] LIT , 1 , ['] + , ['] R> , ['] 2DUP , ['] = , ['] ?BRANCH , HERE - , ['] 2DROP , ; IMMEDIATE 
+ : I ['] R@ , ; IMMEDIATE 
+ : LEAVE ['] R> , ['] DROP , ['] R> , ['] DROP , ['] EXIT , ; IMMEDIATE 
+ : FOR HERE ['] >R , ; IMMEDIATE 
+ : NEXT ['] R> , ['] LIT , 1 , ['] - , ['] DUP , ['] 0< , ['] NOT , ['] ?BRANCH , HERE - , ['] DROP , ; IMMEDIATE 
  : ?DUP DUP IF DUP THEN ;
  : CELLS DUP + DUP + ;
-  : CELL LIT [ 4 , ] ;
-  : 0 LIT [ 0 , ] ;
-  : 1 LIT [ 1 , ] ;
-  : 2 LIT [ 1 1 + , ] ;
-  : 4 LIT [ 2 2 + , ] ;
-  : 8 LIT [ 4 4 + , ] ;
-  : 16 LIT [ 8 8 + , ] ;
-  : 32 LIT [ 16 16 + , ] ;
-  : 64 LIT [ 32 32 + , ] ;
-  : 128 LIT [ 64 64 + , ] ;
-  : BL LIT [ 16 16 + , ] ;
-  : QU LIT [ 16 16 + 2 + , ] ;
+ : CELL LIT [ 4 , ] ;
+ : 0 LIT [ 0 , ] ;
+ : 1 LIT [ 1 , ] ;
+ : 2 LIT [ 1 1 + , ] ;
+ : 4 LIT [ 2 2 + , ] ;
+ : 8 LIT [ 4 4 + , ] ;
+ : 16 LIT [ 8 8 + , ] ;
+ : 32 LIT [ 16 16 + , ] ;
+ : 64 LIT [ 32 32 + , ] ;
+ : 128 LIT [ 64 64 + , ] ;
+ : 256 LIT [ 128 128 + , ] ;
+ : 512 LIT [ 256 256 + , ] ;
+ : 1024 LIT [ 512 512 + , ] ;
+ : 2048 LIT [ 1024 1024 + , ] ;
+ : 4096 LIT [ 2048 2048 + , ] ;
+ : BL LIT [ 16 16 + , ] ;
+ : QU LIT [ 16 16 + 2 + , ] ;
  : CR 8 2 + EMIT ;
  : NL 8 4 + 1 + EMIT ;
  : SPACE BL EMIT ;
@@ -141,9 +136,9 @@
  : TYPE 0 DO DUP C@ EMIT 1 + LOOP DROP ;
  : SKIP BEGIN KEY OVER - 0# UNTIL DROP ;
  : SCAN BEGIN KEY OVER - 0# NOT UNTIL DROP ;
- : \ 8 2 + SCAN ;
- : ( 32 8 + 1 + SCAN ;
- : ." 32 2 + BEGIN KEY OVER OVER - WHILE EMIT REPEAT DROP DROP ;
+ : \ 8 2 + SCAN ; IMMEDIATE
+ : ( 32 8 + 1 + SCAN ; IMMEDIATE
+ : ." 32 2 + BEGIN KEY OVER OVER - WHILE EMIT REPEAT DROP DROP ; 
 
  \ comments
 
