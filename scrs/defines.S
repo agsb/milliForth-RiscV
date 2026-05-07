@@ -95,7 +95,7 @@
 .equ STAT, 4 * CELL
 
 # last heap while compiling
-.equ FAUX, 5 * CELL
+.equ PEEK, 5 * CELL
 
 # last free cell for heap dictionary  
 .equ CEIL, 6 * CELL

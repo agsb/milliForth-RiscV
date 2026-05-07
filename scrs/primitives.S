@@ -85,7 +85,7 @@
 .equ hash_LAST, 0x7C835F2F
 .equ hash_HEAP, 0x7C857DF9
 
-.equ hash_FAUX, 0x7C7DF4AF 
+.equ hash_PEEK, 0x7C75C17E 
 .equ hash_CEIL, 0x7C81B006 
 
 .equ hash_HEAD, 0x7C857DED
@@ -543,15 +543,15 @@ def_word "HEAP", "heap", hash_HEAP, it_last
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @ start of memory for use
-def_word "FAUX", "faux", hash_FAUX, it_heap
+def_word "PEEK", "peek", hash_PEEK, it_heap
 
-        lw fst, FAUX (usr)
+        lw fst, PEEK (usr)
 
         j push1
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @ start of memory for use
-def_word "CEIL", "ceil", hash_CEIL, it_faux
+def_word "CEIL", "ceil", hash_CEIL, it_peek
 
         lw fst, CEIL (usr)
 

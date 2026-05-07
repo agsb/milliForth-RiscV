@@ -63,7 +63,7 @@ def_word ":", "colon", hash_colon, it_exit
         
         lw fst, HEAP (usr)
         
-        sw fst, FAUX (usr)
+        sw fst, PEEK (usr)
 
 # stat is 'compile' == 1
         
@@ -100,7 +100,7 @@ docomma:
 def_word ";", "semis", hash_semis, it_colon 
 # update last, panic if colon not lead elsewhere 
         
-        lw fst, FAUX (usr)
+        lw fst, PEEK (usr)
         
         sw fst, LAST (usr)
 

@@ -221,7 +221,7 @@ miss:
         beq fst, zero, 100f
         
         # wipe remains, reclaims space.
-        lw fst, FAUX (usr)
+        lw fst, PEEK (usr)
         sw fst, HEAP (usr)
         li fst, EXECUTE
         sw fst, STAT (usr)
