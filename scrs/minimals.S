@@ -161,15 +161,7 @@ def_word "@", "fetch", hash_fetch, it_store
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
 def_word "NAND", "nand", hash_NAND, it_fetch
-# generic error
-by_erro:
-# division by zero
-by_zero:
-# undeflow
-by_unflow:
-# overflow
-by_ovflow:
-        
+
         call pull2
 
         and fst, snd, fst
@@ -260,30 +252,52 @@ pull2:
 .set init_extras, last_next
 
 #---------------------------------------------------------------------
-# ( -- ) execute a jump and link
-def_word ";$", "docode", hash_DOCODE, init_extras
+# ( -- ) push 0x80000000 #; Not a Number and flag IMMEDIATE and error
+def_word "NAN", "nan", hash_NAN, init_extras
+by_erro:
+by_zero:
+by_under:        
+by_over:
 
-        # pull the next reference 
-        lw idx, SPTR (usr)
-        lw fst, 0 (idx)
-
-        # update return stack 
-        addi idx, idx, 4
-        sw idx, SPTR (usr)
-
-        # then jump and link to there R@
-
-        jalr ra, 0 (fst)
+        lui fst, 0x80000
         
-        # at there, ending with a ret
-        # will return here 
+        j push1
 
-        j unnest
+#---------------------------------------------------------------------
+# ( w1 w2 -- w1<<w2 ) #; shift left
+def_word "LSHIFT", "lshift", hash_LSHIFT, it_nan
 
-        # how about COMBINE ;$ $ ..., $ ... , $; CONTINUE  
-        # doing as CODE ( ;$ ) ...code... END-CODE ( $; ) but inside a word ?
-        # how get the offset from pos-COMBINE to pre-CONTINE
+        call pull2
+        
+        sll fst, snd, fst
+        
+        j keep1
 
+#---------------------------------------------------------------------
+# ( w1 w2 -- w1>>w2 ) #; shift right
+def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
+
+        call pull2
+        
+        srl fst, snd, fst
+        
+        j keep1
+
+#---------------------------------------------------------------------
+# ( -- ) execute a jump and link
+def_word ";$", "docode", hash_DOCODE, it_rshift 
+
+        # jump and link to there 
+
+        jalr ra, 0 (ipt)
+        
+        # at there, keep ra, do anything, keep ra,
+        # end with  jalr s1, 0 (ra)
+        # to return here, with s1 (is IP) to next cell 
+        # eg. : THIS OVER ;$ $ 4B1DCAFE DROP ; 
+        # \ execute after OVER then returns to DROP
+
+        j next
 
 #---------------------------------------------------------------------
 # ( -- ) ae abort

@@ -1,5 +1,4 @@
 *~
-z*
 ?
 ??
 out
@@ -7,9 +6,9 @@ err
 tst/
 try/
 out/
+.*/
 *.o
 *.a
-*.x
 *.log
 *.toc
 *.fmt

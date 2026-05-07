@@ -122,12 +122,8 @@ keep0:
 
         j next
 
-rdrop1:
-        lw idx, RPTR (usr)
-
-        addi idx, idx, CELL
-
-        sw idx, RPTR (usr)
+drop0:
+        addi ipt, ipt, CELL
 
         j next
 
@@ -436,15 +432,14 @@ def_word "SP!", "spto", hash_SPTO, it_spat
 def_word "BRANCH", "branch", hash_BRANCH, it_spto
 
 branch:
-        lw idx, RPTR (usr)
 
-        lw fst, 0 (idx)
+        lw fst, 0 (ipt)
+        
+        # when absolute
+        # mv ipt, fst
 
-        lw snd, 0 (fst)
-
-        add fst, fst, snd
-
-        sw fst, 0 (idx)
+        # when relative
+        add ipt, ipt, fst
 
         j next
 
@@ -456,7 +451,7 @@ def_word "0BRANCH", "zbranch", hash_ZBRANCH, it_branch
 
         beq fst, zero, branch
 
-        j rdrop1
+        j drop0
 
 #---------------------------------------------------------------------
 # ( -- ; -- ) #; branch if greater than zero
@@ -466,7 +461,7 @@ def_word "GBRANCH", "gbranch", hash_GBRANCH, it_zbranch
 
         bgt fst, zero, branch
 
-        j drop1
+        j drop0
 
 #---------------------------------------------------------------------
 # ( -- w ) #; 
@@ -619,34 +614,6 @@ def_word "HEAD", "head", hash_HEAD, it_ceil
 def_word "TAIL", "tail", hash_TAIL, it_head
 
         la fst, h_there
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- ) push 0x80000000
-def_word "NAN", "nan", hash_NAN, it_cell
-by_erro:
-by_zero:
-by_under:        
-by_over:
-
-        lui fst, 0x80000
-        
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- 1 ) #; push 0x00000001
-def_word "1", "one", hash_ONE, it_false
-
-        li fst, ONE
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- 2 ) #; push 0x00000002
-def_word "2", "two", hash_TWO, it_one
-
-        li fst, TWO
 
         j push1
 
