@@ -34,6 +34,12 @@
 
 ## Done
 
+07/05/2026
+
+    Renamed variable FAUX to PEEK
+
+    Review of presentation "AEForth v3.pdf"
+
 06/05/2026
 
     Preparing a presentation about millifort-riscv for forth2020
