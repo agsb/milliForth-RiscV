@@ -47,8 +47,9 @@
 .equ hash_AND, 0x0B87B72E 
 .equ hash_OR, 0x00597378 
 .equ hash_XOR, 0x0B883040 
-.equ hash_NOT, 0x0B87D3D0 
-.equ hash_NEG, 0x0B87D489 
+
+.equ hash_NEGATE, 0x26B37A79 
+.equ hash_INVERSE, 0x2D6AA2B5 
 
 .equ hash_DUP, 0x0B87BC84 
 .equ hash_DROP, 0x7C7F5C2C 
@@ -111,14 +112,14 @@
 #---------------------------------------------------------------------
 #
 look0:
-        lw idx, SPTR (usr)
+        lw trd, SPTR (usr)
 
-        lw fst, 0 (idx)
+        lw fst, 0 (trd)
 
         ret
 
 keep0:
-        sw fst, 0 (idx)
+        sw fst, 0 (trd)
 
         j next
 
@@ -140,8 +141,8 @@ def_word "ALIGN", "align", hash_ALIGN, init_primitives
         j keep0
 
 #---------------------------------------------------------------------
-# ( w1 -- w2 ) #; NOT w
-def_word "NOT", "nots", hash_NOT, it_align
+# ( w1 -- w2 ) #; INVERSE w
+def_word "INVERSE", "nots", hash_INVERSE, it_align
 
         call look0
 
@@ -152,7 +153,7 @@ def_word "NOT", "nots", hash_NOT, it_align
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; NEG w, arithmetic inverse
-def_word "NEG", "negs", hash_NEG, it_nots
+def_word "NEGATE", "negs", hash_NEGATE, it_nots
 
         call look0
 
@@ -181,7 +182,7 @@ def_word "OVER", "over", hash_OVER, it_drop
 
         call look0
 
-        lw fst, CELL (idx)
+        lw fst, CELL (trd)
 
         j push1
 
@@ -191,11 +192,11 @@ def_word "SWAP", "swap", hash_SWAP, it_over
 
         call look0
 
-        lw snd, CELL (idx)
+        lw snd, CELL (trd)
 
-        sw snd, 0 (idx)
+        sw snd, 0 (trd)
 
-        sw fst, CELL (idx)
+        sw fst, CELL (trd)
 
         j next
 
@@ -205,15 +206,15 @@ def_word "ROT", "rot", hash_ROT, it_swap
 
         call look0
 
-        lw snd, CELL (idx)
+        lw snd, CELL (trd)
         
-        lw trd, 2 * CELL (idx)
+        sw fst, CELL (trd)
 
-        sw trd, 0 (idx)
+        lw fst, 2 * CELL (trd)
 
-        sw fst, CELL (idx)
+        sw snd, 2 * CELL (trd)
 
-        sw snd, 2 * CELL (idx)
+        sw fst, 0 (trd)
 
         j next
 
@@ -286,12 +287,12 @@ def_word "=", "equ", hash_EQU, it_xor
         bne fst, snd, isfalse
 
 istrue:
-        addi fst, zero, TRUE
+        li fst, TRUE
 
         j keep0
 
 isfalse:
-        addi fst, zero, FALSE
+        li fst, FALSE
 
         j keep0
 
@@ -316,10 +317,10 @@ def_word "U<", "uless", hash_ULESS, it_less
         j isfalse
 
 #---------------------------------------------------------------------
-# ( w1 w2 -- w3 ) #; w1 < w2 greater than zero
+# ( w1 -- w2 ) #; w1 > 0 greater than zero
 def_word "0>", "gtzero", hash_GTZERO, it_uless     
 
-        call pull2
+        call look0
 
         bgt fst, zero, istrue
 
@@ -330,9 +331,9 @@ def_word "0>", "gtzero", hash_GTZERO, it_uless
 def_word "R@", "rat", hash_RAT, it_gtzero
 
 rlook0:
-        lw idx, RPTR (usr)
+        lw trd, RPTR (usr)
 
-        lw fst, CELL (idx)
+        lw fst, CELL (trd)
 
         j push1
 
@@ -341,23 +342,31 @@ rlook0:
 def_word "R>", "rto", hash_RTO, it_rat
 
 rpull1:
-        lw idx, RPTR (usr)
+        # load pointer
+
+        lw trd, RPTR (usr)
 
         # load value
 
-        lw fst, CELL (idx)
+        lw fst, CELL (trd)
 
         # load return
 
-        lw snd, 0 (idx)
+        lw snd, 0 (trd)
 
-        addi idx, idx, +1 * CELL
+        # update pointer 
+
+        addi trd, trd, +1 * CELL
 
         # save return 
 
-        sw snd, 0 (idx) 
+        sw snd, 0 (trd) 
 
-        sw idx, RPTR (usr)
+        # save pointer
+
+        sw trd, RPTR (usr)
+
+        # save value
 
         j push1
 
@@ -365,25 +374,33 @@ rpull1:
 # ( w --  ; -- w ) #; the value is at second cell
 def_word ">R", "tor", hash_TOR, it_rto
 
+        # load value
+
         call pull2 
 
-        lw idx, RPTR (usr)
+        # load pointer
+
+        lw trd, RPTR (usr)
 
         # load return
 
-        lw snd, 0 (idx) 
+        lw snd, 0 (trd) 
 
         # save value
 
-        sw fst, 0 (idx) 
+        sw fst, 0 (trd) 
 
-        addi idx, idx, -1 * CELL
+        # update pointer 
+
+        addi trd, trd, -1 * CELL
 
         # save return
 
-        sw snd, 0 (idx)
+        sw snd, 0 (trd)
 
-        sw idx, RPTR (usr)
+        # save pointer
+
+        sw trd, RPTR (usr)
 
         j next
 
@@ -392,8 +409,6 @@ def_word ">R", "tor", hash_TOR, it_rto
 def_word "RP@", "rpat", hash_RPAT, it_tor
 
         lw fst, RPTR (usr)
-
-        addi fst, fst, CELL
 
         j push1
 
@@ -412,8 +427,6 @@ def_word "RP!", "rpto", hash_RPTO, it_rpat
 def_word "SP@", "spat", hash_SPAT, it_rpto
 
         lw fst, SPTR (usr)
-
-        addi fst, fst, CELL
 
         j push1
 
@@ -467,13 +480,13 @@ def_word "GBRANCH", "gbranch", hash_GBRANCH, it_zbranch
 # ( -- w ) #; 
 def_word "LIT", "lit", hash_LIT, it_gbranch
 
-        lw idx, RPTR (usr)
+        lw trd, RPTR (usr)
 
-        lw fst, 0 (idx)
+        lw fst, 0 (trd)
 
-        addi idx, idx, CELL
+        addi trd, trd, CELL
 
-        sw idx, RPTR (usr)
+        sw trd, RPTR (usr)
 
         j push1
 
@@ -562,21 +575,22 @@ def_word "CEIL", "ceil", hash_CEIL, it_peek
 def_word "M*", "bymul", hash_BYMUL, it_ceil
         
         call pull2
-        mulh trd, fst, snd
+        mulh spc, fst, snd
         mul snd, fst, snd
 
 push2:
-        sw snd, 0 (idx)
-        add fst, trd, zero
-	j back1
+        sw snd, 0 (trd)
+        mv fst, spc
+	j push1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 w4 ) divide
 def_word "/MOD", "bymod", hash_BYMOD, it_bymul
         
         call pull2
-	beqz snd, by_zero
-        div trd, fst, snd
+	beqz fst, by_zero
+
+        div spc, fst, snd
         rem snd, fst, snd
 	j push2
 
@@ -588,107 +602,11 @@ def_word "PERFORM", "perform", hash_PERFORM, it_bymod
 
         jalr ra, 0 (fst)
 
-        j save1
+        j next
         
 #---------------------------------------------------------------------
 
 .set last_next, it_perform
 
 #---------------------------------------------------------------------
-
-/*
-#---------------------------------------------------------------------
-# extras already defined or not used
-#---------------------------------------------------------------------
-
-#---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @ start of memory for use
-def_word "HEAD", "head", hash_HEAD, it_ceil
-
-        la fst, h_where
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( -- w ; w -- ) #; @ end of memory for use
-def_word "TAIL", "tail", hash_TAIL, it_head
-
-        la fst, h_there
-
-        j push1
-
-#---------------------------------------------------------------------
-# ( w -- w*2 ) #; shift left
-def_word "2*", "twomul", hash_TWOMUL, it_bymod
-
-        call look0
-        
-        slli fst, fst, 1
-        
-        j keep0
-
-#---------------------------------------------------------------------
-# ( w -- w/2 ) #; shift right
-def_word "2/", "twodiv", hash_TWODIV, it_twomul
-
-        call look0
-        
-        srli fst, fst, 1
-        
-        j keep0
-
-
-#---------------------------------------------------------------------
-# ( w1 w2 -- w1<<w2 ) #; shift left
-def_word "LSHIFT", "lshift", hash_LSHIFT, it_twodiv
-
-        call pull2
-        
-        sll fst, snd, fst
-        
-        j keep1
-
-#---------------------------------------------------------------------
-# ( w1 w2 -- w1>>w2 ) #; shift right
-def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
-
-        call pull2
-        
-        srl fst, snd, fst
-        
-        j keep1
-
-#---------------------------------------------------------------------
-# ( w1 w2 w3 -- w3 w1 w2 ) #; rot tos
-def_word "-ROT", "nrot", hash_NROT, it_rot
-
-        call look0
-
-        lw snd, CELL (idx)
-        
-        lw trd, 2 * CELL (idx)
-
-        sw snd, 0 (idx)
-
-        sw trd, CELL (idx)
-
-        sw fst, 2 * CELL (idx)
-
-        j next
-
-#---------------------------------------------------------------------
-# ( w -- ) #; @
-def_word "+!", "plusto", hash_PLUSTO, it_perform
-
-        call pull2
-
-        lw idx, 0 (fst)
-
-        add snd, snd, idx
-
-        sw snd, 0 (fst)
-
-        j drop1
-        
-*/
 

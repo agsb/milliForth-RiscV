@@ -401,9 +401,9 @@ shows:
         mhex fst
         putchar ' '
        
-       putchar 'F'
+       putchar 'P'
         putchar ' '
-        lw fst, FAUX (usr)
+        lw fst, PEEK (usr)
         mhex fst
         putchar ' '
        

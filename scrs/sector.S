@@ -88,8 +88,6 @@ is_\label:
 .section .data
 .p2align 4, 0x0
 
-.word 0xFEEDCAFE
-
 # There is no spoon.
 
 #----------------------------------------------------------------------
@@ -122,7 +120,7 @@ _rp0:
 
 #----------------------------------------------------------------------
 # NOTE:
-# user_size + sp_size + rp_size must be less than 1024 bytes
+# user_size + sp_size + rp_size must be less than 2024 bytes
 # because code uses addi (+12bits) to setup offset address
 #----------------------------------------------------------------------
 
@@ -174,13 +172,12 @@ cold:
 
 # xxx 
 .ifdef beatme
-
-        sw zero, BEAT (usr)
-
-        sw zero, TICK (usr)
-
-        sw zero, TACK (usr)
-
+        # beat
+        li t0, 0
+        # tick
+        li t1, 0
+        # tack
+        li t2, 0
 .endif
 
 #----------------------------------------------------------------------
@@ -218,7 +215,7 @@ miss:
         # not compiling ? 
         lw fst, STAT (usr)
         # execute is zero
-        beq fst, zero, 100f
+        beqz fst, 100f
         
         # wipe remains, reclaims space.
         lw fst, PEEK (usr)
@@ -271,13 +268,13 @@ warp:
 100:
 .endif
 
-        # get a hash of the next token in idx
+        # get a hash of the next token in trd
         
         call token
 
 #---------------------------------------------------------------------         
 # search for a hash in dictionary linked list 
-# idx have the hash of the word
+# trd have the hash of the word
 #
 find:
 
@@ -288,7 +285,7 @@ find:
 100:
         # verify end of dictionary 
         
-        beq lnk, zero, miss
+        beqz lnk, miss
 
         # linked list
         
@@ -302,19 +299,19 @@ find:
         
         addi fst, fst, CELL
 
-        lw wrd, 0 (fst)
+        lw hsh, 0 (fst)
 
         # mask the FLAG, hold it in snd
 
         lui snd, %hi(FLAG_IMM)
 
-        and snd, wrd, snd
+        and snd, hsh, snd
 
-        xor wrd, wrd, snd
+        xor hsh, hsh, snd
 
         # compare trd equ hash
         
-        bne idx, wrd, 100b
+        bne trd, hsh, 100b
 
         # points to code or list, aka xt
 
@@ -340,11 +337,11 @@ eval:
         
         # executing ? if state == 0
 
-        beq wrd, zero, execute
+        beqz wrd, execute
 
         # immediate ? if flaged
 
-        bne snd, zero, execute      
+        bnez snd, execute      
 
         # compiling  
 compile:
@@ -372,53 +369,51 @@ execute:
 .equ DJB2, 5381
 .equ SFHT, 5
 #---------------------------------------------------------------------
-# return the hash of token in idx 
+# return the hash of token in trd
 # do not change the registers !
 token:
         save_ra
 
         # prepare for hash
 
-        lui idx, %hi(DJB2)
-        addi idx, idx, %lo(DJB2)
+        lui trd, %hi(DJB2)
+        addi trd, trd, %lo(DJB2)
 
         # load word separator, BL is space
 
-        li trd, BL
+        li spc, BL
 
         # skip spaces
 skip:
         call _getc
 
-        bleu fst, trd, skip
+        ble fst, spc, skip
         
         # djb2 hash function
 hash:        
 
-        mv snd, idx
+        mv snd, trd
 
-        slli idx, idx, SFHT
+        slli trd, trd, SFHT
         
-        add idx, idx, snd
+        add trd, trd, snd
         
-        xor idx, idx, fst
+        xor trd, trd, fst
         
         # scan spaces
 scan:
         call _getc
 
-        # andi fst, fst, 127
+        blt fst, spc, scan
 
-        bltu fst, trd, scan
-
-        bne fst, trd, hash
+        bne fst, spc, hash
 
         # clear hash high bit 
 mask:
 
-        slli idx, idx, ONE
+        slli trd, trd, ONE
 
-        srli idx, idx, ONE
+        srli trd, trd, ONE
 
         load_ra
 
@@ -427,13 +422,13 @@ mask:
 #---------------------------------------------------------------------
 comma:
 
-        lw idx, HEAP (usr)
+        lw trd, HEAP (usr)
       
-        sw fst, 0 (idx)
+        sw fst, 0 (trd)
       
-        addi idx, idx, CELL
+        addi trd, trd, CELL
       
-        sw idx, HEAP (usr)
+        sw trd, HEAP (usr)
 
         ret
 
@@ -461,19 +456,19 @@ is_warp:
 # return pull 
 unnest: 
         
-        lw idx, RPTR (usr)
+        lw trd, RPTR (usr)
         
-        lw ipt, 0 (idx)
+        lw ipt, 0 (trd)
         
-        addi idx, idx, CELL
+        addi trd, trd, CELL
         
-        sw idx, RPTR (usr)
+        sw trd, RPTR (usr)
 
 # next heart beat
 next:
 # xxx
 .ifdef beatme
-        call beats
+        addi t0, t0, 1
 .endif
 
         lw fst, 0 (ipt)
@@ -483,16 +478,13 @@ next:
 # compare address, if is a primitive then jumps, MITC 
 pick:
         
-        # la idx, _ends
-        # bge fst, idx, nest
-        
         bge fst, nib, nest
 
 # jump to primitive
 jump: 
 # xxx
 .ifdef beatme
-        call ticks
+        addi t1, t1, 1
 .endif
 
         # really jump and link 
@@ -502,16 +494,16 @@ jump:
 nest:   
 # xxx
 .ifdef beatme
-        call tacks
+        addi t2, t2, 1
 .endif
 
-        lw idx, RPTR (usr)
+        lw trd, RPTR (usr)
         
-        addi idx, idx, -1 * CELL
+        addi trd, trd, -1 * CELL
         
-        sw ipt, 0 (idx)
+        sw ipt, 0 (trd)
         
-        sw idx, RPTR (usr)
+        sw trd, RPTR (usr)
 
 move: 
 # resolve indirect thread
@@ -520,41 +512,6 @@ move:
         
         j next
 
-#----------------------------------------------------------------------
-# xxx
-.ifdef beatme
-
-# count heart beats 
-beats:
-        lw idx, BEAT (usr)
-
-        addi idx, idx, 1
-        
-        sw idx, BEAT (usr)
-
-        ret
-
-# count ticks as primitive executions
-ticks:
-        lw idx, TICK (usr)
-
-        addi idx, idx, 1
-        
-        sw idx, TICK (usr)
-
-        ret
-
-# count tacks as composed executions
-tacks:
-        lw idx, TACK (usr)
-
-        addi idx, idx, 1
-        
-        sw idx, TACK (usr)
-
-        ret
-
-.endif
 #----------------------------------------------------------------------
 
 #----------------------------------------------------------------------

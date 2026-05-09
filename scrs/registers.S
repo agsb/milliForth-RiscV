@@ -93,12 +93,12 @@
 #define snd a4
 
 # index 
-#define idx a5
+#define trd a5
 
 # not for compressed code
 
 # generic
-#define trd a6
+#define spc a6
 
 # generic
 #define ops a7

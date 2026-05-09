@@ -36,6 +36,7 @@
 .equ hash_plus,  0x0002B58E 
 .equ hash_zeroq, 0x00596816 
 .equ hash_colon, 0x0002B59F 
+
 .equ hash_semis, 0x8002B59E # unique with FLAG_IMM 
 
 #---------------------------------------------------------------------
@@ -87,7 +88,7 @@ create:
 
 # copy hash into (here)
 
-        mv fst, idx
+        mv fst, trd
 
 docomma:
 
@@ -104,7 +105,7 @@ def_word ";", "semis", hash_semis, it_colon
         
         sw fst, LAST (usr)
 
-# stat is 'interpret' == 0
+# stat is 'execute' == 0
         
         li fst, EXECUTE
 
@@ -144,7 +145,7 @@ def_word "!", "store", hash_store, it_emit
         sw snd, 0 (fst)
 
 drop1:
-        addi idx, idx, CELL
+        addi trd, trd, CELL
 
         j save1
 
@@ -186,9 +187,9 @@ def_word "0#", "zeroq", hash_zeroq, it_plus
 
         call pull2
         
-        beq fst, zero, back1
+        beqz fst, back1
 
-        addi fst, zero, TRUE
+        li fst, TRUE
         
         j back1
 
@@ -200,16 +201,16 @@ def_word "U@", "userat", hash_USERAT, it_zeroq
         mv fst, usr 
 
 push1:
-        lw idx, SPTR (usr)
+        lw trd, SPTR (usr)
         
 back1:
-        addi idx, idx, -1 * CELL
+        addi trd, trd, -1 * CELL
 
 keep1:
-        sw fst, 0 (idx)
+        sw fst, 0 (trd)
 
 save1:
-        sw idx, SPTR (usr)
+        sw trd, SPTR (usr)
         
         j next
 
@@ -217,13 +218,13 @@ save1:
 
 pull2:
         
-        lw idx, SPTR (usr)
+        lw trd, SPTR (usr)
         
-        lw fst, 0 (idx)
+        lw fst, 0 (trd)
         
-        addi idx, idx, CELL
+        addi trd, trd, CELL
 
-        lw snd, 0 (idx)
+        lw snd, 0 (trd)
 
         ret
 
@@ -246,6 +247,9 @@ pull2:
 .equ hash_BYE, 0x0B87C61B
 .equ hash_DOT, 0x0002B58B
 .equ hash_HEX, 0x0002B581
+.equ hash_NAN, 0x0B87D404 
+.equ hash_LSHIFT, 0x2C5784C9 
+.equ hash_RSHIFT, 0x416E6B97
 
 #---------------------------------------------------------------------
 
@@ -291,11 +295,9 @@ def_word ";$", "docode", hash_DOCODE, it_rshift
 
         jalr ra, 0 (ipt)
         
-        # at there, keep ra, do anything, keep ra,
+        # at there, save ra, do whatever, load ra,
         # end with  jalr s1, 0 (ra)
         # to return here, with s1 (is IP) to next cell 
-        # eg. : THIS OVER ;$ $ 4B1DCAFE DROP ; 
-        # \ execute after OVER then returns to DROP
 
         j next
 
@@ -341,22 +343,22 @@ tohex:
 
         save_ra
 
-        mv t2, fst
+        mv snd, fst
         
-        li t1, 58
+        li trd, 58
 
-        li t0, 32
+        li spc, 32
 
         # rolls 
 100:
-        beq t0, zero, 300f
+        beqz spc, 300f
 
-        addi t0, t0, -4
+        addi spc, spc, -4
 
-        srl  fst, t2, t0
+        srl  fst, snd, spc
         andi fst, fst, 15
         ori  fst, fst, 48
-        blt  fst, t1, 200f
+        blt  fst, trd, 200f
         addi fst, fst, 7
 200:
         call _putc
@@ -378,7 +380,7 @@ number:
 
         # clear result
 
-        li idx, 0
+        li trd, 0
 
         # load NaN
 
@@ -386,12 +388,12 @@ number:
 
         # load word separator, BL is space      
 
-        li trd, BL
+        li spc, BL
 
         # skip spaces 
 nskip:
         call _getc
-        bleu fst, trd, nskip
+        bleu fst, spc, nskip
 
 ndigit:
 
@@ -399,20 +401,20 @@ ndigit:
 
         beq fst, snd, nodigit
 
-        slli idx, idx, 4
+        slli trd, trd, 4
 
-        add idx, idx, fst
+        add trd, trd, fst
         
         # scan spaces 
 nscan:
         call _getc
-        bltu fst, trd, nscan
+        bltu fst, spc, nscan
 
-        bne fst, trd, ndigit
+        bne fst, spc, ndigit
 
 isdigit:
 
-        mv fst, idx 
+        mv fst, trd 
 
 nodigit:
 
