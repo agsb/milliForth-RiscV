@@ -111,6 +111,15 @@ def_word ";", "semis", hash_semis, it_colon
 
         sw fst, STAT (usr)
 
+# xxx
+.ifdef emote
+        # emote 
+        putch '\n'
+        putch 'O'
+        putch 'K'
+        putch '\n'
+.endif
+
 finish:
 # compound words must ends with exit
         

@@ -29,23 +29,23 @@
  
  : DUP SP@ @ ; 
 
- : NOT DUP NAND ; 
- : AND NAND NOT ; 
+ : INVERSE DUP NAND ; 
+ : AND NAND INVERSE ; 
 
- : NEGATE NOT 1 + ;
+ : NEGATE INVERSE 1 + ;
  : - NEGATE + ; 
 
  : BRANCH RP@ @ DUP @ + RP@ ! ; 
- : 0BRANCH 0# NOT RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
+ : 0BRANCH 0# INVERSE RP@ @ @ CELL - AND RP@ @ + CELL + RP@ ! ; 
  
  : OVER SP@ CELL + @ ; 
  : SWAP OVER OVER SP@ CELL + CELL + CELL + ! SP@ CELL + ! ; 
 
- : OR NOT SWAP NOT AND NOT ; 
- : NOR OR NOT ; 
+ : OR INVERSE SWAP INVERSE AND INVERSE ; 
+ : NOR OR INVERSE ; 
 
  : <> - 0# ; 
- : = <> NOT ; 
+ : = <> INVERSE ; 
  
  : DROP DUP - + ; 
  : NIP SWAP DROP ; 
@@ -74,7 +74,7 @@
  : -ROT SWAP >R SWAP R> ; 
  
  : XOR OVER OVER AND -ROT NOR NOR ; 
- : XNOR XOR NOT ; 
+ : XNOR XOR INVERSE ; 
  
  : 2DUP OVER OVER ; 
  : 2DROP DROP DROP ; 
@@ -100,7 +100,7 @@
  : SP0 LIT [ SP@ , ] ; SEE SP0  
  : RP0 LIT [ RP@ , ] ; SEE RP0 
 
- : 0= 0# NOT ; 
+ : 0= 0# INVERSE ; 
  : 0< ISNEGATIVE AND 0# ; 
 
  : ISNEGATIVE LIT [ ISNEGATIVE , ] ; 
@@ -147,7 +147,7 @@
  : FOR 0 >R HERE ['] >R , ; IMMEDIATE 
 
  : NEXT ['] R> , ['] LIT , 1 , ['] - , ['] DUP , 
- ['] 0< , ['] NOT , ['] 0BRANCH , HERE - , 
+ ['] 0< , ['] INVERSE , ['] 0BRANCH , HERE - , 
  ['] 2DROP , ; IMMEDIATE 
 
  : ?DUP DUP IF DUP THEN ; 
@@ -191,7 +191,7 @@
  : FFh LIT [ 128 128 + 1 - , ] ;
 
  : C@ @ ffh AND ; 
- : C! DUP @ ffh NOT AND ROT ffh AND OR SWAP ! ; 
+ : C! DUP @ ffh INVERSE AND ROT ffh AND OR SWAP ! ; 
  : C, HERE C! 1 ALLOT ; 
 
  : ALIGN 3 + TRUE 3 - AND ; 
@@ -200,7 +200,7 @@
 
  : SKIP BEGIN KEY OVER - 0# UNTIL DROP ; 
 
- : SCAN BEGIN KEY OVER - 0# NOT UNTIL DROP ; 
+ : SCAN BEGIN KEY OVER - 0# INVERSE UNTIL DROP ; 
 
  : \ 8 2 + SCAN ; IMMEDIATE  
 

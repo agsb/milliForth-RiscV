@@ -139,10 +139,16 @@ h_there:
 
 #---------------------------------------------------------------------
 # xxx
+.ifdef emote 
+.macro putch value
+        li a3, \value
+        call _putc
+.endm
+.endif
+
+# xxx
 .ifdef tools
-
 #include "puthex.S"
-
 .endif
 
 #----------------------------------------------------------------------
@@ -199,14 +205,12 @@ warm:
 miss:
 
 # xxx 
-.ifdef tools
-
+.ifdef emote
         # emote 
-        putchar '\n'
-        putchar '?'
-        putchar '?'
-        putchar '\n'
-
+        putch '\n'
+        putch '?'
+        putch '?'
+        putch '\n'
 .endif
 
 # xxx
@@ -250,24 +254,6 @@ quit:
 #---------------------------------------------------------------------
 # 
 warp:
-
-# xxx
-.ifdef tools
-
-        # not compiling ?
-        lw fst, STAT (usr)
-        # execute is zero
-        bne fst, zero, 100f
-
-        # emote 
-        putchar '\n'
-        putchar 'O'
-        putchar 'K'
-        putchar '\n'
-
-100:
-.endif
-
         # get a hash of the next token in trd
         
         call token
