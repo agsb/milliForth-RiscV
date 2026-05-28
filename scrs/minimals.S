@@ -259,6 +259,7 @@ pull2:
 .equ hash_NAN, 0x0B87D404 
 .equ hash_LSHIFT, 0x2C5784C9 
 .equ hash_RSHIFT, 0x416E6B97
+.equ hash_LIT, 0x0B87DB14
 
 #---------------------------------------------------------------------
 
@@ -321,6 +322,16 @@ def_word "ABORT", "aborts", hash_ABORT, it_docode
 def_word "BYE", "byes", hash_BYE, it_aborts
 
         j _exit
+
+#---------------------------------------------------------------------
+# ( -- ) exit forth
+def_word "LIT", "lit", hash_LIT, it_byes
+        
+        mv fst, ipt
+
+        addi ipt, ipt, 4
+
+        j push1
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @

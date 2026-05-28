@@ -155,7 +155,7 @@
 #.equ emote, YES
 
 # enable extra minimals
-#.equ extras, YES
+.equ extras, YES
 
 # enable extra primitives
 #.equ primitives, YES
