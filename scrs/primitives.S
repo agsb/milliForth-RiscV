@@ -70,7 +70,7 @@
 .equ hash_ZBRANCH, 0x7D28616B
 .equ hash_GBRANCH, 0x689E2DB6    
 
-.equ hash_LIT, 0x0B87DB14 
+.equ hash_EXEC, 0x7C7CC8DE 
 .equ hash_ALIGN, 0x0C531CC8 
 
 .equ hash_TRUE, 0x7C879BF3
@@ -79,7 +79,6 @@
 .equ hash_ONE, 0x00002B594      # 1
 .equ hash_TWO, 0x00002B597      # 2
 .equ hash_CELL, 0x07C81B0A3
-.equ hash_NAN, 0x0B87D404       
 
 .equ hash_STATE, 0x0DD1F032
 
@@ -477,22 +476,16 @@ def_word "GBRANCH", "gbranch", hash_GBRANCH, it_zbranch
         j drop0
 
 #---------------------------------------------------------------------
-# ( -- w ) #; 
-def_word "LIT", "lit", hash_LIT, it_gbranch
+# ( -- ) exit forth
+def_word "EXEC", "exec", hash_EXEC, it_gbranch
+        
+        call pull2
 
-        lw trd, RPTR (usr)
-
-        lw fst, 0 (trd)
-
-        addi trd, trd, CELL
-
-        sw trd, RPTR (usr)
-
-        j push1
+        j pick
 
 #---------------------------------------------------------------------
 # ( -- TRUE ) #; push 0xFFFFFFFF 
-def_word "TRUE", "true", hash_TRUE, it_lit
+def_word "TRUE", "true", hash_TRUE, it_exec
         
         li fst, TRUE 
 

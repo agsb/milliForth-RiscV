@@ -327,7 +327,7 @@ def_word "BYE", "byes", hash_BYE, it_aborts
 # ( -- ) exit forth
 def_word "LIT", "lit", hash_LIT, it_byes
         
-        mv fst, ipt
+        lw fst, 0 (ipt)
 
         addi ipt, ipt, 4
 

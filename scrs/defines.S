@@ -158,7 +158,7 @@
 .equ extras, YES
 
 # enable extra primitives
-#.equ primitives, YES
+.equ primitives, YES
 
 # enable extra debug tools
 #.equ tools, YES
