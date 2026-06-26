@@ -149,7 +149,7 @@
 # flags for compiler options
 
 # enable echo
-#.equ echoo, YES
+.equ echoo, YES
 
 # enable OK or ??
 #.equ emote, YES
@@ -158,10 +158,10 @@
 .equ extras, YES
 
 # enable extra primitives
-.equ primitives, YES
+# .equ primitives, YES
 
 # enable extra debug tools
-#.equ tools, YES
+.equ tools, YES
 
 # enable clean when try compile a missed word 
 # .equ missme, YES

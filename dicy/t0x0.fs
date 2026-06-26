@@ -97,8 +97,8 @@
 
  : LITERAL ['] LIT , , ; IMMEDIATE 
  
- : SP0 LIT [ SP@ , ] ;   
- : RP0 LIT [ RP@ , ] ;  
+ : SP0 LIT [ SP@ , ] ; SEE SP0  
+ : RP0 LIT [ RP@ , ] ; SEE RP0 
 
  : 0= 0# INVERSE ; 
  : 0< ISNEGATIVE AND 0# ; 

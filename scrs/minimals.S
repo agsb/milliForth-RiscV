@@ -29,6 +29,9 @@
 #
 #  djb2 hash cleared of bit 31
 #
+#  all uppercase
+#
+
 #---------------------------------------------------------------------
 # symbols ! @ + 0# : ;
 .equ hash_store, 0x0002B584 
@@ -347,7 +350,11 @@ def_word ".", "dot", hash_DOT, it_hex
 
         call pull2
 
+#        mv t1, trd
+
         call tohex
+
+#        mv trd, t1 
 
         j save1
         
@@ -365,20 +372,20 @@ tohex:
 
         mv snd, fst
         
-        li trd, 58
+        li t1, 58
 
-        li spc, 32
+        li t2, 32
 
         # rolls 
 100:
-        beqz spc, 300f
+        beqz t2, 300f
 
-        addi spc, spc, -4
+        addi t2, t2, -4
 
-        srl  fst, snd, spc
+        srl  fst, snd, t2
         andi fst, fst, 15
         ori  fst, fst, 48
-        blt  fst, trd, 200f
+        blt  fst, t1, 200f
         addi fst, fst, 7
 200:
         call _putc
