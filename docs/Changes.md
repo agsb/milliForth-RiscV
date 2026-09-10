@@ -34,6 +34,12 @@
 
 ## Done
 
+09/09/2026
+
+    Include HOOP :) Jimmy idea about IF ... LOOP
+        HOOP returns to IF 
+        Is a form of AGAIN 
+
 07/05/2026
 
     Renamed variable FAUX to PEEK
