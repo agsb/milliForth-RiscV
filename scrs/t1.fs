@@ -1,3 +1,9 @@
+\ the dictionary is a set of  
+\ link, hash, code, exit
+\ link is a pointer to previous word
+\ hash is the djb2 32 bits hash with high bit clear
+\    high bit is immediate flag, set only in immediate words 
+\ code is a set of pointers or native code
 
 \ where is the hash
 
@@ -5,11 +11,11 @@
 
  SEE 
 
-\ where is the body
+\ where is the code
 
  : LINK>BODY CELL + CELL + ; 
 
- SEE 
+ SEE
 
  \ make a header
 
@@ -23,47 +29,51 @@
 
  SEE
 
- \ : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
-
- : DJB2 LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] ; 
+ : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
 
  SEE
 
- DJB2 . SPACE CR 
+ : DJB2-CTE ( -- 1505 ) LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] ; 
 
- BL . SPACE CR 
+ : DJB2-HSH ( KEY HSH -- HSH2 ) DUP DUP + DUP + DUP + DUP + DUP + + XOR ;
 
- \ BYE
-
- : HASH 
-        BL BEGIN KEY OVER OVER = NOT UNTIL 
-        DJB2 BEGIN 
-                DUP DUP + DUP + DUP + DUP + DUP + + XOR >R
-                KEY OVER OVER = 
-                IF TRUE ELSE R> FALSE THEN
-        UNTIL
-        DROP DROP R>  
-        ;
+ : HASH2 
+    BL BEGIN KEY OVER OVER = NOT UNTIL 
+    DJB2-HSH >R
+    ( BL KEY -- )
+    BEGIN 
+    R> DJB2-HSH >R
+        KEY OVER OVER = 
+        IF TRUE ELSE FALSE THEN
+    UNTIL
+    DROP DROP R> 
+       ;
  
- SEE 
+ \ zzzz review it
+ : FIND ( caddr -- caddr 0 | caddr1 1 immediate | caddr1 -1 not immediate )
+	LATEST @ 
+	BEGIN
+    	OVER OVER CELL + @
+    	ISNEGATIVE 1 - AND
+    = IF SWAP DROP TRUE EXIT THEN
+    @ DUP 0 
+    = IF SWAP DROP FALSE EXIT THEN
+    AGAIN ; 
 
- : FIND LATEST @ BEGIN
-        OVER OVER CELL + @
-        ISNEGATIVE 1 - AND
-        = IF SWAP DROP TRUE EXIT THEN
-        @ DUP 0 
-        = IF SWAP DROP FALSE EXIT THEN
-        AGAIN ; 
+
+ HASH HASH . CR
+
+ \ HASH2 HASH . CR
+
+ ISNEGATIVE 1 - . CR
+
+ ISNEGATIVE 1 + . CR
+
+ FIND HASH . CR
  
- SEE 
+ SEE HASH
 
- \ BYE
-
- HASH HASH . ." "
-
- HASH U@ . ." "
-
- HASH 0# . ." "
+ BYE
 
  : ' HASH FIND IF CELL + CELL + THEN ;  
  

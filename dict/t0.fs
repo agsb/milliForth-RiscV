@@ -187,8 +187,7 @@
  TRUE ; 
 
  : 0fh LIT [ 16 1 - , ] ; 
- : ffh LIT [ 0fh 2* 2* 2* 2* 0fh OR , ] ; 
- : FFh LIT [ 128 128 + 1 - , ] ;
+ : ffh LIT [ 256 1 - , ] ; 
 
  : C@ @ ffh AND ; 
  : C! DUP @ ffh INVERSE AND ROT ffh AND OR SWAP ! ; 

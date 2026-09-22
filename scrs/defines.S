@@ -152,7 +152,7 @@
 .equ echoo, YES
 
 # enable OK or ??
-#.equ emote, YES
+.equ emote, YES
 
 # enable extra minimals
 .equ extras, YES

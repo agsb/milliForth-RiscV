@@ -30,6 +30,7 @@
  : DUP SP@ @ ; 
 
  : INVERSE DUP NAND ; 
+ : NOT INVERSE ;
  : AND NAND INVERSE ; 
 
  : NEGATE INVERSE 1 + ;
@@ -122,8 +123,6 @@
  : ELSE ['] BRANCH , MARK SWAP ENDIF ; IMMEDIATE  
 
  : THEN ENDIF ; IMMEDIATE  
- 
- : HOOP ['] BRANCH , DUP CELL - BACK ENDIF ; IMMEDIATE  
 
  : WHILE ['] 0BRANCH , MARK ; IMMEDIATE  
 
@@ -189,8 +188,7 @@
  TRUE ; 
 
  : 0fh LIT [ 16 1 - , ] ; 
- : ffh LIT [ 0fh 2* 2* 2* 2* 0fh OR , ] ; 
- : FFh LIT [ 128 128 + 1 - , ] ;
+ : ffh LIT [ 256 1 - , ] ; 
 
  : C@ @ ffh AND ; 
  : C! DUP @ ffh INVERSE AND ROT ffh AND OR SWAP ! ; 

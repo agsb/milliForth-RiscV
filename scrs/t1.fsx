@@ -1,29 +1,39 @@
-\ the dictionary is a set of  
-\ link, hash, code, exit
-\ link is a pointer to previous word
-\ hash is the djb2 32 bits hash with high bit clear
-\	high bit is immediate flag, set only in immediate words 
-\ code is a set of pointers or native code
 
 \ where is the hash
 
  : LINK>HASH CELL + ; 
 
-\ where is the code
+ SEE 
+
+\ where is the body
 
  : LINK>BODY CELL + CELL + ; 
+
+ SEE 
 
  \ make a header
 
  : :NAME HERE : 0 STATE ! ; 
 
+ SEE
+
  \ make a body
 
  : :NONAME HERE 1 STATE ! ; 
 
- \ : HASH HERE :NAME SWAP HEAP ! CELL + @ ; \ alternative
+ SEE
+
+ \ : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
 
  : DJB2 LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] ; 
+
+ SEE
+
+ DJB2 . SPACE CR 
+
+ BL . SPACE CR 
+
+ \ BYE
 
  : HASH 
         BL BEGIN KEY OVER OVER = NOT UNTIL 
@@ -35,6 +45,8 @@
         DROP DROP R>  
         ;
  
+ SEE 
+
  : FIND LATEST @ BEGIN
         OVER OVER CELL + @
         ISNEGATIVE 1 - AND
@@ -43,7 +55,9 @@
         = IF SWAP DROP FALSE EXIT THEN
         AGAIN ; 
  
- SEE HASH
+ SEE 
+
+ \ BYE
 
  HASH HASH . ." "
 
@@ -51,7 +65,6 @@
 
  HASH 0# . ." "
 
- 
  : ' HASH FIND IF CELL + CELL + THEN ;  
  
  : '= ' ; IMMEDIATE  
