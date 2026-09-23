@@ -9,29 +9,20 @@
 
  : LINK>HASH CELL + ; 
 
- SEE 
-
 \ where is the code
 
  : LINK>BODY CELL + CELL + ; 
-
- SEE
 
  \ make a header
 
  : :NAME HERE : 0 STATE ! ; 
 
- SEE
-
  \ make a body
 
  : :NONAME HERE 1 STATE ! ; 
 
- SEE
-
+ \ make a hash HFA
  : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
-
- SEE
 
  : DJB2-CTE ( -- 1505 ) LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] ; 
 
@@ -48,38 +39,29 @@
     UNTIL
     DROP DROP R> 
        ;
- 
- \ zzzz review it
+
+ \ find a hash of a word
  : FIND ( caddr -- caddr 0 | caddr1 1 immediate | caddr1 -1 not immediate )
-	LATEST @ 
-	BEGIN
-    	OVER OVER CELL + @
-    	ISNEGATIVE 1 - AND
-    = IF SWAP DROP TRUE EXIT THEN
-    @ DUP 0 
-    = IF SWAP DROP FALSE EXIT THEN
+    LATEST @ 
+    BEGIN
+        OVER OVER CELL + @
+        ISNEGATIVE 1 - AND
+         = IF SWAP DROP 
+            DUP CELL + @
+            ISNEGATIVE AND
+            0 = IF -1 ELSE 1 THEN EXIT 
+        THEN
+        @ DUP 0 
+        = IF SWAP DROP FALSE EXIT THEN
     AGAIN ; 
 
-
- HASH HASH . CR
-
- \ HASH2 HASH . CR
-
- ISNEGATIVE 1 - . CR
-
- ISNEGATIVE 1 + . CR
-
- FIND HASH . CR
- 
- SEE HASH
-
- BYE
-
+ \ retrieve CFA 
  : ' HASH FIND IF CELL + CELL + THEN ;  
  
- : '= ' ; IMMEDIATE  
-
+ \ compile CFA 
  : POSTPONE ' , ; IMMEDIATE 
+ 
+ SEE
 
  \ crude pointer for CREATE DOES>
 
@@ -114,4 +96,17 @@
         IF ['] LIT , , ['] ! , 
         ELSE ! THEN ; 
 
+ HERE .  SPACE
+
+ : TEST U@ 0# ; 
+ \ : TEST POSTPONE POSTPONE 
+ \   HERE DUP . SPACE POSTPONE IF @ . CR
+ \   HERE DUP . SPACE POSTPONE ELSE @ . CR
+ \   HERE DUP . SPACE POSTPONE THEN @ . CR
+ \   ; 
+
+HERE .  SPACE
+
+
+SEE
 
