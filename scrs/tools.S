@@ -403,7 +403,7 @@ shows:
        
        putchar 'P'
         putchar ' '
-        lw fst, PEEK (usr)
+        lw fst, PIKE (usr)
         mhex fst
         putchar ' '
        

@@ -21,8 +21,8 @@
  : LATEST HEAP CELL + ; 
  : STATE LATEST CELL + ; 
 
- : FAUX STATE CELL + ;
- : CEIL FAUX CELL + ;
+ : PIKE STATE CELL + ;
+ : CEIL PIKE CELL + ;
 
  : SP@ SP @ CELL + ; 
  : RP@ RP @ CELL + ; 
@@ -56,7 +56,7 @@
  : ALLOT HERE + HEAP ! ; 
  : , HERE ! CELL ALLOT ; 
  
- : RECURSE FAUX @ , ;
+ : RECURSE PIKE @ , ;
 
  : +! SWAP OVER @ + SWAP ! ; 
 

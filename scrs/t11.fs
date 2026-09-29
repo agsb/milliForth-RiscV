@@ -2,6 +2,8 @@
  \ make a hash HFA
  : HASH HERE :NAME SWAP HEAP ! CELL + @ ; 
 
+ SEE
+
  : DJB2-CTE ( -- 1505 ) LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] ; 
 
  : DJB2-HSH ( KEY HSH -- HSH2 ) DUP DUP + DUP + DUP + DUP + DUP + + XOR ;
@@ -39,3 +41,5 @@
  \ compile CFA 
  : POSTPONE ' , ; IMMEDIATE 
  
+ : POSTPONE ' . ; IMMEDIATE 
+

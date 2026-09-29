@@ -8,7 +8,7 @@
 
  \ make a header
 
- : :NAME HERE : 0 STATE ! ; 
+ : :NAME PIKE @ : PIKE ! 0 STATE ! ; 
 
  \ make a body
 
