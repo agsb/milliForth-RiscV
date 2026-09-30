@@ -34,6 +34,20 @@
 
 ## Done
 
+30/09/2026
+
+    Trying make a minimal dictionary from sources in many Forths
+
+    The millifort uses hash and FIND will look for a hash not a word.
+    maybe better change the name to FIND-HASH  
+
+    still testing 
+
+25/09/2026
+
+    IF ... LOOP or HOOP is same of BEGIN WHILE REPEAT :(
+    not continne 
+
 09/09/2026
 
     Include HOOP :) Jimmy idea about IF ... LOOP

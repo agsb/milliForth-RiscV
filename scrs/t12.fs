@@ -1,33 +1,26 @@
- \ crude pointer for CREATE DOES>
-
- : >BODY ['] LIT , HERE CELL + , 0 , ;
-
- \ from eforth, first EXIT is reserved for DOES> 
-
- : CREATE :NAME 
-        ['] LIT , 
-        HERE CELL + CELL + CELL + , 
-        HERE >BODY ! 
-        ['] EXIT , 
-        ['] EXIT , 
-        LATEST ! ; 
  
- : DOES> R> >BODY @ ! ; 
+ \ make a hash HFA
+ : HASH :NAME DUP HEAP ! CELL + @  ; SEE  
 
- : <BUILDS CREATE 0 , ; 
+ \ find a hash of a word
+ : FIND ( caddr -- caddr 0 \ not found | caddr1 1 \ if immediate | caddr1 -1 \ if not immediate )
+    LATEST @ 
+    BEGIN
+        OVER OVER CELL + @
+        ISNEGATIVE 1 - AND
+         = IF SWAP DROP 
+            DUP CELL + @
+            ISNEGATIVE AND
+            0 = IF -1 ELSE 1 THEN EXIT 
+        THEN
+        @ DUP 0 
+        = IF SWAP DROP FALSE EXIT THEN
+    AGAIN  ; SEE  
 
- : VARIABLE CREATE CELL ALLOT ; 
-
- : CONSTANT CREATE , DOES> @ ; 
+ \ retrieve CFA 
+ : ' HASH FIND IF CELL + CELL + THEN  ; SEE   
  
- : BUFFER CREATE ALLOT ; 
-
- : ARRAY CREATE ALLOT DOES> + @ ; 
-
- : VALUE CREATE , DOES> @ ; 
+ \ compile CFA 
+ : POSTPONE ' ,  ; SEE  IMMEDIATE 
  
- : TO ' CELL + @ 
-        STATE @ 
-        IF ['] LIT , , ['] ! , 
-        ELSE ! THEN ; 
 
