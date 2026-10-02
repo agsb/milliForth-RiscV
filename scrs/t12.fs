@@ -1,8 +1,5 @@
  
- \ make a hash HFA
- : HASH :NAME DUP HEAP ! CELL + @  ; SEE  
-
- \ find a hash of a word
+ \ find a word by hash
  : FIND ( caddr -- caddr 0 \ not found | caddr1 1 \ if immediate | caddr1 -1 \ if not immediate )
     LATEST @ 
     BEGIN
@@ -23,4 +20,3 @@
  \ compile CFA 
  : POSTPONE ' ,  ; SEE  IMMEDIATE 
  
-

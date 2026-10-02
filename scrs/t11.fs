@@ -15,5 +15,7 @@
         IF TRUE ELSE FALSE THEN
     UNTIL
     DROP DROP R> 
-       ;
+    ;
+
+ : HASH DJB2-VAL ; 
 

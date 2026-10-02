@@ -1,3 +1,8 @@
+
+ \ make a header as :name
+
+ : :NAME HERE LATEST @ , LATEST ! HASH , ; 
+
  \ crude pointer for CREATE DOES>
 
  : >BODY ['] LIT , HERE CELL + , 0 ,  ; SEE 
@@ -14,6 +19,16 @@
  
  : DOES> R> >BODY @ !  ; SEE  
 
+ : nCREATE 
+	HERE LATEST @ , LATEST ! HASH , \ make a header as :name
+ \ zzz
+        ['] LIT , 
+        HERE CELL + CELL + CELL + , 
+        HERE >BODY ! 
+        ['] EXIT , 
+        ['] EXIT , 
+        ; SEE  
+ 
  : <BUILDS CREATE 0 ,  ; SEE  
 
  : VARIABLE CREATE CELL ALLOT  ; SEE  
