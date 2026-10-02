@@ -7,14 +7,15 @@
 
  : DJB2-VAL 
     BL BEGIN KEY OVER OVER = NOT UNTIL 
-    ( BL KEY -- )
     DJB2-CTE >R
     BEGIN 
     R> DJB2-HSH >R
         KEY OVER OVER = 
         IF TRUE ELSE FALSE THEN
     UNTIL
-    DROP DROP R> 
+    DROP DROP 
+    ( MASK HIGH BIT ) 
+    ISNEGATIVE INVERSE R> AND 
     ;
 
  : HASH DJB2-VAL ; 

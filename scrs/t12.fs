@@ -15,7 +15,7 @@
     AGAIN  ; SEE  
 
  \ retrieve CFA 
- : ' HASH FIND IF CELL + CELL + THEN  ; SEE   
+ : ' HASH FIND IF CELL + CELL + ELSE DROP ['] ABORT THEN ; SEE   
  
  \ compile CFA 
  : POSTPONE ' ,  ; SEE  IMMEDIATE 
