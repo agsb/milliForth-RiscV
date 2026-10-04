@@ -36,7 +36,9 @@
  
  \ changes the first EXIT to next current compiled dictionary cell
 
- : DOES> R> LATEST CELL + CELL + CELL + !  ; SEE IMMEDIATE 
+ : DOES> R> DUP >R LATEST CELL + CELL + CELL + !  ; SEE IMMEDIATE 
+
+ SEE 
 
  \ classics
 
