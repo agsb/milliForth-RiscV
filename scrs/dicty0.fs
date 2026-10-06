@@ -98,8 +98,8 @@
 
  : LITERAL ['] LIT , , ; IMMEDIATE 
  
- : SP0 LIT [ SP@ , ] ;   
- : RP0 LIT [ RP@ , ] ;  
+ : SP0 LIT [ SP@ , ] ; 
+ : RP0 LIT [ RP@ , ] ; 
 
  : 0= 0# INVERSE ; 
  : 0< ISNEGATIVE AND 0# ; 
@@ -218,4 +218,117 @@
  ." That's all folks ! "
 
  ." At least one more ! "
+
+
+ \ CANONICAL DJB2 HASH
+
+ : DJB2-CTE ( -- 1505 ) LIT [ 1024 DUP DUP + DUP + + 256 + 4 + 1 + , ] ; 
+
+ : DJB2-HSH ( KEY HSH -- HSH2 ) DUP DUP + DUP + DUP + DUP + DUP + + XOR ; 
+
+ : DJB2-VAL 
+    BL BEGIN KEY OVER OVER = NOT UNTIL 
+    DJB2-CTE >R
+    BEGIN 
+    R> DJB2-HSH >R
+        KEY OVER OVER = 
+        IF TRUE ELSE FALSE THEN
+    UNTIL
+    DROP DROP 
+    ( MASK HIGH BIT ) 
+    ISNEGATIVE INVERSE R> AND 
+    ; 
+
+ : HASH DJB2-VAL ; 
+
+ 
+ \ find a word by hash
+ : FIND ( caddr -- caddr 0 \ not found | caddr1 1 \ if immediate | caddr1 -1 \ if not immediate )
+    LATEST @ 
+    BEGIN
+        OVER OVER CELL + @
+        ISNEGATIVE 1 - AND
+         = IF SWAP DROP 
+            DUP CELL + @
+            ISNEGATIVE AND
+            0 = IF -1 ELSE 1 THEN EXIT 
+        THEN
+        @ DUP 0 
+        = IF SWAP DROP FALSE EXIT THEN
+    AGAIN ; 
+
+ \ retrieve CFA 
+ : ' HASH FIND IF CELL + CELL + ELSE ABORT THEN ; 
+ 
+ \ compile CFA 
+ : POSTPONE ' ,  ; IMMEDIATE 
+ 
+
+\ a entry is  LINK HASH CODE ... CODE EXIT
+\ LATEST points to LINK
+\ TICK points to CODE
+
+\ where is the hash
+
+ : L>H CELL + ; 
+
+\ where is the code
+
+ : L>C CELL + CELL + ; 
+
+\ where the does changes
+ 
+ : L>D CELL + CELL + CELL + ; 
+
+ \ make a header as :name
+
+ : :NAME HERE LATEST @ , LATEST ! HASH , ; 
+
+ \ make a body
+
+ : :NONAME HERE 1 STATE ! ; 
+
+ \ easy create
+ \ leaves a pointer to next cell after second EXIT
+ \ first EXIT is reserved for DOES> use 
+
+ : CREATE :NAME 
+        ['] LIT , 
+        HERE CELL + CELL + CELL + , 
+        ['] EXIT , 
+        ['] EXIT , 
+  ; 
+ 
+ \ easy does, changes the first EXIT to next current compiled dictionary cell
+
+ : DOES> R> LATEST @ CELL + CELL + CELL + CELL + ! ;  
+
+ \ classics
+
+ : <BUILDS CREATE ; 
+
+ : VARIABLE CREATE 0 , ; 
+
+ : CONSTANT CREATE , DOES> @ ; 
+ 
+ : BUFFER CREATE ALLOT ; 
+
+ : ARRAY CREATE ALLOT DOES> + @ ; 
+
+ \ extras 
+
+ : VALUE CONSTANT ; 
+
+ : TO ' CELL + @ 
+        STATE @ 
+        IF ['] LIT , , ['] ! , \ compiling 
+        ELSE ! THEN ; 
+
+ \ easy defer, first EXIT is replaced by IS
+
+ : DEFER :NAME ['] EXIT , ['] EXIT , ; 
+ 
+\ easy is, changes the first EXIT to a address in TOS
+
+ : IS ' ! ; 
 

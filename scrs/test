@@ -1,0 +1,18 @@
+ VARIABLE TEST 
+
+ CR 16 TEST !
+
+ CR TEST @ .
+
+ CR 32 TEST !
+
+ CR TEST @ .
+
+ CR 16 CONSTANT TEST 
+ 
+ CR TEST .
+
+ CR CELL CONSTANT TEST 
+
+ CR TEST .  
+

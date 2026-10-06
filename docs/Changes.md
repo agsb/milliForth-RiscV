@@ -10,7 +10,7 @@
     
     Notes:
 
-    Could use any case, mixed, lowercase or uppercase.
+    New words could use lowercase or uppercase or mixed case.
 
     In FigForth, ;S is called semis and ; is called semicolon, 
         but in Milliforth, ;S is exit and ; is semis. 
@@ -30,10 +30,22 @@
 
     Include the eforth dictionary for reference
 
-    Change ." to only be compiled as in ANSI and TalyForth
+    Change ." to only be compiled as in ANSI and TalyForth ???
+
+## TODO
+
+    Going to review ." to statefull
 
 ## Done
 
+06/10/2026
+
+    CREATE and DOES> working as easy. 
+    All set with <BUILDS, VARIABLE, CONSTANT, ARRAY, BUFFER,
+	VALUE, TO, DEFER, IS done.
+
+    Included powers of two as words, to allow define numbers
+ 
 30/09/2026
 
     Trying make a minimal dictionary from sources in many Forths
@@ -46,7 +58,7 @@
 25/09/2026
 
     IF ... LOOP or HOOP is same of BEGIN WHILE REPEAT :(
-    not continne 
+    do not included  
 
 09/09/2026
 
@@ -56,7 +68,7 @@
 
 07/05/2026
 
-    Renamed variable FAUX to PEEK
+    Renamed variable FAUX to PIKE, holds the next LATEST 
 
     Review of presentation "AEForth v3.pdf"
 
