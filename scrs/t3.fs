@@ -29,7 +29,7 @@
 
  : CREATE :NAME 
         ['] LIT , 
-        HERE CELL + CELL + CELL + CELL + , 
+        HERE CELL + CELL + CELL + , 
         ['] EXIT , 
         ['] EXIT , 
   ;  
