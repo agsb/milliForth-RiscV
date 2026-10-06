@@ -29,33 +29,37 @@
 
  : CREATE :NAME 
         ['] LIT , 
-        HERE CELL + CELL + CELL + , 
+        HERE CELL + CELL + CELL + CELL + , 
         ['] EXIT , 
         ['] EXIT , 
-   ; SEE  
+  ;  
  
  \ changes the first EXIT to next current compiled dictionary cell
 
- : DOES> R> DUP >R LATEST CELL + CELL + CELL + !  ; SEE IMMEDIATE 
+ : DOES> HERE LATEST CELL + CELL + CELL + ! ; IMMEDIATE  
 
- SEE 
-
- \ classics
-
- : <BUILDS CREATE 0 ,  ; SEE  
-
- : VARIABLE CREATE 0 ,  ; SEE  
-
- : CONSTANT CREATE , DOES> @  ; SEE  
+ : VALUE CREATE , DOES> @ ;  
  
- : BUFFER CREATE ALLOT  ; SEE  
 
- : ARRAY CREATE ALLOT DOES> + @  ; SEE  
-
- : VALUE CREATE , DOES> @  ; SEE  
- 
  : TO ' CELL + @ 
         STATE @ 
         IF ['] LIT , , ['] ! , \ compiling 
-        ELSE ! THEN  ; SEE  	
+        ELSE ! THEN ;  	
+
+
+ : DEFER :NAME ['] EXIT , ['] EXIT , ;
+ 
+ : IS ' ! ; 
+
+ \ classics
+
+ : <BUILDS CREATE 0 , ;  
+
+ : VARIABLE CREATE 0 , ;  
+
+ : CONSTANT CREATE , DOES> @ ;  
+ 
+ : BUFFER CREATE ALLOT ;  
+
+ : ARRAY CREATE ALLOT DOES> + @ ;  
 

@@ -179,8 +179,11 @@
  
  : CR 8 2 + EMIT ; 
  : NL 8 4 + 1 + EMIT ; 
+ 
  : SPACE BL EMIT ; 
  : SPACES 0 DO SPACE LOOP ; 
+
+ : CELL-UP 2 + 1 + 4 0 - AND ;
 
  : 0> DUP 
  0= IF DROP FALSE EXIT THEN 
