@@ -1,39 +1,34 @@
 
- \  words like ."
+ \ words like ."
 
-	: COPY" ( c addr -- c addr2 ) \ copy from input to memory
-		BEGIN
-			>R  ( c a -- c ) ( -- a )
-			KEY ( c -- c k )
-			OVER OVER ( c k -- c k c k )
-			= ( c k c k -- c k T|F )
-		WHILE \ not false
-			R@ ( c k -- c k a ) ( a -- a )
-			C! ( c k a -- c )
-			R> 1 + ( c -- c a+1 )
-		REPEAT
-		DROP  ( c a -- c )
-		;
+ : COPY" ( c a1 -- c a2 ) \ copy from input to memory till quote
+	BEGIN ( c a1 -- 
+		>R KEY ( c a -- c k ) ( -- a )
+		DUP R@ C!  ( c k -- c k k -- c k k a -- c k )
+		OVER = ( c k -- c k c -- c V )
+		R> 1 + SWAP ( c V -- c V a+1 -- c a+1 V )
+	UNTIL ( c a+1 V -- c a+1 )
+	; 
 
-	: TYPE" ( c addr -- c addr2 ) \ dump from memory till quote
-		BEGIN
-			OVER OVER C@ =
-		WHILE
-			DUP C@ EMIT
-			1 +
-		REPEAT
-		1 +
-		;
- 
-		
-	: ."
-		QU
-		STATE @ 
-		IF \ compiling
-			HERE COPY" 
-			ROUND-UP HEAP !
-		ELSE \ executing
-			R> TYPE" >R DROP
+ : TYPE" ( c a1 -- c a2 ) \ dump from memory till quote
+	BEGIN
+		OVER OVER C@ = DUP 
+		IF 
+			>R DUP C@ EMIT 1 + R> 
 		THEN
-		;		
-			
+	UNTIL
+	; 
+
+ zzz
+
+ : ."
+ 	QU
+ 	STATE @ 
+ 	IF \ compiling
+ 		HERE COPY" 
+ 		ROUND-UP HEAP !
+ 	ELSE \ executing
+ 		R> TYPE" >R DROP
+ 	THEN
+ 	; IMMEDIATE 
+ 
