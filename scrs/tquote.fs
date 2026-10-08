@@ -2,24 +2,23 @@
  \ words like ."
 
  : COPY" ( c a1 -- c a2 ) \ copy from input to memory till quote
-	>R
+    >R
     BEGIN 
         KEY DUP R@ C! 
         OVER = 
         R> 1 + >R 
     UNTIL 
-	R>
+    R>
     ; 
 
  : TYPE" ( c a1 -- c a2 ) \ dump from memory till quote
-	>R
     BEGIN
-        R@ C@ OVER =  
+        OVER OVER C@ =  
     WHILE
-        R@ C@ EMIT
-	    R> 1 + >R> 
+        DUP C@ EMIT
+        1 + 
     REPEAT
-	R> 1 +   
+    1 +   
     ; 
 
  : ."
@@ -30,6 +29,6 @@
      ELSE   \ executing
          R> TYPE" >R 
      THEN
-	 DROP
+     DROP
      ; IMMEDIATE 
  
