@@ -31,8 +31,8 @@
  
     As ANSI Forth 1983: FALSE is 0 and TRUE is -1 ;
  
-    Uses DJB2 Hash instead of size-name-pad in header of words in
-        dictionary.
+    Uses DJB2 Hash instead of size-name-pad in header of words 
+        in dictionary.
 
     The header order is LINK, HASH and code or references.
  
@@ -76,10 +76,10 @@
  
     No multiuser, no multitask, no checks, not faster;
 
-    IMMEDIATE always toggle latest word flag immediate.
+    IMMEDIATE always toggle latest word flag immediate;
  
-    No SMUDGE ou HIDDEN flags, colon saves HERE into FAUX and 
-    semis loads FAUX into LATEST;
+    No SMUDGE ou HIDDEN flags, colon saves HERE into PIKE and 
+    semis loads LATEST from PIKE;
  
 ## For Devs
  
@@ -232,7 +232,7 @@ By the way, tick and comma are in compiled dictionary,
 How do not use flags as SMUDGE or HIDDEM or else ?
 
 The colon *:* makes a header by:
-        1. copy HERE to FAUX
+        1. copy HERE to PIKE
         2. copy LATEST to first cell;
         3. calculate the djb2 hash of the next token;
         4. copy hash to second cell;
@@ -277,8 +277,6 @@ BUFFER uses thr data address to access a array of bytes;
 
 ARRAY uses the data address to access the nth byte;
     
-Note by that way, DOES> is just one word and is not immediate.
-
 ## ;CODE CODE END-CODE
 
 Those are classic methods to execute compiled native code in 
@@ -290,7 +288,7 @@ where jump to execute the native code.
 In a RISCV with MITC, a better way is do a jump and link to IPT 
 and end the native code with a return.
 
-gonative:
+go native:
 
     jarl ra, 0 (IPT)
 

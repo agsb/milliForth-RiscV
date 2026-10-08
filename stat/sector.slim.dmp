@@ -12,11 +12,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   3 .got.plt      00000008  00011ff8  00011ff8  00000ff8  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  4 .data         00000008  00012000  00012000  00001000  2**4
+  4 .data         00000004  00012000  00012000  00001000  2**4
                   CONTENTS, ALLOC, LOAD, DATA
-  5 .bss          00040000  00012010  00012010  00001008  2**4
+  5 .bss          00040000  00012010  00012010  00001004  2**4
                   ALLOC
-  6 .riscv.attributes 00000051  00000000  00000000  00001008  2**0
+  6 .riscv.attributes 00000051  00000000  00000000  00001004  2**0
                   CONTENTS, READONLY
 SYMBOL TABLE:
 000100d4 l    d  .note.gnu.build-id	00000000 .note.gnu.build-id
@@ -26,7 +26,7 @@ SYMBOL TABLE:
 00012000 l    d  .data	00000000 .data
 00012010 l    d  .bss	00000000 .bss
 00000000 l    d  .riscv.attributes	00000000 .riscv.attributes
-00000000 l    df *ABS*	00000000 cc2Cyp0a.o
+00000000 l    df *ABS*	00000000 cc61neEo.o
 00040000 l       *ABS*	00000000 RAM_LIMIT
 00000000 l       *ABS*	00000000 FALSE
 ffffffff l       *ABS*	00000000 TRUE
@@ -48,7 +48,7 @@ ffffffff l       *ABS*	00000000 TRUE
 00000008 l       *ABS*	00000000 HEAP
 0000000c l       *ABS*	00000000 LAST
 00000010 l       *ABS*	00000000 STAT
-00000014 l       *ABS*	00000000 FAUX
+00000014 l       *ABS*	00000000 PIKE
 00000018 l       *ABS*	00000000 CEIL
 0000001c l       *ABS*	00000000 HEAD
 00000020 l       *ABS*	00000000 TAIL
@@ -107,7 +107,7 @@ ffffffff l       *ABS*	00000000 TRUE
 00000040 l       *ABS*	00000000 _PUTC
 0000005d l       *ABS*	00000000 _EXIT
 000000c0 l       *ABS*	00000000 _MMAP
-00012004 l       .data	00000000 _char
+00012000 l       .data	00000000 _char
 000101b6 l       .text	00000000 _exit
 000101c0 l       .text	00000000 _init
 000101de l       .text	00000000 _putc
@@ -157,13 +157,13 @@ ffffffff l       *ABS*	00000000 TRUE
 000102a0 l       .text	00000000 it_userat
 000102a8 l       .text	00000000 is_userat
 00011fdc l     O .got	00000000 _GLOBAL_OFFSET_TABLE_
-00012808 g       *ABS*	00000000 __global_pointer$
-00012008 g       .data	00000000 __SDATA_BEGIN__
+00012804 g       *ABS*	00000000 __global_pointer$
+00012004 g       .data	00000000 __SDATA_BEGIN__
 000100f8 g       .text	00000000 _start
 00052010 g       .bss	00000000 __BSS_END__
 00012010 g       .bss	00000000 __bss_start
 00012000 g       .data	00000000 __DATA_BEGIN__
-00012008 g       .data	00000000 _edata
+00012004 g       .data	00000000 _edata
 00052010 g       .bss	00000000 _end
 
 
@@ -204,11 +204,11 @@ Disassembly of section .text:
    10136:	86ae                	mv	a3,a1
    10138:	428c                	lw	a1,0(a3)
    1013a:	0691                	addi	a3,a3,4
-   1013c:	4290                	lw	a2,0(a3)
+   1013c:	4288                	lw	a0,0(a3)
    1013e:	80000737          	lui	a4,0x80000
-   10142:	8f71                	and	a4,a4,a2
-   10144:	8e39                	xor	a2,a2,a4
-   10146:	fec797e3          	bne	a5,a2,10134 <find+0x2>
+   10142:	8f69                	and	a4,a4,a0
+   10144:	8d39                	xor	a0,a0,a4
+   10146:	fea797e3          	bne	a5,a0,10134 <find+0x2>
    1014a:	0691                	addi	a3,a3,4
 
 0001014c <eval>:
@@ -232,7 +232,7 @@ Disassembly of section .text:
 
 00010168 <skip>:
    10168:	28a9                	jal	101c2 <_getc>
-   1016a:	fed87fe3          	bgeu	a6,a3,10168 <skip>
+   1016a:	fed85fe3          	bge	a6,a3,10168 <skip>
 
 0001016e <hash>:
    1016e:	873e                	mv	a4,a5
@@ -242,7 +242,7 @@ Disassembly of section .text:
 
 00010176 <scan>:
    10176:	20b1                	jal	101c2 <_getc>
-   10178:	ff06efe3          	bltu	a3,a6,10176 <scan>
+   10178:	ff06cfe3          	blt	a3,a6,10176 <scan>
    1017c:	ff0699e3          	bne	a3,a6,1016e <hash>
 
 00010180 <mask>:
@@ -352,7 +352,8 @@ Disassembly of section .text:
 00010226 <is_semis>:
    10226:	4854                	lw	a3,20(s0)
    10228:	c454                	sw	a3,12(s0)
-   1022a:	00042823          	sw	zero,16(s0)
+   1022a:	4681                	li	a3,0
+   1022c:	c814                	sw	a3,16(s0)
 
 0001022e <finish>:
    1022e:	00002697          	auipc	a3,0x2

@@ -328,7 +328,8 @@
 
  : DEFER :NAME ['] EXIT , ['] EXIT , ; 
  
-\ easy is, changes the first EXIT to a address in TOS
+ \ easy is, changes the first EXIT to a address in TOS
 
  : IS ' ! ; 
+
 

@@ -157,11 +157,11 @@
 # enable extra minimals
 .equ extras, YES
 
-# enable extra primitives
-# .equ primitives, YES
-
 # enable extra debug tools
 .equ tools, YES
+
+# enable extra primitives
+# .equ primitives, YES
 
 # enable clean when try compile a missed word 
 # .equ missme, YES
