@@ -1,0 +1,103 @@
+   101a6:	fea797e3          	bne	a5,a0,10194 <find+0x2>
+   101bc:	000017b7          	lui	a5,0x1
+   101c0:	50578793          	addi	a5,a5,1285 # 1505 <DJB2>
+   101ce:	873e                	mv	a4,a5
+   101d0:	0796                	slli	a5,a5,0x5
+   101d2:	97ba                	add	a5,a5,a4
+   101d4:	8fb5                	xor	a5,a5,a3
+   101e0:	0786                	slli	a5,a5,0x1
+   101e2:	8385                	srli	a5,a5,0x1
+   101e8:	441c                	lw	a5,8(s0)
+   101ea:	c394                	sw	a3,0(a5)
+   101ec:	0791                	addi	a5,a5,4
+   101ee:	c41c                	sw	a5,8(s0)
+   101f6:	405c                	lw	a5,4(s0)
+   101f8:	4384                	lw	s1,0(a5)
+   101fa:	0791                	addi	a5,a5,4
+   101fc:	c05c                	sw	a5,4(s0)
+   10210:	405c                	lw	a5,4(s0)
+   10212:	17f1                	addi	a5,a5,-4
+   10214:	c384                	sw	s1,0(a5)
+   10216:	c05c                	sw	a5,4(s0)
+   1027c:	86be                	mv	a3,a5
+   102c2:	0791                	addi	a5,a5,4
+   1030e:	401c                	lw	a5,0(s0)
+   10310:	17f1                	addi	a5,a5,-4
+   10312:	c394                	sw	a3,0(a5)
+   10314:	c01c                	sw	a5,0(s0)
+   10318:	401c                	lw	a5,0(s0)
+   1031a:	4394                	lw	a3,0(a5)
+   1031c:	0791                	addi	a5,a5,4
+   1031e:	4398                	lw	a4,0(a5)
+   103c6:	4781                	li	a5,0
+   103dc:	0792                	slli	a5,a5,0x4
+   103de:	97b6                	add	a5,a5,a3
+   103ea:	86be                	mv	a3,a5
+   1040e:	401c                	lw	a5,0(s0)
+   10410:	4394                	lw	a3,0(a5)
+   10414:	0791                	addi	a5,a5,4
+   10416:	c01c                	sw	a5,0(s0)
+   1041a:	c394                	sw	a3,0(a5)
+   10470:	401c                	lw	a5,0(s0)
+   10472:	43d4                	lw	a3,4(a5)
+   10480:	43d8                	lw	a4,4(a5)
+   10482:	c398                	sw	a4,0(a5)
+   10484:	c3d4                	sw	a3,4(a5)
+   10492:	43d8                	lw	a4,4(a5)
+   10494:	c3d4                	sw	a3,4(a5)
+   10496:	4794                	lw	a3,8(a5)
+   10498:	c798                	sw	a4,8(a5)
+   1049a:	c394                	sw	a3,0(a5)
+   10546:	405c                	lw	a5,4(s0)
+   10548:	43d4                	lw	a3,4(a5)
+   10554:	405c                	lw	a5,4(s0)
+   10556:	43d4                	lw	a3,4(a5)
+   10558:	4398                	lw	a4,0(a5)
+   1055a:	0791                	addi	a5,a5,4
+   1055c:	c398                	sw	a4,0(a5)
+   1055e:	c05c                	sw	a5,4(s0)
+   1056c:	405c                	lw	a5,4(s0)
+   1056e:	4398                	lw	a4,0(a5)
+   10570:	c394                	sw	a3,0(a5)
+   10572:	17f1                	addi	a5,a5,-4
+   10574:	c398                	sw	a4,0(a5)
+   10576:	c05c                	sw	a5,4(s0)
+   10672:	c398                	sw	a4,0(a5)
+   1076c:	ca3e                	sw	a5,20(sp)
+   1077e:	47d2                	lw	a5,20(sp)
+   10796:	445c                	lw	a5,12(s0)
+   107b8:	fd77c8e3          	blt	a5,s7,10788 <returns>
+   107bc:	8c3e                	mv	s8,a5
+   107c2:	00082783          	lw	a5,0(a6)
+   107ce:	445c                	lw	a5,12(s0)
+   107d8:	faf858e3          	bge	a6,a5,10788 <returns>
+   10804:	86be                	mv	a3,a5
+   10828:	4398                	lw	a4,0(a5)
+   10856:	0791                	addi	a5,a5,4
+   10858:	f907c8e3          	blt	a5,a6,107e8 <wordt+0x4>
+   108a8:	401c                	lw	a5,0(s0)
+   108ea:	405c                	lw	a5,4(s0)
+   1091c:	86be                	mv	a3,a5
+   10988:	03078d63          	beq	a5,a6,109c2 <stackp+0xca>
+   1098c:	4398                	lw	a4,0(a5)
+   109bc:	0791                	addi	a5,a5,4
+   109be:	fd07c7e3          	blt	a5,a6,1098c <stackp+0x94>
+   109fe:	87b6                	mv	a5,a3
+   10a02:	0107c463          	blt	a5,a6,10a0a <dumps+0x12>
+   10a06:	87ba                	mv	a5,a4
+   10a28:	86be                	mv	a3,a5
+   10a4e:	4398                	lw	a4,0(a5)
+   10a66:	0791                	addi	a5,a5,4
+   10a68:	fb07c1e3          	blt	a5,a6,10a0a <dumps+0x12>
+   10d34:	401c                	lw	a5,0(s0)
+   10d38:	fed7ae23          	sw	a3,-4(a5)
+   10d3e:	fed7ac23          	sw	a3,-8(a5)
+   10d44:	fed7aa23          	sw	a3,-12(a5)
+   10d48:	17d1                	addi	a5,a5,-12
+   10d4a:	c01c                	sw	a5,0(s0)
+   10d58:	401c                	lw	a5,0(s0)
+   10d5a:	4394                	lw	a3,0(a5)
+   10d5e:	43d4                	lw	a3,4(a5)
+   10d62:	4794                	lw	a3,8(a5)
+   10d66:	07b1                	addi	a5,a5,12
+   10d68:	c01c                	sw	a5,0(s0)

@@ -24,7 +24,7 @@ grep -E '_GLOBAL_|auipc' dmp > globals
 
 grep -E 'lui|aui' dmp > lauis
 
-for r in s0 s1 a0 a1 a2 a3 a4 a5 a6 a7 t0 t1 t2 t3 ;
+for r in s0 s1 s2 s3 s4 a0 a1 a2 a3 a4 a5 a6 a7 t0 t1 t2 t3 t4 t5 t6 ;
 do
         grep -E ",${r}|${r},|\(${r}\)" dmp > ${r}.ss
         # | \

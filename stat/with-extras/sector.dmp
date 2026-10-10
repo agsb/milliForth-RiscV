@@ -6,7 +6,7 @@ Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
   0 .note.gnu.build-id 00000024  000100d4  000100d4  000000d4  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  1 .text         000001c6  000100f8  000100f8  000000f8  2**2
+  1 .text         000002b4  000100f8  000100f8  000000f8  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   2 .got          0000001c  00011fdc  00011fdc  00000fdc  2**2
                   CONTENTS, ALLOC, LOAD, DATA
@@ -26,7 +26,7 @@ SYMBOL TABLE:
 00012000 l    d  .data	00000000 .data
 00012010 l    d  .bss	00000000 .bss
 00000000 l    d  .riscv.attributes	00000000 .riscv.attributes
-00000000 l    df *ABS*	00000000 cclZOK0D.o
+00000000 l    df *ABS*	00000000 ccq8g0IZ.o
 00040000 l       *ABS*	00000000 RAM_LIMIT
 00000000 l       *ABS*	00000000 FALSE
 ffffffff l       *ABS*	00000000 TRUE
@@ -66,10 +66,10 @@ ffffffff l       *ABS*	00000000 TRUE
 00052010 l       .bss	00000000 h_there
 000100f8 l       .text	00000000 main
 000100f8 l       .text	00000000 cold
-000102be l       .text	00000000 _nibs
+000103aa l       .text	00000000 _nibs
 00010192 l       .text	00000000 _warp
 00010110 l       .text	00000000 warm
-000102a0 l       .text	00000000 h_last
+00010328 l       .text	00000000 h_last
 00010120 l       .text	00000000 miss
 00010120 l       .text	00000000 abort
 00010126 l       .text	00000000 quit
@@ -108,7 +108,7 @@ ffffffff l       *ABS*	00000000 TRUE
 000101c0 l       .text	00000000 _init
 000101de l       .text	00000000 _putc
 000101f2 l       .text	00000000 _rets
-000102a0 l       .text	00000000 last_next
+00010328 l       .text	00000000 last_next
 0002b584 l       *ABS*	00000000 hash_store
 0002b5e5 l       *ABS*	00000000 hash_fetch
 0002b58e l       *ABS*	00000000 hash_plus
@@ -152,6 +152,46 @@ ffffffff l       *ABS*	00000000 TRUE
 000102a0 l       .text	00000000 it_userat
 000102a8 l       .text	00000000 is_userat
 000102a8 l       .text	00000000 user1
+0059697a l       *ABS*	00000000 hash_DOCODE
+0a1dff4f l       *ABS*	00000000 hash_ABORT
+0b87c61b l       *ABS*	00000000 hash_BYE
+0002b58b l       *ABS*	00000000 hash_DOT
+0002b581 l       *ABS*	00000000 hash_HEX
+0b87d404 l       *ABS*	00000000 hash_NAN
+2c5784c9 l       *ABS*	00000000 hash_LSHIFT
+416e6b97 l       *ABS*	00000000 hash_RSHIFT
+0b87db14 l       *ABS*	00000000 hash_LIT
+000102a0 l       .text	00000000 init_extras
+000102be l       .text	00000000 it_nan
+000102c6 l       .text	00000000 is_nan
+000102c6 l       .text	00000000 by_erro
+000102c6 l       .text	00000000 by_zero
+000102c6 l       .text	00000000 by_under
+000102c6 l       .text	00000000 by_over
+000102cc l       .text	00000000 it_lshift
+000102d4 l       .text	00000000 is_lshift
+000102dc l       .text	00000000 it_rshift
+000102e4 l       .text	00000000 is_rshift
+000102ec l       .text	00000000 it_docode
+000102f4 l       .text	00000000 is_docode
+000102fa l       .text	00000000 it_aborts
+00010302 l       .text	00000000 is_aborts
+00010304 l       .text	00000000 it_byes
+0001030c l       .text	00000000 is_byes
+0001030e l       .text	00000000 it_lit
+00010316 l       .text	00000000 is_lit
+0001031c l       .text	00000000 it_hex
+00010324 l       .text	00000000 is_hex
+00010360 l       .text	00000000 number
+00010328 l       .text	00000000 it_dot
+00010330 l       .text	00000000 is_dot
+00010336 l       .text	00000000 tohex
+0001036c l       .text	00000000 nskip
+00010372 l       .text	00000000 ndigit
+0001038c l       .text	00000000 digit
+00010388 l       .text	00000000 nodigit
+0001037c l       .text	00000000 nscan
+00010386 l       .text	00000000 isdigit
 00011fdc l     O .got	00000000 _GLOBAL_OFFSET_TABLE_
 00012804 g       *ABS*	00000000 __global_pointer$
 00012004 g       .data	00000000 __SDATA_BEGIN__
@@ -421,7 +461,7 @@ Disassembly of section .text:
    1029c:	56fd                	li	a3,-1
    1029e:	a039                	j	102ac <back1>
 
-000102a0 <h_last>:
+000102a0 <init_extras>:
    102a0:	00010290          	.word	0x00010290
    102a4:	005973b0          	.word	0x005973b0
 
@@ -447,3 +487,137 @@ Disassembly of section .text:
    102b8:	0791                	addi	a5,a5,4
    102ba:	4398                	lw	a4,0(a5)
    102bc:	8082                	ret
+
+000102be <it_nan>:
+   102be:	000102a0          	.word	0x000102a0
+   102c2:	0b87d404          	.word	0x0b87d404
+
+000102c6 <by_erro>:
+   102c6:	800006b7          	lui	a3,0x80000
+   102ca:	b7c5                	j	102aa <push1>
+
+000102cc <it_lshift>:
+   102cc:	000102be          	.word	0x000102be
+   102d0:	2c5784c9          	.word	0x2c5784c9
+
+000102d4 <is_lshift>:
+   102d4:	37c5                	jal	102b4 <pull2>
+   102d6:	00d716b3          	sll	a3,a4,a3
+   102da:	bfd1                	j	102ae <keep1>
+
+000102dc <it_rshift>:
+   102dc:	000102cc          	.word	0x000102cc
+   102e0:	416e6b97          	.word	0x416e6b97
+
+000102e4 <is_rshift>:
+   102e4:	3fc1                	jal	102b4 <pull2>
+   102e6:	00d756b3          	srl	a3,a4,a3
+   102ea:	b7d1                	j	102ae <keep1>
+
+000102ec <it_docode>:
+   102ec:	000102dc          	.word	0x000102dc
+   102f0:	0059697a          	.word	0x0059697a
+
+000102f4 <is_docode>:
+   102f4:	000480e7          	jalr	s1
+   102f8:	b55d                	j	1019e <next>
+
+000102fa <it_aborts>:
+   102fa:	000102ec          	.word	0x000102ec
+   102fe:	0a1dff4f          	.word	0x0a1dff4f
+
+00010302 <is_aborts>:
+   10302:	bd39                	j	10120 <abort>
+
+00010304 <it_byes>:
+   10304:	000102fa          	.word	0x000102fa
+   10308:	0b87c61b          	.word	0x0b87c61b
+
+0001030c <is_byes>:
+   1030c:	b56d                	j	101b6 <_exit>
+
+0001030e <it_lit>:
+   1030e:	00010304          	.word	0x00010304
+   10312:	0b87db14          	.word	0x0b87db14
+
+00010316 <is_lit>:
+   10316:	4094                	lw	a3,0(s1)
+   10318:	0491                	addi	s1,s1,4
+   1031a:	bf41                	j	102aa <push1>
+
+0001031c <it_hex>:
+   1031c:	00010304          	.word	0x00010304
+   10320:	0002b581          	.word	0x0002b581
+
+00010324 <is_hex>:
+   10324:	2835                	jal	10360 <number>
+   10326:	b751                	j	102aa <push1>
+
+00010328 <h_last>:
+   10328:	0001031c          	.word	0x0001031c
+   1032c:	0002b58b          	.word	0x0002b58b
+
+00010330 <is_dot>:
+   10330:	3751                	jal	102b4 <pull2>
+   10332:	2011                	jal	10336 <tohex>
+   10334:	bfb5                	j	102b0 <save1>
+
+00010336 <tohex>:
+   10336:	8906                	mv	s2,ra
+   10338:	8e36                	mv	t3,a3
+   1033a:	03a00e93          	li	t4,58
+   1033e:	02000f13          	li	t5,32
+   10342:	000f0d63          	beqz	t5,1035c <tohex+0x26>
+   10346:	1f71                	addi	t5,t5,-4
+   10348:	01ee56b3          	srl	a3,t3,t5
+   1034c:	8abd                	andi	a3,a3,15
+   1034e:	0306e693          	ori	a3,a3,48
+   10352:	01d6c363          	blt	a3,t4,10358 <tohex+0x22>
+   10356:	069d                	addi	a3,a3,7 # 80000007 <FLAG_IMM+0x7>
+   10358:	3559                	jal	101de <_putc>
+   1035a:	b7e5                	j	10342 <tohex+0xc>
+   1035c:	80ca                	mv	ra,s2
+   1035e:	8082                	ret
+
+00010360 <number>:
+   10360:	8906                	mv	s2,ra
+   10362:	4781                	li	a5,0
+   10364:	80000737          	lui	a4,0x80000
+   10368:	02000813          	li	a6,32
+
+0001036c <nskip>:
+   1036c:	3d99                	jal	101c2 <_getc>
+   1036e:	fed87fe3          	bgeu	a6,a3,1036c <nskip>
+
+00010372 <ndigit>:
+   10372:	2829                	jal	1038c <digit>
+   10374:	00e68a63          	beq	a3,a4,10388 <nodigit>
+   10378:	0792                	slli	a5,a5,0x4
+   1037a:	97b6                	add	a5,a5,a3
+
+0001037c <nscan>:
+   1037c:	3599                	jal	101c2 <_getc>
+   1037e:	ff06efe3          	bltu	a3,a6,1037c <nscan>
+   10382:	ff0698e3          	bne	a3,a6,10372 <ndigit>
+
+00010386 <isdigit>:
+   10386:	86be                	mv	a3,a5
+
+00010388 <nodigit>:
+   10388:	80ca                	mv	ra,s2
+   1038a:	8082                	ret
+
+0001038c <digit>:
+   1038c:	fd068693          	addi	a3,a3,-48
+   10390:	0006ca63          	bltz	a3,103a4 <digit+0x18>
+   10394:	4529                	li	a0,10
+   10396:	00a6c663          	blt	a3,a0,103a2 <digit+0x16>
+   1039a:	16e5                	addi	a3,a3,-7
+   1039c:	4541                	li	a0,16
+   1039e:	00d54363          	blt	a0,a3,103a4 <digit+0x18>
+   103a2:	8082                	ret
+   103a4:	800006b7          	lui	a3,0x80000
+   103a8:	8082                	ret
+
+000103aa <_nibs>:
+	...

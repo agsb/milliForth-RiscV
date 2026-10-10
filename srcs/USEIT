@@ -1,0 +1,3 @@
+ Use: cat <file>.fs ... <file>.fs | sh doit.sh > output
+
+ 

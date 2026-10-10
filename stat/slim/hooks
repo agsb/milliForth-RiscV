@@ -1,0 +1,11 @@
+000101f8 l       .text	00000000 it_exit
+00010202 l       .text	00000000 it_colon
+0001021e l       .text	00000000 it_semis
+00010238 l       .text	00000000 it_key
+00010244 l       .text	00000000 it_emit
+00010252 l       .text	00000000 it_store
+00010262 l       .text	00000000 it_fetch
+00010270 l       .text	00000000 it_nand
+00010282 l       .text	00000000 it_plus
+00010290 l       .text	00000000 it_zeroq
+000102a0 l       .text	00000000 it_userat

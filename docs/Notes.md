@@ -38,22 +38,20 @@
  
     No Terminal Input Buffer (TIB), just a parser word-to-hash.
 
+    Added a pack of 6 cells for scratch workspace, generic use.
+
  ## NO MORE
 
     Those are no more used.
 
     ~~ Overflow or underflow stack checks.~~
  
-    ~~Added a pack of 8 cells for scratch workspace, generic use.~~
-
     ~~TIB (80 bytes) and locals (8 cells) are in sequence;~~ 
 
     ~~PAD (84 bytes) and PIC (68 bytes) must be allocated if need;~~
  
     ~~TIB, PAD, PIC grows forward, stacks grows backwards;~~
  
-    Those could be made by user if when need.
-
     Using compiled words, could define :
 
         PAD is for temporaries, formats, buffers, etc;  
@@ -68,15 +66,15 @@
  
     No TOS or ROS registers, all values keeped at stacks;
  
-    Only 7-bit ASCII characters, no controls;
+    All ASCII characters are valid, no filter or controls;
  
-    Words must be between spaces, before and after;
+    Words must be between spaces (0x32), before and after;
  
     Words are case-sensitivy and no length limit;
  
     No multiuser, no multitask, no checks, not faster;
 
-    IMMEDIATE always toggle latest word flag immediate;
+    IMMEDIATE toggle latest word flag immediate;
  
     No SMUDGE ou HIDDEN flags, colon saves HERE into PIKE and 
     semis loads LATEST from PIKE;
@@ -91,7 +89,7 @@
 
     Why you need more ?
     
-    Never mess with two underscore variables.
+    Never mess with variable starting with two underscore.
  
     When the heap moves forward, the stack moves backward. 
  
@@ -108,10 +106,12 @@
  
     Stacks represented as (standart)
         (w1 w2 w3 -- u1 u2 ; w1 w2 w3 -- u1 u2)
-        Read as (before -- after), top at left.
-        c unsigned 8-bit character, a 32-bit address,
-        w signed 32-bit, u unsigned 32-bit,
-        (Data stack ; Return Stack)
+        As (Data stack ; Return Stack)
+        Read as (before -- after), top at right.
+        c unsigned 8-bit character, 
+        a 32-bit address,
+        w signed 32-bit, 
+        u unsigned 32-bit,
  
 ## For RiscV
  
@@ -132,11 +132,12 @@ No direct memory access, only accessed using a register as pointer.
 
 No register indexed offset, only immediate offsets (+/- 1024 bytes).
 
-Use "link and jump" concept like old PDPs.
+Uses "link and jump" concept like old PDPs.
 
 Have a ZERO dedicated register.
 
-The milliForth uses registers r0, ra, sp, s0, s1, a0-a7, t0-t1. 
+The milliForth uses registers r0, ra, sp, s0, s1, a0-a7, t0-t2, 
+        and others to minimize hardware push and pull
 
 ## Coding
 
@@ -153,7 +154,9 @@ It uses less than 1k byte, without extras and user dictionary.
 The milliForth must use memory pointers for data stack and return stack, 
 because does fetch and store from a special 'user structure', which 
 contains the user variables for Forth 
-( sptr, rptr, state, last, heap ).
+( sptr, rptr, state, last, heap, etc ).
+
+There is a Makefile :)
 
 ### For compiler options
 
@@ -168,7 +171,6 @@ contains the user variables for Forth
     systems calls of core functions: linux ecalls
 
     system stack pointer: not used as Forth stack.
-
 
 ## Hell of Makefiles
 
@@ -239,41 +241,41 @@ The colon *:* makes a header by:
         5. change STATE to compile (1);
 
 In compile mode, all non immediate words are compiled, 
-        and the immediate words are executed. 
+        and all immediate words are executed. 
     
 The semis *;* ends the word by:
-        1. copy FAUX to LATEST
+        1. copy PIKE to LATEST
         2. place a 'EXIT into last cell
         3. change STATE to execute (0);
+
+Semis is IMMEDIATE
 
 ## Missed Hack
 
 When the compilation breaks, by error or missing word,
-the STATE and LATEST are keepd in order but HERE was advanced with 
-references of words compiled, that junk stays lost in heap. 
+the STATE and LATEST are keepd in order but HEAP was advanced with 
+references of words compiled, that references junk stays lost in heap. 
 
 To clean heap, HERE must returns to value before start the last compilation. 
 
-That is why FAUX exists, to keep last mark, then just need copy FAUX to HERE. 
-
-Also need toggle STATE to interpret mode.
+That is why PIKE exists, to keep last mark, then just need copy PIKE to HERE. 
 
 ## CREATE and DOES>
 
    _ (from eforth ideas)_
 
-CREATE place the data address in stack and compiles two EXIT, 
-        the address of the first is saved at Forth variable BODY, 
-        the data address is the cell after second EXIT;
+CREATE compiles two EXIT, DOES> uses the first EXIT to put the address 
+    that follows DOES>;
 
-DOES> uses the address in BODY to save the complile address of 
-        what follows DOES>;
+CREATE places the reference after second EXIT in data stack;
 
-VARIABLE uses the data address to access a cell;
+DOES> uses LATEST to find the offset address to replace the first EXIT;
+
+VARIABLE uses the data address to access a reference;
     
 CONSTANT uses the data address to access a value;
     
-BUFFER uses thr data address to access a array of bytes;
+BUFFER uses the data address to access a array of bytes;
 
 ARRAY uses the data address to access the nth byte;
     
@@ -282,15 +284,12 @@ ARRAY uses the data address to access the nth byte;
 Those are classic methods to execute compiled native code in 
  dictionary. 
 
-But ;CODE depends on CREATE and CODE END-CODE on DOCOL, to know
-where jump to execute the native code.
-
-In a RISCV with MITC, a better way is do a jump and link to IPT 
+In a RISCV with MITC, a better way is do a jump and link to IP 
 and end the native code with a return.
 
 go native:
 
-    jarl ra, 0 (IPT)
+    jarl ra, 0 (IP)
 
     j next
     
@@ -374,7 +373,7 @@ wpush:
     and the gcc __attribute__((interrupt)) keeps which are used inside.
 
     The convention for R32* linux ecalls read and writes, 
-        uses a0, a1, a2, a7 registers.
+        uses a0, a1, a2, a3, a7 registers.
 
     Then best registers to use are s2-s11 and t3-t6 ? 
 
@@ -410,17 +409,17 @@ wpush:
          
           a0,a1,a2,a3,a7 used by ecalls in _putc, _getc, _exit, etc
          
-          a0,a1,a2 used as ecalls unsafe
+          a0,a1,a2,a3,a7 used as ecalls unsafe
          
-          a4,a5,a6 used as ecall safe
+          a4,a5,a6 used as ecalls safe
          
           t0,t1,t2 used as counters
          
-          t3,t4,t5,t6 used as holders for a0,a1,a2,a3 for ecalls
+          t3,t4,t5,t6 used as holders for a0,a1,a2,a7 for ecalls
          
           s2 used to keep ra, two level threads
          
-          a3 used as joker :)
+          a3 used everywhere as joker :)
          
 ## For Heaps
 

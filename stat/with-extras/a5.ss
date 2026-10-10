@@ -1,0 +1,35 @@
+   10146:	fea797e3          	bne	a5,a0,10134 <find+0x2>
+   1015c:	000017b7          	lui	a5,0x1
+   10160:	50578793          	addi	a5,a5,1285 # 1505 <DJB2>
+   1016e:	873e                	mv	a4,a5
+   10170:	0796                	slli	a5,a5,0x5
+   10172:	97ba                	add	a5,a5,a4
+   10174:	8fb5                	xor	a5,a5,a3
+   10180:	0786                	slli	a5,a5,0x1
+   10182:	8385                	srli	a5,a5,0x1
+   10188:	441c                	lw	a5,8(s0)
+   1018a:	c394                	sw	a3,0(a5)
+   1018c:	0791                	addi	a5,a5,4
+   1018e:	c41c                	sw	a5,8(s0)
+   10196:	405c                	lw	a5,4(s0)
+   10198:	4384                	lw	s1,0(a5)
+   1019a:	0791                	addi	a5,a5,4
+   1019c:	c05c                	sw	a5,4(s0)
+   101aa:	405c                	lw	a5,4(s0)
+   101ac:	17f1                	addi	a5,a5,-4
+   101ae:	c384                	sw	s1,0(a5)
+   101b0:	c05c                	sw	a5,4(s0)
+   10218:	86be                	mv	a3,a5
+   1025e:	0791                	addi	a5,a5,4
+   102aa:	401c                	lw	a5,0(s0)
+   102ac:	17f1                	addi	a5,a5,-4
+   102ae:	c394                	sw	a3,0(a5)
+   102b0:	c01c                	sw	a5,0(s0)
+   102b4:	401c                	lw	a5,0(s0)
+   102b6:	4394                	lw	a3,0(a5)
+   102b8:	0791                	addi	a5,a5,4
+   102ba:	4398                	lw	a4,0(a5)
+   10362:	4781                	li	a5,0
+   10378:	0792                	slli	a5,a5,0x4
+   1037a:	97b6                	add	a5,a5,a3
+   10386:	86be                	mv	a3,a5

@@ -38,6 +38,25 @@
 
 ## Done
 
+09/10/2026
+
+    Include optional internal counters for total, primitives and
+        compiled executed words and define words to
+        clean, flash and flush values at data stacks. 
+
+    Extended review: 
+
+    - No more internal POSTPONE hack, 
+    - Exclude unnecessary counter and memory variables
+    - Reform dump and .. (twodots) to keep stack
+    - Reform words for binary to ascii, and vice-versa, hexadecimal only. 
+    
+    Grouped native code words in minimal, extra, extended and debug
+
+    Optional clean heap when compilation misses a word
+
+    Optional emote OK or ?? for eval results, still noised.
+
 06/10/2026
 
     CREATE and DOES> working as easy. 

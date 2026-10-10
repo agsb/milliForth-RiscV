@@ -1,0 +1,11 @@
+0002b584 l       *ABS*	00000000 hash_store
+0002b5e5 l       *ABS*	00000000 hash_fetch
+0002b58e l       *ABS*	00000000 hash_plus
+00596816 l       *ABS*	00000000 hash_zeroq
+0002b59f l       *ABS*	00000000 hash_colon
+8002b59e l       *ABS*	00000000 hash_semis
+0b87f112 l       *ABS*	00000000 hash_KEY
+7c7c87d0 l       *ABS*	00000000 hash_EMIT
+7c8254c0 l       *ABS*	00000000 hash_NAND
+005973b0 l       *ABS*	00000000 hash_USERAT
+7c7cc745 l       *ABS*	00000000 hash_EXIT

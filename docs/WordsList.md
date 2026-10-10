@@ -43,14 +43,18 @@
 
  | name | word | stacks | use | defined | 
  | -- | -- | -- | -- | -- | 
+ | nan | NaN | ( -- w ) | place NaN 0x80000000 at TOS | milli |
+ | lshift | LSHIFT | ( w1 w2 -- w1\<\< w2 ) | ditto | core |
+ | rshift | RSHIFT | ( w1 w2 -- w1\>\> w2 ) | ditto | core |
  | docode | ( ;$ ) | ( -- ) | execute native code at next dictionary cell | milli |
  | abort | ABORT | ( -- ) | restart interpreter | core |
  | bye | BYE | ( -- ) | ends Forth | core | 
- | dot | ( . ) | ( w -- ) | outputs a value, in hexadecimal, from stack | core |
+ | lit | LIT | ( -- w ) | place next dictionary cell at TOS, advance IP | core |
  | dolar | ( $ ) | ( -- w ) | inputs a value, in hexadecimal, into stack | milli |
+ | dot | ( . ) | ( w -- ) | outputs a value, in hexadecimal, from stack | core |
  |   |   |   |   |   |
 
- ## Primitives
+ ## Extendeds
 
  | name | word | stacks | use | defined | 
  | -- | -- | -- | -- | -- | 
@@ -80,29 +84,17 @@
  | spto | SP! | ( sp -- ) | ditto | exception |
  | branch | BRANCH | ( -- ) | jump to relative by next dictionary cell value | internal |
  | branchz | 0BRANCH | ( -- ) | branch if TOS is 0 | internal |
- | lit | LIT | ( -- w ) | push next dictionary cell value to stack | internal |
  | true | TRUE | ( -- -1 ) | push TRUE to stack | core |
  | false | FALSE | ( -- 0 ) | push FALSE to stack | core |
- | one | 1 | ( -- 1 ) | ditto | internal |
- | two | 2 | ( -- 2 ) | ditto | internal |
  | cell | CELL | ( -- 4 ) | size in bytes of Forth cell | core |
- | nan | NAN | ( -- 0x80000000 ) | Not a Number, flag IMMEDIATE | internal |
  | state | STATE | ( -- c ) | 0 execute 1 compile 2 postpone ? | core |
  | last | LAST | ( -- a ) | address of last node of linked list dictionary, aka LATEST | internal |
  | heap | HEAP | ( -- a ) | address of next unnused cell in free memory, aka DP | internal |
- | ceil | CEIL | ( -- a ) | address of last unnused cell in free memory | internal |
- | faux | FAUX | ( -- a ) | address of HEAP before compiling | internal |
+ | pike | PIKE | ( -- a ) | address of last HEAP before compiling | internal |
  | rpzo | RP0 | ( -- rp0 ) | constant address to bottom of return stack | internal |
  | spzo | SP0 | ( -- sp0 ) | constant address to botton of data stack | internal |
- | head | HEAD | ( -- a ) | constant initial address of memory | internal |
- | tail | TAIL | ( -- a ) | constant final address of memory | internal |
  | bymul | M* | ( w1 w2 -- w3 w4 ) | w1/w2 == w3 reminder w4 quotient | core |
  | bymod | \*/MOD | ( w1 w2 -- w3 w4 ) | w1 * w2 == w3 lower w4 upper | core |
- | twomul | 2* | ( w -- w * 2 ) | ditto | core |
- | twodiv | 2/ | ( w -- w / 2 ) | ditto | core |
- | lshift | LSHIFT | ( w1 w2 -- w1\<\< w2 ) | ditto | core |
- | rshift | RSHIFT | ( w1 w2 -- w1\>\> w2 ) | ditto | core |
- | plusto | +! | ( w1 w2 -- ) | [w1] = [w1] + w2 | core |
  | perform | PERFORM | ( a -- ) | execute native code at address on top of stack | proposed* |
  |   |   |   |   |   |
 
@@ -112,10 +104,10 @@
  | -- | -- | -- | -- | -- | 
  | splist | .S | ( -- ) | pretty print data stack | tools |
  | rplist | .R | ( -- ) | pretty print return stack | tools* |
- | dump | DUMP | ( a1 a2 -- ) | pretty print memory from a1 to a2 | tools* |
  | words | WORDS | ( -- ) | pretty print all compiled words backwards | tools |
- | sees | SEE | ( -- ) | pretty print latest word | tools |
+ | see | SEE | ( -- ) | pretty print latest word | tools |
  | show | SHOW | ( -- ) | shows variables and lists data and return stacks | tools* |
  | twodot | .. | ( w -- w ) | print TOS in hexadecimal, DUP DOT | tools* |
+ | dump | DUMP | ( a1 a2 -- ) | pretty print memory from a1 to a2 | tools* |
  |   |   |   |   |   |
 
