@@ -93,7 +93,12 @@
  
     When the heap moves forward, the stack moves backward. 
  
-# For stacks
+## For rules 
+
+    The minimal code does not follow the rules for
+        preserve any register, nor callee, nor caller, none.
+
+## For stacks
  
     The hardware stack is not used for this Forth;
  

@@ -32,7 +32,7 @@
 #.equ missme, YES
 
 # enable extras
-.equ extras, YES
+# .equ extras, YES
 
 # enable extendeds
 #.equ extendeds, YES
@@ -41,7 +41,7 @@
 #.equ beats, YES
 
 # enable debug 
-.equ debugs, YES
+#.equ debugs, YES
 
 
 #---------------------------------------------------------------------
