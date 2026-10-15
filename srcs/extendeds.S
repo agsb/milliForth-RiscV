@@ -206,9 +206,9 @@ def_native "C@", "cfetch", hash_CFETCH
 
          j keep0
 
- #---------------------------------------------------------------------
- # ( a w -- ),  [a] = w, one byte
- def_native "C!", "cstore", hash_CSTORE 
+#---------------------------------------------------------------------
+# ( a w -- ),  [a] = w, one byte
+def_native "C!", "cstore", hash_CSTORE 
 
          call pull2
 
