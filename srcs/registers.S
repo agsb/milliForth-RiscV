@@ -67,15 +67,6 @@
 # forth instruction pointer, preserved
 #define ipt s1
 
-# used to keep ra, preseved
-#define rak s2
-
-# forth end of native code, constant
-#define nib s3
-
-# forth external loop of native code, constant
-#define bow s4
-
 # hash value
 #define hsh a0
 
@@ -102,4 +93,12 @@
 # generic
 #define ops a7
 
+# used to keep ra, preseved
+#define rak s2
+
+# forth end of native code, constant
+#define nib s3
+
+# forth loop of native code, constant
+#define bow s4
 

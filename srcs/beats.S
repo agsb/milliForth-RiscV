@@ -35,12 +35,8 @@
 .equ hash_BEATSTO, 0x0C8269A9
 
 #---------------------------------------------------------------------
-
-.equ init_beats, last_next
-
-#---------------------------------------------------------------------
 # ( -- ) ae flush counters to stack
-def_word "BEATS>", "beatsto", hash_BEATSTO, init_beats
+def_native "BEATS>", "beatsto", hash_BEATSTO 
 
 	# load stack pointer
         lw trd, SPTR (usr)
@@ -70,7 +66,7 @@ def_word "BEATS>", "beatsto", hash_BEATSTO, init_beats
 
 #----------------------------------------------------------------------
 # ( -- ) ae flash counters to stack
-def_word ">BEATS", "tobeats", hash_TOBEATS, it_beatsto
+def_native ">BEATS", "tobeats", hash_TOBEATS 
 
 	# load stack pointer
         lw trd, SPTR (usr)
@@ -99,9 +95,8 @@ def_word ">BEATS", "tobeats", hash_TOBEATS, it_beatsto
         j next
 
 #----------------------------------------------------------------------
-# ( -- ) ae clear counters
-# ( -- ) list all words in compiled dictionary, 
-def_word "0BEATS", "zbeats", hash_ZBEATS, it_tobeats
+# ( -- ) ae fast clear counters
+def_native "0BEATS", "zbeats", hash_ZBEATS 
 
 	mv t0, zero
 
@@ -110,10 +105,6 @@ def_word "0BEATS", "zbeats", hash_ZBEATS, it_tobeats
 	mv t2, zero
 
         j next
-
-#---------------------------------------------------------------------
-
-.set last_next, it_zbeats
 
 #---------------------------------------------------------------------
 

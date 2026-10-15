@@ -31,14 +31,16 @@
 
 .equ _ZERO,      0
 .equ _ONE,       1
+
 .equ _STDIN,     0
 .equ _STDOUT,    1
 
-.equ _SBRK,     45
-.equ _FCNT,     55
 .equ _GETC,     63
 .equ _PUTC,     64
 .equ _EXIT,     93
+
+.equ _SBRK,     45
+.equ _FCNT,     55
 .equ _MMAP,     192
 
 #---------------------------------------------------------------------
@@ -91,45 +93,4 @@ _rets:
         ecall
         ret
 
-/*
-
-.ifdef extras
 #---------------------------------------------------------------------
-_fcntl: # fd, cdm, arg
-        li a7, _FCNT 
-        mv a0, a3
-        mv a1, a4
-        mv a2, a5
-        j _rets
-        
-#---------------------------------------------------------------------
-_fcntl:
-        lw idx, SPTR (usr)
-        lw a0, 0 (idx)
-        lw a1, 4 (idx)
-        lw a2, 8 (idx)
-        addi idx, idx, 8
-        sw idx, SPTR (usr)
-
-        li a7, _FCNT 
-        ecall
-        ret
-        
-#---------------------------------------------------------------------
-_sbrk:
-        li a7, _SBRK
-        li a0, 0x0
-        j _rets
-
-        # this is where here is
-        # mov a3, a0
-
-        # add memory 
-        li a7, _SBRK
-        add a0, a0, a3
-
-        j _rets
-
-.endif
-*/
-

@@ -48,8 +48,8 @@
 .equ hash_OR, 0x00597378 
 .equ hash_XOR, 0x0B883040 
 
-.equ hash_NEGATE, 0x26B37A79 
-.equ hash_INVERSE, 0x2D6AA2B5 
+.equ hash_NEGATE, 0x26B37A79 	
+.equ hash_INVERSE, 0x2D6AA2B5 	
 
 .equ hash_DUP, 0x0B87BC84 
 .equ hash_DROP, 0x7C7F5C2C 
@@ -86,10 +86,6 @@
 .equ hash_PERFORM, 0x15EEB854 #; ( PERFORM )
 
 #---------------------------------------------------------------------
-
-.equ init_primitives, last_next
-
-#---------------------------------------------------------------------
 #
 look0:
         lw trd, SPTR (usr)
@@ -110,14 +106,9 @@ keep0:
 
         j next
 
-pass0:
-        addi ipt, ipt, CELL
-
-        j next
-
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; align to cell, word is 4 bytes
-def_word "ALIGN", "align", hash_ALIGN, init_primitives
+def_native "ALIGN", "align", hash_ALIGN 
 
         call look0
 
@@ -129,7 +120,7 @@ def_word "ALIGN", "align", hash_ALIGN, init_primitives
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; INVERSE w
-def_word "INVERSE", "nots", hash_INVERSE, it_align
+def_native "INVERSE", "nots", hash_INVERSE 
 
         call look0
 
@@ -140,7 +131,7 @@ def_word "INVERSE", "nots", hash_INVERSE, it_align
 
 #---------------------------------------------------------------------
 # ( w1 -- w2 ) #; NEG w, arithmetic inverse
-def_word "NEGATE", "negs", hash_NEGATE, it_nots
+def_native "NEGATE", "negs", hash_NEGATE 
 
         call look0
 
@@ -151,7 +142,7 @@ def_word "NEGATE", "negs", hash_NEGATE, it_nots
 
 #---------------------------------------------------------------------
 # ( w -- w w ) #; duplicate tos
-def_word "DUP", "dups", hash_DUP, it_negs
+def_native "DUP", "dups", hash_DUP 
 
         call look0
 
@@ -159,13 +150,13 @@ def_word "DUP", "dups", hash_DUP, it_negs
 
 #---------------------------------------------------------------------
 # ( w -- ) #; drop tos
-def_word "DROP", "drop", hash_DROP, it_dups
+def_native "DROP", "drop", hash_DROP 
 
         j drop1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1 w2 w1 ) #; over tos
-def_word "OVER", "over", hash_OVER, it_drop
+def_native "OVER", "over", hash_OVER 
 
         lw trd, SPTR (usr)
 
@@ -175,7 +166,7 @@ def_word "OVER", "over", hash_OVER, it_drop
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w2 w1 ) #; over tos
-def_word "SWAP", "swap", hash_SWAP, it_over
+def_native "SWAP", "swap", hash_SWAP 
 
         call look0
 
@@ -189,7 +180,7 @@ def_word "SWAP", "swap", hash_SWAP, it_over
 
 #---------------------------------------------------------------------
 # ( w1 w2 w3 -- w2 w3 w1 ) #; rot tos
-def_word "ROT", "rot", hash_ROT, it_swap
+def_native "ROT", "rot", hash_ROT 
 
         call look0
 
@@ -206,8 +197,8 @@ def_word "ROT", "rot", hash_ROT, it_swap
         j next
 
 #---------------------------------------------------------------------
- # ( a -- w ), w = [a], one byte
- def_word "C@", "cfetch", hash_CFETCH, it_rot
+# ( a -- w ), w = [a], one byte
+def_native "C@", "cfetch", hash_CFETCH 
 
          call look0
 
@@ -217,7 +208,7 @@ def_word "ROT", "rot", hash_ROT, it_swap
 
  #---------------------------------------------------------------------
  # ( a w -- ),  [a] = w, one byte
- def_word "C!", "cstore", hash_CSTORE, it_cfetch
+ def_native "C!", "cstore", hash_CSTORE 
 
          call pull2
 
@@ -227,7 +218,7 @@ def_word "ROT", "rot", hash_ROT, it_swap
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 - w2
-def_word "-", "minus", hash_MINUS, it_cstore
+def_native "-", "minus", hash_MINUS 
 
         call pull2
 
@@ -237,7 +228,7 @@ def_word "-", "minus", hash_MINUS, it_cstore
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 AND w2
-def_word "AND", "and", hash_AND, it_minus
+def_native "AND", "and", hash_AND 
 
         call pull2
 
@@ -247,7 +238,7 @@ def_word "AND", "and", hash_AND, it_minus
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 OR w2 
-def_word "OR", "or", hash_OR, it_and
+def_native "OR", "or", hash_OR 
 
         call pull2
 
@@ -257,7 +248,7 @@ def_word "OR", "or", hash_OR, it_and
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 OR w2 
-def_word "XOR", "xor", hash_XOR, it_or
+def_native "XOR", "xor", hash_XOR 
 
         call pull2
 
@@ -267,7 +258,7 @@ def_word "XOR", "xor", hash_XOR, it_or
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 = w2 
-def_word "=", "equ", hash_EQU, it_xor
+def_native "=", "equ", hash_EQU 
 
         call pull2
 
@@ -285,7 +276,7 @@ isfalse:
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 < w2 
-def_word "<", "less", hash_LESS, it_equ
+def_native "<", "less", hash_LESS 
 
         call pull2
 
@@ -295,7 +286,7 @@ def_word "<", "less", hash_LESS, it_equ
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 ) #; w1 < w2 unsigned
-def_word "U<", "uless", hash_ULESS, it_less     
+def_native "U<", "uless", hash_ULESS 
 
         call pull2
 
@@ -304,8 +295,8 @@ def_word "U<", "uless", hash_ULESS, it_less
         j isfalse
 
 #---------------------------------------------------------------------
-# ( w1 -- w2 ) #; w1 > 0 greater than zero
-def_word "0>", "gtzero", hash_GTZERO, it_uless     
+# ( w1 -- w2 ) #; w1 > 0 greater than zero #; WTF why not 0< ?
+def_native "0>", "gtzero", hash_GTZERO 
 
         call look0
 
@@ -315,9 +306,8 @@ def_word "0>", "gtzero", hash_GTZERO, it_uless
 
 #---------------------------------------------------------------------
 # ( -- w ) #; the value is at second cell
-def_word "R@", "rat", hash_RAT, it_gtzero
+def_native "R@", "rat", hash_RAT 
 
-rlook0:
         lw trd, RPTR (usr)
 
         lw fst, CELL (trd)
@@ -326,9 +316,8 @@ rlook0:
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; the value is at second cell
-def_word "R>", "rto", hash_RTO, it_rat
+def_native "R>", "rto", hash_RTO 
 
-rpull1:
         # load pointer
 
         lw trd, RPTR (usr)
@@ -359,7 +348,7 @@ rpull1:
 
 #---------------------------------------------------------------------
 # ( w --  ; -- w ) #; the value is at second cell
-def_word ">R", "tor", hash_TOR, it_rto
+def_native ">R", "tor", hash_TOR 
 
         # load value
 
@@ -393,7 +382,7 @@ def_word ">R", "tor", hash_TOR, it_rto
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "RP@", "rpat", hash_RPAT, it_tor
+def_native "RP@", "rpat", hash_RPAT 
 
         lw fst, RPTR (usr)
 
@@ -401,7 +390,7 @@ def_word "RP@", "rpat", hash_RPAT, it_tor
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "RP!", "rpto", hash_RPTO, it_rpat
+def_native "RP!", "rpto", hash_RPTO 
 
         call pull2
 
@@ -411,7 +400,7 @@ def_word "RP!", "rpto", hash_RPTO, it_rpat
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "SP@", "spat", hash_SPAT, it_rpto
+def_native "SP@", "spat", hash_SPAT 
 
         lw fst, SPTR (usr)
 
@@ -419,7 +408,7 @@ def_word "SP@", "spat", hash_SPAT, it_rpto
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "SP!", "spto", hash_SPTO, it_spat
+def_native "SP!", "spto", hash_SPTO 
 
         call pull2
 
@@ -429,8 +418,7 @@ def_word "SP!", "spto", hash_SPTO, it_spat
 
 #---------------------------------------------------------------------
 # ( -- ; -- ) #; branch is relative, not absolute
-def_word "BRANCH", "branch", hash_BRANCH, it_spto
-
+def_native "BRANCH", "branch", hash_BRANCH 
 branch:
 
         lw fst, 0 (ipt)
@@ -445,17 +433,20 @@ branch:
 
 #---------------------------------------------------------------------
 # ( -- ; -- ) #; branch if zero
-def_word "0BRANCH", "zbranch", hash_ZBRANCH, it_branch
+def_native "0BRANCH", "zbranch", hash_ZBRANCH 
         
         call pull2
 
         beq fst, zero, branch
 
-        j pass0
+pass0:
+        addi ipt, ipt, CELL
+
+        j next
 
 #---------------------------------------------------------------------
 # ( -- ; -- ) #; branch if greater than zero
-def_word "GBRANCH", "gbranch", hash_GBRANCH, it_zbranch
+def_native "GBRANCH", "gbranch", hash_GBRANCH 
         
         call pull2
 
@@ -465,7 +456,7 @@ def_word "GBRANCH", "gbranch", hash_GBRANCH, it_zbranch
 
 #---------------------------------------------------------------------
 # ( a -- ) #; execute s reference in TOS zzzz
-def_word "EXEC", "exec", hash_EXEC, it_gbranch
+def_native "EXEC", "exec", hash_EXEC 
         
         call look0
 	
@@ -475,7 +466,7 @@ def_word "EXEC", "exec", hash_EXEC, it_gbranch
 
 #---------------------------------------------------------------------
 # ( -- TRUE ) #; push 0xFFFFFFFF 
-def_word "TRUE", "true", hash_TRUE, it_exec
+def_native "TRUE", "true", hash_TRUE 
         
         li fst, TRUE 
 
@@ -483,7 +474,7 @@ def_word "TRUE", "true", hash_TRUE, it_exec
 
 #---------------------------------------------------------------------
 # ( -- FALSE ) #; push 0x00000000
-def_word "FALSE", "false", hash_FALSE, it_true
+def_native "FALSE", "false", hash_FALSE 
 
         li fst, FALSE 
 
@@ -491,7 +482,7 @@ def_word "FALSE", "false", hash_FALSE, it_true
 
 #---------------------------------------------------------------------
 # ( -- 4 ) #; push 0x00000004
-def_word "CELL", "cell", hash_CELL, it_false
+def_native "CELL", "cell", hash_CELL 
 
         li fst, CELL
 
@@ -499,7 +490,7 @@ def_word "CELL", "cell", hash_CELL, it_false
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; constant
-def_word "RP0", "rpzo", hash_RPZO, it_cell
+def_native "RP0", "rpzo", hash_RPZO 
 
         la fst, _rp0
 
@@ -507,7 +498,7 @@ def_word "RP0", "rpzo", hash_RPZO, it_cell
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; constant
-def_word "SP0", "spzo", hash_SPZO, it_rpzo
+def_native "SP0", "spzo", hash_SPZO 
 
         la fst, _sp0
 
@@ -515,7 +506,7 @@ def_word "SP0", "spzo", hash_SPZO, it_rpzo
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @
-def_word "STATE", "state", hash_STATE, it_spzo
+def_native "STATE", "state", hash_STATE 
 
         lw fst, STAT (usr)
 
@@ -523,7 +514,7 @@ def_word "STATE", "state", hash_STATE, it_spzo
 
 #---------------------------------------------------------------------
 # ( -- w ; w -- ) #; @ last in dictionary
-def_word "LAST", "last", hash_LAST, it_state
+def_native "LAST", "last", hash_LAST 
 
         lw fst, LAST (usr)
 
@@ -531,7 +522,7 @@ def_word "LAST", "last", hash_LAST, it_state
 
 #---------------------------------------------------------------------
 # ( -- w ; -- ) #; @ heap in memory
-def_word "HEAP", "heap", hash_HEAP, it_last
+def_native "HEAP", "heap", hash_HEAP 
 
         lw fst, HEAP (usr)
 
@@ -539,7 +530,7 @@ def_word "HEAP", "heap", hash_HEAP, it_last
 
 #---------------------------------------------------------------------
 # ( -- w ; -- ) #; @ heap in memory
-def_word "PIKE", "pike", hash_PIKE, it_heap
+def_native "PIKE", "pike", hash_PIKE 
 
         lw fst, PIKE (usr)
 
@@ -547,7 +538,7 @@ def_word "PIKE", "pike", hash_PIKE, it_heap
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 w4 ) double multiply,  
-def_word "M*", "bymul", hash_BYMUL, it_pike
+def_native "M*", "bymul", hash_BYMUL 
         
         call pull2
         mulh spc, fst, snd
@@ -560,7 +551,7 @@ push2:
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w3 w4 ) divide
-def_word "/MOD", "bymod", hash_BYMOD, it_bymul
+def_native "/MOD", "bymod", hash_BYMOD 
         
         call pull2
 	beqz fst, by_zero
@@ -571,7 +562,7 @@ def_word "/MOD", "bymod", hash_BYMOD, it_bymul
 
 #---------------------------------------------------------------------
 # ( w -- ) #; @
-def_word "PERFORM", "perform", hash_PERFORM, it_bymod
+def_native "PERFORM", "perform", hash_PERFORM 
 
         call pull2
 
@@ -579,9 +570,5 @@ def_word "PERFORM", "perform", hash_PERFORM, it_bymod
 
         j next
         
-#---------------------------------------------------------------------
-
-.set last_next, it_perform
-
 #---------------------------------------------------------------------
 

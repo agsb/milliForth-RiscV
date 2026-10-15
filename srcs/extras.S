@@ -41,25 +41,24 @@
 .equ hash_RSHIFT, 0x416E6B97
 .equ hash_LIT, 0x0B87DB14
 
-#---------------------------------------------------------------------
 
-.set init_extras, last_next
+.equ NAN, 0x8000
 
 #---------------------------------------------------------------------
 # ( -- ) push 0x80000000 #; Not a Number and flag IMMEDIATE and error
-def_word "NAN", "nan", hash_NAN, init_extras
+def_native "NAN", "nan", hash_NAN  
 by_erro: 
 by_zero: 
 by_under:         
 by_over: 
 	# load upper value, lower is auto set to 0x0
-        lui fst, 0x80000
+        lui fst, NAN
         
         j push1
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1<<w2 ) #; shift left some bits
-def_word "LSHIFT", "lshift", hash_LSHIFT, it_nan
+def_native "LSHIFT", "lshift", hash_LSHIFT 
 
         call pull2
         
@@ -69,7 +68,7 @@ def_word "LSHIFT", "lshift", hash_LSHIFT, it_nan
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w1>>w2 ) #; shift right some bits
-def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
+def_native "RSHIFT", "rshift", hash_RSHIFT 
 
         call pull2
         
@@ -79,7 +78,7 @@ def_word "RSHIFT", "rshift", hash_RSHIFT, it_lshift
 
 #---------------------------------------------------------------------
 # ( -- ) #; execute a jump and link
-def_word ";$", "docode", hash_DOCODE, it_rshift 
+def_native ";$", "docode", hash_DOCODE 
 
         # jump and link to there 
 
@@ -93,19 +92,19 @@ def_word ";$", "docode", hash_DOCODE, it_rshift
 
 #---------------------------------------------------------------------
 # ( -- ) #; abort 
-def_word "ABORT", "aborts", hash_ABORT, it_docode
+def_native "ABORT", "aborts", hash_ABORT 
 
         j abort
 
 #---------------------------------------------------------------------
 # ( -- ) #; exit forth
-def_word "BYE", "byes", hash_BYE, it_aborts
+def_native "BYE", "byes", hash_BYE 
 
         j _exit
 
 #---------------------------------------------------------------------
 # ( -- w ) #; copy next dictionary cell into TOS
-def_word "LIT", "lit", hash_LIT, it_byes
+def_native "LIT", "lit", hash_LIT 
         
         lw fst, 0 (ipt)
 
@@ -115,7 +114,7 @@ def_word "LIT", "lit", hash_LIT, it_byes
 
 #---------------------------------------------------------------------
 # ( -- w ) #; accept a hexadecimal number into TOS
-def_word "$", "hex", hash_HEX, it_byes
+def_native "$", "hex", hash_HEX 
 
         call number
 
@@ -123,7 +122,7 @@ def_word "$", "hex", hash_HEX, it_byes
         
 #---------------------------------------------------------------------
 # ( w -- ) #; print a hexadecimal number from TOS
-def_word ".", "dot", hash_DOT, it_hex
+def_native ".", "dot", hash_DOT 
 
         call pull2
 
@@ -131,9 +130,6 @@ def_word ".", "dot", hash_DOT, it_hex
 
         j save1
         
-#---------------------------------------------------------------------
-
-.equ last_next, it_dot
 
 #---------------------------------------------------------------------
 # code a 32-bit word in 0-9A-F ASCII hexadecimal
@@ -189,7 +185,7 @@ number:
 
         # load NaN
 
-        lui snd, 0x80000
+        lui snd, NAN
 
         # load word separator, BL is space      
 
@@ -257,7 +253,7 @@ digit:
 400:
 # is_error, NaN
 
-        lui fst, 0x80000
+        lui fst, NAN
 
         ret
 

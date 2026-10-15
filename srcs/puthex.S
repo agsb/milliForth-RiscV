@@ -28,18 +28,20 @@
 # lazy way, why push and pull using hardware stack
 .globl esave
 .macro esave
+        mv s7, a7
         mv s8, a0
         mv s9, a1
         mv s10, a2
-        mv s11, a7
+        mv s11, a3
 .endm
 
 .globl eload
 .macro eload
+        mv a7, s7
         mv a0, s8
         mv a1, s9
         mv a2, s10
-        mv a7, s11
+        mv a3, s11
 .endm
 
 #---------------------------------------------------------------------

@@ -59,14 +59,14 @@
 #---------------------------------------------------------------------
 # macro to define the header of words in dictionary
 #
-.global def_word
-
-.macro def_word name, label, hash, last
-it_\label:
-        .word \last
-        .word \hash
-is_\label:
-.endm
+#.global def_word
+#
+#.macro def_word name, label, hash, last
+#it_\label:
+#        .word \last
+#        .word \hash
+#is_\label:
+#.endm
 
 #---------------------------------------------------------------------
 # Riscv does not have automatic, and hidden, SP push/pull
@@ -188,7 +188,7 @@ cold:
 
         la usr, _user
 
-        la nib, _nibs
+        la nib, _ends
         
         la bow, _warp
 
@@ -326,7 +326,7 @@ find:
         xor hsh, hsh, snd
 
         # compare trd equ hash
-        
+	
         bne trd, hsh, 100b
 
         # found ! point to code or to list, aka xt
@@ -562,14 +562,17 @@ move:
 .endif
 
 #----------------------------------------------------------------------
-.set h_last, last_next
+# hack to last word defined in dictionary linked list, 
+# vide macro def_native
+
+.set h_last, 9999b - 8
 
 #---------------------------------------------------------------------
-# Beware, ends must be at last word behind native ditionary !
+# Beware, _ends must be at last word behind native ditionary !
 # it is used to know if a 'address' is primitive or not
 #---------------------------------------------------------------------
 
-_nibs:
+_ends:
 
 #---------------------------------------------------------------------
 .end

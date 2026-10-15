@@ -40,12 +40,8 @@
 .equ hash_SHOW, 0x7C8AB346
 
 #---------------------------------------------------------------------
-
-.equ init_debugs, last_next
-
-#---------------------------------------------------------------------
 # ( -- ) ae list of data stack
-def_word "%S", "splist", hash_splist, init_debugs
+def_native "%S", "splist", hash_splist 
 
         call stackS
 
@@ -53,7 +49,7 @@ def_word "%S", "splist", hash_splist, init_debugs
 
 #----------------------------------------------------------------------
 # ( -- ) ae list of return stack
-def_word "%R", "rplist", hash_rplist, it_splist
+def_native "%R", "rplist", hash_rplist 
 
         call stackR
         
@@ -61,7 +57,7 @@ def_word "%R", "rplist", hash_rplist, it_splist
 
 #----------------------------------------------------------------------
 # ( -- ) list all words in compiled dictionary, 
-def_word "WORDS", "words", hash_WORDS, it_rplist
+def_native "WORDS", "words", hash_WORDS 
 
         call wordf
 
@@ -69,7 +65,7 @@ def_word "WORDS", "words", hash_WORDS, it_rplist
 
 #----------------------------------------------------------------------
 # ( -- ) list last word in dictionary, 
-def_word "SEE", "sees", hash_SEE, it_words
+def_native "SEE", "sees", hash_SEE 
 
         call wordu
 
@@ -77,7 +73,7 @@ def_word "SEE", "sees", hash_SEE, it_words
 
 #----------------------------------------------------------------------
 # ( -- ) print user variables 
-def_word "SHOW", "show", hash_SHOW, it_sees
+def_native "SHOW", "show", hash_SHOW 
 
         call shows
         
@@ -85,7 +81,7 @@ def_word "SHOW", "show", hash_SHOW, it_sees
 
 #----------------------------------------------------------------------
 # ( a b -- a b ) print TOS and NOS in hexadecimal, keep stack
-def_word "..", "twodot", hash_twodot, it_show
+def_native "..", "twodot", hash_twodot 
 
         call pull2
 
@@ -103,17 +99,13 @@ def_word "..", "twodot", hash_twodot, it_show
 
 #----------------------------------------------------------------------
 # ( a b -- a b ) dumps memory between lower to upper, keep stack
-def_word "DUMP", "dump", hash_DUMP, it_twodot
+def_native "DUMP", "dump", hash_DUMP 
 
         call pull2
         
         call dumps
 
         j next
-
-#---------------------------------------------------------------------
-
-.set last_next, it_dump
 
 #---------------------------------------------------------------------
 #

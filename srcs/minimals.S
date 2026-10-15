@@ -19,6 +19,44 @@
 #----------------------------------------------------------------------
 */
 
+#
+# this trick allow easy changes order of word
+#
+#	.word 9999b - 8
+#	.word HASH
+# 9999:
+#
+# name, real forth word name
+# label, internal used for label 
+# hash, hash djb2 of name
+#
+
+#---------------------------------------------------------------------
+# the last of linked list marked with 0x0
+.macro def_native_end name label hash
+# head
+it_\label:
+    .word 0x0
+    .word \hash
+9999:
+# code
+is_\label:
+.endm
+
+#---------------------------------------------------------------------
+# the linked list of header 
+.global def_native
+
+.macro def_native name label hash
+# head
+it_\label:
+    .word 9999b - 8
+    .word \hash
+9999:
+# code
+is_\label:
+.endm
+
 #---------------------------------------------------------------------
 #
 # the minimal primitives 
@@ -50,19 +88,16 @@
 .equ hash_USERAT, 0x005973B0
 .equ hash_EXIT,  0x7C7CC745
 
-#---------------------------------------------------------------------
-
-.equ init_minimals, last_next
 
 #---------------------------------------------------------------------
 # ( -- ) ; aka figforth semis
-def_word "EXIT", "exit", hash_EXIT, init_minimals
-
+# all compiled words must end with exit
+def_native_end "EXIT", "exit", hash_EXIT
         j unnest
 
 #---------------------------------------------------------------------
 # ( -- ), ; aka figforth colon 
-def_word ":", "colon", hash_colon, it_exit
+def_native ":", "colon", hash_colon 
 # save here, panic if semis not follow elsewhere
         
         lw fst, HEAP (usr)
@@ -101,7 +136,7 @@ docomma:
 
 #---------------------------------------------------------------------
 # ( -- ) ; aka figforth semicolon
-def_word ";", "semis", hash_semis, it_colon 
+def_native ";", "semis", hash_semis 
 # update last, panic if colon not lead elsewhere 
         
         lw fst, PIKE (usr)
@@ -122,7 +157,7 @@ def_word ";", "semis", hash_semis, it_colon
 
 #---------------------------------------------------------------------
 # ( -- c ) 
-def_word "KEY", "key", hash_KEY, it_semis 
+def_native "KEY", "key", hash_KEY 
 
         call _getc
 
@@ -130,7 +165,7 @@ def_word "KEY", "key", hash_KEY, it_semis
 
 #---------------------------------------------------------------------
 # ( c -- ) 
-def_word "EMIT", "emit", hash_EMIT, it_key
+def_native "EMIT", "emit", hash_EMIT 
         
         call pull2
 
@@ -140,7 +175,7 @@ def_word "EMIT", "emit", hash_EMIT, it_key
 
 #---------------------------------------------------------------------
 # ( a w -- ),  [a] = w
-def_word "!", "store", hash_store, it_emit
+def_native "!", "store", hash_store 
         
         call pull2
 
@@ -153,7 +188,7 @@ drop1:
 
 #---------------------------------------------------------------------
 # ( a -- w ), w = [a]
-def_word "@", "fetch", hash_fetch, it_store
+def_native "@", "fetch", hash_fetch 
         
         call pull2
         
@@ -163,7 +198,7 @@ def_word "@", "fetch", hash_fetch, it_store
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), NOT(w1 AND w2)
-def_word "NAND", "nand", hash_NAND, it_fetch
+def_native "NAND", "nand", hash_NAND 
 
         call pull2
 
@@ -175,7 +210,7 @@ def_word "NAND", "nand", hash_NAND, it_fetch
 
 #---------------------------------------------------------------------
 # ( w1 w2 -- w), w = w1 + w2  
-def_word "+", "plus", hash_plus, it_nand
+def_native "+", "plus", hash_plus 
         
         call pull2
 
@@ -185,7 +220,7 @@ def_word "+", "plus", hash_plus, it_nand
 
 #---------------------------------------------------------------------
 # ( 0 -- FALSE) | ( n -- TRUE), not zero at top ?
-def_word "0#", "zeroq", hash_zeroq, it_plus
+def_native "0#", "zeroq", hash_zeroq 
 
         call pull2
         
@@ -197,9 +232,8 @@ def_word "0#", "zeroq", hash_zeroq, it_plus
         j back1
 
 #---------------------------------------------------------------------
-# beware variables order
 # ( -- _user ) return an reference to _user structure
-def_word "U@", "userat", hash_USERAT, it_zeroq
+def_native "U@", "userat", hash_USERAT 
 
 user1:
         mv fst, usr 
@@ -218,8 +252,6 @@ save1:
         
         j next
 
-#---------------------------------------------------------------------
-
 pull2:
         
         lw trd, SPTR (usr)
@@ -231,10 +263,6 @@ pull2:
         lw snd, 0 (trd)
 
         ret
-
-#---------------------------------------------------------------------
-
-.equ last_next, it_userat
 
 #---------------------------------------------------------------------
 

@@ -23,7 +23,7 @@
 # flags for compiler options
 
 # enable echo
-# .equ echoo, YES
+#.equ echoo, YES
 
 # enable OK or ??
 #.equ emote, YES
@@ -32,7 +32,7 @@
 #.equ missme, YES
 
 # enable extras
-# .equ extras, YES
+#.equ extras, YES
 
 # enable extendeds
 #.equ extendeds, YES
@@ -42,7 +42,6 @@
 
 # enable debug 
 #.equ debugs, YES
-
 
 #---------------------------------------------------------------------
 # max size of dictionary 64k CELLS  
@@ -97,6 +96,8 @@
 #---------------------------------------------------------------------
 # user structure of internal Forth variables, per task
 
+# user parameter stack: sp rp heap last state base
+
 # data stack index
 .equ SPTR, 0 * CELL
 
@@ -118,23 +119,10 @@
 # base radix for numbers, for future use
 .equ BASE, 6 * CELL
 
-#---------------------------------------------------------------------
-# reserved internals  
+# temporary scratch as array of CELLS
+.equ TEMP, 7 * CELL
 
-# last ip, reserved
-.equ HIPO, 7 * CELL
-
-# first absolute cell, reserved DICTIONARY__INIT 
-.equ HEAD, 8 * CELL
-
-# last absolute free cell, reserved RAM_LIMIT
-.equ TAIL, 9 * CELL
-
-# temporary scratch as array of 6 CELLS
-.equ TEMP, 10 * CELL
-
-# user parameter stack: sp rp heap last state base
-# user internal: hipo pike hipo head tail temp[6]
+# allow some cells for extra
 
 .equ params, 16
 
