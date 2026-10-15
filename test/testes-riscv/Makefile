@@ -23,8 +23,6 @@ GCC = ${PASS}gcc
 
 GCCFLAGS = -nostartfiles -nodefaultlibs -static -Oz \
 		-march=rv32gc -mabi=ilp32 \
-		
-		# -fPIC -fno-pie -fno-pic \
 	   	
 # -mno-explicit-relocs -fno-pic -Wl,--no-relax\
 # -march=rv32g  -mabi=ilp32 \
@@ -56,11 +54,7 @@ QEMU = ${BASE}qemu-riscv32
 
 QFLAGS = -display none -bios none -serial mon:stdio -smp 1 -machine virt 
 
-MY = minimal
-
-MY = sector-riscv
-
-MY = test
+MY = main
 
 ########################################
 

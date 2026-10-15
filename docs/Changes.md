@@ -38,6 +38,41 @@
 
 ## Done
 
+15/10/2026
+
+    Change the macros for define native words. 
+
+```
+    .macro native_end name label hash
+    it_\label:
+        .word 0x0
+        .word \hash  
+    9999:
+    is_\label:
+    .endm
+
+    .macro native name label hash
+    it_\label:
+        .word 9999b - 8
+        .word \hash  
+    9999:
+    is_\label:
+    .endm
+
+    .set h_last, 9999b - 8
+
+```
+    The compiler handles the back reference to '9999' labels.
+
+    Do not need explicity especify the previous link for
+    the linked list struct in dictionary.
+
+    Now, could easy change the order of words without worries.
+
+    PS. 
+        reserve the '9999' label for restrict macro use
+        name is not used, it is only reminds the real forth word name.
+
 09/10/2026
 
     Include optional internal counters for total, primitives and
@@ -56,35 +91,6 @@
     Optional clean heap when compilation misses a word
 
     Optional emote OK or ?? for eval results, still noised.
-
-15/10/2026
-
-    Change the macros for define native words. 
-
-    .macro native_end name label hash
-    it_\label:
-        .word 0x0
-        .word \hash  
-    9999:
-    is_\label:
-    .endm
-
-    .macro native name label hash
-    it_\label:
-        .word 9999b - 8
-        .word \hash  
-    9999:
-    is_\label:
-    .endm
-
-    The compiler handles the back reference to 9999 labels.
-
-    Do not need explicity especify the previous link for
-    the linked list struct in dictionary.
-
-    Now, could easy change the order of words without worries.
-
-    PS. name is not used, it is only reminds the real forth word name.
 
 06/10/2026
 

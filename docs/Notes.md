@@ -511,6 +511,37 @@ numeric errors in conversion, overflow, undeflow, zero division.
 
 Sure it is extended to 4 bytes cells. 
 
+## Linked List 
+
+    Finaly, change the macros for define primitive (native) words.
+
+    Using back reference to '9999' label, the compiler handles 
+    the linked list and not without explicity the previous link.
+
+    Now, could easy change the position of words without worries.
+
+
+```
+    .macro native_end name label hash
+    it_\label:
+        .word 0x0
+        .word \hash
+    9999:
+    is_\label:
+    .endm
+
+    .macro native name label hash
+    it_\label:
+        .word 9999b - 8
+        .word \hash
+    9999:
+    is_\label:
+    .endm
+
+    .set h_last, 9999b - 8
+
+```
+
 ## Linux ecalls
 
 https://www.chromium.org/chromium-os/developer-library/reference/linux-constants/syscalls/
